@@ -395,8 +395,27 @@ export const AddFoodModal: React.FC<AddFoodModalProps> = ({ meal, onClose }) => 
         ) : (
           <>
             {activeTab === 'pantry' && (
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                <h3 style={{ fontSize: '14px', fontWeight: '700', marginBottom: '8px', color: 'var(--theme-text)' }}>Your Saved Pantry</h3>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '4px' }}>
+                  <h3 style={{ fontSize: '14px', fontWeight: '700', margin: 0, color: 'var(--theme-text)' }}>Your Saved Pantry</h3>
+                  <button 
+                    onClick={() => setActiveTab('search')}
+                    style={{ 
+                      background: 'var(--theme-accent-dim, rgba(0,201,255,0.1))', 
+                      border: '1px solid var(--theme-border, rgba(0,201,255,0.2))', 
+                      padding: '8px 16px', 
+                      borderRadius: '12px', 
+                      color: 'var(--theme-accent, #00C9FF)', 
+                      fontSize: '12px', 
+                      fontWeight: '700', 
+                      cursor: 'pointer', 
+                      display: 'flex', 
+                      alignItems: 'center', 
+                      gap: '6px'
+                    }}>
+                    <Search size={14} /> Search Global
+                  </button>
+                </div>
                 {localCache.customFoods && localCache.customFoods.length > 0 ? (
                   localCache.customFoods.map((f: any, i: number) => (
                     <div key={i} onClick={() => handleAddFoodClick(f)} style={{ padding: '16px', background: 'var(--theme-panel, rgba(255,255,255,0.05))', borderRadius: '12px', cursor: 'pointer', display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderLeft: '3px solid var(--theme-success, #92FE9D)' }}>

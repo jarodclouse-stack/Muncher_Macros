@@ -23,6 +23,7 @@ export const PantryView: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [isSearching, setIsSearching] = useState(false);
   const [searchResults, setSearchResults] = useState<any[]>([]);
+  const [recipeSearchMode, setRecipeSearchMode] = useState<'keyword' | 'describe'>('keyword');
   
   const customFoods = localCache.customFoods || [];
   const [loggingFood, setLoggingFood] = useState<any | null>(null);
@@ -129,6 +130,31 @@ export const PantryView: React.FC = () => {
       }
     } catch (err) {
       setIngredientSearchResults(localMatches);
+    }
+    setIsSearching(false);
+  };
+
+  const handleIngredientDescribe = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!ingredientSearchQuery) return;
+    setIsSearching(true);
+    setErrorMsg('');
+    try {
+      const res = await fetch('/api/ai-meal', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ description: ingredientSearchQuery })
+      });
+      const body = await res.json();
+      if (!res.ok) throw new Error(body.error || 'Failed AI ingredient parsing');
+      
+      if (body.foods && body.foods.length > 0) {
+        setIngredientSearchResults(body.foods);
+      } else {
+        setErrorMsg('AI could not parse any ingredients from that description.');
+      }
+    } catch(err: any) {
+      setErrorMsg(err.message);
     }
     setIsSearching(false);
   };
@@ -355,10 +381,30 @@ export const PantryView: React.FC = () => {
 
       {activeTab === 'manual' && (
         <div style={{ background: 'var(--theme-panel, rgba(255,255,255,0.03))', border: '1px solid var(--theme-border, rgba(255,255,255,0.05))', borderRadius: '24px', padding: '24px' }}>
-          <h2 style={{ fontSize: '18px', fontWeight: '700', marginBottom: '20px', display: 'flex', alignItems: 'center', gap: '8px', color: 'var(--theme-text)' }}>
-            {editingIndex !== null ? <Edit3 size={18} color="var(--theme-accent, #00C9FF)" /> : <Plus size={18} color="var(--theme-success, #92FE9D)" />} 
-            {editingIndex !== null ? 'Modify Pantry Item' : 'New Food Manual Entry'}
-          </h2>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px', gap: '12px', flexWrap: 'wrap' }}>
+            <h2 style={{ fontSize: '18px', fontWeight: '700', margin: 0, display: 'flex', alignItems: 'center', gap: '8px', color: 'var(--theme-text)' }}>
+              {editingIndex !== null ? <Edit3 size={18} color="var(--theme-accent, #00C9FF)" /> : <Plus size={18} color="var(--theme-success, #92FE9D)" />} 
+              {editingIndex !== null ? 'Modify Pantry Item' : 'New Food Manual Entry'}
+            </h2>
+            <button 
+              onClick={() => setActiveTab('search')}
+              style={{ 
+                background: 'var(--theme-accent-dim, rgba(0,201,255,0.1))', 
+                border: '1px solid var(--theme-border, rgba(0,201,255,0.2))', 
+                padding: '10px 18px', 
+                borderRadius: '12px', 
+                color: 'var(--theme-accent, #00C9FF)', 
+                fontSize: '13px', 
+                fontWeight: '700', 
+                cursor: 'pointer', 
+                display: 'flex', 
+                alignItems: 'center', 
+                gap: '8px',
+                whiteSpace: 'nowrap'
+              }}>
+              <Search size={16} /> Search Global
+            </button>
+          </div>
 
           <form onSubmit={handleSave} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
             <div>
@@ -410,17 +456,49 @@ export const PantryView: React.FC = () => {
 
               {isAddingIngredient && (
                 <div style={{ marginBottom: '16px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                  <div style={{ display: 'flex', gap: '8px' }}>
-                    <input 
-                      className="inp"
-                      placeholder="Search items for recipe..."
-                      value={ingredientSearchQuery}
-                      onChange={e => setIngredientSearchQuery(e.target.value)}
-                      onKeyDown={e => { if(e.key === 'Enter') { e.preventDefault(); handleIngredientSearch(e); }}}
-                    />
-                    <button type="button" onClick={handleIngredientSearch} className="btn" style={{ marginTop: 0, padding: '0 16px' }} disabled={isSearching}>
-                      {isSearching ? <Loader2 className="spin" size={16} /> : <Search size={16} />}
+                  <div style={{ display: 'flex', gap: '8px', marginBottom: '8px' }}>
+                    <button 
+                      type="button"
+                      onClick={() => setRecipeSearchMode('keyword')}
+                      style={{ flex: 1, padding: '8px', fontSize: '11px', fontWeight: '700', borderRadius: '8px', border: 'none', background: recipeSearchMode === 'keyword' ? 'var(--theme-accent-dim)' : 'transparent', color: recipeSearchMode === 'keyword' ? 'var(--theme-accent)' : '#8b8b9b', cursor: 'pointer' }}>
+                      Keyword Search
                     </button>
+                    <button 
+                      type="button"
+                      onClick={() => setRecipeSearchMode('describe')}
+                      style={{ flex: 1, padding: '8px', fontSize: '11px', fontWeight: '700', borderRadius: '8px', border: 'none', background: recipeSearchMode === 'describe' ? 'var(--theme-accent-dim)' : 'transparent', color: recipeSearchMode === 'describe' ? 'var(--theme-accent)' : '#8b8b9b', cursor: 'pointer' }}>
+                      AI Describe
+                    </button>
+                  </div>
+
+                  <div style={{ display: 'flex', gap: '8px' }}>
+                    {recipeSearchMode === 'keyword' ? (
+                      <>
+                        <input 
+                          className="inp"
+                          placeholder="Search items for recipe..."
+                          value={ingredientSearchQuery}
+                          onChange={e => setIngredientSearchQuery(e.target.value)}
+                          onKeyDown={e => { if(e.key === 'Enter') { e.preventDefault(); handleIngredientSearch(e); }}}
+                        />
+                        <button type="button" onClick={handleIngredientSearch} className="btn" style={{ marginTop: 0, padding: '0 16px' }} disabled={isSearching}>
+                          {isSearching ? <Loader2 className="spin" size={16} /> : <Search size={16} />}
+                        </button>
+                      </>
+                    ) : (
+                      <>
+                        <textarea 
+                          className="inp"
+                          placeholder="Describe ingredients... e.g. '2 cups of diced chicken breast'"
+                          value={ingredientSearchQuery}
+                          onChange={e => setIngredientSearchQuery(e.target.value)}
+                          style={{ flex: 1, minHeight: '60px', padding: '12px' }}
+                        />
+                        <button type="button" onClick={handleIngredientDescribe} className="btn" style={{ marginTop: 0, padding: '0 16px' }} disabled={isSearching}>
+                          {isSearching ? <Loader2 className="spin" size={16} /> : <Sparkles size={16} />}
+                        </button>
+                      </>
+                    )}
                   </div>
 
                   {ingredientSearchResults.length > 0 && (
