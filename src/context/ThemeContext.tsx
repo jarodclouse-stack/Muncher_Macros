@@ -52,7 +52,7 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     body.classList.add(`theme-${theme}`);
     
     // Add light-surface class for specific themes
-    const isLight = ['glacier-peak', 'matcha-zen', 'sandstone'].includes(theme);
+    const isLight = ['glacier-peak', 'matcha-zen', 'sandstone', 'aegean-mist', 'athenas-wisdom'].includes(theme);
     if (isLight) {
       body.classList.add('theme-light-surface');
     } else {
@@ -61,6 +61,13 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     
     // Set color-scheme meta for mobile browser chrome
     body.style.colorScheme = isLight ? 'light' : 'dark';
+
+    // Update theme-meta to match background for Dynamic Island blending
+    const themeMeta = document.getElementById('theme-meta');
+    if (themeMeta) {
+      const bgColor = getComputedStyle(body).getPropertyValue('--theme-bg').trim() || '#080A0F';
+      themeMeta.setAttribute('content', bgColor);
+    }
   }, [theme]);
 
   return (

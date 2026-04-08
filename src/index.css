@@ -144,8 +144,134 @@ body.theme-sandstone {
   --theme-text: #4A3A2A;
   --theme-text-dim: #8A7A6A;
   --theme-border: rgba(166, 124, 82, 0.3);
-  --theme-placeholder: rgba(74, 58, 42, 0.5);
+  --placeholder: rgba(74, 58, 42, 0.5);
   --theme-input-bg: rgba(255, 255, 255, 0.8);
+}
+
+/* 10. Olympian Gold (⚡) */
+body.theme-olympian-gold {
+  --theme-bg: #0F0D08;
+  --theme-panel: rgba(28, 26, 20, 0.8);
+  --theme-panel-base: #1C1A14;
+  --theme-accent: #D4AF37;
+  --theme-accent-dim: rgba(212, 175, 55, 0.15);
+  --theme-text: #F5F5DC;
+  --theme-text-dim: #A09D80;
+  --theme-border: rgba(212, 175, 55, 0.25);
+}
+
+/* 11. Aegean Mist (🌊) - Light Theme */
+body.theme-aegean-mist {
+  --theme-bg: #F0FBFF;
+  --theme-panel: rgba(255, 255, 255, 0.9);
+  --theme-panel-base: #FFFFFF;
+  --theme-panel-dim: rgba(0, 201, 255, 0.05);
+  --theme-accent: #0088CC;
+  --theme-accent-dim: rgba(0, 136, 204, 0.1);
+  --theme-text: #003366;
+  --theme-text-dim: #507DA0;
+  --theme-border: rgba(0, 136, 204, 0.15);
+  --theme-placeholder: rgba(0, 51, 102, 0.5);
+  --theme-input-bg: rgba(255, 255, 255, 0.8);
+}
+
+/* 12. Hades' Ember (🔥) */
+body.theme-hades-ember {
+  --theme-bg: #0A0202;
+  --theme-panel: rgba(26, 8, 8, 0.85);
+  --theme-panel-base: #1A0808;
+  --theme-accent: #FF4500;
+  --theme-accent-dim: rgba(255, 69, 0, 0.15);
+  --theme-text: #FFE4E1;
+  --theme-text-dim: #CD5C5C;
+  --theme-border: rgba(255, 69, 0, 0.3);
+}
+
+/* 13. Athena's Wisdom (🦉) - Light Theme */
+body.theme-athenas-wisdom {
+  --theme-bg: #F5F5DC;
+  --theme-panel: rgba(255, 255, 250, 0.9);
+  --theme-panel-base: #FFFBF0;
+  --theme-panel-dim: rgba(139, 154, 103, 0.05);
+  --theme-accent: #6B8E23;
+  --theme-accent-dim: rgba(107, 142, 35, 0.1);
+  --theme-text: #2F4F4F;
+  --theme-text-dim: #556B2F;
+  --theme-border: rgba(107, 142, 35, 0.2);
+  --theme-placeholder: rgba(47, 79, 79, 0.5);
+  --theme-input-bg: rgba(255, 255, 255, 0.8);
+}
+
+/* 14. Dionysus' Vineyard (🍇) */
+body.theme-dionysus-vineyard {
+  --theme-bg: #1A0A1F;
+  --theme-panel: rgba(45, 20, 55, 0.8);
+  --theme-panel-base: #2D1437;
+  --theme-accent: #9D4EDD;
+  --theme-accent-dim: rgba(157, 78, 221, 0.15);
+  --theme-text: #F3E8FF;
+  --theme-text-dim: #C084FC;
+  --theme-border: rgba(157, 78, 221, 0.3);
+}
+
+/* 15. Poseidon's Depths (🔱) */
+body.theme-poseidons-depths {
+  --theme-bg: #051923;
+  --theme-panel: rgba(0, 53, 84, 0.8);
+  --theme-panel-base: #003554;
+  --theme-accent: #00A6FB;
+  --theme-accent-dim: rgba(0, 166, 251, 0.15);
+  --theme-text: #E0F2FE;
+  --theme-text-dim: #7DD3FC;
+  --theme-border: rgba(0, 166, 251, 0.3);
+}
+
+/* 16. Artemis' Moonlight (🌙) */
+body.theme-artemis-moonlight {
+  --theme-bg: #0B0E14;
+  --theme-panel: rgba(21, 26, 35, 0.85);
+  --theme-panel-base: #151A23;
+  --theme-accent: #A5B4FC;
+  --theme-accent-dim: rgba(165, 180, 252, 0.15);
+  --theme-text: #F8FAFC;
+  --theme-text-dim: #94A3B8;
+  --theme-border: rgba(165, 180, 252, 0.2);
+}
+
+/* 17. Hermes' Swiftness (👟) */
+body.theme-hermes-swiftness {
+  --theme-bg: #1F1D1A;
+  --theme-panel: rgba(45, 40, 35, 0.8);
+  --theme-panel-base: #2D2823;
+  --theme-accent: #F97316;
+  --theme-accent-dim: rgba(249, 115, 22, 0.15);
+  --theme-text: #FFF7ED;
+  --theme-text-dim: #FB923C;
+  --theme-border: rgba(249, 115, 22, 0.3);
+}
+
+/* 18. Spartan Grit (🛡️) */
+body.theme-spartan-grit {
+  --theme-bg: #0F0A0A;
+  --theme-panel: rgba(40, 20, 20, 0.8);
+  --theme-panel-base: #281414;
+  --theme-accent: #991B1B;
+  --theme-accent-dim: rgba(153, 27, 27, 0.15);
+  --theme-text: #FEE2E2;
+  --theme-text-dim: #F87171;
+  --theme-border: rgba(153, 27, 27, 0.3);
+}
+
+/* 19. Oracle's Vision (🔮) */
+body.theme-oracles-vision {
+  --theme-bg: #0D0B12;
+  --theme-panel: rgba(30, 25, 45, 0.85);
+  --theme-panel-base: #1E192D;
+  --theme-accent: #C084FC;
+  --theme-accent-dim: rgba(192, 132, 252, 0.15);
+  --theme-text: #FAF5FF;
+  --theme-text-dim: #D8B4FE;
+  --theme-border: rgba(192, 132, 252, 0.3);
 }
 
 

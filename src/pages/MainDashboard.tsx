@@ -24,7 +24,18 @@ export const MainDashboard: React.FC = () => {
   return (
     <div style={{ backgroundColor: 'var(--theme-bg, #080A0F)', backgroundAttachment: 'fixed', minHeight: '100vh', color: 'var(--theme-text, #f1f1f1)', fontFamily: 'Inter, sans-serif' }}>
       {/* Topbar */}
-      <header style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '16px 20px', background: 'var(--theme-panel, rgba(255,255,255,0.02))', borderBottom: '1px solid var(--theme-border, rgba(255,255,255,0.05))', backdropFilter: 'blur(10px)', position: 'sticky', top: 0, zIndex: 10 }}>
+      <header style={{ 
+        display: 'flex', 
+        justifyContent: 'space-between', 
+        alignItems: 'center', 
+        padding: 'calc(16px + env(safe-area-inset-top)) 20px 16px', 
+        background: 'var(--theme-panel, rgba(255,255,255,0.02))', 
+        borderBottom: '1px solid var(--theme-border, rgba(255,255,255,0.05))', 
+        backdropFilter: 'blur(10px)', 
+        position: 'sticky', 
+        top: 0, 
+        zIndex: 10 
+      }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '12px', cursor: 'pointer' }} onClick={() => setActiveTab('settings')}>
           <div 
             style={{ 
@@ -137,7 +148,19 @@ export const MainDashboard: React.FC = () => {
       )}
 
       {/* Bottom Navigation */}
-      <nav style={{ position: 'fixed', bottom: 0, left: 0, right: 0, display: 'flex', justifyContent: 'space-around', background: 'var(--theme-panel, rgba(20, 24, 34, 0.85))', backdropFilter: 'blur(15px)', borderTop: '1px solid var(--theme-border, rgba(255,255,255,0.05))', padding: '12px 0 24px 0', zIndex: 100 }}>
+      <nav style={{ 
+        position: 'fixed', 
+        bottom: 0, 
+        left: 0, 
+        right: 0, 
+        display: 'flex', 
+        justifyContent: 'space-around', 
+        background: 'var(--theme-panel, rgba(20, 24, 34, 0.85))', 
+        backdropFilter: 'blur(15px)', 
+        borderTop: '1px solid var(--theme-border, rgba(255,255,255,0.05))', 
+        padding: '12px 0 calc(env(safe-area-inset-bottom) + 12px) 0', 
+        zIndex: 100 
+      }}>
         <NavItem active={activeTab === 'diary'} onClick={() => setActiveTab('diary')} label="Diary" icon={<Utensils size={20} />} />
         <NavItem active={activeTab === 'nutrition'} onClick={() => setActiveTab('nutrition')} label="Nutrition" icon={<Activity size={20} />} />
         <NavItem active={activeTab === 'pantry'} onClick={() => setActiveTab('pantry')} label="Pantry" icon={<Package size={20} />} />

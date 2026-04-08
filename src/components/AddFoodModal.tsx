@@ -102,11 +102,24 @@ export const AddFoodModal: React.FC<AddFoodModalProps> = ({ meal, onClose }) => 
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ query })
       });
-      const body = await res.json();
-      if (!res.ok) throw new Error(body.error || 'Failed AI search');
-      setResults(body.foods || []);
+      
+      const contentType = res.headers.get('content-type');
+      if (contentType && contentType.includes('application/json')) {
+        const body = await res.json();
+        if (!res.ok) throw new Error(body.error || 'Failed AI search');
+        setResults(body.foods || []);
+      } else {
+        throw new Error('Our AI services are temporarily resting. Using local search fallback...');
+      }
     } catch(err: any) {
-      setErrorMsg(err.message);
+      console.warn("AI Search Error:", err);
+      // Fallback to local
+      const q = query.toLowerCase();
+      const pantry = localCache.customFoods || [];
+      const combinedDB = [...pantry, ...FOOD_DB];
+      const localFallbacks = combinedDB.filter((f: any) => f.name.toLowerCase().includes(q));
+      setResults(localFallbacks);
+      setErrorMsg(err.message.includes('JSON') ? 'AI service error. Showing local matches.' : err.message);
     }
     setSearching(false);
   };

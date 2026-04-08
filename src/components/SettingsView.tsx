@@ -42,27 +42,27 @@ export const SettingsView: React.FC = () => {
   const purchasedThemes = settings.purchasedThemes;
 
   const themes: { id: ThemeName; name: string; emoji: string; price: number; color: string }[] = [
-    { id: 'obsidian', name: 'Obsidian', emoji: '🌑', price: 0, color: '#00F5D4' },
-    { id: 'cybermancer', name: 'Cybermancer', emoji: '🔮', price: 0, color: '#FF00E5' },
-    { id: 'gold-reserve', name: 'Gold Reserve', emoji: '🔱', price: 0, color: '#D4AF37' },
-    { id: 'glacier-peak', name: 'Glacier Peak', emoji: '🏔️', price: 0, color: '#0077B6' },
-    { id: 'forest-phantom', name: 'Forest Phantom', emoji: '🌿', price: 0, color: '#92FE9D' },
-    { id: 'midnight-crimson', name: 'Midnight Crimson', emoji: '🩸', price: 0, color: '#E63946' },
-    { id: 'sunset-horizon', name: 'Sunset Horizon', emoji: '🌅', price: 0, color: '#FF9F1C' },
-    { id: 'quantum-violet', name: 'Quantum Violet', emoji: '🌌', price: 0, color: '#9A48D0' },
-    { id: 'matcha-zen', name: 'Matcha Zen', emoji: '🍵', price: 0, color: '#7A9B76' },
-    { id: 'sandstone', name: 'Sandstone', emoji: '🏜️', price: 0, color: '#A67C52' },
+    { id: 'obsidian', name: 'Obsidian 🌑', emoji: '🌑', price: 0, color: '#00F5D4' },
+    { id: 'cybermancer', name: 'Cybermancer 🔮', emoji: '🔮', price: 0, color: '#FF00E5' },
+    { id: 'gold-reserve', name: 'Gold Reserve 🔱', emoji: '🔱', price: 0, color: '#D4AF37' },
+    { id: 'glacier-peak', name: 'Glacier Peak 🏔️', emoji: '🏔️', price: 0, color: '#0077B6' },
+    { id: 'forest-phantom', name: 'Forest Phantom 🌿', emoji: '🌿', price: 0, color: '#92FE9D' },
+    { id: 'midnight-crimson', name: 'Midnight Crimson 🩸', emoji: '🩸', price: 0, color: '#E63946' },
+    { id: 'sunset-horizon', name: 'Sunset Horizon 🌅', emoji: '🌅', price: 0, color: '#FF9F1C' },
+    { id: 'quantum-violet', name: 'Quantum Violet 🌌', emoji: '🌌', price: 0, color: '#9A48D0' },
+    { id: 'matcha-zen', name: 'Matcha Zen 🍵', emoji: '🍵', price: 0, color: '#7A9B76' },
+    { id: 'sandstone', name: 'Sandstone 🏜️', emoji: '🏜️', price: 0, color: '#A67C52' },
     // Greek Themes
-    { id: 'olympian-gold', name: 'Olympian Gold', emoji: '⚡', price: 0, color: '#D4AF37' },
-    { id: 'aegean-mist', name: 'Aegean Mist', emoji: '🌊', price: 0, color: '#00C9FF' },
-    { id: 'hades-ember', name: 'Hades\' Ember', emoji: '🔥', price: 0, color: '#FF4500' },
-    { id: 'athenas-wisdom', name: 'Athena\'s Wisdom', emoji: '🦉', price: 0, color: '#8B9A67' },
-    { id: 'dionysus-vineyard', name: 'Dionysus\' Vineyard', emoji: '🍇', price: 0, color: '#7B2CBF' },
-    { id: 'poseidons-depths', name: 'Poseidon\'s Depths', emoji: '🔱', price: 0, color: '#00A6FB' },
-    { id: 'artemis-moonlight', name: 'Artemis\' Moonlight', emoji: '🌙', price: 0, color: '#A5B4FC' },
-    { id: 'hermes-swiftness', name: 'Hermes\' Swiftness', emoji: '👟', price: 0, color: '#F97316' },
-    { id: 'spartan-grit', name: 'Spartan Grit', emoji: '🛡️', price: 0, color: '#991B1B' },
-    { id: 'oracles-vision', name: 'Oracle\'s Vision', emoji: '🔮', price: 0, color: '#C084FC' },
+    { id: 'olympian-gold', name: 'Olympian Gold ⚡', emoji: '⚡', price: 0, color: '#D4AF37' },
+    { id: 'aegean-mist', name: 'Aegean Mist 🌊', emoji: '🌊', price: 0, color: '#00C9FF' },
+    { id: 'hades-ember', name: 'Hades\' Ember 🔥', emoji: '🔥', price: 0, color: '#FF4500' },
+    { id: 'athenas-wisdom', name: 'Athena\'s Wisdom 🦉', emoji: '🦉', price: 0, color: '#8B9A67' },
+    { id: 'dionysus-vineyard', name: 'Dionysus\' Vineyard 🍇', emoji: '🍇', price: 0, color: '#7B2CBF' },
+    { id: 'poseidons-depths', name: 'Poseidon\'s Depths 🔱', emoji: '🔱', price: 0, color: '#00A6FB' },
+    { id: 'artemis-moonlight', name: 'Artemis\' Moonlight 🌙', emoji: '🌙', price: 0, color: '#A5B4FC' },
+    { id: 'hermes-swiftness', name: 'Hermes\' Swiftness 👟', emoji: '👟', price: 0, color: '#F97316' },
+    { id: 'spartan-grit', name: 'Spartan Grit 🛡️', emoji: '🛡️', price: 0, color: '#991B1B' },
+    { id: 'oracles-vision', name: 'Oracle\'s Vision 🔮', emoji: '🔮', price: 0, color: '#C084FC' },
   ];
 
   const handleSelectTheme = (t: any) => {
@@ -246,7 +246,8 @@ export const SettingsView: React.FC = () => {
                   </div>
                 )}
                 <div style={{ fontSize: '24px', marginBottom: '8px' }}>{t.emoji}</div>
-                <div style={{ fontSize: '11px', fontWeight: '800', color: isSelected ? 'var(--theme-text, #fff)' : 'var(--theme-text-dim, #8b8b9b)', marginBottom: '4px' }}>{t.name}</div>
+                <div style={{ fontSize: '11px', fontWeight: '800', color: isSelected ? 'var(--theme-text, #fff)' : 'var(--theme-text-dim, #8b8b9b)', marginBottom: '2px' }}>{t.name}</div>
+                <div style={{ fontSize: '9px', color: 'var(--theme-accent, #00C9FF)', fontWeight: '700', marginBottom: '6px' }}>{t.price} GEMS</div>
                 <div style={{ width: '30px', height: '4px', borderRadius: '2px', background: t.color, margin: '0 auto' }} />
                 
                 {isSelected && (
