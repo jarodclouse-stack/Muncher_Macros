@@ -1,7 +1,7 @@
 // api/ai-label.js
 const LABEL_PROMPT = 'Extract ALL nutrition data from this label. Return ONLY a valid JSON object with these exact keys: name, serving, sUnit (g/oz/cup/tbsp/tsp/piece/slice/whole/medium/scoop/serving), sQty (number), cal, p (protein g), c (carbs g), f (fat g), fb (fiber g), chol (dietary cholesterol mg), sat (saturated fat g), trans (trans fat g), "Vitamin C"(mg), "Vitamin B1"(mg), "Vitamin B2"(mg), "Vitamin B3"(mg), "Vitamin B5"(mg), "Vitamin B6"(mg), "Vitamin B7"(mcg), "Vitamin B9"(mcg), "Vitamin B12"(mcg), "Vitamin A"(mcg), "Vitamin D"(mcg), "Vitamin E"(mg), "Vitamin K"(mcg), Calcium(mg), Phosphorus(mg), Magnesium(mg), Sodium(mg), Potassium(mg), Chloride(mg), Iron(mg), Zinc(mg), Copper(mg), Manganese(mg), Selenium(mcg), Iodine(mcg), Chromium(mcg), Molybdenum(mcg), Fluoride(mg), ingredients (string — the full ingredients list text exactly as printed on the label, or empty string if not visible). Use 0 for any numeric field not on the label. Return ONLY the JSON, no markdown.';
 
-module.exports = async function handler(req, res) {
+export default async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');

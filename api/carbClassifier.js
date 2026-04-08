@@ -110,4 +110,37 @@ async function classifyFood(query) {
   };
 }
 
-module.exports = { classifyFood, extractCarbData };
+export async function classifyFood(query) {
+  const foods = await searchFood(query);
+  if (foods.length === 0) return { error: 'No foods found for that search term.' };
+
+  const food = foods[0];
+  const nutrientData = extractCarbData(food);
+  const classification = classifyCarbs({
+    name: food.description,
+    carbs: nutrientData.carbs,
+    sugar: nutrientData.sugars,
+    fiber: nutrientData.fiber
+  });
+
+  return {
+    foodName: food.description,
+    nutrients: nutrientData,
+    classification: classification.label,
+    split: {
+      simpleCarbs: classification.simpleCarbs,
+      complexCarbs: classification.complexCarbs
+    }
+  };
+}
+
+export default async function handler(req, res) {
+  const { query } = req.query || {};
+  if (!query) return res.status(400).json({ error: 'Missing query parameter' });
+  try {
+    const result = await classifyFood(query);
+    return res.status(200).json(result);
+  } catch (err) {
+    return res.status(500).json({ error: err.message });
+  }
+}

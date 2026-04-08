@@ -1,5 +1,5 @@
 // api/check.js — diagnostic endpoint, visit /api/check in browser to confirm setup
-module.exports = async function handler(req, res) {
+export default async function handler(req, res) {
   const apiKey = (process.env.ANTHROPIC_API_KEY || '').trim();
 
   if (!apiKey) {
