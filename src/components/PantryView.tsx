@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useDiary } from '../context/DiaryContext';
-import { Plus, Trash2, Camera, Scan, ChevronDown, ChevronUp, Search, Loader2, Utensils, BookmarkPlus, LogIn, Scale, Check, X, Info, Edit3, RefreshCw } from 'lucide-react';
+import { Plus, Trash2, Camera, Scan, ChevronDown, ChevronUp, Search, Loader2, Utensils, BookmarkPlus, LogIn, Scale, Check, X, Info, Edit3, RefreshCw, Sparkles } from 'lucide-react';
 import { ALL_MICRO_KEYS, MEALS, MICRO_UNITS } from '../lib/constants';
 import { NUTRIENT_BENEFITS } from '../lib/nutrient-info';
 import { computeMultiplier, scaleLegacyFoodByAmount, COMMON_UNITS } from '../lib/food/serving-converter';
@@ -33,6 +33,8 @@ export const PantryView: React.FC = () => {
   const [ingredientSearchQuery, setIngredientSearchQuery] = useState('');
   const [ingredientSearchResults, setIngredientSearchResults] = useState<any[]>([]);
   const [pickingIngredient, setPickingIngredient] = useState<any | null>(null);
+  const [manualEntryMode, setManualEntryMode] = useState<'manual' | 'ai-describe'>('manual');
+  const [mainFormAIDesc, setMainFormAIDesc] = useState('');
 
   const handleFieldChange = (key: string, value: string) => {
     const updatedForm = { ...form, [key]: value };
@@ -184,6 +186,44 @@ export const PantryView: React.FC = () => {
     setIsAddingIngredient(false);
     setIngredientSearchResults([]);
     setIngredientSearchQuery('');
+  };
+
+  const handleMainFormAIDescribe = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!mainFormAIDesc) return;
+    setIsSearching(true);
+    setErrorMsg('');
+    try {
+      const res = await fetch('/api/ai-meal', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ description: mainFormAIDesc })
+      });
+      const body = await res.json();
+      if (!res.ok) throw new Error(body.error || 'Failed AI form parsing');
+      
+      if (body.foods && body.foods.length > 0) {
+        const food = body.foods[0];
+        setForm({
+          name: food.name,
+          cal: String(food.cal),
+          p: String(food.p),
+          c: String(food.c),
+          f: String(food.f),
+          ingredients: food.ingredients || '',
+          serving: food.serving || '1 serving',
+          sUnit: food.sUnit || 'serving',
+          sQty: food.sQty || 1
+        });
+        setManualEntryMode('manual'); // Switch to manual to review
+        setMainFormAIDesc('');
+      } else {
+        setErrorMsg('AI could not parse food data from that description.');
+      }
+    } catch(err: any) {
+      setErrorMsg(err.message);
+    }
+    setIsSearching(false);
   };
 
   const removeIngredient = (idx: number) => {
@@ -406,9 +446,47 @@ export const PantryView: React.FC = () => {
             </button>
           </div>
 
-          <form onSubmit={handleSave} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-            <div>
-              <label style={{ fontSize: '12px', color: 'var(--theme-text-dim, #8b8b9b)', display: 'block', marginBottom: '6px' }}>Food Name</label>
+          <div style={{ display: 'flex', gap: '8px', marginBottom: '20px', background: 'var(--theme-panel-dim, rgba(255,255,255,0.02))', padding: '4px', borderRadius: '12px', border: '1px solid var(--theme-border, rgba(255,255,255,0.05))' }}>
+            <button 
+              type="button"
+              onClick={() => setManualEntryMode('manual')}
+              style={{ flex: 1, padding: '10px', borderRadius: '8px', border: 'none', background: manualEntryMode === 'manual' ? 'var(--theme-accent-dim)' : 'transparent', color: manualEntryMode === 'manual' ? 'var(--theme-accent)' : '#8b8b9b', fontWeight: '700', cursor: 'pointer', fontSize: '12px' }}>
+              Manual Macro Entry
+            </button>
+            <button 
+              type="button"
+              onClick={() => setManualEntryMode('ai-describe')}
+              style={{ flex: 1, padding: '10px', borderRadius: '8px', border: 'none', background: manualEntryMode === 'ai-describe' ? 'var(--theme-accent-dim)' : 'transparent', color: manualEntryMode === 'ai-describe' ? 'var(--theme-accent)' : '#8b8b9b', fontWeight: '700', cursor: 'pointer', fontSize: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}>
+              <Sparkles size={14} /> AI Description
+            </button>
+          </div>
+
+          {manualEntryMode === 'ai-describe' ? (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', marginBottom: '20px' }}>
+              <div style={{ background: 'var(--theme-panel-dim, rgba(0,201,255,0.03))', padding: '16px', borderRadius: '16px', border: '1px dashed var(--theme-accent, rgba(0,201,255,0.2))' }}>
+                <label style={{ fontSize: '13px', fontWeight: '700', color: 'var(--theme-accent)', display: 'block', marginBottom: '8px' }}>AI Food Parser</label>
+                <textarea 
+                  className="inp"
+                  value={mainFormAIDesc}
+                  onChange={e => setMainFormAIDesc(e.target.value)}
+                  placeholder="Describe your food... e.g. 'One cup of thick creamy whole milk greek yogurt with honey'"
+                  style={{ width: '100%', minHeight: '100px', marginBottom: '12px' }}
+                />
+                <button 
+                  type="button"
+                  onClick={handleMainFormAIDescribe}
+                  disabled={isSearching}
+                  style={{ width: '100%', padding: '14px', background: 'var(--theme-accent)', color: 'var(--theme-panel-base)', borderRadius: '12px', border: 'none', fontWeight: '800', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
+                  {isSearching ? <Loader2 className="spin" size={18} /> : <Sparkles size={18} />}
+                  Auto-Fill Nutrition Data
+                </button>
+                <p style={{ fontSize: '11px', color: '#5b5b6b', marginTop: '12px', textAlign: 'center' }}>AI will analyze your description and automatically fill out the form below.</p>
+              </div>
+            </div>
+          ) : (
+            <form onSubmit={handleSave} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+              <div>
+                <label style={{ fontSize: '12px', color: 'var(--theme-text-dim, #8b8b9b)', display: 'block', marginBottom: '6px' }}>Food Name</label>
               <input 
                 required
                 value={form.name}
@@ -579,7 +657,8 @@ export const PantryView: React.FC = () => {
                 </button>
               )}
             </div>
-          </form>
+            </form>
+          )}
         </div>
       )}
 
