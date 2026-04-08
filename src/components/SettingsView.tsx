@@ -64,16 +64,16 @@ export const SettingsView: React.FC = () => {
     { id: 'spartan-grit', name: 'Spartan Grit 🛡️', emoji: '🛡️', price: 0, color: '#991B1B' },
     { id: 'oracles-vision', name: 'Oracle\'s Vision 🔮', emoji: '🔮', price: 0, color: '#C084FC' },
     // New Themes
-    { id: 'solar-flare', name: 'Solar Flare ☀️', emoji: '☀️', price: 500, color: '#FF9F1C' },
-    { id: 'deep-sea', name: 'Deep Sea 🌊', emoji: '🌊', price: 500, color: '#0077B6' },
-    { id: 'sakura-spring', name: 'Sakura Spring 🌸', emoji: '🌸', price: 500, color: '#FFB7C5' },
-    { id: 'neon-wasteland', name: 'Neon Wasteland ⚡', emoji: '⚡', price: 500, color: '#39FF14' },
-    { id: 'emerald-city', name: 'Emerald City 🏰', emoji: '🏰', price: 500, color: '#50C878' },
-    { id: 'carbon-fiber', name: 'Carbon Fiber 🏎️', emoji: '🏎️', price: 500, color: '#333333' },
-    { id: 'sahara-gold', name: 'Sahara Gold 🏜️', emoji: '🏜️', price: 500, color: '#E1AD01' },
-    { id: 'midnight-galaxy', name: 'Midnight Galaxy 🌌', emoji: '🌌', price: 500, color: '#7B2CBF' },
-    { id: 'nordic-frost', name: 'Nordic Frost 🧊', emoji: '🧊', price: 500, color: '#A5D8FF' },
-    { id: 'ember-forge', name: 'Ember Forge ⚒️', emoji: '⚒️', price: 500, color: '#B22222' },
+    { id: 'solar-flare', name: 'Solar Flare ☀️', emoji: '☀️', price: 0, color: '#FF9F1C' },
+    { id: 'deep-sea', name: 'Deep Sea 🌊', emoji: '🌊', price: 0, color: '#0077B6' },
+    { id: 'sakura-spring', name: 'Sakura Spring 🌸', emoji: '🌸', price: 0, color: '#FFB7C5' },
+    { id: 'neon-wasteland', name: 'Neon Wasteland ⚡', emoji: '⚡', price: 0, color: '#39FF14' },
+    { id: 'emerald-city', name: 'Emerald City 🏰', emoji: '🏰', price: 0, color: '#50C878' },
+    { id: 'carbon-fiber', name: 'Carbon Fiber 🏎️', emoji: '🏎️', price: 0, color: '#333333' },
+    { id: 'sahara-gold', name: 'Sahara Gold 🏜️', emoji: '🏜️', price: 0, color: '#E1AD01' },
+    { id: 'midnight-galaxy', name: 'Midnight Galaxy 🌌', emoji: '🌌', price: 0, color: '#7B2CBF' },
+    { id: 'nordic-frost', name: 'Nordic Frost 🧊', emoji: '🧊', price: 0, color: '#A5D8FF' },
+    { id: 'ember-forge', name: 'Ember Forge ⚒️', emoji: '⚒️', price: 0, color: '#B22222' },
   ];
 
   const handleSelectTheme = (t: any) => {

@@ -43,16 +43,16 @@ export const BadgesView: React.FC = () => {
     { id: 'spartan-grit', name: 'Spartan Grit 🛡️', emoji: '🛡️', price: 0, colors: ['#0F0A0A', '#991B1B'] },
     { id: 'oracles-vision', name: 'Oracle\'s Vision 🔮', emoji: '🔮', price: 0, colors: ['#0D0B12', '#C084FC'] },
     // Premium Themes
-    { id: 'solar-flare', name: 'Solar Flare ☀️', emoji: '☀️', price: 500, colors: ['#1A0700', '#FF9F1C'] },
-    { id: 'deep-sea', name: 'Deep Sea 🌊', emoji: '🌊', price: 500, colors: ['#001219', '#0077B6'] },
-    { id: 'sakura-spring', name: 'Sakura Spring 🌸', emoji: '🌸', price: 500, colors: ['#FFF0F3', '#FF4D6D'] },
-    { id: 'neon-wasteland', name: 'Neon Wasteland ⚡', emoji: '⚡', price: 500, colors: ['#0D0221', '#39FF14'] },
-    { id: 'emerald-city', name: 'Emerald City 🏰', emoji: '🏰', price: 500, colors: ['#012E1B', '#50C878'] },
-    { id: 'carbon-fiber', name: 'Carbon Fiber 🏎️', emoji: '🏎️', price: 500, colors: ['#111111', '#E63946'] },
-    { id: 'sahara-gold', name: 'Sahara Gold 🏜️', emoji: '🏜️', price: 500, colors: ['#F5E6BE', '#D4AF37'] },
-    { id: 'midnight-galaxy', name: 'Midnight Galaxy 🌌', emoji: '🌌', price: 500, colors: ['#10002B', '#E0AAFF'] },
-    { id: 'nordic-frost', name: 'Nordic Frost 🧊', emoji: '🧊', price: 500, colors: ['#F0F8FF', '#4682B4'] },
-    { id: 'ember-forge', name: 'Ember Forge ⚒️', emoji: '⚒️', price: 500, colors: ['#1B0B04', '#FF4500'] },
+    { id: 'solar-flare', name: 'Solar Flare ☀️', emoji: '☀️', price: 0, colors: ['#1A0700', '#FF9F1C'] },
+    { id: 'deep-sea', name: 'Deep Sea 🌊', emoji: '🌊', price: 0, colors: ['#001219', '#0077B6'] },
+    { id: 'sakura-spring', name: 'Sakura Spring 🌸', emoji: '🌸', price: 0, colors: ['#FFF0F3', '#FF4D6D'] },
+    { id: 'neon-wasteland', name: 'Neon Wasteland ⚡', emoji: '⚡', price: 0, colors: ['#0D0221', '#39FF14'] },
+    { id: 'emerald-city', name: 'Emerald City 🏰', emoji: '🏰', price: 0, colors: ['#012E1B', '#50C878'] },
+    { id: 'carbon-fiber', name: 'Carbon Fiber 🏎️', emoji: '🏎️', price: 0, colors: ['#111111', '#E63946'] },
+    { id: 'sahara-gold', name: 'Sahara Gold 🏜️', emoji: '🏜️', price: 0, colors: ['#F5E6BE', '#D4AF37'] },
+    { id: 'midnight-galaxy', name: 'Midnight Galaxy 🌌', emoji: '🌌', price: 0, colors: ['#10002B', '#E0AAFF'] },
+    { id: 'nordic-frost', name: 'Nordic Frost 🧊', emoji: '🧊', price: 0, colors: ['#F0F8FF', '#4682B4'] },
+    { id: 'ember-forge', name: 'Ember Forge ⚒️', emoji: '⚒️', price: 0, colors: ['#1B0B04', '#FF4500'] },
   ];
 
   const handleSelectTheme = (t: any) => {
