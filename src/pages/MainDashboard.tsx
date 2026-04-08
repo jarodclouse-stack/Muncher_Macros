@@ -8,7 +8,7 @@ import { PantryView } from '../components/PantryView';
 import { SettingsView } from '../components/SettingsView';
 import { useDiary } from '../context/DiaryContext';
 import { getRewardBreakdown } from '../lib/reward-utils';
-import { LogOut, Activity, Flame, Utensils, Award, Package, Settings, ChevronRight, Gem, X, Info } from 'lucide-react';
+import { LogOut, Activity, Flame, Utensils, Award, Plus, Settings, ChevronRight, Gem, X, Info } from 'lucide-react';
 import legacyLogo from '../assets/logo_legacy.png';
 
 export const MainDashboard: React.FC = () => {
@@ -164,7 +164,7 @@ export const MainDashboard: React.FC = () => {
       }}>
         <NavItem active={activeTab === 'diary'} onClick={() => setActiveTab('diary')} label="Diary" icon={<Utensils size={20} />} />
         <NavItem active={activeTab === 'nutrition'} onClick={() => setActiveTab('nutrition')} label="Nutrition" icon={<Activity size={20} />} />
-        <NavItem active={activeTab === 'pantry'} onClick={() => setActiveTab('pantry')} label="Pantry" icon={<Package size={20} />} />
+        <NavItem active={activeTab === 'pantry'} onClick={() => setActiveTab('pantry')} label="Add Food" icon={<Plus size={20} />} />
         <NavItem active={activeTab === 'progress'} onClick={() => setActiveTab('progress')} label="Goals" icon={<Flame size={20} />} />
         <NavItem active={activeTab === 'badges'} onClick={() => setActiveTab('badges')} label="Badges/Themes" icon={<Award size={20} />} />
       </nav>

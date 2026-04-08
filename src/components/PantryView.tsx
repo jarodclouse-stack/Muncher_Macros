@@ -327,11 +327,6 @@ export const PantryView: React.FC = () => {
             style={{ flex: 1, padding: '12px', border: 'none', borderRadius: '12px', background: activeTab === 'saved' ? 'var(--theme-warning-dim, rgba(252,196,25,0.1))' : 'transparent', color: activeTab === 'saved' ? 'var(--theme-warning, #FCC419)' : 'var(--theme-text-dim, #8b8b9b)', fontWeight: '700', cursor: 'pointer', transition: 'all 0.2s', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
             <Utensils size={16} /> Pantry
           </button>
-          <button 
-            onClick={() => setActiveTab('diary')}
-            style={{ flex: 1, padding: '12px', border: 'none', borderRadius: '12px', background: activeTab === 'diary' ? 'var(--theme-accent-dim, rgba(0,201,255,0.1))' : 'transparent', color: activeTab === 'diary' ? 'var(--theme-accent, #00C9FF)' : 'var(--theme-text-dim, #8b8b9b)', fontWeight: '700', cursor: 'pointer', transition: 'all 0.2s', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
-            <LogIn size={16} /> To Diary
-          </button>
       </div>
 
       {activeTab === 'search' && (
