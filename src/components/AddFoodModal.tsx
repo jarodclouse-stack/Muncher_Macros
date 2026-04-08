@@ -33,6 +33,8 @@ export const AddFoodModal: React.FC<AddFoodModalProps> = ({ meal, onClose }) => 
   
   // Configuring single food
   const [configuringFood, setConfiguringFood] = useState<any | null>(null);
+  const [editName, setEditName] = useState('');
+  const [saveToPantry, setSaveToPantry] = useState(false);
   const [servingQty, setServingQty] = useState('1');
   const [servingUnit, setServingUnit] = useState('serving');
   const [showFullNutrition, setShowFullNutrition] = useState(false);
@@ -49,9 +51,13 @@ export const AddFoodModal: React.FC<AddFoodModalProps> = ({ meal, onClose }) => 
 
   const handleAddFoodClick = (food: any) => {
     setConfiguringFood(food);
+    setEditName(food.name || '');
+    setSaveToPantry(false);
     setServingQty('1');
     setServingUnit('serving');
   };
+
+  const { saveCustomFood } = useDiary();
 
   const handleConfirmAdd = (e: React.FormEvent) => {
     e.preventDefault();
@@ -61,8 +67,21 @@ export const AddFoodModal: React.FC<AddFoodModalProps> = ({ meal, onClose }) => 
       const scaledFood = scaleLegacyFoodByAmount(configuringFood, mult);
       
       const unitLabel = COMMON_UNITS.find((u: any) => u.id === servingUnit)?.label || servingUnit;
-      scaledFood.serving = `${qty} ${unitLabel} (Customized)`;
+      scaledFood.name = editName || configuringFood.name;
+      scaledFood.serving = `${qty} ${unitLabel}`;
       
+      // Save to Pantry if requested
+      if (saveToPantry) {
+        saveCustomFood({
+          ...configuringFood,
+          name: editName || configuringFood.name,
+          p: Number(configuringFood.p) || 0,
+          c: Number(configuringFood.c) || 0,
+          f: Number(configuringFood.f) || 0,
+          cal: Number(configuringFood.cal) || 0
+        });
+      }
+
       addFoodLog(meal, scaledFood);
       onClose();
     }
@@ -308,10 +327,19 @@ export const AddFoodModal: React.FC<AddFoodModalProps> = ({ meal, onClose }) => 
               <ChevronLeft size={16} /> Back to results
             </button>
             <div style={{ background: 'var(--theme-panel, rgba(255,255,255,0.05))', borderRadius: '16px', padding: '24px', marginBottom: '20px' }}>
-              <h4 style={{ margin: '0 0 8px 0', fontSize: '18px', color: 'var(--theme-text)' }}>{configuringFood.name}</h4>
-              <div style={{ color: 'var(--theme-text-dim, #8b8b9b)', fontSize: '13px', marginBottom: '20px' }}>Base: {configuringFood.serving} • {configuringFood.cal} kcal</div>
+              <div style={{ marginBottom: '16px' }}>
+                <label style={{ display: 'block', fontSize: '12px', color: 'var(--theme-text-dim, #8b8b9b)', marginBottom: '6px' }}>Food Name</label>
+                <input 
+                  value={editName}
+                  onChange={e => setEditName(e.target.value)}
+                  placeholder="Rename this food..."
+                  style={{ width: '100%', boxSizing: 'border-box', background: 'var(--theme-input-bg, rgba(0,0,0,0.3))', border: '1px solid var(--theme-border, rgba(255,255,255,0.2))', padding: '12px', color: 'var(--theme-text)', borderRadius: '12px', fontSize: '15px', fontWeight: '600' }}
+                />
+              </div>
+
+              <div style={{ color: 'var(--theme-text-dim, #8b8b9b)', fontSize: '12px', marginBottom: '16px', fontStyle: 'italic' }}>Base: {configuringFood.serving} • {configuringFood.cal} kcal</div>
               
-              <form id="serving-form" onSubmit={handleConfirmAdd} style={{ display: 'flex', gap: '12px' }}>
+              <form id="serving-form" onSubmit={handleConfirmAdd} style={{ display: 'flex', gap: '12px', marginBottom: '20px' }}>
                 <div style={{ flex: 1 }}>
                   <label style={{ display: 'block', fontSize: '12px', color: 'var(--theme-text-dim, #8b8b9b)', marginBottom: '6px' }}>Amount</label>
                   <input type="number" step="0.1" required value={servingQty} onChange={e => setServingQty(e.target.value)} style={{ width: '100%', boxSizing: 'border-box', background: 'var(--theme-input-bg, rgba(0,0,0,0.3))', border: '1px solid var(--theme-border, rgba(255,255,255,0.2))', padding: '12px', color: 'var(--theme-text)', borderRadius: '12px' }} />
@@ -323,6 +351,20 @@ export const AddFoodModal: React.FC<AddFoodModalProps> = ({ meal, onClose }) => 
                   </select>
                 </div>
               </form>
+
+              {!localCache.customFoods?.some((f: any) => f.name === (editName || configuringFood.name)) && (
+                <div 
+                  onClick={() => setSaveToPantry(!saveToPantry)}
+                  style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '12px', background: saveToPantry ? 'var(--theme-success-dim, rgba(146,254,157,0.1))' : 'rgba(255,255,255,0.02)', border: `1px solid ${saveToPantry ? 'var(--theme-success, #92FE9D)' : 'var(--theme-border, rgba(255,255,255,0.05))'}`, borderRadius: '12px', cursor: 'pointer', transition: 'all 0.2s' }}>
+                  <div style={{ width: '20px', height: '20px', borderRadius: '6px', border: '2px solid var(--theme-success, #92FE9D)', display: 'flex', alignItems: 'center', justifyContent: 'center', background: saveToPantry ? 'var(--theme-success, #92FE9D)' : 'transparent' }}>
+                    {saveToPantry && <Check size={14} color="#000" strokeWidth={4} />}
+                  </div>
+                  <div>
+                    <div style={{ fontSize: '13px', fontWeight: '700', color: saveToPantry ? 'var(--theme-success, #92FE9D)' : 'var(--theme-text)' }}>Save to My Pantry</div>
+                    <div style={{ fontSize: '10px', color: 'var(--theme-text-dim, #8b8b9b)' }}>Add this item to your permanent custom database</div>
+                  </div>
+                </div>
+              )}
             </div>
 
             {/* FULL NUTRITION COLLAPSABLE */}

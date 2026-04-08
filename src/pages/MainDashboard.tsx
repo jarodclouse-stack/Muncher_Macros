@@ -22,7 +22,7 @@ export const MainDashboard: React.FC = () => {
   const gems = rewards.totalGems;
 
   return (
-    <div style={{ backgroundColor: 'var(--theme-bg, #080A0F)', backgroundAttachment: 'fixed', minHeight: '100vh', color: 'var(--theme-text, #f1f1f1)', fontFamily: 'Inter, sans-serif' }}>
+    <div style={{ backgroundColor: 'var(--theme-bg, #080A0F)', backgroundAttachment: 'fixed', minHeight: '100vh', width: '100%', display: 'flex', flexDirection: 'column', color: 'var(--theme-text, #f1f1f1)', fontFamily: 'Inter, sans-serif' }}>
       {/* Topbar */}
       <header style={{ 
         display: 'flex', 
@@ -60,19 +60,19 @@ export const MainDashboard: React.FC = () => {
           </div>
         </div>
         
-        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginLeft: 'auto' }}>
           {/* Rewards Section */}
-          <div style={{ display: 'flex', borderRight: '1px solid var(--theme-border, rgba(255,255,255,0.05))', paddingRight: '12px', marginRight: '4px', gap: '8px' }}>
-            <RewardChip icon={<Flame size={14} color="#FF6B6B" />} value={streak} label="Streak" onClick={() => setShowRewardModal(true)} />
+          <div style={{ display: 'flex', borderRight: '1px solid var(--theme-border, rgba(255,255,255,0.05))', paddingRight: '10px', gap: '6px' }}>
+            <RewardChip icon={<Flame size={14} color="#FF6B6B" />} value={streak} label="Strk" onClick={() => setShowRewardModal(true)} />
             <RewardChip icon={<Gem size={14} color="#FFD700" />} value={gems} label="Gems" onClick={() => setShowRewardModal(true)} />
           </div>
 
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
-            <button onClick={() => setActiveTab('settings')} style={{ background: activeTab === 'settings' ? 'var(--theme-accent-dim, rgba(0,201,255,0.1))' : 'transparent', border: '1px solid var(--theme-border, rgba(255,255,255,0.1))', color: activeTab === 'settings' ? 'var(--theme-accent, #00C9FF)' : 'var(--theme-text-dim, #c0c0d0)', padding: '6px', borderRadius: '8px', cursor: 'pointer', transition: 'all 0.2s', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <Settings size={16} />
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', minWidth: '32px' }}>
+            <button onClick={() => setActiveTab('settings')} style={{ background: activeTab === 'settings' ? 'var(--theme-accent-dim, rgba(0,201,255,0.1))' : 'rgba(255,255,255,0.02)', border: '1px solid var(--theme-border, rgba(255,255,255,0.1))', color: activeTab === 'settings' ? 'var(--theme-accent, #00C9FF)' : 'var(--theme-text-dim, #c0c0d0)', padding: '6px', borderRadius: '8px', cursor: 'pointer', transition: 'all 0.2s', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <Settings size={14} />
             </button>
-            <button onClick={logout} style={{ background: 'transparent', border: '1px solid var(--theme-border, rgba(255,255,255,0.1))', color: 'var(--theme-text-dim, #c0c0d0)', padding: '6px', borderRadius: '8px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'all 0.2s' }}>
-              <LogOut size={16} />
+            <button onClick={logout} style={{ background: 'rgba(255,107,107,0.05)', border: '1px solid var(--theme-error-dim, rgba(255,107,107,0.1))', color: '#FF6B6B', padding: '6px', borderRadius: '8px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'all 0.2s' }}>
+              <LogOut size={14} />
             </button>
           </div>
         </div>

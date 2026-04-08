@@ -6,6 +6,8 @@
  * An active day is defined as having food logs, water, or a weight entry.
  */
 
+import { getDailyGemReward } from './gamification/gems';
+
 const isDayComplete = (day: any) => {
   if (!day) return false;
   const hasFood = day.foodLog && day.foodLog.length > 0;
@@ -70,8 +72,8 @@ export const calculateTotalGems = (cache: any): number => {
       currentStreak = 1;
     }
     
-    // 1. Base Gem
-    totalGems += 1;
+    // 1. Daily Gem (Scaled by streak)
+    totalGems += getDailyGemReward(currentStreak);
     
     // 2. Weekly Bonus: Every 7 days (7, 14, 21, ...)
     if (currentStreak % 7 === 0) {

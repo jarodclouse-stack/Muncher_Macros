@@ -413,6 +413,132 @@ body.theme-oracles-vision {
   --theme-border: rgba(192, 132, 252, 0.3);
 }
 
+/* 21. Solar Flare ☀️ */
+body.theme-solar-flare {
+  --theme-bg: #1A0700;
+  --theme-panel: rgba(50, 15, 0, 0.8);
+  --theme-panel-base: #320F00;
+  --theme-accent: #FF9F1C;
+  --theme-accent-dim: rgba(255, 159, 28, 0.15);
+  --theme-text: #FFF7ED;
+  --theme-text-dim: #FFB703;
+  --theme-border: rgba(255, 159, 28, 0.3);
+}
+
+/* 22. Deep Sea 🌊 */
+body.theme-deep-sea {
+  --theme-bg: #001219;
+  --theme-panel: rgba(0, 40, 50, 0.8);
+  --theme-panel-base: #002832;
+  --theme-accent: #0077B6;
+  --theme-accent-dim: rgba(0, 119, 182, 0.15);
+  --theme-text: #E9D8A6;
+  --theme-text-dim: #94D2BD;
+  --theme-border: rgba(0, 119, 182, 0.3);
+}
+
+/* 23. Sakura Spring 🌸 */
+body.theme-sakura-spring {
+  --theme-bg: #FFF0F3;
+  --theme-panel: rgba(255, 230, 235, 0.8);
+  --theme-panel-base: #FFE6EB;
+  --theme-accent: #FF4D6D;
+  --theme-accent-dim: rgba(255, 77, 109, 0.15);
+  --theme-text: #590D22;
+  --theme-text-dim: #C9184A;
+  --theme-border: rgba(255, 77, 109, 0.3);
+  --theme-placeholder: rgba(164, 19, 60, 0.4);
+  --theme-input-bg: rgba(255, 255, 255, 0.9);
+}
+
+/* 24. Neon Wasteland ⚡ */
+body.theme-neon-wasteland {
+  --theme-bg: #0D0221;
+  --theme-panel: rgba(30, 10, 50, 0.8);
+  --theme-panel-base: #1E0A32;
+  --theme-accent: #39FF14;
+  --theme-accent-dim: rgba(57, 255, 20, 0.15);
+  --theme-text: #C084FC;
+  --theme-text-dim: #7B2CBF;
+  --theme-border: rgba(57, 255, 20, 0.3);
+}
+
+/* 25. Emerald City 🏰 */
+body.theme-emerald-city {
+  --theme-bg: #012E1B;
+  --theme-panel: rgba(1, 45, 28, 0.8);
+  --theme-panel-base: #012D1C;
+  --theme-accent: #50C878;
+  --theme-accent-dim: rgba(80, 200, 120, 0.15);
+  --theme-text: #D1FFD7;
+  --theme-text-dim: #FFD700;
+  --theme-border: rgba(80, 200, 120, 0.3);
+}
+
+/* 26. Carbon Fiber 🏎️ */
+body.theme-carbon-fiber {
+  --theme-bg: #111111;
+  --theme-panel: rgba(25, 25, 25, 0.8);
+  --theme-panel-base: #191919;
+  --theme-accent: #E63946;
+  --theme-accent-dim: rgba(230, 57, 70, 0.15);
+  --theme-text: #F1FAEE;
+  --theme-text-dim: #A8DADC;
+  --theme-border: rgba(230, 57, 70, 0.3);
+}
+
+/* 27. Sahara Gold 🏜️ */
+body.theme-sahara-gold {
+  --theme-bg: #F5E6BE;
+  --theme-panel: rgba(235, 215, 170, 0.8);
+  --theme-panel-base: #EBD7AA;
+  --theme-accent: #D4AF37;
+  --theme-accent-dim: rgba(212, 175, 55, 0.15);
+  --theme-text: #3B2E2A;
+  --theme-text-dim: #785A28;
+  --theme-border: rgba(212, 175, 55, 0.3);
+  --theme-placeholder: rgba(59, 46, 42, 0.4);
+  --theme-input-bg: rgba(255, 255, 255, 0.9);
+}
+
+/* 28. Midnight Galaxy 🌌 */
+body.theme-midnight-galaxy {
+  --theme-bg: #10002B;
+  --theme-panel: rgba(36, 0, 70, 0.8);
+  --theme-panel-base: #240046;
+  --theme-accent: #E0AAFF;
+  --theme-accent-dim: rgba(224, 170, 255, 0.15);
+  --theme-text: #FFFFFF;
+  --theme-text-dim: #9D4EDD;
+  --theme-border: rgba(224, 170, 255, 0.3);
+}
+
+/* 29. Nordic Frost 🧊 */
+body.theme-nordic-frost {
+  --theme-bg: #F0F8FF;
+  --theme-panel: rgba(230, 245, 255, 0.8);
+  --theme-panel-base: #E6F5FF;
+  --theme-accent: #4682B4;
+  --theme-accent-dim: rgba(70, 130, 180, 0.15);
+  --theme-text: #2F4F4F;
+  --theme-text-dim: #5F9EA0;
+  --theme-border: rgba(70, 130, 180, 0.3);
+  --theme-placeholder: rgba(47, 79, 79, 0.4);
+  --theme-input-bg: rgba(255, 255, 255, 0.9);
+}
+
+/* 30. Ember Forge ⚒️ */
+body.theme-ember-forge {
+  --theme-bg: #1B0B04;
+  --theme-panel: rgba(40, 15, 10, 0.8);
+  --theme-panel-base: #280F0A;
+  --theme-accent: #FF4500;
+  --theme-accent-dim: rgba(255, 69, 0, 0.15);
+  --theme-text: #FFDAB9;
+  --theme-text-dim: #D2691E;
+  --theme-border: rgba(255, 69, 0, 0.3);
+}
+
 /* ===== REMAINDER OF YOUR ORIGINAL CSS GOES HERE ===== */
 /* Dark mode — Macro Munchers is always dark */
   .glass{background:rgba(10,30,33,0.8);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border:1px solid rgba(62,73,73,0.15)}
@@ -437,9 +563,22 @@ body.theme-oracles-vision {
   .nc-chip-teal{background:rgba(137,220,227,0.15);color:#89dce3;border:1px solid rgba(137,220,227,0.3)}
   .nc-chip-gold{background:rgba(237,209,85,0.15);color:#edd155;border:1px solid rgba(237,209,85,0.3)}
   .nc-chip-red{background:rgba(255,113,108,0.15);color:#ff716c;border:1px solid rgba(255,113,108,0.3)}
-  *{box-sizing:border-box;margin:0;padding:0}
-  body{font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;color:var(--text);background:var(--bg3);font-size:14px;min-height:100vh}
-  .app{max-width:480px;margin:0 auto;background:var(--bg);min-height:100vh;display:flex;flex-direction:column;box-shadow:0 0 0 0.5px var(--border);padding-bottom:80px}
+  html, body, #root {
+    width: 100%;
+    min-height: 100%;
+    margin: 0;
+    padding: 0;
+    overflow-x: hidden;
+    background-color: var(--theme-bg, #080A0F);
+  }
+
+  body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    color: var(--theme-text);
+    background: var(--theme-bg);
+    font-size: 14px;
+    transition: background-color var(--transition-smooth), color var(--transition-smooth);
+  }
 
   /* LOGIN */
   .login-screen{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;padding:24px;position:relative;z-index:100;overflow:hidden;background:linear-gradient(170deg,#000a0d 0%,#001d22 35%,#002b30 65%,#003138 85%,#001114 100%)}
@@ -457,10 +596,7 @@ body.theme-oracles-vision {
   .login-error{font-size:12px;color:var(--danger-text);background:var(--danger-bg);border-radius:var(--radius-md);padding:9px 12px;margin-top:12px;text-align:center;display:none}
 
   /* TOPBAR */
-  .topbar{display:flex;justify-content:space-between;align-items:center;padding:0 20px;height:64px;border-bottom:1px solid rgba(62,73,73,0.15);background:rgba(10,30,33,0.82);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);position:fixed;top:0;left:50%;transform:translateX(-50%);width:100%;max-width:480px;z-index:50}
-  .topbar-name{font-size:11px;font-weight:500;color:rgba(209,230,234,0.6);font-family:"Inter",sans-serif}
-  .topbar-app{font-size:17px;font-weight:800;color:#89dce3;font-family:"Manrope",sans-serif;letter-spacing:-.02em;text-transform:none}
-  .logout-btn{font-size:11px;padding:5px 12px;border:1px solid rgba(137,220,227,0.35);border-radius:var(--radius-md);background:transparent;color:#89dce3;cursor:pointer;font-family:inherit}
+  /* Modern Topbar & Nav are handled via inline-styles or new scoped classes */
   .acct-modal{position:fixed;inset:0;z-index:300;display:flex;align-items:flex-end;background:rgba(0,0,0,0.6);backdrop-filter:blur(4px)}
   .acct-sheet{width:100%;background:linear-gradient(180deg, rgba(255,255,255,0.08), rgba(255,255,255,0.03));border-radius:18px 18px 0 0;overflow:hidden;max-height:88vh;overflow-y:auto;animation:acctUp .25s ease-out}
   @keyframes acctUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
@@ -471,7 +607,7 @@ body.theme-oracles-vision {
   .logout-btn:hover{opacity:.8}
 
   /* NAV - Fixed Bottom */
-  .nav{display:flex;justify-content:space-around;align-items:center;padding:8px 4px env(safe-area-inset-bottom,20px);border-top:1px solid rgba(62,73,73,0.15);background:rgba(10,30,33,0.82);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:480px;z-index:50;border-radius:20px 20px 0 0;box-shadow:0 -8px 32px rgba(0,0,0,0.5)}
+  /* Removed legacy nav max-width constraints */
   .nav::-webkit-scrollbar{display:none}
   .nav button{position:relative;padding:6px 8px;font-size:9px;font-weight:600;border:none;border-radius:10px;background:transparent;color:rgba(209,230,234,0.45);cursor:pointer;white-space:nowrap;font-family:"Inter",sans-serif;transition:all .2s;text-align:center;display:flex;flex-direction:column;align-items:center;gap:2px;line-height:1.3;letter-spacing:.05em;text-transform:uppercase;min-width:48px}
   .nav button.active{background:transparent;border:none;color:#89dce3}.nav button.active::after{content:"";position:absolute;bottom:-2px;left:50%;transform:translateX(-50%);width:4px;height:4px;background:#89dce3;border-radius:50%;box-shadow:0 0 8px #89dce3,0 0 4px #89dce3}

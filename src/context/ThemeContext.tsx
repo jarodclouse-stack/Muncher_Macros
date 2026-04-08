@@ -20,7 +20,17 @@ export type ThemeName =
   | 'artemis-moonlight'
   | 'hermes-swiftness'
   | 'spartan-grit'
-  | 'oracles-vision';
+  | 'oracles-vision'
+  | 'solar-flare'
+  | 'deep-sea'
+  | 'sakura-spring'
+  | 'neon-wasteland'
+  | 'emerald-city'
+  | 'carbon-fiber'
+  | 'sahara-gold'
+  | 'midnight-galaxy'
+  | 'nordic-frost'
+  | 'ember-forge';
 
 interface ThemeContextType {
   theme: ThemeName;
@@ -52,7 +62,7 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     body.classList.add(`theme-${theme}`);
     
     // Add light-surface class for specific themes
-    const isLight = ['glacier-peak', 'matcha-zen', 'sandstone', 'aegean-mist', 'athenas-wisdom'].includes(theme);
+    const isLight = ['glacier-peak', 'matcha-zen', 'sandstone', 'aegean-mist', 'athenas-wisdom', 'sakura-spring', 'sahara-gold', 'nordic-frost'].includes(theme);
     if (isLight) {
       body.classList.add('theme-light-surface');
     } else {

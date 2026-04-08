@@ -77,23 +77,22 @@ export function scaleFoodByAmount(food: any, amount: number | string): any {
 export function scaleLegacyFoodByAmount(food: any, amount: number | string): any {
   const multiplier = sanitizeServingAmount(amount, 1);
   const f = food || {};
-  return {
-    ...f,
-    qty: multiplier,
-    cal: round(safeNum(f.cal) * multiplier),
-    p: round(safeNum(f.p) * multiplier),
-    c: round(safeNum(f.c) * multiplier),
-    fb: round(safeNum(f.fb) * multiplier),
-    sugars: round(safeNum(f.sugars) * multiplier),
-    f: round(safeNum(f.f) * multiplier),
-    sat: round(safeNum(f.sat) * multiplier),
-    mono: round(safeNum(f.mono) * multiplier),
-    poly: round(safeNum(f.poly) * multiplier),
-    trans: round(safeNum(f.trans) * multiplier),
-    chol: round(safeNum(f.chol) * multiplier),
-    Sodium: round(safeNum(f.Sodium) * multiplier),
-    Potassium: round(safeNum(f.Potassium) * multiplier)
-  };
+  const scaled: any = { ...f, qty: multiplier };
+  
+  // Scale every numeric property found in the object (Vitamins, Minerals, Macros)
+  Object.keys(f).forEach(key => {
+    // Avoid scaling metadata or identifiers
+    if (['id', 'name', 'brand', 'serving', 'sUnit', '_src', 'raw', 'meal', 'timestamp'].includes(key)) return;
+    
+    const value = f[key];
+    if (typeof value === 'number') {
+      scaled[key] = round(value * multiplier);
+    } else if (typeof value === 'string' && !isNaN(Number(value)) && value.trim() !== '') {
+      scaled[key] = round(Number(value) * multiplier);
+    }
+  });
+
+  return scaled;
 }
 
 export function sumFoods(foodEntries: any[]): any {
