@@ -24,6 +24,7 @@ export const PantryView: React.FC = () => {
   const [isSearching, setIsSearching] = useState(false);
   const [searchResults, setSearchResults] = useState<any[]>([]);
   const [recipeSearchMode, setRecipeSearchMode] = useState<'keyword' | 'describe'>('keyword');
+  const [innerGlobalSearchMode, setInnerGlobalSearchMode] = useState<'keyword' | 'describe'>('keyword');
   
   const customFoods = localCache.customFoods || [];
   const [loggingFood, setLoggingFood] = useState<any | null>(null);
@@ -336,21 +337,55 @@ export const PantryView: React.FC = () => {
       {activeTab === 'search' && (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
           <div style={{ background: 'var(--theme-panel, rgba(255,255,255,0.03))', border: '1px solid var(--theme-border, rgba(255,255,255,0.05))', borderRadius: '24px', padding: '24px' }}>
-            <h2 style={{ fontSize: '18px', fontWeight: '700', marginBottom: '20px', display: 'flex', alignItems: 'center', gap: '8px', color: 'var(--theme-text)' }}>
-              <Search size={18} color="var(--theme-accent, #00C9FF)" /> Search Global Database
-            </h2>
-            <form onSubmit={handleGlobalSearch} style={{ display: 'flex', gap: '8px', marginBottom: '16px' }}>
-              <input 
-                className="inp"
-                placeholder="Search millions of foods..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                style={{ flex: 1 }}
-              />
-              <button type="submit" disabled={isSearching} className="btn" style={{ marginTop: 0, width: 'auto', padding: '0 20px' }}>
-                {isSearching ? <Loader2 className="spin" size={18} /> : 'Search'}
-              </button>
-            </form>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px', gap: '12px', flexWrap: 'wrap' }}>
+              <h2 style={{ fontSize: '18px', fontWeight: '700', margin: 0, display: 'flex', alignItems: 'center', gap: '8px', color: 'var(--theme-text)' }}>
+                <Search size={18} color="var(--theme-accent, #00C9FF)" /> Search Global Database
+              </h2>
+              
+              <div style={{ display: 'flex', background: 'var(--theme-panel-dim, rgba(255,255,255,0.02))', padding: '4px', borderRadius: '12px', border: '1px solid var(--theme-border, rgba(255,255,255,0.05))', width: 'auto' }}>
+                <button 
+                  type="button"
+                  onClick={() => setInnerGlobalSearchMode('keyword')}
+                  style={{ padding: '8px 16px', borderRadius: '8px', border: 'none', background: innerGlobalSearchMode === 'keyword' ? 'var(--theme-accent-dim)' : 'transparent', color: innerGlobalSearchMode === 'keyword' ? 'var(--theme-accent)' : '#8b8b9b', fontWeight: '700', cursor: 'pointer', fontSize: '11px' }}>
+                  Keyword
+                </button>
+                <button 
+                  type="button"
+                  onClick={() => setInnerGlobalSearchMode('describe')}
+                  style={{ padding: '8px 16px', borderRadius: '8px', border: 'none', background: innerGlobalSearchMode === 'describe' ? 'var(--theme-accent-dim)' : 'transparent', color: innerGlobalSearchMode === 'describe' ? 'var(--theme-accent)' : '#8b8b9b', fontWeight: '700', cursor: 'pointer', fontSize: '11px', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                  <Sparkles size={12} /> AI Describe
+                </button>
+              </div>
+            </div>
+
+            {innerGlobalSearchMode === 'keyword' ? (
+              <form onSubmit={handleGlobalSearch} style={{ display: 'flex', gap: '8px', marginBottom: '16px' }}>
+                <input 
+                  className="inp"
+                  placeholder="Search millions of foods..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  style={{ flex: 1 }}
+                />
+                <button type="submit" disabled={isSearching} className="btn" style={{ marginTop: 0, width: 'auto', padding: '0 20px' }}>
+                  {isSearching ? <Loader2 className="spin" size={18} /> : 'Search'}
+                </button>
+              </form>
+            ) : (
+              <form onSubmit={handleIngredientDescribe} style={{ display: 'flex', flexDirection: 'column', gap: '12px', marginBottom: '16px' }}>
+                <textarea 
+                  className="inp"
+                  placeholder="Describe what you ate... e.g. 'grilled salmon with asparagus and half a cup of brown rice'"
+                  value={searchQuery}
+                  onChange={e => setSearchQuery(e.target.value)}
+                  style={{ width: '100%', minHeight: '80px', padding: '12px' }}
+                />
+                <button type="submit" disabled={isSearching} className="btn" style={{ marginTop: 0, width: '100%', padding: '14px', display: 'flex', justifyContent: 'center', gap: '8px' }}>
+                  {isSearching ? <Loader2 className="spin" size={20} /> : <Sparkles size={20} />}
+                  Parse Description
+                </button>
+              </form>
+            )}
 
             {searchResults.length > 0 && (
               <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', maxHeight: '300px', overflowY: 'auto', padding: '8px', background: 'var(--theme-panel-dim, rgba(0,0,0,0.2))', borderRadius: '12px' }}>

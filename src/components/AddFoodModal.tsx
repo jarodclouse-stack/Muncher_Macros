@@ -18,7 +18,7 @@ interface AddFoodModalProps {
 export const AddFoodModal: React.FC<AddFoodModalProps> = ({ meal, onClose }) => {
   const { localCache, addFoodLog, saveCustomFood } = useDiary();
   const [activeTab, setActiveTab] = useState<Tab>('search');
-  
+  const [searchMode, setSearchMode] = useState<'keyword' | 'describe'>('keyword');
   const [query, setQuery] = useState('');
   const [results, setResults] = useState<any[]>([]);
   const [searching, setSearching] = useState(false);
@@ -436,18 +436,51 @@ export const AddFoodModal: React.FC<AddFoodModalProps> = ({ meal, onClose }) => 
             )}
 
             {(activeTab === 'search' || activeTab === 'ai-search') && (
-              <form onSubmit={activeTab === 'search' ? handleStandardSearch : handleAISearch} style={{ display: 'flex', gap: '8px', marginBottom: '16px' }}>
-                <input 
-                  autoFocus
-                  placeholder={activeTab === 'search' ? "Search USDA & OpenFoodFacts..." : "AI Keyword Search (e.g. 'sweet potato fries')..."}
-                  value={query}
-                  onChange={e => setQuery(e.target.value)}
-                  style={{ flex: 1, padding: '12px 16px', borderRadius: '12px', border: '1px solid var(--theme-border, rgba(255,255,255,0.2))', background: 'var(--theme-input-bg, rgba(0,0,0,0.3))', color: 'var(--theme-text)', outline: 'none' }}
-                />
-                <button type="submit" disabled={searching} style={{ padding: '0 16px', background: 'var(--theme-accent, #00C9FF)', color: 'var(--theme-panel-base, #000)', borderRadius: '12px', border: 'none', fontWeight: 'bold', cursor: 'pointer' }}>
-                  <Search size={18} />
-                </button>
-              </form>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginBottom: '16px' }}>
+                <div style={{ display: 'flex', gap: '8px', marginBottom: '8px' }}>
+                  <button 
+                    type="button"
+                    onClick={() => setSearchMode('keyword')}
+                    style={{ flex: 1, padding: '8px', fontSize: '11px', fontWeight: '700', borderRadius: '8px', border: 'none', background: searchMode === 'keyword' ? 'var(--theme-accent-dim)' : 'transparent', color: searchMode === 'keyword' ? 'var(--theme-accent)' : '#8b8b9b', cursor: 'pointer' }}>
+                    Keyword Search
+                  </button>
+                  <button 
+                    type="button"
+                    onClick={() => setSearchMode('describe')}
+                    style={{ flex: 1, padding: '8px', fontSize: '11px', fontWeight: '700', borderRadius: '8px', border: 'none', background: searchMode === 'describe' ? 'var(--theme-accent-dim)' : 'transparent', color: searchMode === 'describe' ? 'var(--theme-accent)' : '#8b8b9b', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '4px' }}>
+                    <Sparkles size={12} /> AI Describe
+                  </button>
+                </div>
+
+                {searchMode === 'keyword' ? (
+                  <form onSubmit={activeTab === 'search' ? handleStandardSearch : handleAISearch} style={{ display: 'flex', gap: '8px' }}>
+                    <input 
+                      autoFocus
+                      placeholder={activeTab === 'search' ? "Search USDA & OpenFoodFacts..." : "AI Keyword Search (e.g. 'sweet potato fries')..."}
+                      value={query}
+                      onChange={e => setQuery(e.target.value)}
+                      style={{ flex: 1, padding: '12px 16px', borderRadius: '12px', border: '1px solid var(--theme-border, rgba(255,255,255,0.2))', background: 'var(--theme-input-bg, rgba(0,0,0,0.3))', color: 'var(--theme-text)', outline: 'none' }}
+                    />
+                    <button type="submit" disabled={searching} style={{ padding: '0 16px', background: 'var(--theme-accent, #00C9FF)', color: 'var(--theme-panel-base, #000)', borderRadius: '12px', border: 'none', fontWeight: 'bold', cursor: 'pointer' }}>
+                      <Search size={18} />
+                    </button>
+                  </form>
+                ) : (
+                  <form onSubmit={handleDescribeMeal} style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                    <textarea 
+                      autoFocus
+                      rows={3}
+                      placeholder="Describe your meal... e.g. '3 scrambled eggs and a piece of toast'"
+                      value={mealDesc || query}
+                      onChange={e => { setMealDesc(e.target.value); setQuery(e.target.value); }}
+                      style={{ flex: 1, padding: '12px 16px', borderRadius: '12px', border: '1px solid var(--theme-border, rgba(255,255,255,0.2))', background: 'var(--theme-input-bg, rgba(0,0,0,0.3))', color: 'var(--theme-text)', outline: 'none', resize: 'vertical' }}
+                    />
+                    <button type="submit" disabled={searching} style={{ padding: '12px', background: 'var(--theme-accent, #00C9FF)', color: 'var(--theme-panel-base, #000)', borderRadius: '12px', border: 'none', fontWeight: 'bold', display: 'flex', justifyContent: 'center', gap: '8px', cursor: 'pointer' }}>
+                      <Sparkles size={18} /> Parse & Describe
+                    </button>
+                  </form>
+                )}
+              </div>
             )}
 
             {activeTab === 'describe' && (
