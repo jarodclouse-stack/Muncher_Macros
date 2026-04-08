@@ -189,13 +189,13 @@ function normalizeNutritional(item) {
 
 export default async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
   if (req.method === 'OPTIONS') return res.status(200).end();
-  if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
+  if (req.method !== 'POST' && req.method !== 'GET') return res.status(405).json({ error: 'Method not allowed' });
 
-  const body = await readBody(req);
-  const query = typeof body.query === 'string' ? body.query.trim() : '';
+  const body = req.method === 'POST' ? await readBody(req) : {};
+  const query = typeof body.query === 'string' ? body.query.trim() : (req.query.q || req.query.query || '').trim();
   if (!query) return res.status(400).json({ error: 'Missing query' });
 
   const USDA_KEY       = process.env.USDA_API_KEY || '';

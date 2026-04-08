@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom';
 import { useDiary } from '../context/DiaryContext';
 import { FOOD_DB } from '../lib/constants';
 import { computeMultiplier, scaleLegacyFoodByAmount, COMMON_UNITS } from '../lib/food/serving-converter';
-import { Search, Camera, FileText, Sparkles, Plus, Check, Scan, ChevronLeft } from 'lucide-react';
+import { Search, Camera, FileText, Sparkles, Plus, Check, Scan, ChevronLeft, ChevronDown, ChevronUp, Beaker } from 'lucide-react';
 import { calculateVitalityScore } from '../lib/scoring/vitality';
 import { VitalityBadge } from './VitalityBadge';
 import { BrowserMultiFormatReader } from '@zxing/library';
@@ -23,6 +23,10 @@ export const AddFoodModal: React.FC<AddFoodModalProps> = ({ meal, onClose }) => 
   const [results, setResults] = useState<any[]>([]);
   const [searching, setSearching] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
+  
+  // Staging Tray for multi-add
+  const [stagingTray, setStagingTray] = useState<any[]>([]);
+  const [showTray, setShowTray] = useState(false);
 
   // Describe meal state
   const [mealDesc, setMealDesc] = useState('');
@@ -31,6 +35,7 @@ export const AddFoodModal: React.FC<AddFoodModalProps> = ({ meal, onClose }) => 
   const [configuringFood, setConfiguringFood] = useState<any | null>(null);
   const [servingQty, setServingQty] = useState('1');
   const [servingUnit, setServingUnit] = useState('serving');
+  const [showFullNutrition, setShowFullNutrition] = useState(false);
 
   // Scanner status
   const [scanStatus, setScanStatus] = useState('');
@@ -63,8 +68,39 @@ export const AddFoodModal: React.FC<AddFoodModalProps> = ({ meal, onClose }) => 
     }
   };
 
-  const addDirectly = (food: any) => {
-    addFoodLog(meal, food);
+  const addToTray = (food: any) => {
+    // Check if already in tray
+    const exists = stagingTray.find(item => item.id === food.id);
+    if (!exists) {
+      setStagingTray([...stagingTray, { ...food, qty: 1, unit: 'serving' }]);
+      setShowTray(true);
+    }
+  };
+
+  const updateTrayItem = (index: number, updates: any) => {
+    const newTray = [...stagingTray];
+    newTray[index] = { ...newTray[index], ...updates };
+    setStagingTray(newTray);
+  };
+
+  const removeFromTray = (index: number) => {
+    const newTray = stagingTray.filter((_, i) => i !== index);
+    setStagingTray(newTray);
+    if (newTray.length === 0) setShowTray(false);
+  };
+
+  const handleLogMeal = () => {
+    if (stagingTray.length === 0) return;
+    
+    stagingTray.forEach(item => {
+      const mult = computeMultiplier(item.serving || '', item.unit, item.qty);
+      const scaledFood = scaleLegacyFoodByAmount(item, mult);
+      const unitLabel = COMMON_UNITS.find((u: any) => u.id === item.unit)?.label || item.unit;
+      scaledFood.serving = `${item.qty} ${unitLabel}`;
+      addFoodLog(meal, scaledFood);
+    });
+    
+    onClose();
   };
 
   const handleStandardSearch = async (e: React.FormEvent) => {
@@ -73,7 +109,11 @@ export const AddFoodModal: React.FC<AddFoodModalProps> = ({ meal, onClose }) => 
     setSearching(true);
     setErrorMsg('');
     try {
-      const res = await fetch(`/api/food-search?q=${encodeURIComponent(query)}`);
+      const res = await fetch(`/api/food-search`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ query })
+      });
       if (res.ok) {
         const body = await res.json();
         setResults(body.foods || body.results || []);
@@ -138,8 +178,17 @@ export const AddFoodModal: React.FC<AddFoodModalProps> = ({ meal, onClose }) => 
       const body = await res.json();
       if (!res.ok) throw new Error(body.error || 'Failed AI meal estimation');
       
-      // For describe meal, we directly add all returned foods or show them as results
-      setResults(body.foods || []);
+      // For describe meal, we directly add all returned foods to the tray
+      if (body.foods && body.foods.length > 0) {
+        const newItems = body.foods.map((f: any) => ({ ...f, qty: 1, unit: 'serving' }));
+        setStagingTray([...stagingTray, ...newItems]);
+        setShowTray(true);
+        // Clear describe text for next add if they want
+        setMealDesc('');
+        // Switch to search or stay on describe? Stay but hint at tray.
+      } else {
+        setResults([]);
+      }
     } catch(err: any) {
       setErrorMsg(err.message);
     }
@@ -275,6 +324,35 @@ export const AddFoodModal: React.FC<AddFoodModalProps> = ({ meal, onClose }) => 
                 </div>
               </form>
             </div>
+
+            {/* FULL NUTRITION COLLAPSABLE */}
+            <div style={{ marginBottom: '20px' }}>
+              <button 
+                onClick={() => setShowFullNutrition(!showFullNutrition)}
+                style={{ 
+                  width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+                  padding: '12px 16px', background: 'var(--theme-panel, rgba(255,255,255,0.05))',
+                  border: '1px solid var(--theme-border, rgba(255,255,255,0.1))', borderRadius: '12px',
+                  color: 'var(--theme-text)', cursor: 'pointer', transition: 'all 0.2s'
+                }}
+              >
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '14px', fontWeight: '600' }}>
+                  <Beaker size={16} color="var(--theme-accent, #00C9FF)" /> Full Nutrition Facts
+                </div>
+                {showFullNutrition ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
+              </button>
+
+              {showFullNutrition && (
+                <div style={{ 
+                  marginTop: '8px', padding: '16px', background: 'var(--theme-panel, rgba(255,255,255,0.03))',
+                  borderRadius: '12px', border: '1px solid var(--theme-border, rgba(255,255,255,0.05))',
+                  display: 'flex', flexDirection: 'column', gap: '8px'
+                }}>
+                  <NutritionFactsDisplay food={scaleLegacyFoodByAmount(configuringFood, computeMultiplier(configuringFood.serving, servingUnit, parseFloat(servingQty) || 1))} />
+                </div>
+              )}
+            </div>
+
             <button form="serving-form" type="submit" style={{ marginTop: 'auto', padding: '16px', background: 'var(--theme-accent, #00C9FF)', color: 'var(--theme-panel-base, #000)', borderRadius: '12px', border: 'none', fontWeight: 'bold', cursor: 'pointer', display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '8px' }}>
               <Check size={18} /> Add to Diary
             </button>
@@ -377,12 +455,6 @@ export const AddFoodModal: React.FC<AddFoodModalProps> = ({ meal, onClose }) => 
             {/* RESULTS LIST */}
             {!searching && results.length > 0 && (
               <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                {activeTab === 'describe' && (
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
-                    <span style={{ color: 'var(--theme-success, #92FE9D)', fontSize: '13px', fontWeight: '600' }}>AI generated {results.length} items:</span>
-                    <button onClick={() => { results.forEach(addDirectly); onClose(); }} style={{ background: 'var(--theme-success, #92FE9D)', color: 'var(--theme-panel-base, #000)', border: 'none', padding: '6px 12px', borderRadius: '6px', fontWeight: 'bold', fontSize: '12px', cursor: 'pointer' }}>Add All</button>
-                  </div>
-                )}
                 {results.map((res: any, idx: number) => (
                   <div key={idx} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '16px', background: 'var(--theme-panel, rgba(255,255,255,0.05))', borderRadius: '12px' }}>
                     <div>
@@ -392,11 +464,20 @@ export const AddFoodModal: React.FC<AddFoodModalProps> = ({ meal, onClose }) => 
                       </div>
                       <div style={{ color: 'var(--theme-text-dim, #8b8b9b)', fontSize: '13px' }}>{res.serving} • {Math.round(res.cal || 0)} kcal • {res._src === 'usda' ? '🏛️ USDA' : res._src === 'ai' ? '🤖 AI' : '📦 Label'}</div>
                     </div>
-                    <button 
-                      onClick={() => handleAddFoodClick(res)} 
-                      style={{ width: '36px', height: '36px', borderRadius: '18px', background: 'var(--theme-accent-dim, rgba(0,201,255,0.2))', border: 'none', color: 'var(--theme-accent, #00C9FF)', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', flexShrink: 0 }}>
-                      <Plus size={20} />
-                    </button>
+                    <div style={{ display: 'flex', gap: '8px' }}>
+                      <button 
+                        onClick={() => handleAddFoodClick(res)} 
+                        title="Edit & Add"
+                        style={{ width: '36px', height: '36px', borderRadius: '18px', background: 'var(--theme-panel-base, rgba(0,0,0,0.2))', border: '1px solid var(--theme-border, rgba(255,255,255,0.1))', color: 'var(--theme-text-dim, #c0c0d0)', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', flexShrink: 0 }}>
+                        <Plus size={18} />
+                      </button>
+                      <button 
+                        onClick={() => addToTray(res)} 
+                        title="Add to Meal"
+                        style={{ width: '36px', height: '36px', borderRadius: '18px', background: 'var(--theme-accent-dim, rgba(0,201,255,0.2))', border: 'none', color: 'var(--theme-accent, #00C9FF)', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', flexShrink: 0 }}>
+                        <Check size={18} />
+                      </button>
+                    </div>
                   </div>
                 ))}
               </div>
@@ -408,6 +489,57 @@ export const AddFoodModal: React.FC<AddFoodModalProps> = ({ meal, onClose }) => 
           </>
         )}
       </div>
+
+      {/* MEAL TRAY (PERSISTENT AT BOTTOM) */}
+      {stagingTray.length > 0 && (
+        <div style={{ 
+          background: 'var(--theme-panel-base, #10141f)', 
+          borderTop: '1px solid var(--theme-border, rgba(255,255,255,0.1))',
+          padding: '16px',
+          boxShadow: '0 -10px 30px rgba(0,0,0,0.5)',
+          display: 'flex',
+          flexDirection: 'column',
+          gap: '12px'
+        }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <span style={{ fontWeight: '700', fontSize: '14px', color: 'var(--theme-text)' }}>Meal Preview ({stagingTray.length})</span>
+            <button onClick={() => setShowTray(!showTray)} style={{ background: 'none', border: 'none', color: 'var(--theme-accent, #00C9FF)', fontSize: '12px', cursor: 'pointer' }}>
+              {showTray ? 'Collapse' : 'Expand'}
+            </button>
+          </div>
+
+          {showTray && (
+            <div style={{ maxHeight: '200px', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '8px' }}>
+              {stagingTray.map((item, idx) => (
+                <div key={idx} style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '10px', background: 'rgba(255,255,255,0.03)', borderRadius: '10px' }}>
+                  <div style={{ flex: 1, fontSize: '13px', fontWeight: '500', color: 'var(--theme-text)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{item.name}</div>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                    <input 
+                      type="number" 
+                      step="0.1" 
+                      value={item.qty} 
+                      onChange={(e) => updateTrayItem(idx, { qty: parseFloat(e.target.value) || 0 })}
+                      style={{ width: '45px', padding: '4px', background: 'var(--theme-input-bg, rgba(0,0,0,0.2))', border: '1px solid var(--theme-border, rgba(255,255,255,0.1))', borderRadius: '6px', color: 'var(--theme-text)', fontSize: '12px', textAlign: 'center' }}
+                    />
+                    <select 
+                      value={item.unit}
+                      onChange={(e) => updateTrayItem(idx, { unit: e.target.value })}
+                      style={{ padding: '4px', background: 'var(--theme-input-bg, rgba(0,0,0,0.2))', border: '1px solid var(--theme-border, rgba(255,255,255,0.1))', borderRadius: '6px', color: 'var(--theme-text)', fontSize: '11px', outline: 'none' }}
+                    >
+                      {COMMON_UNITS.map(u => <option key={u.id} value={u.id} style={{ background: '#10141f', color: '#fff' }}>{u.label}</option>)}
+                    </select>
+                  </div>
+                  <button onClick={() => removeFromTray(idx)} style={{ background: 'none', border: 'none', color: '#ff6b6b', padding: '4px', cursor: 'pointer' }}>&times;</button>
+                </div>
+              ))}
+            </div>
+          )}
+
+          <button onClick={handleLogMeal} style={{ width: '100%', padding: '14px', background: 'var(--theme-accent, #00C9FF)', color: 'var(--theme-panel-base, #000)', borderRadius: '12px', border: 'none', fontWeight: '800', fontSize: '14px', cursor: 'pointer', display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '8px' }}>
+            <Check size={18} /> Log Meal Now
+          </button>
+        </div>
+      )}
     </div>,
     document.body
   );
@@ -426,3 +558,49 @@ const TabBtn = ({ active, onClick, icon, label }: any) => (
     {icon} {label}
   </button>
 );
+
+const NutritionFactsDisplay = ({ food }: { food: any }) => {
+  if (!food) return null;
+
+  const nutrients: [string, any][] = Object.entries(food);
+  const excludeKeys = ['id', 'name', 'brand', 'serving', 'sUnit', '_src', 'raw', 'meal', 'timestamp', 'qty','cal','p','c','f','fb','sugars','sat','mono','poly','trans','chol','Sodium','Potassium'];
+  
+  // Custom unit labels for certain nutrients
+  const unitMap: any = {
+    'Vitamin A': 'mcg', 'Vitamin D': 'mcg', 'Vitamin K': 'mcg', 'Vitamin B7': 'mcg', 'Vitamin B9': 'mcg', 'Vitamin B12': 'mcg',
+    'Selenium': 'mcg', 'Iodine': 'mcg', 'Chromium': 'mcg', 'Molybdenum': 'mcg'
+  };
+
+  const micros = nutrients.filter(([k, v]) => !excludeKeys.includes(k) && typeof v === 'number' && v > 0);
+  const macros = nutrients.filter(([k]) => ['cal','p','c','f','fb','sugars','sat','mono','poly','trans','chol','Sodium','Potassium'].includes(k));
+
+  return (
+    <div style={{ fontSize: '12px' }}>
+      <div style={{ borderBottom: '1px solid rgba(255,255,255,0.1)', paddingBottom: '4px', marginBottom: '8px', color: 'var(--theme-text-dim, #8b8b9b)', fontWeight: 'bold', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Standard Macros</div>
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '4px 16px', marginBottom: '16px' }}>
+        {macros.map(([k, v]) => (
+          <div key={k} style={{ display: 'flex', justifyContent: 'space-between', borderBottom: '1px solid rgba(255,255,255,0.05)', padding: '2px 0' }}>
+            <span style={{ color: 'var(--theme-text-dim, #8b8b9b)' }}>{k}:</span>
+            <span style={{ color: 'var(--theme-text)', fontWeight: '600' }}>{v}{['Sodium','Potassium','chol'].includes(k) ? 'mg' : (k==='cal' ? '' : 'g')}</span>
+          </div>
+        ))}
+      </div>
+
+      {micros.length > 0 && (
+        <>
+          <div style={{ borderBottom: '1px solid rgba(255,255,255,0.1)', paddingBottom: '4px', marginBottom: '8px', color: 'var(--theme-text-dim, #8b8b9b)', fontWeight: 'bold', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Vitamins & Minerals</div>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '4px 16px' }}>
+            {micros.map(([k, v]) => (
+              <div key={k} style={{ display: 'flex', justifyContent: 'space-between', borderBottom: '1px solid rgba(255,255,255,0.05)', padding: '2px 0' }}>
+                <span style={{ color: 'var(--theme-text-dim, #8b8b9b)' }}>{k}:</span>
+                <span style={{ color: 'var(--theme-text)', fontWeight: '600' }}>{v}{unitMap[k] || 'mg'}</span>
+              </div>
+            ))}
+          </div>
+        </>
+      )}
+
+      {micros.length === 0 && <div style={{ color: 'var(--theme-text-dim, #8b8b9b)', textAlign: 'center', padding: '10px' }}>No additional micro-nutrients found.</div>}
+    </div>
+  );
+};
