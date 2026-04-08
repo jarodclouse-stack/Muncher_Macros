@@ -150,7 +150,7 @@ export const ScannerModal: React.FC<ScannerModalProps> = ({ type, onClose, onRes
       onResult(result.data);
       onClose();
     } else {
-      setError(result.error);
+      setError(result.error || 'Could not find a product with that barcode. Please try a different code.');
       setIsProcessing(false);
     }
   };

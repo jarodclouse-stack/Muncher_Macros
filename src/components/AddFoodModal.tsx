@@ -16,7 +16,7 @@ interface AddFoodModalProps {
 }
 
 export const AddFoodModal: React.FC<AddFoodModalProps> = ({ meal, onClose }) => {
-  const { localCache, addFoodLog } = useDiary();
+  const { localCache, addFoodLog, saveCustomFood } = useDiary();
   const [activeTab, setActiveTab] = useState<Tab>('search');
   
   const [query, setQuery] = useState('');
@@ -26,7 +26,6 @@ export const AddFoodModal: React.FC<AddFoodModalProps> = ({ meal, onClose }) => 
   
   // Staging Tray for multi-add
   const [stagingTray, setStagingTray] = useState<any[]>([]);
-  const [showTray, setShowTray] = useState(false);
 
   // Describe meal state
   const [mealDesc, setMealDesc] = useState('');
@@ -36,8 +35,9 @@ export const AddFoodModal: React.FC<AddFoodModalProps> = ({ meal, onClose }) => 
   const [editName, setEditName] = useState('');
   const [saveToPantry, setSaveToPantry] = useState(false);
   const [servingQty, setServingQty] = useState('1');
-  const [servingUnit, setServingUnit] = useState('serving');
+  const [servingUint, setServingUnit] = useState('serving');
   const [showFullNutrition, setShowFullNutrition] = useState(false);
+  const [showMealNutrition, setShowMealNutrition] = useState(false);
 
   // Scanner status
   const [scanStatus, setScanStatus] = useState('');
@@ -57,16 +57,14 @@ export const AddFoodModal: React.FC<AddFoodModalProps> = ({ meal, onClose }) => 
     setServingUnit('serving');
   };
 
-  const { saveCustomFood } = useDiary();
-
   const handleConfirmAdd = (e: React.FormEvent) => {
     e.preventDefault();
     if (configuringFood) {
       const qty = parseFloat(servingQty) || 1;
-      const mult = computeMultiplier(configuringFood.serving || '', servingUnit, qty);
+      const mult = computeMultiplier(configuringFood.serving || '', servingUint, qty);
       const scaledFood = scaleLegacyFoodByAmount(configuringFood, mult);
       
-      const unitLabel = COMMON_UNITS.find((u: any) => u.id === servingUnit)?.label || servingUnit;
+      const unitLabel = COMMON_UNITS.find((u: any) => u.id === servingUint)?.label || servingUint;
       scaledFood.name = editName || configuringFood.name;
       scaledFood.serving = `${qty} ${unitLabel}`;
       
@@ -88,11 +86,9 @@ export const AddFoodModal: React.FC<AddFoodModalProps> = ({ meal, onClose }) => 
   };
 
   const addToTray = (food: any) => {
-    // Check if already in tray
     const exists = stagingTray.find(item => item.id === food.id);
     if (!exists) {
       setStagingTray([...stagingTray, { ...food, qty: 1, unit: 'serving' }]);
-      setShowTray(true);
     }
   };
 
@@ -105,7 +101,6 @@ export const AddFoodModal: React.FC<AddFoodModalProps> = ({ meal, onClose }) => 
   const removeFromTray = (index: number) => {
     const newTray = stagingTray.filter((_, i) => i !== index);
     setStagingTray(newTray);
-    if (newTray.length === 0) setShowTray(false);
   };
 
   const handleLogMeal = () => {
@@ -122,13 +117,27 @@ export const AddFoodModal: React.FC<AddFoodModalProps> = ({ meal, onClose }) => 
     onClose();
   };
 
+  const getCombinedTrayNutrition = () => {
+    const totals: any = { name: 'Full Meal', serving: 'Calculated' };
+    stagingTray.forEach(item => {
+      const mult = computeMultiplier(item.serving || '', item.unit, item.qty);
+      const scaled = scaleLegacyFoodByAmount(item, mult);
+      Object.entries(scaled).forEach(([k, v]) => {
+        if (typeof v === 'number') {
+          totals[k] = (totals[k] || 0) + v;
+        }
+      });
+    });
+    return totals;
+  };
+
   const handleStandardSearch = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!query) return;
     setSearching(true);
     setErrorMsg('');
     try {
-      const res = await fetch(`/api/food-search`, {
+      const res = await fetch('/api/food-search', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ query })
@@ -156,7 +165,7 @@ export const AddFoodModal: React.FC<AddFoodModalProps> = ({ meal, onClose }) => 
     setSearching(true);
     setErrorMsg('');
     try {
-      const res = await fetch(`/api/ai-lookup`, {
+      const res = await fetch('/api/ai-lookup', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ query })
@@ -172,7 +181,6 @@ export const AddFoodModal: React.FC<AddFoodModalProps> = ({ meal, onClose }) => 
       }
     } catch(err: any) {
       console.warn("AI Search Error:", err);
-      // Fallback to local
       const q = query.toLowerCase();
       const pantry = localCache.customFoods || [];
       const combinedDB = [...pantry, ...FOOD_DB];
@@ -189,7 +197,7 @@ export const AddFoodModal: React.FC<AddFoodModalProps> = ({ meal, onClose }) => 
     setSearching(true);
     setErrorMsg('');
     try {
-      const res = await fetch(`/api/ai-meal`, {
+      const res = await fetch('/api/ai-meal', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ description: mealDesc, meal })
@@ -197,14 +205,10 @@ export const AddFoodModal: React.FC<AddFoodModalProps> = ({ meal, onClose }) => 
       const body = await res.json();
       if (!res.ok) throw new Error(body.error || 'Failed AI meal estimation');
       
-      // For describe meal, we directly add all returned foods to the tray
       if (body.foods && body.foods.length > 0) {
         const newItems = body.foods.map((f: any) => ({ ...f, qty: 1, unit: 'serving' }));
         setStagingTray([...stagingTray, ...newItems]);
-        setShowTray(true);
-        // Clear describe text for next add if they want
         setMealDesc('');
-        // Switch to search or stay on describe? Stay but hint at tray.
       } else {
         setResults([]);
       }
@@ -214,8 +218,6 @@ export const AddFoodModal: React.FC<AddFoodModalProps> = ({ meal, onClose }) => 
     setSearching(false);
   };
 
-  // --- Photo Scanners ---
-  
   const handleBarcodeFile = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -226,7 +228,6 @@ export const AddFoodModal: React.FC<AddFoodModalProps> = ({ meal, onClose }) => 
       setScanStatus(`Barcode found: ${result.getText()}. Fetching food...`);
       setQuery(result.getText());
       
-      // Auto trigger search using the barcode as query
       setSearching(true);
       const res = await fetch(`/api/food-search?q=${encodeURIComponent(result.getText())}`);
       if (res.ok) {
@@ -256,7 +257,6 @@ export const AddFoodModal: React.FC<AddFoodModalProps> = ({ meal, onClose }) => 
     setScanStatus('Analyzing label with AI...');
     setErrorMsg('');
     
-    // Convert to base64
     const reader = new FileReader();
     reader.onload = async () => {
       const base64Str = (reader.result as string).split(',')[1];
@@ -269,7 +269,6 @@ export const AddFoodModal: React.FC<AddFoodModalProps> = ({ meal, onClose }) => 
         const body = await res.json();
         if (!res.ok) throw new Error(body.error || 'Failed AI label scan');
         
-        // Auto-configure the single food returned
         if (body.food) {
           setConfiguringFood(body.food);
           setServingQty('1');
@@ -292,8 +291,6 @@ export const AddFoodModal: React.FC<AddFoodModalProps> = ({ meal, onClose }) => 
     if (fileInputRef.current) fileInputRef.current.value = '';
   };
 
-  // --- Rendering ---
-
   return ReactDOM.createPortal(
     <div style={{ position: 'fixed', inset: 0, background: 'var(--theme-bg, #001114)', zIndex: 99999, display: 'flex', flexDirection: 'column' }}>
       
@@ -304,7 +301,6 @@ export const AddFoodModal: React.FC<AddFoodModalProps> = ({ meal, onClose }) => 
           <button onClick={onClose} style={{ background: 'transparent', color: 'var(--theme-text)', border: 'none', fontSize: '24px', cursor: 'pointer' }}>&times;</button>
         </div>
 
-        {/* TABS */}
         {!configuringFood && (
           <div style={{ display: 'flex', overflowX: 'auto', gap: '8px', paddingBottom: '12px', msOverflowStyle: 'none', scrollbarWidth: 'none' }}>
             <TabBtn active={activeTab==='search'} onClick={() => setActiveTab('search')} icon={<Search size={14}/>} label="Search" />
@@ -317,10 +313,8 @@ export const AddFoodModal: React.FC<AddFoodModalProps> = ({ meal, onClose }) => 
         )}
       </div>
 
-      {/* CONTENT PORTION */}
       <div style={{ flex: 1, overflowY: 'auto', padding: '16px', display: 'flex', flexDirection: 'column' }}>
         
-        {/* SERVING CONFIGURATOR MODE */}
         {configuringFood ? (
           <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
             <button onClick={handleBackToSearch} style={{ background: 'none', border: 'none', color: 'var(--theme-accent, #00C9FF)', display: 'flex', alignItems: 'center', gap: '4px', cursor: 'pointer', padding: 0, marginBottom: '20px', fontWeight: '600' }}>
@@ -346,7 +340,7 @@ export const AddFoodModal: React.FC<AddFoodModalProps> = ({ meal, onClose }) => 
                 </div>
                 <div style={{ flex: 2 }}>
                   <label style={{ display: 'block', fontSize: '12px', color: 'var(--theme-text-dim, #8b8b9b)', marginBottom: '6px' }}>Unit</label>
-                  <select value={servingUnit} onChange={e => setServingUnit(e.target.value)} style={{ width: '100%', boxSizing: 'border-box', background: 'var(--theme-input-bg, rgba(0,0,0,0.3))', border: '1px solid var(--theme-border, rgba(255,255,255,0.2))', padding: '12px', color: 'var(--theme-text)', borderRadius: '12px', WebkitAppearance: 'none' }}>
+                  <select value={servingUint} onChange={e => setServingUnit(e.target.value)} style={{ width: '100%', boxSizing: 'border-box', background: 'var(--theme-input-bg, rgba(0,0,0,0.3))', border: '1px solid var(--theme-border, rgba(255,255,255,0.2))', padding: '12px', color: 'var(--theme-text)', borderRadius: '12px', WebkitAppearance: 'none' }}>
                     {COMMON_UNITS.map((u: any) => <option key={u.id} value={u.id} style={{ background: 'var(--theme-panel, #fff)', color: 'var(--theme-panel-base, #000)' }}>{u.label}</option>)}
                   </select>
                 </div>
@@ -367,7 +361,6 @@ export const AddFoodModal: React.FC<AddFoodModalProps> = ({ meal, onClose }) => 
               )}
             </div>
 
-            {/* FULL NUTRITION COLLAPSABLE */}
             <div style={{ marginBottom: '20px' }}>
               <button 
                 onClick={() => setShowFullNutrition(!showFullNutrition)}
@@ -390,7 +383,7 @@ export const AddFoodModal: React.FC<AddFoodModalProps> = ({ meal, onClose }) => 
                   borderRadius: '12px', border: '1px solid var(--theme-border, rgba(255,255,255,0.05))',
                   display: 'flex', flexDirection: 'column', gap: '8px'
                 }}>
-                  <NutritionFactsDisplay food={scaleLegacyFoodByAmount(configuringFood, computeMultiplier(configuringFood.serving, servingUnit, parseFloat(servingQty) || 1))} />
+                  <NutritionFactsDisplay food={scaleLegacyFoodByAmount(configuringFood, computeMultiplier(configuringFood.serving, servingUint, parseFloat(servingQty) || 1))} />
                 </div>
               )}
             </div>
@@ -400,7 +393,6 @@ export const AddFoodModal: React.FC<AddFoodModalProps> = ({ meal, onClose }) => 
             </button>
           </div>
         ) : (
-          /* STANDARD TAB MODES */
           <>
             {activeTab === 'pantry' && (
               <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
@@ -479,12 +471,10 @@ export const AddFoodModal: React.FC<AddFoodModalProps> = ({ meal, onClose }) => 
               </div>
             )}
 
-            {/* STATUS / ERRORS */}
             {(searching || scanStatus) && (
               <div style={{ textAlign: 'center', color: 'var(--theme-text-dim, #8b8b9b)', padding: '20px' }}>
                 <div style={{ display: 'inline-block', width: '20px', height: '20px', border: '2px solid var(--theme-accent, #00C9FF)', borderTopColor: 'transparent', borderRadius: '50%', animation: 'spin 1s linear infinite', marginBottom: '8px' }} />
                 <div>{scanStatus || 'Searching...'}</div>
-                <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
               </div>
             )}
 
@@ -494,7 +484,6 @@ export const AddFoodModal: React.FC<AddFoodModalProps> = ({ meal, onClose }) => 
               </div>
             )}
 
-            {/* RESULTS LIST */}
             {!searching && results.length > 0 && (
               <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
                 {results.map((res: any, idx: number) => (
@@ -532,7 +521,7 @@ export const AddFoodModal: React.FC<AddFoodModalProps> = ({ meal, onClose }) => 
         )}
       </div>
 
-      {/* MEAL TRAY (PERSISTENT AT BOTTOM) */}
+      {/* MEAL TRAY */}
       {stagingTray.length > 0 && (
         <div style={{ 
           background: 'var(--theme-panel-base, #10141f)', 
@@ -545,37 +534,60 @@ export const AddFoodModal: React.FC<AddFoodModalProps> = ({ meal, onClose }) => 
         }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
             <span style={{ fontWeight: '700', fontSize: '14px', color: 'var(--theme-text)' }}>Meal Preview ({stagingTray.length})</span>
-            <button onClick={() => setShowTray(!showTray)} style={{ background: 'none', border: 'none', color: 'var(--theme-accent, #00C9FF)', fontSize: '12px', cursor: 'pointer' }}>
-              {showTray ? 'Collapse' : 'Expand'}
-            </button>
+            <span style={{ fontSize: '11px', color: 'var(--theme-text-dim, #8b8b9b)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Always Visible</span>
           </div>
 
-          {showTray && (
-            <div style={{ maxHeight: '200px', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '8px' }}>
-              {stagingTray.map((item, idx) => (
-                <div key={idx} style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '10px', background: 'rgba(255,255,255,0.03)', borderRadius: '10px' }}>
-                  <div style={{ flex: 1, fontSize: '13px', fontWeight: '500', color: 'var(--theme-text)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{item.name}</div>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-                    <input 
-                      type="number" 
-                      step="0.1" 
-                      value={item.qty} 
-                      onChange={(e) => updateTrayItem(idx, { qty: parseFloat(e.target.value) || 0 })}
-                      style={{ width: '45px', padding: '4px', background: 'var(--theme-input-bg, rgba(0,0,0,0.2))', border: '1px solid var(--theme-border, rgba(255,255,255,0.1))', borderRadius: '6px', color: 'var(--theme-text)', fontSize: '12px', textAlign: 'center' }}
-                    />
-                    <select 
-                      value={item.unit}
-                      onChange={(e) => updateTrayItem(idx, { unit: e.target.value })}
-                      style={{ padding: '4px', background: 'var(--theme-input-bg, rgba(0,0,0,0.2))', border: '1px solid var(--theme-border, rgba(255,255,255,0.1))', borderRadius: '6px', color: 'var(--theme-text)', fontSize: '11px', outline: 'none' }}
-                    >
-                      {COMMON_UNITS.map(u => <option key={u.id} value={u.id} style={{ background: '#10141f', color: '#fff' }}>{u.label}</option>)}
-                    </select>
-                  </div>
-                  <button onClick={() => removeFromTray(idx)} style={{ background: 'none', border: 'none', color: '#ff6b6b', padding: '4px', cursor: 'pointer' }}>&times;</button>
+          <div style={{ maxHeight: '180px', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '8px' }}>
+            {stagingTray.map((item, idx) => (
+              <div key={idx} style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '10px', background: 'rgba(255,255,255,0.03)', borderRadius: '10px' }}>
+                <div style={{ flex: 1, fontSize: '13px', fontWeight: '500', color: 'var(--theme-text)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{item.name}</div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                  <input 
+                    type="number" 
+                    step="0.1" 
+                    value={item.qty} 
+                    onChange={(e) => updateTrayItem(idx, { qty: parseFloat(e.target.value) || 0 })}
+                    style={{ width: '45px', padding: '4px', background: 'var(--theme-input-bg, rgba(0,0,0,0.2))', border: '1px solid var(--theme-border, rgba(255,255,255,0.1))', borderRadius: '6px', color: 'var(--theme-text)', fontSize: '12px', textAlign: 'center' }}
+                  />
+                  <select 
+                    value={item.unit}
+                    onChange={(e) => updateTrayItem(idx, { unit: e.target.value })}
+                    style={{ padding: '4px', background: 'var(--theme-input-bg, rgba(0,0,0,0.2))', border: '1px solid var(--theme-border, rgba(255,255,255,0.1))', borderRadius: '6px', color: 'var(--theme-text)', fontSize: '11px', outline: 'none' }}
+                  >
+                    {COMMON_UNITS.map(u => <option key={u.id} value={u.id} style={{ background: '#10141f', color: '#fff' }}>{u.label}</option>)}
+                  </select>
                 </div>
-              ))}
-            </div>
-          )}
+                <button onClick={() => removeFromTray(idx)} style={{ background: 'none', border: 'none', color: '#ff6b6b', padding: '4px', cursor: 'pointer' }}>&times;</button>
+              </div>
+            ))}
+          </div>
+
+          <div style={{ borderTop: '1px solid var(--theme-border, rgba(255,255,255,0.05))', paddingTop: '8px' }}>
+            <button 
+              onClick={() => setShowMealNutrition(!showMealNutrition)}
+              style={{ 
+                width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+                padding: '8px 12px', background: 'var(--theme-panel, rgba(255,255,255,0.03))',
+                border: '1px solid var(--theme-border, rgba(255,255,255,0.05))', borderRadius: '10px',
+                color: 'var(--theme-text)', cursor: 'pointer', transition: 'all 0.2s'
+              }}
+            >
+              <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '13px', fontWeight: '600' }}>
+                <Beaker size={14} color="var(--theme-accent, #00C9FF)" /> Full Meal Nutrition
+              </div>
+              {showMealNutrition ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
+            </button>
+
+            {showMealNutrition && (
+              <div style={{ 
+                marginTop: '8px', padding: '12px', background: 'var(--theme-panel, rgba(255,255,255,0.02))',
+                borderRadius: '10px', border: '1px solid var(--theme-border, rgba(255,255,255,0.03))',
+                maxHeight: '200px', overflowY: 'auto'
+              }}>
+                <NutritionFactsDisplay food={getCombinedTrayNutrition()} />
+              </div>
+            )}
+          </div>
 
           <button onClick={handleLogMeal} style={{ width: '100%', padding: '14px', background: 'var(--theme-accent, #00C9FF)', color: 'var(--theme-panel-base, #000)', borderRadius: '12px', border: 'none', fontWeight: '800', fontSize: '14px', cursor: 'pointer', display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '8px' }}>
             <Check size={18} /> Log Meal Now
@@ -607,7 +619,6 @@ const NutritionFactsDisplay = ({ food }: { food: any }) => {
   const nutrients: [string, any][] = Object.entries(food);
   const excludeKeys = ['id', 'name', 'brand', 'serving', 'sUnit', '_src', 'raw', 'meal', 'timestamp', 'qty','cal','p','c','f','fb','sugars','sat','mono','poly','trans','chol','Sodium','Potassium'];
   
-  // Custom unit labels for certain nutrients
   const unitMap: any = {
     'Vitamin A': 'mcg', 'Vitamin D': 'mcg', 'Vitamin K': 'mcg', 'Vitamin B7': 'mcg', 'Vitamin B9': 'mcg', 'Vitamin B12': 'mcg',
     'Selenium': 'mcg', 'Iodine': 'mcg', 'Chromium': 'mcg', 'Molybdenum': 'mcg'
@@ -623,7 +634,7 @@ const NutritionFactsDisplay = ({ food }: { food: any }) => {
         {macros.map(([k, v]) => (
           <div key={k} style={{ display: 'flex', justifyContent: 'space-between', borderBottom: '1px solid rgba(255,255,255,0.05)', padding: '2px 0' }}>
             <span style={{ color: 'var(--theme-text-dim, #8b8b9b)' }}>{k}:</span>
-            <span style={{ color: 'var(--theme-text)', fontWeight: '600' }}>{v}{['Sodium','Potassium','chol'].includes(k) ? 'mg' : (k==='cal' ? '' : 'g')}</span>
+            <span style={{ color: 'var(--theme-text)', fontWeight: '600' }}>{Math.round(v * 10) / 10}{['Sodium','Potassium','chol'].includes(k) ? 'mg' : (k==='cal' ? '' : 'g')}</span>
           </div>
         ))}
       </div>
@@ -635,7 +646,7 @@ const NutritionFactsDisplay = ({ food }: { food: any }) => {
             {micros.map(([k, v]) => (
               <div key={k} style={{ display: 'flex', justifyContent: 'space-between', borderBottom: '1px solid rgba(255,255,255,0.05)', padding: '2px 0' }}>
                 <span style={{ color: 'var(--theme-text-dim, #8b8b9b)' }}>{k}:</span>
-                <span style={{ color: 'var(--theme-text)', fontWeight: '600' }}>{v}{unitMap[k] || 'mg'}</span>
+                <span style={{ color: 'var(--theme-text)', fontWeight: '600' }}>{Math.round(v * 10) / 10}{unitMap[k] || 'mg'}</span>
               </div>
             ))}
           </div>
