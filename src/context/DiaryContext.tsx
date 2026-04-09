@@ -6,13 +6,13 @@ import type { Food, StagedFood } from '../types/food';
 interface LocalCache {
   customFoods?: Food[];
   stagingTray?: StagedFood[];
-  goals?: Record<string, number>;
+  goals?: Record<string, any>;
   settings?: {
     units: { weight: string; height: string };
     notifications: Record<string, boolean>;
     purchasedThemes: string[];
   };
-  [date: string]: any; // Keep per-day logs flexible for now but typed better
+  [date: string]: any; 
 }
 
 interface DiaryContextState {
@@ -25,7 +25,7 @@ interface DiaryContextState {
   addFoodLog: (meal: string, food: Food) => void;
   removeFoodLog: (meal: string, idx: number) => void;
   updateFoodLog: (meal: string, idx: number, updatedFood: Food) => void;
-  updateGoals: (partialGoals: Partial<Record<string, number>>) => void;
+  updateGoals: (partialGoals: Record<string, any>) => void;
   saveCustomFood: (food: Food) => void;
   updateCustomFood: (idx: number, food: Food) => void;
   deleteCustomFood: (idx: number) => void;
@@ -149,9 +149,13 @@ export const DiaryProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   };
 
   const updateDayData = (date: string, partialData: any) => {
-    const updated = { ...localCache };
-    updated[date] = { ...(updated[date] || {}), ...partialData };
-    updateCacheDebounced(updated);
+    setLocalCache(prev => {
+      const updated = { ...prev };
+      updated[date] = { ...(updated[date] || {}), ...partialData };
+      if (syncTimeoutRef.current) clearTimeout(syncTimeoutRef.current);
+      syncTimeoutRef.current = setTimeout(() => saveCloudData(updated), 1500) as any;
+      return updated;
+    });
   };
 
   const addFoodLog = (meal: string, food: Food) => {
@@ -208,7 +212,7 @@ export const DiaryProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     updateCacheDebounced(updated);
   };
 
-  const updateGoals = (partialGoals: Partial<Record<string, number>>) => {
+  const updateGoals = (partialGoals: Record<string, any>) => {
     const updated = { ...localCache, goals: { ...(localCache.goals || {}), ...partialGoals } };
     updateCacheDebounced(updated);
   };

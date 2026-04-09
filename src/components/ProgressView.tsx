@@ -3,7 +3,7 @@ import { useDiary } from '../context/DiaryContext';
 import { ACTIVITY_LEVELS, MICRO_CATEGORIES } from '../lib/constants';
 import { computeGoals } from '../lib/goals/compute';
 import { sumFoods } from '../lib/food/serving-converter';
-import { X, Search, Plus, Filter, Star, Edit3, Trash2, Camera, Scan, FileText, Sparkles, ChevronDown, Flame, Activity, Save, Scale, Droplet, User, PieChart, Info, Check } from 'lucide-react';
+import { Flame, Activity, Save, Scale, Droplet, User, PieChart, Info, Check } from 'lucide-react';
 import { HistoryCalendar } from './HistoryCalendar';
 import { WeightHistoryChart } from './WeightHistoryChart';
 
@@ -13,7 +13,7 @@ export const ProgressView: React.FC<{ setActiveTab: (tab: any) => void }> = ({ s
   const goals = localCache.goals || {};
   const currentDayData = localCache[currentDate] || {};
   
-  const [dailyWeight, setDailyWeight] = useState(currentDayData.weight || '');
+  const [dailyWeight, setDailyWeight] = useState<number>(Number(currentDayData.weight) || 0);
   const [sex, setSex] = useState(goals.sex || 'male');
   const [age, setAge] = useState(goals.age || 30);
   const [heightIn, setHeightIn] = useState(goals.height || 70);
@@ -98,7 +98,7 @@ export const ProgressView: React.FC<{ setActiveTab: (tab: any) => void }> = ({ s
         <div style={{ display: 'flex', gap: '16px', alignItems: 'flex-end' }}>
           <div style={{ flex: 1 }}>
             <label className="lbl">Target Body Weight (lbs)</label>
-            <input type="number" step="0.1" className="inp" value={targetWeight} onChange={e => setTargetWeight(e.target.value)} style={{ fontSize: '18px', fontWeight: '800' }} />
+            <input type="number" step="0.1" className="inp" value={targetWeight} onChange={e => setTargetWeight(parseFloat(e.target.value) || 0)} style={{ fontSize: '18px', fontWeight: '800' }} />
           </div>
           <button 
             onClick={() => updateGoals({ targetWeight: Number(targetWeight) })} 
@@ -163,7 +163,7 @@ export const ProgressView: React.FC<{ setActiveTab: (tab: any) => void }> = ({ s
         <div className="card-header"><Scale size={18} color="var(--theme-accent, #4DABF7)" /> Log Today's Weight</div>
         <form onSubmit={handleSaveDailyWeight} style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
           <div style={{ flex: 1, minWidth: '120px' }}>
-            <input type="number" step="0.1" className="inp" placeholder="Log weight for day..." value={dailyWeight} onChange={e => setDailyWeight(e.target.value)} />
+            <input type="number" step="0.1" className="inp" placeholder="Log weight for day..." value={dailyWeight} onChange={e => setDailyWeight(parseFloat(e.target.value) || 0)} />
             <div style={{ fontSize: '11px', color: 'var(--theme-accent, #00C9FF)', marginTop: '6px', fontWeight: '500' }}>💡 Note: Logging weight here updates your body stats & TDEE app-wide.</div>
           </div>
           <button type="submit" className="btn" style={{ marginTop: 0, padding: '0 24px' }}><Check size={16} /> Save Weight</button>
@@ -189,17 +189,17 @@ export const ProgressView: React.FC<{ setActiveTab: (tab: any) => void }> = ({ s
                 </div>
                 <div style={{ flex: 1 }}>
                   <label className="lbl">Age</label>
-                  <input type="number" className="inp" value={age} onChange={e => setAge(e.target.value)} />
+                  <input type="number" className="inp" value={age} onChange={e => setAge(parseInt(e.target.value) || 0)} />
                 </div>
               </div>
               <div style={{ display: 'flex', gap: '12px' }}>
                 <div style={{ flex: 1 }}>
                   <label className="lbl">Height (in)</label>
-                  <input type="number" className="inp" value={heightIn} onChange={e => setHeightIn(e.target.value)} />
+                  <input type="number" className="inp" value={heightIn} onChange={e => setHeightIn(parseFloat(e.target.value) || 0)} />
                 </div>
                 <div style={{ flex: 1 }}>
                   <label className="lbl">Weight (lb)</label>
-                  <input type="number" className="inp" value={weightLb} onChange={e => setWeightLb(e.target.value)} />
+                  <input type="number" className="inp" value={weightLb} onChange={e => setWeightLb(parseFloat(e.target.value) || 0)} />
                 </div>
               </div>
 
@@ -259,7 +259,7 @@ export const ProgressView: React.FC<{ setActiveTab: (tab: any) => void }> = ({ s
             {proteinLevelId === 'custom' && (
               <div>
                 <label className="lbl">Custom Protein (g per lb of bodyweight)</label>
-                <input type="number" step="0.05" className="inp" value={customRatioLb} onChange={e => setCustomRatioLb(e.target.value)} />
+                <input type="number" step="0.05" className="inp" value={customRatioLb} onChange={e => setCustomRatioLb(parseFloat(e.target.value) || 0)} />
               </div>
             )}
             <div style={{ fontSize: '11px', color: 'var(--theme-accent, #00C9FF)', marginTop: '4px', textAlign: 'right' }}>
@@ -390,7 +390,7 @@ export const ProgressView: React.FC<{ setActiveTab: (tab: any) => void }> = ({ s
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
              <div style={{ fontSize: '13px', color: 'var(--theme-text-dim, #8b8b9b)' }}>Based on your stats and activity level, here are your daily targets:</div>
              <button 
-               onClick={() => updateGoals({ customMicros: null })}
+               onClick={() => updateGoals({ customMicros: {} })}
                style={{ background: 'var(--theme-error-dim, rgba(255,107,107,0.1))', border: 'none', color: 'var(--theme-error, #FF6B6B)', fontSize: '11px', fontWeight: '700', padding: '6px 10px', borderRadius: '6px', cursor: 'pointer' }}>
                RESET ALL TO DEFAULTS
              </button>
@@ -429,7 +429,7 @@ export const ProgressView: React.FC<{ setActiveTab: (tab: any) => void }> = ({ s
                           }}
                           title="Click to override target"
                         >
-                          {computed.computedMicros[nutrient.k]} {nutrient.u}
+                          {(computed.computedMicros as any)[nutrient.k]} {nutrient.u}
                         </span>
                       )}
                     </div>

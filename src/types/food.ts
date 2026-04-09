@@ -31,6 +31,10 @@ export interface Food {
   ingredientItems?: RecipeItem[]; 
   tags?: string[];
   isLocal?: boolean;
+  barcode?: string;
+  brand?: string;
+  stagedQty?: string | number;
+  stagedUnit?: string;
 }
 
 export interface StagedFood extends Food {

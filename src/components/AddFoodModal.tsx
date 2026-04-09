@@ -19,7 +19,7 @@ interface AddFoodModalProps {
 
 export const AddFoodModal: React.FC<AddFoodModalProps> = ({ meal, onClose }) => {
   const { 
-    localCache, addFoodLog, saveCustomFood, 
+    addFoodLog, saveCustomFood, 
     stagingTray, addToTray, clearTray 
   } = useDiary();
   
@@ -165,15 +165,7 @@ export const AddFoodModal: React.FC<AddFoodModalProps> = ({ meal, onClose }) => 
           onTabChange={(tab) => {
             clearSearchState();
             setMealDesc('');
-            if (tab === 'barcode' || tab === 'label' || tab === 'pantry') {
-              if (tab === 'pantry') { 
-                 setActiveTab(tab); 
-              } else {
-                 setActiveScanner(tab);
-              }
-            } else {
-              setActiveTab(tab);
-            }
+            setActiveTab(tab);
           }} 
         />
 
@@ -315,15 +307,6 @@ export const AddFoodModal: React.FC<AddFoodModalProps> = ({ meal, onClose }) => 
                 </div>
               )}
             </div>
-          ) : activeTab === 'pantry' ? (
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-                  {localCache.customFoods?.map((f: any, i: number) => (
-                    <div key={i} onClick={() => handleAddFoodClick(f)} style={{ padding: '16px', background: 'rgba(255,255,255,0.05)', borderRadius: '18px', border: '1px solid rgba(255,255,255,0.05)', cursor: 'pointer' }}>
-                        <div style={{ fontWeight: '700', color: '#fff' }}>{f.name}</div>
-                        <div style={{ fontSize: '11px', color: '#8b8b9b' }}>{f.cal} kcal • P:{f.p}g C:{f.c}g F:{f.f}g</div>
-                    </div>
-                  ))}
-                </div>
           ) : null}
         </div>
 

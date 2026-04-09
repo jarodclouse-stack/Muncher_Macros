@@ -12,7 +12,7 @@ import { getPairingSuggestions } from '../lib/food/smart-pairing';
 
 import { ScannerModal } from './ScannerModal';
 import { SearchCoaster, type SearchTab } from './SearchCoaster';
-import { Food, RecipeItem } from '../types/food';
+import type { Food, RecipeItem } from '../types/food';
 
 const CollapsibleEntrySection = ({ title, isOpen, onToggle, children }: { title: string, isOpen: boolean, onToggle: () => void, children: React.ReactNode }) => (
   <div style={{ border: '1px solid var(--theme-border)', borderRadius: '16px', overflow: 'hidden', background: 'var(--theme-panel-dim)', marginBottom: '8px' }}>
@@ -67,7 +67,7 @@ export const PantryView: React.FC = () => {
   const [openSection, setOpenSection] = useState<string | null>(null);
   const [editingIndex, setEditingIndex] = useState<number | null>(null);
   const [errorMsg, setErrorMsg] = useState('');
-  const [activeTab, setActiveTab] = useState<'search' | 'manual' | 'saved'>('search');
+  const [activeTab, setActiveTab] = useState<SearchTab | 'saved' | 'manual' | 'pantry'>('saved');
   const [activeScanner, setActiveScanner] = useState<'barcode' | 'qr' | 'label' | null>(null);
   
   const [sortBy, setSortBy] = useState<'recent' | 'name' | 'cal' | 'p'>('recent');
@@ -189,7 +189,7 @@ export const PantryView: React.FC = () => {
     });
 
     const newForm = { ...form, ingredientItems: items };
-    Object.keys(totals).forEach(k => { newForm[k] = totals[k] ? totals[k].toFixed(1) : ''; });
+    Object.keys(totals).forEach(k => { (newForm as any)[k] = totals[k as keyof typeof totals] ? totals[k as keyof typeof totals].toFixed(1) : ''; });
     setForm(newForm);
     setPairingSuggestions(getPairingSuggestions(items));
   };
@@ -345,7 +345,7 @@ export const PantryView: React.FC = () => {
                   <button 
                     onClick={() => {
                       aiStagedResults.forEach(f => {
-                        const mult = computeMultiplier(f.serving || '', f.stagedUnit, parseFloat(f.stagedQty) || 1);
+                        const mult = computeMultiplier(f.serving || '', f.stagedUnit || 'serving', parseFloat(String(f.stagedQty)) || 1);
                         const scaled = scaleLegacyFoodByAmount(f, mult);
                         addFoodLog('Breakfast', scaled);
                       });
@@ -359,7 +359,7 @@ export const PantryView: React.FC = () => {
                   <button 
                     onClick={() => {
                       aiStagedResults.forEach(f => {
-                        const mult = computeMultiplier(f.serving || '', f.stagedUnit, parseFloat(f.stagedQty) || 1);
+                        const mult = computeMultiplier(f.serving || '', f.stagedUnit || 'serving', parseFloat(String(f.stagedQty)) || 1);
                         const scaled = scaleLegacyFoodByAmount(f, mult);
                         saveCustomFood(scaled);
                       });
@@ -384,7 +384,7 @@ export const PantryView: React.FC = () => {
             <EntryField label="Food Name" value={form.name} onChange={v => setForm({...form, name: v})} placeholder="e.g. Grilled Chicken" />
             
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
-              <EntryField label="Serving Amount" value={form.sQty} onChange={v => setForm({...form, sQty: v})} placeholder="100" />
+              <EntryField label="Serving Amount" value={String(form.sQty || 100)} onChange={v => setForm({...form, sQty: parseFloat(v) || 0})} placeholder="100" />
               <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
                 <label style={{ fontSize: '10px', color: 'var(--theme-text-dim)', fontWeight: '800' }}>SERVING UNIT</label>
                 <select 
@@ -398,10 +398,10 @@ export const PantryView: React.FC = () => {
             </div>
 
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '12px' }}>
-               <EntryField label="Calories (kcal)" value={form.cal} onChange={v => setForm({...form, cal: v})} placeholder="0" />
-               <EntryField label="Protein (g)" value={form.p} onChange={v => setForm({...form, p: v})} placeholder="0" />
-               <EntryField label="Carbs (g)" value={form.c} onChange={v => setForm({...form, c: v})} placeholder="0" />
-               <EntryField label="Fat (g)" value={form.f} onChange={v => setForm({...form, f: v})} placeholder="0" />
+               <EntryField label="Calories (kcal)" value={String(form.cal || 0)} onChange={v => setForm({...form, cal: parseFloat(v) || 0})} placeholder="0" />
+               <EntryField label="Protein (g)" value={String(form.p || 0)} onChange={v => setForm({...form, p: parseFloat(v) || 0})} placeholder="0" />
+               <EntryField label="Carbs (g)" value={String(form.c || 0)} onChange={v => setForm({...form, c: parseFloat(v) || 0})} placeholder="0" />
+               <EntryField label="Fat (g)" value={String(form.f || 0)} onChange={v => setForm({...form, f: parseFloat(v) || 0})} placeholder="0" />
             </div>
 
             {/* Smart Scaling Controls */}
@@ -531,7 +531,7 @@ export const PantryView: React.FC = () => {
                     <input 
                       type="number" className="inp" value={item.qty} 
                       onChange={e => {
-                        const newItems = [...form.ingredientItems];
+                        const newItems = [...(form.ingredientItems || [])];
                         newItems[i] = { ...item, qty: e.target.value };
                         calculateRecipeTotals(newItems);
                       }}
@@ -540,7 +540,7 @@ export const PantryView: React.FC = () => {
                     <select 
                       value={item.unit}
                       onChange={e => {
-                        const newItems = [...form.ingredientItems];
+                        const newItems = [...(form.ingredientItems || [])];
                         newItems[i] = { ...item, unit: e.target.value };
                         calculateRecipeTotals(newItems);
                       }}
@@ -548,7 +548,7 @@ export const PantryView: React.FC = () => {
                       {SERVING_UNITS.map(u => <option key={u.v} value={u.v}>{u.v}</option>)}
                     </select>
                     <button onClick={() => {
-                        const newItems = form.ingredientItems.filter((_: any, idx: number) => idx !== i);
+                        const newItems = (form.ingredientItems || []).filter((_: any, idx: number) => idx !== i);
                         calculateRecipeTotals(newItems);
                       }} 
                       style={{ background: 'none', border: 'none', color: 'rgba(255,107,107,0.7)', cursor: 'pointer' }}><Trash2 size={14} /></button>
@@ -562,7 +562,7 @@ export const PantryView: React.FC = () => {
                   const foodData: any = { 
                     ...form,
                     serving: `${form.sQty || '1'} ${form.sUnit || 'serving'}`,
-                    sQty: parseFloat(form.sQty) || 1,
+                    sQty: Number(form.sQty) || 1,
                     sUnit: form.sUnit || 'serving'
                   };
                   ['cal', 'p', 'c', 'f', 'fiber', 'sugars', 'sat', 'mono', 'poly', 'trans', 'chol', 'Sodium', 'Potassium', 'Calcium', 'Magnesium', ...ALL_MICRO_KEYS].forEach(k => {
@@ -575,11 +575,11 @@ export const PantryView: React.FC = () => {
                   setActiveTab('saved');
                   setEditingIndex(null);
                   setForm({
-                    name:'', sQty: '100', sUnit: 'g', cal:'',p:'',c:'',f:'', fiber: '', sugars: '', 
-                    sat: '', mono: '', poly: '', trans: '', chol: '', 
-                    Sodium: '', Potassium: '', Calcium: '', Magnesium: '',
-                    ...ALL_MICRO_KEYS.reduce((acc, k) => ({ ...acc, [k]: '' }), {}),
-                    ingredients:'',
+                    name:'', sQty: 100, sUnit: 'g', cal: 0, p: 0, c: 0, f: 0, fiber: 0, sugars: 0, 
+                    sat: 0, mono: 0, poly: 0, trans: 0, chol: 0, 
+                    Sodium: 0, Potassium: 0, Calcium: 0, Magnesium: 0,
+                    ...ALL_MICRO_KEYS.reduce((acc, k) => ({ ...acc, [k]: 0 }), {}),
+                    ingredients:'', serving: '',
                     ingredientItems: []
                   });
                 }}
@@ -590,11 +590,11 @@ export const PantryView: React.FC = () => {
                 onClick={() => {
                   setEditingIndex(null);
                   setForm({
-                    name:'', sQty: '100', sUnit: 'g', cal:'',p:'',c:'',f:'', fiber: '', sugars: '', 
-                    sat: '', mono: '', poly: '', trans: '', chol: '', 
-                    Sodium: '', Potassium: '', Calcium: '', Magnesium: '',
-                    ...ALL_MICRO_KEYS.reduce((acc, k) => ({ ...acc, [k]: '' }), {}),
-                    ingredients:'',
+                    name:'', sQty: 100, sUnit: 'g', cal: 0, p: 0, c: 0, f: 0, fiber: 0, sugars: 0, 
+                    sat: 0, mono: 0, poly: 0, trans: 0, chol: 0, 
+                    Sodium: 0, Potassium: 0, Calcium: 0, Magnesium: 0,
+                    ...ALL_MICRO_KEYS.reduce((acc, k) => ({ ...acc, [k]: 0 }), {}),
+                    ingredients:'', serving: '',
                     ingredientItems: []
                   });
                 }}
@@ -612,13 +612,14 @@ export const PantryView: React.FC = () => {
               onToggle={() => setOpenSection(openSection === 'fats' ? null : 'fats')}
             >
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
-                <EntryField label="Fiber (g)" value={form.fiber} onChange={v => setForm({...form, fiber: v})} />
-                <EntryField label="Sugars (g)" value={form.sugars} onChange={v => setForm({...form, sugars: v})} />
-                <EntryField label="Sat Fat (g)" value={form.sat} onChange={v => setForm({...form, sat: v})} />
-                <EntryField label="Trans Fat (g)" value={form.trans} onChange={v => setForm({...form, trans: v})} />
-                <EntryField label="Mono Fat (g)" value={form.mono} onChange={v => setForm({...form, mono: v})} />
-                <EntryField label="Poly Fat (g)" value={form.poly} onChange={v => setForm({...form, poly: v})} />
-                <EntryField label="Chol (mg)" value={form.chol} onChange={v => setForm({...form, chol: v})} />
+                <EntryField label="Fiber (g)" value={String(form.fiber || 0)} onChange={v => setForm({...form, fiber: parseFloat(v) || 0})} />
+                <EntryField label="Sugars (g)" value={String(form.sugars || 0)} onChange={v => setForm({...form, sugars: parseFloat(v) || 0})} />
+                <EntryField label="Sat Fat (g)" value={String(form.sat || 0)} onChange={v => setForm({...form, sat: parseFloat(v) || 0})} />
+                <EntryField label="Trans Fat (g)" value={String(form.trans || 0)} onChange={v => setForm({...form, trans: parseFloat(v) || 0})} />
+                <EntryField label="Mono Fat (g)" value={String(form.mono || 0)} onChange={v => setForm({...form, mono: parseFloat(v) || 0})} />
+                <EntryField label="Poly Fat (g)" value={String(form.poly || 0)} onChange={v => setForm({...form, poly: parseFloat(v) || 0})} />
+                <EntryField label="Chol (mg)" value={String(form.chol || 0)} onChange={v => setForm({...form, chol: parseFloat(v) || 0})} />
+                <EntryField label="Sodium (mg)" value={String(form.Sodium || 0)} onChange={v => setForm({...form, Sodium: parseFloat(v) || 0})} />
               </div>
             </CollapsibleEntrySection>
 
@@ -634,8 +635,8 @@ export const PantryView: React.FC = () => {
                     <EntryField 
                       key={k.k} 
                       label={`${k.k} (${k.u})`} 
-                      value={form[k.k]} 
-                      onChange={v => setForm({...form, [k.k]: v})} 
+                      value={String((form as any)[k.k] || 0)} 
+                      onChange={v => setForm({...form, [k.k]: parseFloat(v) || 0})} 
                     />
                   ))}
                 </div>
@@ -709,7 +710,7 @@ export const PantryView: React.FC = () => {
                     <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                       <div style={{ fontWeight: '800', color: 'var(--theme-text)', fontSize: '15px' }}>{f.name}</div>
                       {f.favorite && <span style={{ color: '#FCC419', fontSize: '14px' }}>⭐</span>}
-                      {f.ingredientItems?.length > 0 && <span style={{ background: 'var(--theme-accent-dim)', color: 'var(--theme-accent)', padding: '2px 6px', borderRadius: '4px', fontSize: '8px', fontWeight: '900' }}>RECIPE</span>}
+                      {(f.ingredientItems?.length || 0) > 0 && <span style={{ background: 'var(--theme-accent-dim)', color: 'var(--theme-accent)', padding: '2px 6px', borderRadius: '4px', fontSize: '8px', fontWeight: '900' }}>RECIPE</span>}
                     </div>
                     <div style={{ display: 'flex', gap: '8px', alignItems: 'center', marginTop: '4px' }}>
                       <div style={{ fontSize: '11px', color: 'var(--theme-accent)', fontWeight: '700' }}>{f.cal} kcal</div>
@@ -721,7 +722,7 @@ export const PantryView: React.FC = () => {
                     <button onClick={() => toggleFavorite(originalIdx)} style={{ padding: '8px', background: 'none', border: 'none', color: f.favorite ? '#FCC419' : 'var(--theme-text-dim)', cursor: 'pointer' }}>
                       <BookmarkCheck size={18} fill={f.favorite ? '#FCC419' : 'none'} />
                     </button>
-                    {f.ingredientItems?.length > 0 ? (
+                    {(f.ingredientItems?.length || 0) > 0 ? (
                       <button onClick={() => { setForm(f); setEditingIndex(originalIdx); setActiveTab('manual'); }} style={{ padding: '8px', background: 'none', border: 'none', color: 'var(--theme-accent)', cursor: 'pointer' }} title="Reload Recipe">
                         <Edit3 size={18} />
                       </button>
@@ -864,7 +865,7 @@ export const PantryView: React.FC = () => {
                         const targetP = Number(target);
                         const baseP = Number(configuringFood.p) || 0;
                         if (baseP > 0) {
-                          const multForOne = computeMultiplier(configuringFood.serving, servingUnit, 1);
+                          const multForOne = computeMultiplier(configuringFood.serving || '', servingUnit, 1);
                           const needed = targetP / (baseP * multForOne);
                           setServingQty(needed.toFixed(1));
                         }
@@ -886,7 +887,7 @@ export const PantryView: React.FC = () => {
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', padding: '12px', background: 'var(--theme-panel-dim)', borderRadius: '16px' }}>
                     <div style={{ fontSize: '10px', fontWeight: '800', color: 'var(--theme-accent, #00C9FF)', borderBottom: '1px solid rgba(255,255,255,0.05)', paddingBottom: '8px', marginBottom: '4px' }}>NUTRITION INTELLIGENCE (Per Logged Amount)</div>
                     {[...ALL_MICRO_KEYS].map(k => {
-                      const val = (Number(configuringFood[k]) || 0) * computeMultiplier(configuringFood.serving, servingUnit, parseFloat(servingQty) || 1);
+                      const val = (Number((configuringFood as any)[k]) || 0) * computeMultiplier(configuringFood.serving || '', servingUnit, parseFloat(servingQty) || 1);
                       if (!val && val !== 0) return null;
                       const descriptions = getNutrientDescriptions();
                       const benefit = descriptions[k] || descriptions[k.toLowerCase()];
