@@ -11,44 +11,44 @@ interface SearchCoasterProps {
 
 export const SearchCoaster: React.FC<SearchCoasterProps> = ({ activeTab, onTabChange, style }) => {
   return (
-    <div style={{ position: 'relative', width: '100%', overflow: 'hidden' }}>
+    <div style={{ position: 'relative', width: '100%' }}>
       <div 
-        className="hide-scrollbar"
         style={{ 
-          display: 'flex', 
-          overflowX: 'auto', 
+          display: 'grid', 
+          gridTemplateColumns: 'repeat(3, 1fr)', 
           gap: '8px', 
-          padding: '4px 20px 12px 20px', 
-          margin: '0 -20px',
-          scrollSnapType: 'x proximity',
-          WebkitOverflowScrolling: 'touch',
-          scrollbarWidth: 'none',
-          msOverflowStyle: 'none',
-          maskImage: 'linear-gradient(to right, transparent, black 40px, black calc(100% - 40px), transparent)',
-          WebkitMaskImage: 'linear-gradient(to right, transparent, black 40px, black calc(100% - 40px), transparent)',
+          padding: '4px 0 12px 0', 
           ...style 
         }}>
-        <TabBtn active={activeTab==='search'} onClick={() => onTabChange('search')} icon={<Search size={14}/>} label="Search" />
-        <TabBtn active={activeTab==='pantry'} onClick={() => onTabChange('pantry')} icon={<Plus size={14}/>} label="Pantry" />
+        <TabBtn active={activeTab==='search'} onClick={() => onTabChange('search')} icon={<Search size={14}/>} label="Search" isPrimary />
+        <TabBtn active={activeTab==='pantry'} onClick={() => onTabChange('pantry')} icon={<Plus size={14}/>} label="Pantry" isPrimary />
         <TabBtn active={activeTab==='ai-search'} onClick={() => onTabChange('ai-search')} icon={<Sparkles size={14}/>} label="AI Search" />
-        <TabBtn active={activeTab==='describe'} onClick={() => onTabChange('describe')} icon={<FileText size={14}/>} label="Describe Meal" />
+        <TabBtn active={activeTab==='describe'} onClick={() => onTabChange('describe')} icon={<FileText size={14}/>} label="Describe" />
         <TabBtn active={activeTab==='barcode'} onClick={() => onTabChange('barcode')} icon={<Scan size={14}/>} label="Barcode" />
-        <TabBtn active={activeTab==='label'} onClick={() => onTabChange('label')} icon={<Camera size={14}/>} label="Label Scan" />
+        <TabBtn active={activeTab==='label'} onClick={() => onTabChange('label')} icon={<Camera size={14}/>} label="Label" />
       </div>
     </div>
   );
 };
 
-const TabBtn = ({ active, onClick, icon, label }: any) => (
+const TabBtn = ({ active, onClick, icon, label, isPrimary }: any) => (
   <button onClick={onClick} style={{ 
-    display: 'flex', alignItems: 'center', gap: '6px', whiteSpace: 'nowrap',
-    padding: '8px 12px', borderRadius: '20px', 
-    background: active ? 'var(--theme-accent-dim, rgba(0,201,255,0.15))' : 'transparent', 
-    color: active ? 'var(--theme-accent, #00C9FF)' : 'var(--theme-text-dim, #8b8b9b)', 
-    border: `1px solid ${active ? 'var(--theme-accent, rgba(0,201,255,0.3))' : 'var(--theme-border, rgba(255,255,255,0.1))'}`,
-    fontWeight: active ? '600' : '400', cursor: 'pointer', transition: 'all 0.2s',
-    fontSize: '13px'
+    display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '4px', textAlign: 'center',
+    padding: '12px 4px', borderRadius: '16px', 
+    background: active ? 'var(--theme-accent-dim, rgba(0,201,255,0.15))' : (isPrimary ? 'rgba(255,255,255,0.06)' : 'transparent'), 
+    color: active ? 'var(--theme-accent, #00C9FF)' : (isPrimary ? '#fff' : 'var(--theme-text-dim, #8b8b9b)'), 
+    border: `1px solid ${active ? 'var(--theme-accent, rgba(0,201,255,0.3))' : (isPrimary ? 'rgba(255,255,255,0.15)' : 'var(--theme-border, rgba(255,255,255,0.05))')}`,
+    fontWeight: (active || isPrimary) ? '700' : '400', cursor: 'pointer', transition: 'all 0.2s',
+    fontSize: '11px', width: '100%', minWidth: 0,
+    boxShadow: (isPrimary && !active) ? '0 4px 12px rgba(0,0,0,0.2)' : 'none'
   }}>
-    {icon} {label}
+    <div style={{ opacity: active ? 1 : 0.8 }}>{icon}</div>
+    <span style={{ 
+      whiteSpace: 'nowrap', 
+      overflow: 'hidden', 
+      textOverflow: 'ellipsis', 
+      width: '100%',
+      letterSpacing: '0.2px'
+    }}>{label}</span>
   </button>
 );

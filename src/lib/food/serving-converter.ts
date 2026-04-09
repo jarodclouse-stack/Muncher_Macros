@@ -117,3 +117,33 @@ export function sumFoods(foodEntries: any[]): any {
   Object.keys(totals).forEach((k) => { totals[k] = round(totals[k]); });
   return totals;
 }
+
+/**
+ * Proportionally scales a food object's quantities so that a specific nutrient hits a target goal.
+ * Use for "Scale to 500kcal" or "Scale to 50g Protein".
+ */
+export function scaleToTarget(food: any, nutrientKey: string, targetValue: number): any {
+  const currentVal = safeNum(food[nutrientKey] || food[nutrientKey === 'calories' ? 'cal' : nutrientKey]);
+  if (currentVal <= 0 || targetValue <= 0) return food;
+
+  const multiplier = targetValue / currentVal;
+  return scaleLegacyFoodByAmount(food, multiplier);
+}
+
+/**
+ * Calculates the percentage distribution of Calories coming from P, C, and F.
+ */
+export function calculateMacroBalance(food: any) {
+  const p = safeNum(food.p || food.protein) * 4;
+  const c = safeNum(food.c || food.carbs) * 4;
+  const f = safeNum(food.f || food.fat) * 9;
+  const total = p + c + f;
+
+  if (total <= 0) return { p: 0, c: 0, f: 0 };
+
+  return {
+    p: Math.round((p / total) * 100),
+    c: Math.round((c / total) * 100),
+    f: Math.round((f / total) * 100)
+  };
+}

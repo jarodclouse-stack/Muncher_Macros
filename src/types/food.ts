@@ -18,6 +18,10 @@ export interface Food {
   Sodium?: number;
   Potassium?: number;
   ingredients?: string;
+  type?: 'food' | 'recipe';
+  favorite?: boolean;
+  ingredientItems?: any[]; 
+  tags?: string[];
   [key: string]: any; // For other micro-nutrients
 }
 

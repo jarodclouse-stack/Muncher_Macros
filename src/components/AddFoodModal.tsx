@@ -28,8 +28,11 @@ export const AddFoodModal: React.FC<AddFoodModalProps> = ({ meal, onClose }) => 
   
   const [query, setQuery] = useState('');
   const [results, setResults] = useState<Food[]>([]);
-  const [searching, setSearching] = useState(false);
+  const [searching, setSearching] = useState<boolean>(false);
   const [errorMsg, setErrorMsg] = useState('');
+  
+  const [aiStagedResults, setAiStagedResults] = useState<any[]>([]);
+  const [isAiReviewing, setIsAiReviewing] = useState(false);
 
   const clearSearchState = () => {
     setQuery('');
@@ -126,6 +129,7 @@ export const AddFoodModal: React.FC<AddFoodModalProps> = ({ meal, onClose }) => 
     e.preventDefault();
     if (!mealDesc) return;
     setSearching(true);
+    setAiStagedResults([]);
     try {
       const res = await fetch('/api/ai-describe', {
         method: 'POST',
@@ -133,7 +137,9 @@ export const AddFoodModal: React.FC<AddFoodModalProps> = ({ meal, onClose }) => 
         body: JSON.stringify({ description: mealDesc })
       });
       const body = await res.json();
-      setResults(body.foods || []);
+      const detected = body.foods || [];
+      setAiStagedResults(detected.map((f: any) => ({ ...f, stagedQty: '1', stagedUnit: f.sUnit || 'serving' })));
+      setIsAiReviewing(true);
     } catch (err) {
       setErrorMsg("AI Parsing failed.");
     }
@@ -209,8 +215,11 @@ export const AddFoodModal: React.FC<AddFoodModalProps> = ({ meal, onClose }) => 
                         alignItems: 'center' 
                       }}>
                       <div style={{ flex: 1 }}>
-                        <div style={{ fontWeight: '800', color: '#fff', fontSize: '15px', marginBottom: '4px' }}>{f.name}</div>
-                        <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                          <div style={{ fontWeight: '800', color: '#fff', fontSize: '15px' }}>{f.name}</div>
+                          {f.brand && <div style={{ fontSize: '10px', color: '#8b8b9b', opacity: 0.6 }}>• {f.brand}</div>}
+                        </div>
+                        <div style={{ display: 'flex', gap: '8px', alignItems: 'center', marginTop: '4px' }}>
                           <div style={{ fontSize: '11px', color: 'var(--theme-accent)', fontWeight: '700' }}>{f.cal} kcal</div>
                           <div style={{ width: '1px', height: '10px', background: 'rgba(255,255,255,0.1)' }} />
                           <div style={{ fontSize: '10px', color: '#8b8b9b', fontWeight: '600' }}>P:{f.p}g C:{f.c}g F:{f.f}g</div>
@@ -243,18 +252,66 @@ export const AddFoodModal: React.FC<AddFoodModalProps> = ({ meal, onClose }) => 
                 </button>
               </div>
 
-              {results.length > 0 && (
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                  <div style={{ fontSize: '11px', fontWeight: '800', color: 'rgba(255,255,255,0.4)', letterSpacing: '1px', textTransform: 'uppercase' }}>Detected Items</div>
-                  {results.map((f, i) => (
-                    <div key={i} onClick={() => handleAddFoodClick(f)} style={{ padding: '14px', background: 'rgba(0,180,255,0.05)', border: '1px solid rgba(0,180,255,0.15)', borderRadius: '16px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer' }}>
-                      <div>
-                        <div style={{ fontWeight: '700', color: '#fff', fontSize: '14px' }}>{f.name}</div>
-                        <div style={{ fontSize: '11px', color: '#8b8b9b' }}>{f.cal} kcal • P:{f.p}g C:{f.c}g F:{f.f}g</div>
-                      </div>
-                      <Plus size={18} color="var(--theme-accent, #00C9FF)" />
+              {/* AI Review Step */}
+              {isAiReviewing && aiStagedResults.length > 0 && (
+                <div style={{ padding: '20px', background: 'rgba(0,180,255,0.05)', borderRadius: '24px', border: '1px solid rgba(0,180,255,0.2)' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
+                    <div style={{ fontSize: '13px', fontWeight: '900', color: '#fff', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                      <Sparkles size={18} color="var(--theme-accent)" /> REVIEW DETECTED MEAL
                     </div>
-                  ))}
+                    <button onClick={() => { setIsAiReviewing(false); setAiStagedResults([]); }} style={{ background: 'none', border: 'none', color: '#8b8b9b', cursor: 'pointer' }}><X size={18} /></button>
+                  </div>
+                  
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', marginBottom: '16px' }}>
+                    {aiStagedResults.map((f, i) => (
+                      <div key={i} style={{ background: 'rgba(0,0,0,0.2)', padding: '12px', borderRadius: '16px', border: '1px solid rgba(255,255,255,0.05)' }}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
+                          <div style={{ fontWeight: '700', fontSize: '13px', color: '#fff' }}>{f.name}</div>
+                          <button onClick={() => {
+                            const next = aiStagedResults.filter((_, idx) => idx !== i);
+                            setAiStagedResults(next);
+                            if (next.length === 0) setIsAiReviewing(false);
+                          }} style={{ background: 'none', border: 'none', color: '#FF6B6B', cursor: 'pointer' }}><X size={14} /></button>
+                        </div>
+                        <div style={{ display: 'flex', gap: '8px' }}>
+                          <input 
+                            type="number" 
+                            value={f.stagedQty} 
+                            onChange={(e) => {
+                              const next = [...aiStagedResults];
+                              next[i] = { ...f, stagedQty: e.target.value };
+                              setAiStagedResults(next);
+                            }}
+                            style={{ width: '50px', background: 'rgba(0,0,0,0.3)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '8px', color: '#fff', fontSize: '11px', padding: '4px' }} 
+                          />
+                          <select 
+                            value={f.stagedUnit} 
+                            onChange={(e) => {
+                              const next = [...aiStagedResults];
+                              next[i] = { ...f, stagedUnit: e.target.value };
+                              setAiStagedResults(next);
+                            }}
+                            style={{ flex: 1, background: 'rgba(0,0,0,0.3)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '8px', color: '#fff', fontSize: '11px', padding: '4px' }}>
+                            {SERVING_UNITS.map(u => <option key={u.v} value={u.v}>{u.v}</option>)}
+                          </select>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+
+                  <button 
+                    onClick={() => {
+                      aiStagedResults.forEach(f => {
+                        const mult = computeMultiplier(f.serving || '', f.stagedUnit, parseFloat(f.stagedQty) || 1);
+                        const scaled = scaleLegacyFoodByAmount(f, mult);
+                        addToTray(scaled);
+                      });
+                      setIsAiReviewing(false);
+                      setAiStagedResults([]);
+                    }}
+                    style={{ width: '100%', padding: '14px', background: 'var(--theme-accent)', border: 'none', borderRadius: '14px', color: '#000', fontWeight: '900', fontSize: '13px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
+                    <Check size={18} /> CONFIRM DETECTED MEAL
+                  </button>
                 </div>
               )}
             </div>
@@ -307,12 +364,33 @@ export const AddFoodModal: React.FC<AddFoodModalProps> = ({ meal, onClose }) => 
               </div>
 
               {/* Quick Macros */}
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '8px', marginBottom: '24px' }}>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '8px', marginBottom: '16px' }}>
                 <QuickMacro label="Calories" val={Math.round((Number(configuringFood.cal)||0) * computeMultiplier(configuringFood.serving||'', servingUnit, parseFloat(servingQty)||1))} unit="kcal" color="#fff" />
                 <QuickMacro label="Protein" val={Math.round((Number(configuringFood.p)||0) * computeMultiplier(configuringFood.serving||'', servingUnit, parseFloat(servingQty)||1))} unit="g" color="#00C9FF" />
                 <QuickMacro label="Carbs" val={Math.round((Number(configuringFood.c)||0) * computeMultiplier(configuringFood.serving||'', servingUnit, parseFloat(servingQty)||1))} unit="g" color="#FCC419" />
                 <QuickMacro label="Fat" val={Math.round((Number(configuringFood.f)||0) * computeMultiplier(configuringFood.serving||'', servingUnit, parseFloat(servingQty)||1))} unit="g" color="#FF6B6B" />
               </div>
+
+              {/* Goal Impact Feedback */}
+              {(() => {
+                const multiplier = computeMultiplier(configuringFood.serving || '', servingUnit, parseFloat(servingQty) || 1);
+                const p = (Number(configuringFood.p) || 0) * multiplier;
+                const c = (Number(configuringFood.c) || 0) * multiplier;
+                const f = (Number(configuringFood.f) || 0) * multiplier;
+                const totalCal = (Number(configuringFood.cal) || 0) * multiplier;
+                
+                const isHighProtein = (p * 4) / (totalCal || 1) > 0.35;
+                const isHighCarb = (c * 4) / (totalCal || 1) > 0.6;
+                const isHighFat = (f * 9) / (totalCal || 1) > 0.5;
+
+                return (
+                  <div style={{ display: 'flex', gap: '6px', marginBottom: '24px', flexWrap: 'wrap' }}>
+                    {isHighProtein && <div style={{ padding: '4px 8px', background: 'rgba(146, 254, 157, 0.1)', border: '1px solid var(--theme-success)', borderRadius: '8px', color: 'var(--theme-success)', fontSize: '9px', fontWeight: '800' }}>⚡ PROTEIN POWERHOUSE</div>}
+                    {isHighCarb && <div style={{ padding: '4px 8px', background: 'rgba(252, 196, 25, 0.1)', border: '1px solid #FCC419', borderRadius: '8px', color: '#FCC419', fontSize: '9px', fontWeight: '800' }}>🥗 HIGH ENERGY CARBS</div>}
+                    {isHighFat && <div style={{ padding: '4px 8px', background: 'rgba(255, 107, 107, 0.1)', border: '1px solid #FF6B6B', borderRadius: '8px', color: '#FF6B6B', fontSize: '9px', fontWeight: '800' }}>🥑 HIGH FAT CONTENT</div>}
+                  </div>
+                );
+              })()}
 
               <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', marginBottom: '24px' }}>
                 <div style={{ display: 'flex', gap: '12px' }}>

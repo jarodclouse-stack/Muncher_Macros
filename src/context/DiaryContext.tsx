@@ -24,6 +24,8 @@ interface DiaryContextState {
   removeFromTray: (idx: number) => void;
   updateTrayItem: (idx: number, updates: Partial<StagedFood>) => void;
   clearTray: () => void;
+  toggleFavorite: (idx: number) => void;
+  duplicateCustomFood: (idx: number) => void;
 }
 
 const DiaryContext = createContext<DiaryContextState>({} as DiaryContextState);
@@ -232,6 +234,27 @@ export const DiaryProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     updateCacheDebounced(updated);
   };
 
+  const toggleFavorite = (idx: number) => {
+    const updated = { ...localCache };
+    const foods = [...(updated.customFoods || [])];
+    if (foods[idx]) {
+      foods[idx] = { ...foods[idx], favorite: !foods[idx].favorite };
+      updated.customFoods = foods;
+      updateCacheDebounced(updated);
+    }
+  };
+
+  const duplicateCustomFood = (idx: number) => {
+    const updated = { ...localCache };
+    const foods = [...(updated.customFoods || [])];
+    if (foods[idx]) {
+      const copy = { ...foods[idx], name: `${foods[idx].name} (Copy)`, favorite: false };
+      foods.splice(idx + 1, 0, copy);
+      updated.customFoods = foods;
+      updateCacheDebounced(updated);
+    }
+  };
+
   const purchaseTheme = (themeId: string) => {
     const currentPurchased = localCache.settings?.purchasedThemes || [
       'obsidian', 'cybermancer', 'gold-reserve', 'glacier-peak', 
@@ -272,7 +295,8 @@ export const DiaryProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       addFoodLog, removeFoodLog, updateFoodLog, updateGoals, 
       saveCustomFood, updateCustomFood, deleteCustomFood, goToDate, 
       updateSettings, purchaseTheme,
-      stagingTray, addToTray, removeFromTray, updateTrayItem, clearTray
+      stagingTray, addToTray, removeFromTray, updateTrayItem, clearTray,
+      toggleFavorite, duplicateCustomFood
     }}>
       {children}
     </DiaryContext.Provider>
