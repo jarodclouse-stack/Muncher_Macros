@@ -1,9 +1,11 @@
 import React, { createContext, useContext, useEffect, useState, useCallback, useRef } from 'react';
 import { useAuth } from './AuthContext';
 import { supabase } from '../lib/supabase';
+import type { Food, StagedFood } from '../types/food';
 
 interface DiaryContextState {
   localCache: any;
+  stagingTray: StagedFood[];
   currentDate: string; // YYYY-MM-DD
   syncStatus: 'ok' | 'syncing' | 'error' | 'offline';
   changeDate: (delta: number) => void;
@@ -18,6 +20,11 @@ interface DiaryContextState {
   goToDate: (date: string) => void;
   updateSettings: (partialSettings: any) => void;
   purchaseTheme: (themeId: string) => void;
+  addToTray: (food: Food) => void;
+  removeFromTray: (idx: number) => void;
+  updateTrayItem: (idx: number, updates: Partial<StagedFood>) => void;
+  clearTray: () => void;
+  logTrayToDiary: (meal: string) => void;
 }
 
 const DiaryContext = createContext<DiaryContextState>({} as DiaryContextState);
@@ -32,6 +39,7 @@ export const DiaryProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   const [localCache, setLocalCache] = useState<any>({});
   const [currentDate, setCurrentDate] = useState(getLocalDateStr());
   const [syncStatus, setSyncStatus] = useState<'ok' | 'syncing' | 'error' | 'offline'>('ok');
+  const [stagingTray, setStagingTray] = useState<StagedFood[]>([]);
   
   const syncTimeoutRef = useRef<number | null>(null);
 
@@ -72,6 +80,7 @@ export const DiaryProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         }
         
         setLocalCache(loaded);
+        if (loaded.stagingTray) setStagingTray(loaded.stagingTray);
         setSyncStatus('ok');
       } catch (err) {
         console.warn('Sync failed:', err);
@@ -105,9 +114,16 @@ export const DiaryProvider: React.FC<{ children: React.ReactNode }> = ({ childre
 
   const updateCacheDebounced = useCallback((newCache: any) => {
     setLocalCache(newCache);
+    if (syncStatus === 'syncing') return; // Don't interrupt
     if (syncTimeoutRef.current) clearTimeout(syncTimeoutRef.current);
     syncTimeoutRef.current = setTimeout(() => saveCloudData(newCache), 1500) as any;
-  }, [saveCloudData]);
+  }, [saveCloudData, syncStatus]);
+
+  const updateStagingTray = useCallback((newTray: StagedFood[]) => {
+    setStagingTray(newTray);
+    const updated = { ...localCache, stagingTray: newTray };
+    updateCacheDebounced(updated);
+  }, [localCache, updateCacheDebounced]);
 
   const changeDate = (delta: number) => {
     const d = new Date(currentDate + 'T12:00:00');
@@ -228,8 +244,43 @@ export const DiaryProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     }
   };
 
+  const addToTray = (food: Food) => {
+    const exists = stagingTray.find(f => (f.id && f.id === food.id) || (f.name === food.name && f.serving === food.serving));
+    if (!exists) {
+      updateStagingTray([...stagingTray, { ...food, qty: 1, unit: food.sUnit || 'serving' }]);
+    }
+  };
+
+  const removeFromTray = (idx: number) => {
+    updateStagingTray(stagingTray.filter((_, i) => i !== idx));
+  };
+
+  const updateTrayItem = (idx: number, updates: Partial<StagedFood>) => {
+    const next = [...stagingTray];
+    next[idx] = { ...next[idx], ...updates };
+    updateStagingTray(next);
+  };
+
+  const clearTray = () => {
+    updateStagingTray([]);
+  };
+
+  const logTrayToDiary = (meal: string) => {
+    // Injected from components/lib for helper usage
+    // We'll rely on the components to scale, 
+    // or we could import scaling logic here.
+    // For now, let's keep the logging logic in the provider as primitive, 
+    // and let the components pass the scaled food to addFoodLog.
+  };
+
   return (
-    <DiaryContext.Provider value={{ localCache, currentDate, syncStatus, changeDate, updateDayData, addFoodLog, removeFoodLog, updateFoodLog, updateGoals, saveCustomFood, updateCustomFood, deleteCustomFood, goToDate, updateSettings, purchaseTheme }}>
+    <DiaryContext.Provider value={{ 
+      localCache, currentDate, syncStatus, changeDate, updateDayData, 
+      addFoodLog, removeFoodLog, updateFoodLog, updateGoals, 
+      saveCustomFood, updateCustomFood, deleteCustomFood, goToDate, 
+      updateSettings, purchaseTheme,
+      stagingTray, addToTray, removeFromTray, updateTrayItem, clearTray, logTrayToDiary
+    }}>
       {children}
     </DiaryContext.Provider>
   );

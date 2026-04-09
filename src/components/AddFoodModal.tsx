@@ -2,6 +2,7 @@ import React, { useState, useRef } from 'react';
 import ReactDOM from 'react-dom';
 import { useDiary } from '../context/DiaryContext';
 import { FOOD_DB } from '../lib/constants';
+import type { Food, StagedFood } from '../types/food';
 import { computeMultiplier, scaleLegacyFoodByAmount, COMMON_UNITS } from '../lib/food/serving-converter';
 import { Search, Camera, FileText, Sparkles, Plus, Check, Scan, ChevronLeft, ChevronDown, ChevronUp, Beaker } from 'lucide-react';
 import { calculateVitalityScore } from '../lib/scoring/vitality';
@@ -16,22 +17,25 @@ interface AddFoodModalProps {
 }
 
 export const AddFoodModal: React.FC<AddFoodModalProps> = ({ meal, onClose }) => {
-  const { localCache, addFoodLog, saveCustomFood } = useDiary();
+  const { 
+    localCache, addFoodLog, saveCustomFood, 
+    stagingTray, addToTray, removeFromTray, updateTrayItem, clearTray 
+  } = useDiary();
   const [activeTab, setActiveTab] = useState<Tab>('search');
   const [searchMode, setSearchMode] = useState<'keyword' | 'describe'>('keyword');
   const [query, setQuery] = useState('');
-  const [results, setResults] = useState<any[]>([]);
+  const [results, setResults] = useState<Food[]>([]);
   const [searching, setSearching] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
   
   // Staging Tray for multi-add
-  const [stagingTray, setStagingTray] = useState<any[]>([]);
+  // REMOVED local state: const [stagingTray, setStagingTray] = useState<any[]>([]);
 
   // Describe meal state
   const [mealDesc, setMealDesc] = useState('');
   
   // Configuring single food
-  const [configuringFood, setConfiguringFood] = useState<any | null>(null);
+  const [configuringFood, setConfiguringFood] = useState<Food | null>(null);
   const [editName, setEditName] = useState('');
   const [saveToPantry, setSaveToPantry] = useState(false);
   const [servingQty, setServingQty] = useState('1');
@@ -49,7 +53,7 @@ export const AddFoodModal: React.FC<AddFoodModalProps> = ({ meal, onClose }) => 
     setConfiguringFood(null);
   };
 
-  const handleAddFoodClick = (food: any) => {
+  const handleAddFoodClick = (food: Food) => {
     setConfiguringFood(food);
     setEditName(food.name || '');
     setSaveToPantry(false);
@@ -64,7 +68,7 @@ export const AddFoodModal: React.FC<AddFoodModalProps> = ({ meal, onClose }) => 
       const mult = computeMultiplier(configuringFood.serving || '', servingUint, qty);
       const scaledFood = scaleLegacyFoodByAmount(configuringFood, mult);
       
-      const unitLabel = COMMON_UNITS.find((u: any) => u.id === servingUint)?.label || servingUint;
+      const unitLabel = COMMON_UNITS.find((u) => u.id === servingUint)?.label || servingUint;
       scaledFood.name = editName || configuringFood.name;
       scaledFood.serving = `${qty} ${unitLabel}`;
       
@@ -85,40 +89,23 @@ export const AddFoodModal: React.FC<AddFoodModalProps> = ({ meal, onClose }) => 
     }
   };
 
-  const addToTray = (food: any) => {
-    const exists = stagingTray.find(item => item.id === food.id);
-    if (!exists) {
-      setStagingTray([...stagingTray, { ...food, qty: 1, unit: 'serving' }]);
-    }
-  };
-
-  const updateTrayItem = (index: number, updates: any) => {
-    const newTray = [...stagingTray];
-    newTray[index] = { ...newTray[index], ...updates };
-    setStagingTray(newTray);
-  };
-
-  const removeFromTray = (index: number) => {
-    const newTray = stagingTray.filter((_, i) => i !== index);
-    setStagingTray(newTray);
-  };
-
   const handleLogMeal = () => {
     if (stagingTray.length === 0) return;
     
     stagingTray.forEach(item => {
       const mult = computeMultiplier(item.serving || '', item.unit, item.qty);
       const scaledFood = scaleLegacyFoodByAmount(item, mult);
-      const unitLabel = COMMON_UNITS.find((u: any) => u.id === item.unit)?.label || item.unit;
+      const unitLabel = COMMON_UNITS.find((u) => u.id === item.unit)?.label || item.unit;
       scaledFood.serving = `${item.qty} ${unitLabel}`;
       addFoodLog(meal, scaledFood);
     });
     
+    clearTray();
     onClose();
   };
 
   const getCombinedTrayNutrition = () => {
-    const totals: any = { name: 'Full Meal', serving: 'Calculated' };
+    const totals: Record<string, any> = { name: 'Full Meal', serving: 'Calculated' };
     stagingTray.forEach(item => {
       const mult = computeMultiplier(item.serving || '', item.unit, item.qty);
       const scaled = scaleLegacyFoodByAmount(item, mult);
@@ -206,8 +193,7 @@ export const AddFoodModal: React.FC<AddFoodModalProps> = ({ meal, onClose }) => 
       if (!res.ok) throw new Error(body.error || 'Failed AI meal estimation');
       
       if (body.foods && body.foods.length > 0) {
-        const newItems = body.foods.map((f: any) => ({ ...f, qty: 1, unit: 'serving' }));
-        setStagingTray([...stagingTray, ...newItems]);
+        body.foods.forEach((f: Food) => addToTray(f));
         setMealDesc('');
       } else {
         setResults([]);
