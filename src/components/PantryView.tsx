@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useDiary } from '../context/DiaryContext';
-import { Plus, Trash2, Camera, Scan, ChevronDown, ChevronUp, Search, Loader2, Utensils, BookmarkPlus, LogIn, Scale, Check, X, Info, Edit3, RefreshCw, Sparkles, Beaker } from 'lucide-react';
+import { Plus, Trash2, ChevronDown, ChevronUp, Search, Loader2, Utensils, BookmarkPlus, Edit3, Sparkles, Beaker, Check, X, Info, LogIn, Scale } from 'lucide-react';
 import { ALL_MICRO_KEYS, MEALS, MICRO_UNITS } from '../lib/constants';
 import { NUTRIENT_BENEFITS } from '../lib/nutrient-info';
 import { computeMultiplier, scaleLegacyFoodByAmount, COMMON_UNITS } from '../lib/food/serving-converter';
@@ -9,6 +9,7 @@ import { calculateVitalityScore } from '../lib/scoring/vitality';
 import { VitalityBadge } from './VitalityBadge';
 import { ScannerModal } from './ScannerModal';
 import { AddToDiaryTab } from './AddToDiaryTab';
+import { SearchCoaster, type SearchTab } from './SearchCoaster';
 
 export const PantryView: React.FC = () => {
   const { 
@@ -27,7 +28,7 @@ export const PantryView: React.FC = () => {
   const [isSearching, setIsSearching] = useState(false);
   const [searchResults, setSearchResults] = useState<any[]>([]);
   const [recipeSearchMode, setRecipeSearchMode] = useState<'keyword' | 'describe'>('keyword');
-  const [innerGlobalSearchMode, setInnerGlobalSearchMode] = useState<'keyword' | 'describe'>('keyword');
+  const [innerGlobalSearchTab, setInnerGlobalSearchTab] = useState<SearchTab>('search');
   
   const customFoods = localCache.customFoods || [];
   const [loggingFood, setLoggingFood] = useState<any | null>(null);
@@ -165,6 +166,34 @@ export const PantryView: React.FC = () => {
         setErrorMsg('AI could not parse any ingredients from that description.');
       }
     } catch(err: any) {
+      setErrorMsg(err.message);
+    }
+    setIsSearching(false);
+  };
+
+  const handleGlobalAISearch = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!searchQuery) return;
+    setIsSearching(true);
+    setErrorMsg('');
+    try {
+      const res = await fetch('/api/ai-lookup', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ query: searchQuery })
+      });
+      if (res.ok) {
+        const body = await res.json();
+        setSearchResults(body.foods || []);
+      } else {
+        throw new Error('AI service error. Showing local results instead.');
+      }
+    } catch (err: any) {
+      console.warn("AI Search Error:", err);
+      const localMatches = customFoods.filter((f: any) => 
+        f.name.toLowerCase().includes(searchQuery.toLowerCase())
+      ).map((f: any) => ({ ...f, isLocal: true }));
+      setSearchResults(localMatches);
       setErrorMsg(err.message);
     }
     setIsSearching(false);
@@ -378,7 +407,7 @@ export const PantryView: React.FC = () => {
       {/* Premium Tab Switcher */}
       <div style={{ display: 'flex', background: 'var(--theme-panel-dim, rgba(255,255,255,0.03))', padding: '6px', borderRadius: '16px', border: '1px solid var(--theme-border, rgba(255,255,255,0.05))', marginBottom: '8px' }}>
           <button 
-            onClick={() => { setActiveTab('search'); }}
+            onClick={() => setActiveTab('search')}
             style={{ flex: 1, padding: '12px', border: 'none', borderRadius: '12px', background: activeTab === 'search' ? 'var(--theme-accent-dim, rgba(0,201,255,0.1))' : 'transparent', color: activeTab === 'search' ? 'var(--theme-accent, #00C9FF)' : 'var(--theme-text-dim, #8b8b9b)', fontWeight: '700', cursor: 'pointer', transition: 'all 0.2s', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
             <Search size={16} /> Global Search
           </button>
@@ -397,38 +426,39 @@ export const PantryView: React.FC = () => {
       {activeTab === 'search' && (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
           <div style={{ background: 'var(--theme-panel, rgba(255,255,255,0.03))', border: '1px solid var(--theme-border, rgba(255,255,255,0.05))', borderRadius: '24px', padding: '24px' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px', gap: '12px', flexWrap: 'wrap' }}>
-              <h2 style={{ fontSize: '18px', fontWeight: '700', margin: 0, display: 'flex', alignItems: 'center', gap: '8px', color: 'var(--theme-text)' }}>
-                <Search size={18} color="var(--theme-accent, #00C9FF)" /> Search Global Database
-              </h2>
-              
-              <div style={{ display: 'flex', background: 'var(--theme-panel-dim, rgba(255,255,255,0.02))', padding: '4px', borderRadius: '12px', border: '1px solid var(--theme-border, rgba(255,255,255,0.05))', width: 'auto' }}>
-                <button 
-                  type="button"
-                  onClick={() => setInnerGlobalSearchMode('keyword')}
-                  style={{ padding: '8px 16px', borderRadius: '8px', border: 'none', background: innerGlobalSearchMode === 'keyword' ? 'var(--theme-accent-dim)' : 'transparent', color: innerGlobalSearchMode === 'keyword' ? 'var(--theme-accent)' : '#8b8b9b', fontWeight: '700', cursor: 'pointer', fontSize: '11px' }}>
-                  Keyword
-                </button>
-                <button 
-                  type="button"
-                  onClick={() => setInnerGlobalSearchMode('describe')}
-                  style={{ padding: '8px 16px', borderRadius: '8px', border: 'none', background: innerGlobalSearchMode === 'describe' ? 'var(--theme-accent-dim)' : 'transparent', color: innerGlobalSearchMode === 'describe' ? 'var(--theme-accent)' : '#8b8b9b', fontWeight: '700', cursor: 'pointer', fontSize: '11px', display: 'flex', alignItems: 'center', gap: '4px' }}>
-                  <Sparkles size={12} /> AI Describe
-                </button>
-              </div>
+            <div style={{ marginBottom: '20px' }}>
+              <SearchCoaster 
+                activeTab={innerGlobalSearchTab} 
+                onTabChange={(tab) => {
+                  if (tab === 'pantry') {
+                    setActiveTab('saved');
+                  } else if (tab === 'barcode' || tab === 'label') {
+                    setActiveScanner(tab);
+                  } else {
+                    setInnerGlobalSearchTab(tab);
+                  }
+                }} 
+              />
             </div>
 
-            {innerGlobalSearchMode === 'keyword' ? (
-              <form onSubmit={handleGlobalSearch} style={{ display: 'flex', gap: '8px', marginBottom: '16px' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px', gap: '12px' }}>
+              <h2 style={{ fontSize: '18px', fontWeight: '700', margin: 0, display: 'flex', alignItems: 'center', gap: '8px', color: 'var(--theme-text)' }}>
+                {innerGlobalSearchTab === 'describe' ? <Sparkles size={18} color="var(--theme-accent, #00C9FF)" /> : <Search size={18} color="var(--theme-accent, #00C9FF)" />}
+                {innerGlobalSearchTab === 'describe' ? 'AI Meal Description' : innerGlobalSearchTab === 'ai-search' ? 'AI Keyword Search' : 'Global Database Search'}
+              </h2>
+            </div>
+
+            {innerGlobalSearchTab !== 'describe' ? (
+              <form onSubmit={innerGlobalSearchTab === 'search' ? handleGlobalSearch : handleGlobalAISearch} style={{ display: 'flex', gap: '8px', marginBottom: '16px' }}>
                 <input 
                   className="inp"
-                  placeholder="Search millions of foods..."
+                  placeholder={innerGlobalSearchTab === 'ai-search' ? "AI Keyword Search (e.g. 'sweet potato fries')..." : "Search millions of foods..."}
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   style={{ flex: 1 }}
                 />
                 <button type="submit" disabled={isSearching} className="btn" style={{ marginTop: 0, width: 'auto', padding: '0 20px' }}>
-                  {isSearching ? <Loader2 className="spin" size={18} /> : 'Search'}
+                  {isSearching ? <Loader2 className="spin" size={18} /> : (innerGlobalSearchTab === 'ai-search' ? <Sparkles size={18} /> : <Search size={18} />)}
                 </button>
               </form>
             ) : (
@@ -489,28 +519,6 @@ export const PantryView: React.FC = () => {
             )}
           </div>
 
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '12px' }}>
-            <button 
-              onClick={() => setActiveScanner('barcode')}
-              style={{ padding: '20px 10px', background: 'var(--theme-accent-dim, rgba(0,201,255,0.05))', color: 'var(--theme-accent, #00C9FF)', border: '1px dashed var(--theme-accent, rgba(0,201,255,0.2))', borderRadius: '16px', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', gap: '8px', cursor: 'pointer', fontWeight: 'bold' }}>
-              <Scan size={28} /> 
-              <span style={{ fontSize: '11px' }}>Barcode</span>
-            </button>
-            
-            <button 
-              onClick={() => setActiveScanner('qr')}
-              style={{ padding: '20px 10px', background: 'var(--theme-warning-dim, rgba(252,196,25,0.05))', color: 'var(--theme-warning, #FCC419)', border: '1px dashed var(--theme-warning, rgba(252,196,25,0.2))', borderRadius: '16px', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', gap: '8px', cursor: 'pointer', fontWeight: 'bold' }}>
-              <RefreshCw size={28} /> 
-              <span style={{ fontSize: '11px' }}>QR Code</span>
-            </button>
-
-            <button 
-              onClick={() => setActiveScanner('label')}
-              style={{ padding: '20px 10px', background: 'var(--theme-success-dim, rgba(146,254,157,0.05))', color: 'var(--theme-success, #92FE9D)', border: '1px dashed var(--theme-success, rgba(146,254,157,0.2))', borderRadius: '16px', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', gap: '8px', cursor: 'pointer', fontWeight: 'bold' }}>
-              <Camera size={28} /> 
-              <span style={{ fontSize: '11px' }}>AI Label</span>
-            </button>
-          </div>
           {errorMsg && <div style={{ color: 'var(--theme-error, #FF6B6B)', fontSize: '13px', textAlign: 'center', padding: '10px' }}>{errorMsg}</div>}
         </div>
       )}

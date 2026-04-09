@@ -92,9 +92,7 @@ export function calculateVitalityScore(food: any): VitalityResult {
   let color = '#8b8b9b';
 
   if (score >= 90) { labeled('Elite Bio-Fuel', '#92FE9D'); }
-  else if (score >= 75) { labeled('Premium Fuel', '#00C9FF'); }
-  else if (score >= 50) { labeled('Functional', '#FCC419'); }
-  else if (score >= 30) { labeled('Metabolic Load', '#FF922B'); }
+  else if (score >= 70) { labeled('Premium Fuel', '#00C9FF'); }
   else { labeled('Low Vitality', '#FF6B6B'); }
 
   function labeled(l: string, c: string) {

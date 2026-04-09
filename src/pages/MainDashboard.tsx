@@ -175,9 +175,28 @@ export const MainDashboard: React.FC = () => {
 
 
 const NavItem = ({ active, onClick, label, icon }: any) => (
-  <button onClick={onClick} style={{ background: 'none', border: 'none', color: active ? 'var(--theme-accent, #00C9FF)' : 'var(--theme-text-dim, #8b8b9b)', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '6px', cursor: 'pointer', transition: 'color 0.2s', flex: 1 }}>
-    {icon}
-    <span style={{ fontSize: '11px', fontWeight: active ? '700' : '500' }}>{label}</span>
+  <button 
+    type="button"
+    onClick={onClick} 
+    style={{ 
+      background: 'none', 
+      border: 'none', 
+      color: active ? 'var(--theme-accent, #00C9FF)' : 'var(--theme-text-dim, #8b8b9b)', 
+      display: 'flex', 
+      flexDirection: 'column', 
+      alignItems: 'center', 
+      gap: '6px', 
+      cursor: 'pointer', 
+      transition: 'all 0.2s', 
+      flex: 1,
+      padding: '8px 4px',
+      outline: 'none',
+      WebkitTapHighlightColor: 'transparent'
+    }}>
+    <div style={{ transform: active ? 'scale(1.1)' : 'scale(1)', transition: 'transform 0.2s' }}>
+      {icon}
+    </div>
+    <span style={{ fontSize: '10px', fontWeight: active ? '800' : '500', letterSpacing: '0.02em', textTransform: 'uppercase' }}>{label}</span>
   </button>
 );
 

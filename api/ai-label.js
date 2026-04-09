@@ -1,5 +1,13 @@
 // api/ai-label.js
-const LABEL_PROMPT = 'Extract ALL nutrition data from this label. Return ONLY a valid JSON object with these exact keys: name, serving, sUnit (g/oz/cup/tbsp/tsp/piece/slice/whole/medium/scoop/serving), sQty (number), cal, p (protein g), c (carbs g), f (fat g), fb (fiber g), chol (dietary cholesterol mg), sat (saturated fat g), trans (trans fat g), "Vitamin C"(mg), "Vitamin B1"(mg), "Vitamin B2"(mg), "Vitamin B3"(mg), "Vitamin B5"(mg), "Vitamin B6"(mg), "Vitamin B7"(mcg), "Vitamin B9"(mcg), "Vitamin B12"(mcg), "Vitamin A"(mcg), "Vitamin D"(mcg), "Vitamin E"(mg), "Vitamin K"(mcg), Calcium(mg), Phosphorus(mg), Magnesium(mg), Sodium(mg), Potassium(mg), Chloride(mg), Iron(mg), Zinc(mg), Copper(mg), Manganese(mg), Selenium(mcg), Iodine(mcg), Chromium(mcg), Molybdenum(mcg), Fluoride(mg), ingredients (string — the full ingredients list text exactly as printed on the label, or empty string if not visible). Use 0 for any numeric field not on the label. Return ONLY the JSON, no markdown.';
+const LABEL_PROMPT = `Extract ALL nutrition data from this nutrition facts label image. 
+Return ONLY a valid JSON object. 
+Requirements:
+1. Keys: name, brand, serving, sUnit (g, oz, cup, tbsp, tsp, piece, slice, whole, medium, scoop, serving), sQty (number), cal, p (protein g), c (carbs g), f (fat g), fb (fiber g), sugars (g), chol (dietary cholesterol mg), sat (saturated fat g), trans (trans fat g), mono (g), poly (g), Sodium (mg), Potassium (mg), Magnesium (mg), Calcium (mg), Iron (mg), Zinc (mg), and any other vitamins/minerals found.
+2. For numeric fields, return only the number. If not found, use 0.
+3. For 'name', provide a descriptive name for the food.
+4. For 'ingredients', extract the ingredients list if visible.
+5. Ensure the JSON is flat and minified. 
+No conversational text, only the raw JSON string starting with { and ending with }.`;
 
 export default async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
@@ -26,8 +34,8 @@ export default async function handler(req, res) {
         'anthropic-version': '2023-06-01'
       },
       body: JSON.stringify({
-        model: 'claude-sonnet-4-6',
-        max_tokens: 2000,
+        model: 'claude-3-5-sonnet-20240620',
+        max_tokens: 2048,
         messages: [{
           role: 'user',
           content: [
@@ -40,12 +48,16 @@ export default async function handler(req, res) {
 
     if (!anthropicRes.ok) {
       const detail = await anthropicRes.text();
-      return res.status(anthropicRes.status).json({ error: 'Anthropic error ' + anthropicRes.status, detail });
+      return res.status(anthropicRes.status).json({ error: 'AI Service Error (' + anthropicRes.status + ')', detail });
     }
 
     const data = await anthropicRes.json();
-    const rawText = (data?.content?.[0]?.text || '')
-      .replace(/```json/g, '').replace(/```/g, '').trim();
+    let rawText = (data?.content?.[0]?.text || '').trim();
+    
+    // Better JSON stripping
+    if (rawText.includes('```')) {
+      rawText = rawText.replace(/```json/g, '').replace(/```/g, '').trim();
+    }
 
     let food;
     try { food = JSON.parse(rawText); }

@@ -17,7 +17,13 @@ export const BadgesView: React.FC = () => {
   const purchasedThemes = localCache.settings?.purchasedThemes || [
     'obsidian', 'cybermancer', 'gold-reserve', 'glacier-peak', 
     'forest-phantom', 'midnight-crimson', 'sunset-horizon', 
-    'quantum-violet', 'matcha-zen', 'sandstone'
+    'quantum-violet', 'matcha-zen', 'sandstone',
+    'olympian-gold', 'aegean-mist', 'hades-ember', 'athenas-wisdom',
+    'dionysus-vineyard', 'poseidons-depths', 'artemis-moonlight',
+    'hermes-swiftness', 'spartan-grit', 'oracles-vision',
+    'solar-flare', 'deep-sea', 'sakura-spring', 'neon-wasteland',
+    'emerald-city', 'carbon-fiber', 'sahara-gold', 'midnight-galaxy',
+    'nordic-frost', 'ember-forge'
   ];
 
   const themes: { id: ThemeName; name: string; emoji: string; price: number; colors: string[] }[] = [
@@ -190,7 +196,7 @@ export const BadgesView: React.FC = () => {
           </div>
           <p style={{ color: 'var(--theme-text-dim, #8b8b9b)', fontSize: '13px', marginBottom: '20px' }}>Spend your hard-earned gems to unlock exclusive visual identities. Emojis indicate the theme's spirit!</p>
           
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '20px' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '20px', paddingBottom: '120px' }}>
             {themes.map(t => {
               const isSelected = currentThemeName === t.id;
               const isPurchased = purchasedThemes.includes(t.id);

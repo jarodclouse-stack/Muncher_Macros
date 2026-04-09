@@ -66,7 +66,7 @@ export const DiaryView: React.FC = () => {
     "Clean fuel, clear mind, unstoppable energy! 🎯"
   ];
   
-  const [randomCheer] = useState(cheers[Math.floor(Math.random() * cheers.length)]);
+  const [randomCheer] = useState(() => cheers[Math.floor(Math.random() * cheers.length)]);
 
   const displayDate = useMemo(() => {
     const d = new Date(currentDate + 'T12:00:00');
@@ -137,8 +137,6 @@ export const DiaryView: React.FC = () => {
         />
       </div>
 
-      {/* Metabolic Window Visualizer (Idea #4) */}
-      <MetabolicWindow meals={MEALS} foodLog={foodLog} />
 
       {/* Meals Log List */}
       {MEALS.map(meal => {
@@ -146,7 +144,7 @@ export const DiaryView: React.FC = () => {
         const mealTotals = sumFoods(mealFoods.map((l:any) => l.f));
         const mealCals = mealTotals.calories;
         
-        // Calculate Aggregated Vitality for the meal (Idea #1)
+        // Calculate Aggregated Vitality for the meal
         const mealVitality = calculateVitalityScore(mealTotals);
 
         return (
@@ -159,7 +157,6 @@ export const DiaryView: React.FC = () => {
                     score={mealVitality.score} 
                     label={mealVitality.label} 
                     color={mealVitality.color} 
-                    alwaysShow={true}
                   />
                 )}
               </div>
@@ -663,53 +660,3 @@ const WaterBtn = ({ icon, label, onClick, color = 'var(--theme-panel-dim, rgba(2
     <span style={{ fontSize: '11px', fontWeight: '800' }}>{label}</span>
   </button>
 );
-
-const MetabolicWindow = ({ meals, foodLog }: any) => {
-  const windowData = meals.map((m: string) => {
-    const mealFoods = foodLog.filter((l: any) => l.meal === m);
-    const totals = sumFoods(mealFoods.map((l: any) => l.f));
-    return { name: m, cals: totals.calories, protein: totals.protein };
-  });
-
-  const totalCals = windowData.reduce((s: number, d: any) => s + d.cals, 0);
-  
-  const getTip = () => {
-    if (totalCals === 0) return "Establish a metabolic anchor by logging your first meal.";
-    
-    const b = windowData.find((w: any) => w.name === 'Breakfast');
-    const d = windowData.find((w: any) => w.name === 'Dinner');
-    
-    if (b && b.protein > 30) return "🔥 Morning Primer: High protein breakfast detected. Optimal for muscle preservation.";
-    if (d && d.cals > totalCals * 0.5) return "⚠️ Storage Risk: Heavy dinner detected. Consider 15min light walking for glucose disposal.";
-    if (windowData.every((w: any) => w.cals > 0)) return "🎯 Perfect distribution: Constant energy supply maintained.";
-    return "Stable fueling in progress. Aim for fiber-rich complex carbs in your next meal.";
-  };
-
-  return (
-    <div style={{ background: 'linear-gradient(145deg, var(--theme-accent-dim, rgba(0,201,255,0.05)) 0%, rgba(0,201,255,0.01) 100%)', border: '1px solid var(--theme-border, rgba(0,201,255,0.1))', borderRadius: '24px', padding: '20px', marginBottom: '8px' }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
-        <div style={{ fontSize: '12px', fontWeight: '800', color: 'var(--theme-accent, #00C9FF)', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Metabolic Window</div>
-        <div style={{ fontSize: '10px', color: 'var(--theme-text-dim, #8b8b9b)' }}>24H FEEDING PHASE</div>
-      </div>
-      
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', height: '40px', gap: '8px', marginBottom: '16px' }}>
-        {windowData.map((d: any, i: number) => {
-          const height = totalCals > 0 ? Math.max(10, (d.cals / totalCals) * 100) : 10;
-          return (
-            <div key={i} style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '6px' }}>
-              <div style={{ width: '100%', height: '30px', background: 'var(--theme-panel-dim, rgba(255,255,255,0.03))', borderRadius: '4px', position: 'relative', overflow: 'hidden' }}>
-                <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: `${height}%`, background: d.cals > 0 ? 'var(--theme-accent, #00C9FF)' : 'var(--theme-panel-dim, rgba(255,255,255,0.03))', transition: 'all 0.5s ease' }} />
-              </div>
-              <span style={{ fontSize: '8px', color: 'var(--theme-text-dim, #5b5b6b)', fontWeight: '700', textTransform: 'uppercase' }}>{d.name}</span>
-            </div>
-          );
-        })}
-      </div>
-
-      <div style={{ background: 'var(--theme-panel-dim, rgba(0,0,0,0.2))', padding: '12px', borderRadius: '12px', fontSize: '12px', color: 'var(--theme-text-dim, #c0c0d0)', fontStyle: 'italic', display: 'flex', gap: '8px', alignItems: 'center' }}>
-        <Info size={14} color="var(--theme-accent, #00C9FF)" />
-        {getTip()}
-      </div>
-    </div>
-  );
-};
