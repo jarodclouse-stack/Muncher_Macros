@@ -537,7 +537,7 @@ const HydrationCard = ({ current, goal, onAdd, onReset }: { current: number, goa
         bottom: 0, 
         left: 0, 
         right: 0, 
-        height: `${pct}%`, 
+        height: `${Math.min(100, pct)}%`, 
         background: 'var(--theme-accent-wave, linear-gradient(180deg, rgba(0,201,255,0.2) 0%, rgba(0,201,255,0.1) 100%))',
         transition: 'height 1s cubic-bezier(0.19, 1, 0.22, 1)',
         zIndex: 0,
@@ -556,6 +556,43 @@ const HydrationCard = ({ current, goal, onAdd, onReset }: { current: number, goa
           }} />
         )}
       </div>
+
+      {/* Overflow Spill Effect */}
+      {current > goal && (
+        <div style={{
+          position: 'absolute',
+          inset: 0,
+          border: '2px solid var(--theme-accent, #00C9FF)',
+          borderRadius: '24px',
+          pointerEvents: 'none',
+          animation: 'water-pulse 2s infinite',
+          zIndex: 0
+        }}>
+          <div style={{
+            position: 'absolute',
+            top: 0,
+            left: '10%',
+            right: '10%',
+            height: '4px',
+            background: 'var(--theme-accent, #00C9FF)',
+            filter: 'blur(4px)',
+            opacity: 0.6,
+            animation: 'spill-flow 3s infinite ease-in-out'
+          }} />
+        </div>
+      )}
+
+      <style>{`
+        @keyframes water-pulse {
+          0% { box-shadow: 0 0 0 0 rgba(0,201,255,0.4); }
+          70% { box-shadow: 0 0 0 10px rgba(0,201,255,0); }
+          100% { box-shadow: 0 0 0 0 rgba(0,201,255,0); }
+        }
+        @keyframes spill-flow {
+          0%, 100% { transform: translateY(0) scaleX(1); opacity: 0.3; }
+          50% { transform: translateY(4px) scaleX(1.1); opacity: 0.7; }
+        }
+      `}</style>
 
       <div style={{ position: 'relative', zIndex: 1 }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>

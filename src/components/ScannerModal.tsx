@@ -197,7 +197,7 @@ export const ScannerModal: React.FC<ScannerModalProps> = ({ type, onClose, onRes
         {!source && (
           <div style={{ display: 'flex', flexDirection: 'column', gap: '20px', width: '85%', maxWidth: '340px' }}>
             <button onClick={startCamera} style={{ background: 'var(--theme-accent, #00C9FF)', color: '#000', padding: '16px', borderRadius: '18px', border: 'none', fontWeight: '800', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '12px', cursor: 'pointer', boxShadow: '0 8px 20px rgba(0,201,255,0.2)' }}>
-              <Camera size={24} /> Take Live Photo
+              <Camera size={24} /> Take Photo
             </button>
             <button onClick={() => fileInputRef.current?.click()} style={{ background: 'rgba(255,255,255,0.08)', color: 'white', padding: '16px', borderRadius: '18px', border: '1px solid rgba(255,255,255,0.15)', fontWeight: '700', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '12px', cursor: 'pointer' }}>
               <ImageIcon size={24} /> Choose Existing
@@ -248,7 +248,7 @@ export const ScannerModal: React.FC<ScannerModalProps> = ({ type, onClose, onRes
               image={image}
               crop={crop}
               zoom={zoom}
-              aspect={type === 'label' ? 0.7 : 1.5}
+              aspect={type === 'label' ? 0.7 : (type === 'barcode' ? 3.0 : 1.0)}
               onCropChange={setCrop}
               onCropComplete={onCropComplete}
               onZoomChange={setZoom}
@@ -290,7 +290,7 @@ export const ScannerModal: React.FC<ScannerModalProps> = ({ type, onClose, onRes
                    </button>
                 )}
                 <button onClick={reset} style={{ background: 'rgba(255,255,255,0.1)', color: 'white', border: 'none', padding: '12px', borderRadius: '12px', fontWeight: '700', cursor: 'pointer' }}>
-                  {type === 'label' ? 'Take New Photo' : 'Try Again / Enter Manual'}
+                  Take New Photo / Try Again
                 </button>
               </div>
             </div>

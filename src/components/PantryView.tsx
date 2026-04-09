@@ -139,7 +139,7 @@ export const PantryView: React.FC = () => {
           Discover & Search
         </button>
         <button onClick={() => setActiveTab('manual')} style={{ flex: 1, padding: '12px', borderRadius: '14px', border: '1px solid var(--theme-border)', background: activeTab === 'manual' ? 'var(--theme-accent-dim)' : 'transparent', color: activeTab === 'manual' ? 'var(--theme-accent)' : 'var(--theme-text-dim)', fontWeight: '700', fontSize: '13px', cursor: 'pointer' }}>
-          Create Food
+          Macro Kitchen
         </button>
         <button onClick={() => setActiveTab('saved')} style={{ flex: 1, padding: '12px', borderRadius: '14px', border: '1px solid var(--theme-border)', background: activeTab === 'saved' ? 'var(--theme-accent-dim)' : 'transparent', color: activeTab === 'saved' ? 'var(--theme-accent)' : 'var(--theme-text-dim)', fontWeight: '700', fontSize: '13px', cursor: 'pointer' }}>
           My Pantry ({customFoods.length})
@@ -190,8 +190,8 @@ export const PantryView: React.FC = () => {
       )}
 
       {activeTab === 'manual' && (
-        <div style={{ background: 'var(--theme-panel)', borderRadius: '24px', padding: '24px', border: '1px solid var(--theme-border)' }}>
-          <h2 style={{ fontSize: '18px', fontWeight: '800', marginBottom: '20px' }}>{editingIndex !== null ? 'Edit Food' : 'Create Food Manual Entry'}</h2>
+        <div style={{ background: 'var(--theme-panel)', borderRadius: '24px', padding: '18px', border: '1px solid var(--theme-border)', maxWidth: '480px', margin: '0 auto', width: '100%', boxSizing: 'border-box' }}>
+          <h2 style={{ fontSize: '18px', fontWeight: '800', marginBottom: '20px', textAlign: 'center' }}>{editingIndex !== null ? 'Edit Macro Kitchen' : 'Macro Kitchen'}</h2>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
             <input placeholder="Food Name" className="inp" value={form.name} onChange={e => setForm({...form, name: e.target.value})} />
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '8px' }}>
