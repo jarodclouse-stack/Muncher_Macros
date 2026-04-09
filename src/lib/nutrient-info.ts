@@ -117,204 +117,266 @@ export const DEFICIENCY_INFO: Record<string, { name: string; sources: string; de
 };
 
 export const NUTRIENT_BENEFITS: Record<string, { summary: string; points: string[] }> = {
-  'Fiber': {
-    summary: "🏥 Systemic metabolic regulator and longevity nutrient.",
-    points: [
-      "Glycemic Control: Prevents rapid blood sugar spikes by slowing digestion.",
-      "Lipid Management: Binds cholesterol in the gut, reducing cardiovascular risk.",
-      "Microbiome Fuel: Feeds beneficial gut bacteria to support systemic immunity.",
-      "Appetite Regulation: Increases satiety signaling to the brain (GLP-1 pathway).",
-      "Digestive Transit: Optimizes intestinal motility and prevents toxin reabsorption."
-    ]
-  },
-  'Protein': {
-    summary: "🏗️ Primary driver of muscle protein synthesis and metabolic flexibility.",
-    points: [
-      "Muscle Preservation: Maintains lean mass even during caloric deficits.",
-      "Enzyme Production: Essential for the creation of all metabolic enzymes.",
-      "Immune Defense: Building blocks for antibodies and critical for repair.",
-      "Structural Integrity: Forms the collagen matrix for skin, hair, and connective tissue.",
-      "Thermic Effect: Increases metabolic rate by requiring more energy to digest than fats/carbs."
-    ]
-  },
-  'Complex Carbs': {
-    summary: '🚜 Sustained muscular fuel and glycogen replenishment.',
-    points: [
-      'Steady Fuel: Provides long-lasting energy without the insulin crash.',
-      'Glycogen Loading: Required for high-intensity training and endurance caps.',
-      'Satiety: Keeps you full longer compared to simple sugar sources.',
-      'Fiber Synergies: Often bundled with essential prebiotics for gut health.',
-      'Brain Glucose: Provides the primary stable fuel source for cognitive focus.'
-    ]
-  },
-  'Simple (Sugars)': {
-    summary: '🚀 Immediate glucose spike for rapid performance needs.',
-    points: [
-      'Instant Energy: Absorbs in minutes for high-output physical demands.',
-      'Glycemic Hit: Use strategically around workouts for peak power.',
-      'Risk Factor: High intake without activity triggers fat storage.',
-      'Brain Reward: Can trigger dopamine release; use with precision and caution.'
-    ]
-  },
-  'Saturated': {
-    summary: '🏗️ Essential for hormone levels but requires moderate intake.',
-    points: [
-      'Hormonal Support: Base material for steroid hormone synthesis.',
-      'Cell Membrane: Provides structural integrity and rigidity to cell walls.',
-      'Flavor Profile: Increases satiety and carries fat-soluble vitamins.',
-      'Heat Stability: Resistant to oxidation during high-heat cooking.'
-    ]
-  },
-  'Monounsaturated': {
-    summary: '💙 The gold-standard fat for heart health and anti-inflammation.',
-    points: [
-      'Heart Health: Strongly improves blood lipid and HDL/LDL profiles.',
-      'Insulin Sensitivity: Helps cells process glucose more efficiently.',
-      'Systemic Calm: Reduces markers of long-term cellular inflammation.',
-      'Vessel Integrity: Maintains the elasticity of the arterial walls.'
-    ]
-  },
-  'Polyunsaturated': {
-    summary: '🌊 Essential Omega-3 & Omega-6 fatty acids for systemic health.',
-    points: [
-      'Brain Clarity: Omega-3s (DHA/EPA) are vital for cognitive function.',
-      'Anti-Inflammatory: Regulates recovery signaling after heavy exercise.',
-      'Cell Signaling: Critical for healthy communication between cells.',
-      'Skin Barrier: Maintains moisture and prevents trans-epidermal water loss.'
-    ]
-  },
   'Vitamin C': {
-    summary: '🛡️ Collagen & Immunity Protocol',
+    summary: '🛡️ Collagen & Tissue Repair Protocol',
     points: [
-      'Collagen Synthesis: Critical for hydroxyproline production for skin/joints.',
-      'Antioxidant Shield: Neutralizes free radicals generated during intense training.',
-      'Immune Training: Enhances neutrophil and lymphocyte motility.',
-      'Iron Absorption: Dramatically increases the uptake of non-heme (plant) iron.',
-      'Adrenal Support: High concentrations found in adrenal glands to manage stress.'
+      'Collagen Synthesis: Essential cofactor for prolyl hydroxylase in skin and joint repair.',
+      'Antioxidant Shield: Neutralizes superoxide and hydroxyl radicals during metabolic stress.',
+      'Immune Training: Highly concentrated in leukocytes to drive phagocytic activity.',
+      'Catecholamine Synthesis: Required for the conversion of dopamine to norepinephrine.',
+      'Iron Bioavailability: Reduces non-heme iron to the ferrous state for optimal absorption.'
     ]
   },
   'Vitamin D': {
-    summary: '☀️ Bone & Immune Master Hormone',
+    summary: '☀️ Steroid Hormone & Immune Sentinel',
     points: [
-      'Calcium Transport: Enables the gut to absorb calcium into the bloodstream.',
-      'Gene Modulation: Regulates over 1,000 different genes in human tissue.',
-      'Immune Sentinel: Activates the "killer" T-cells to identify pathogens.',
-      'Mood Regulation: Linked to serotonin synthesis and Seasonal Affective Disorder.',
-      'Muscular Power: Low D levels are correlated with reduced explosive strength.'
+      'VDR Support: Binds to Vitamin D Receptors (VDR) to regulate 1,000+ gene sequences.',
+      'Calcium Partitioning: Calcitriol signals the gut to upregulate calcium binding proteins.',
+      'T-Cell Activation: Converts naive T-cells into "active" killers of intracellular pathogens.',
+      'Muscle Fiber Size: Linked to the maintenance of Type II (fast-twitch) muscle fibers.',
+      'Cardiovascular Health: Regulates the Renin-Angiotensin system for blood pressure control.'
     ]
   },
   'Magnesium': {
-    summary: '🧘 Signal & Sleep Conductivity',
+    summary: '🧘 Neuromuscular Conductivity Catalyst',
     points: [
-      'ATP Transfer: The "spark plug" that releases energy from ATP molecules.',
-      'Nervous System: Blocks NMDA receptors to lower systemic "noise" and anxiety.',
-      'Muscle Relaxation: Acts as a natural calcium channel blocker to prevent cramps.',
-      'Blood Pressure: Relaxes the walls of blood vessels for better circulation.',
-      'Sleep Quality: Regulates melatonin production and GABA signaling.'
+      'ATP Kinase: Required for the stability and activation of every ATP-dependent enzyme.',
+      'GABA Agonist: Binds to GABA receptors to lower CNS excitability and improve sleep.',
+      'Ion Channel Gate: Regulates calcium and potassium flux across cell membranes.',
+      'Blood Sugar Control: Directly influences insulin receptor sensitivity and glucose flux.',
+      'Structural Mineral: 60% of systemic magnesium is stored in the bone mineral matrix.'
     ]
   },
   'Iron': {
-    summary: '🎈 Oxygenation & Vitality Surge',
+    summary: '🎈 Heme-Delivery & Mitochondrial Respiration',
     points: [
-      'Heme Delivery: Central atom of hemoglobin for systemic oxygen transport.',
-      'Brain Energy: Required for the synthesis of myelin and neurotransmitters.',
-      'Metabolic Rate: Essential for thyroid peroxidase and calorie burning.',
-      'Immune Function: Powers the enzymes that destroy bacteria and viruses.'
+      'Hemoglobin Core: The central functional unit of red blood cells for oxygen transport.',
+      'Myoglobin Storage: Facilitates oxygen diffusion into myocyte mitochondria during load.',
+      'ETC Complex: Essential component of cytochromes for oxidative phosphorylation.',
+      'DNA Synthesis: Serves as a cofactor for ribonucleotide reductase during cell division.',
+      'Thermoregulation: Vital for thyroidal activity and maintaining core body temperature.'
     ]
   },
   'Zinc': {
-    summary: '🛡️ T-Cell & Genomic Repair',
+    summary: '🛡️ Genomic Repair & Hormonal Catalyst',
     points: [
-      'DNA Integrity: Component of "zinc finger" proteins that repair code.',
-      'Immune Catalyst: Drives the maturation of the thymus and T-lymphocytes.',
-      'Testosterone Support: Essential for male reproductive health and hormones.',
-      'Protein Synthesis: Required for muscle repair following micro-tears.',
-      'Sense Profile: Critical for maintaining acute taste and smell sensitivity.'
+      'Zinc Fingers: Structural component of DNA-binding proteins that direct genetic repair.',
+      'Thymic Hormone: Critical for the biological activity of thymulin (T-cell maturation).',
+      'Aromatase Context: Helps maintain healthy testosterone-to-estrogen ratios.',
+      'Superoxide Dismutase (SOD): Vital for neutralizing superoxide radicals in the cytosol.',
+      'Protein Translation: Drives the ribosomal activity needed for muscle tissue synthesis.'
     ]
   },
   'Potassium': {
-    summary: '⚖️ Cardiac Pulse & Pressure Control',
+    summary: '⚖️ Cardiac Potential & Intracellular Balance',
     points: [
-      'Sodium Balance: Actively pumps sodium out of cells to reduce water retention.',
-      'Electrical Signal: Conducts the electrical impulses that trigger heartbeats.',
-      'Blood Pressure: Relaxes arterial walls to prevent hypertension.',
-      'Kidney Health: Protects against the formation of calcium oxalate stones.',
-      'Nerve Firing: Essential for restoring the membrane potential after a signal.'
+      'Membrane Re-Polarization: Critical for the "reset" phase of muscle and nerve signals.',
+      'Na+/K+ Pump: Actively drives sodium out of cells to prevent edema and hypertension.',
+      'Aldosterone Escape: Counteracts the blood-pressure raising effects of high sodium intake.',
+      'Glycogen Synthesis: Increases the rate of glucose conversion to stored glycogen.',
+      'Renal Protection: High intake reduces the risk of kidney stone formation (calcium stones).'
     ]
   },
   'Vitamin B12': {
-    summary: '🛰️ Neuro-Clarity & Nerve Defense',
+    summary: '🛰️ Neuro-Protection & One-Carbon Flux',
     points: [
-      'Myelin Sheath: Insulates nerve fibers for fast and accurate signaling.',
-      'DNA Protocol: Acts as a cofactor for DNA synthesis in every single cell.',
-      'Red Blood Cells: Prevents megaloblastic anemia and ensures oxygen flow.',
-      'Brain Longevity: Linked to slower rates of age-related brain atrophy.',
-      'Homocysteine: Lowers levels to protect the heart and vascular system.'
+      'Myelin Integrity: Required for the synthesis of the fatty sheath around nerve fibers.',
+      'Methionine Cycle: Converts homocysteine to methionine to protect the vascular walls.',
+      'Hematopoiesis: Drives the maturation of red blood cells in the bone marrow.',
+      'Cognitive Speed: High B12 status is correlated with faster information processing.',
+      'SAMe Synthesis: Essential for the production of SAMe, the body\'s main methyl donor.'
     ]
   },
   'Calcium': {
-    summary: '🦴 Structural Integrity Hub',
+    summary: '🦴 Skeletal Matrix & Signal Trigger',
     points: [
-      'Bone Reservoir: Provides the mineral matrix for skeletal strength.',
-      'Muscular Trigger: The signal that causes actin and myosin to contract.',
-      'Blood Clotting: Plays a vital role in the coagulation cascade.',
-      'Nerve Conduction: Triggers the release of neurotransmitters at synapses.',
-      'Enzyme Activation: Works as a co-factor for various metabolic enzymes.'
+      'Hydroxyapatite Flux: Maintains the mineral "bank" needed for dense bone tissue.',
+      'Troponin Activation: The specific trigger that allows muscle fibers to contract.',
+      'Neurotransmission: Triggers the exocytosis of neurotransmitters at the synapse.',
+      'Coagulation Cascade: Factor IV in the blood clotting process for wound closure.',
+      'Secondary Messenger: Coordinates intracellular signaling for hormones and enzymes.'
     ]
   },
   'Vitamin A': {
-    summary: '👁️ Ocular & Barrier Immunity',
+    summary: '👁️ Retinoid Shield & Genetic Differentiation',
     points: [
-      'Retinal Cycle: Regenerates the visual pigments needed for low-light vision.',
-      'Epithelial Health: Maintains the "first line of defense" in skin and lungs.',
-      'Stem Cell Signal: Directs the differentiation of cells into specific tissues.',
-      'Antioxidant: Protects lipids from oxidative damage in high-oxygen tissue.',
-      'Skeletal Growth: Supports bone remodeling and osteoblast activity.'
+      'Rhodopsin Cycle: Regenerates visual pigments needed for scotopic (low-light) vision.',
+      'Epithelial Defense: Prevents keratinization of mucous membranes (skin/lung health).',
+      'Stem Cell Signal: Directs the fate of stem cells into specific specialized tissues.',
+      'T-Cell Homing: Influences the movement of immune cells to the gut and lungs.',
+      'Antioxidant Function: Quenches singlet oxygen and protects cell membrane lipids.'
     ]
   },
   'Sodium': {
-    summary: '🧂 Hydration & Signal Osmolarity',
+    summary: '🧂 Osmotic Pressure & Signal Potential',
     points: [
-      'Fluid Balance: The primary driver of extracellular fluid and hydration.',
-      'Muscle Action: Generates the electrical charge needed for contraction.',
-      'Nutrient Uptake: Drives the transport of glucose and amino acids into cells.',
-      'Nerve Pulse: Required for the rapid depolarization of nerve membranes.'
-    ]
-  },
-  'Vitamin B6': {
-    summary: '🧠 Mood & Hormone Balance',
-    points: [
-      'Neuro-Chemistry: Essential for creating serotonin, dopamine, and GABA.',
-      'Heme Production: Required for the first step of hemoglobin synthesis.',
-      'Gluconeogenesis: Helps convert stored proteins into glucose for energy.',
-      'Anticipatory Stress: Regulates the body\'s response to psychological stress.'
+      'Action Potential: The primary ion responsible for the "upstroke" of nerve signals.',
+      'Blood Volume: Controls the amount of water retained in the circulatory system.',
+      'SGLT-1 Transport: Required for the active transport of glucose into the intestines.',
+      'Extracellular Base: Maintains the principal cation balance of interstitial fluid.',
+      'Hydration Status: Directly dictates the thirst signal and systemic water balance.'
     ]
   },
   'Vitamin B1': {
-    summary: '⚡ Energy & Nerve Catalyst',
+    summary: '⚡ Pyruvate Flux & Mitochondrial Ignition',
     points: [
-      'Energy Conversion: Converts pyruvate into acetyl-CoA for the Krebs cycle.',
-      'Heart Rhythm: Supports the high energy demands of cardiac tissue.',
-      'Nerve Conduct: Protective role in the development of the nervous system.',
-      'Brain Energy: Essential for glucose metabolism in the cerebral cortex.'
+      'TDP Cofactor: Required for pyruvate dehydrogenase to extract energy from carbs.',
+      'BCAAs Metabolism: Essential for breaking down branched-chain amino acids (leucine).',
+      'Neurotransmission: Supports the synthesis of acetylcholine for muscle control.',
+      'Pentose Pathway: Essential for creating the pentose sugars used in DNA and RNA.'
     ]
   },
   'Vitamin B2': {
-    summary: '🔋 Cellular Respiration Core',
+    summary: '🔋 FAD Energy Capture & Redox Balance',
     points: [
-      'FAD/FMN Energy: Core component of flavoproteins for energy capture.',
-      'Antioxidant Power: Required for the recycling of glutathione.',
-      'Iron Metabolism: Essential for iron processing and hemoglobin health.',
-      'Eye Health: Protects the lens of the eye from oxidative clouding.'
+      'FAD Synthesis: Transports high-energy electrons to the mitochondrial ETC.',
+      'Glutathione Recycling: Required for glutathione reductase to fight oxidative stress.',
+      'B6/Folate Support: Essential for activating other B-vitamins into their final forms.',
+      'Lipid Breakdown: Drives the beta-oxidation of fatty acids for cellular fuel.'
     ]
   },
   'Vitamin B3': {
-    summary: '🛡️ Lipid & DNA Repair',
+    summary: '🛡️ NAD+ Fuel & Genomic Integrity',
     points: [
-      'NAD+ Protocol: Critical for the longevity and energy signaling molecule NAD+.',
-      'Genomic Repair: Activates PARP enzymes to repair damaged DNA sequences.',
-      'Fatty Acid Flux: Regulates the breakdown and synthesis of essential fats.',
-      'Mental Focus: Supports brain health by preventing metabolic exhaustion.'
+      'NAD+/NADP+ Catalyst: The primary molecule for 200+ redox energy reactions.',
+      'Sirtuin Activation: Powers the "longevity" proteins that repair cellular damage.',
+      'Skin Barrier: Boosts ceramide production for extreme moisture and defense.',
+      'Lipid Profile: High dosages can improve HDL-C and lower triglyceride levels.'
+    ]
+  },
+  'Vitamin B5 (Pantothenic Acid)': {
+    summary: '🚜 Coenzyme A & Steroid synthesis',
+    points: [
+      'CoA Production: The gateway molecule for carb, fat, and protein metabolism.',
+      'Adrenal Support: Essential fuel for the production of cortisol and stress hormones.',
+      'Heme Synthesis: Required for the creation of porphyrin in red blood cells.',
+      'Fatty Acid Flux: Drives the creation of sphingolipids for healthy nerve cells.'
+    ]
+  },
+  'Vitamin B6': {
+    summary: '🧠 Neuro-Synthesis & Heme Creation',
+    points: [
+      'Amine Transfer: Required to create serotonin, dopamine, and norepinephrine.',
+      'Glycogenolysis: The key to unlocking stored muscle glycogen during exercise.',
+      'Heme Production: Directly triggers the incorporation of iron into hemoglobin.',
+      'Fluid Balance: Helps regulate sodium/potassium levels across cell membranes.'
+    ]
+  },
+  'Vitamin B7 (Biotin)': {
+    summary: '💅 Carbon Selection & Keratin Flux',
+    points: [
+      'Gluconeogenesis: A vital cofactor for enzymes that create glucose from protein.',
+      'Lipid Synthesis: Drives the creation of fatty acids for skin and brain health.',
+      'Keratin Infrastructure: Directly enhances the structural integrity of hair/nails.',
+      'Epigenetic Control: Plays a role in histone biotinylation for gene expression.'
+    ]
+  },
+  'Vitamin B9 (Folate)': {
+    summary: '🧬 DNA Methylation & Genomic Renewal',
+    points: [
+      'Nucleotide Synthesis: Required for create the "building blocks" of DNA and RNA.',
+      'One-Carbon Metabolism: Vital for cellular division and rapid tissue growth.',
+      'Neural Development: Prevents major defects and supports brain signaling.',
+      'Vascular Health: Regulates homocysteine to prevent arterial inflammation.'
+    ]
+  },
+  'Vitamin E': {
+    summary: '🛡️ Non-Polar Anti-Oxidation Shield',
+    points: [
+      'Lipid Protection: Prevents oxidative rancidity of fats within cell membranes.',
+      'Vascular Elasticity: Prevents the oxidation of LDL to protect heart health.',
+      'Immune Maintenance: Protects the delicate membranes of immune cells.',
+      'Muscle Recovery: Reduces damage to myocytes after intense resistance load.'
+    ]
+  },
+  'Vitamin K': {
+    summary: '🦴 Coagulation & Mineral Partitioning',
+    points: [
+      'Coagulation Cascade: Triggers the conversion of prothrombin to thrombin.',
+      'Gla-Protein Flux: Activates Osteocalcin to bind calcium into the bone matrix.',
+      'Arterial Defense: Prevents calcium from depositing in soft tissue and arteries.',
+      'Insulin Sensitivity: Emerging evidence links K-status to better glucose control.'
+    ]
+  },
+  'Phosphorus': {
+    summary: '🔋 ATP Mineral & Structural Base',
+    points: [
+      'Phosphorylation: The fundamental mechanism for "activating" protein enzymes.',
+      'Hydroxyapatite Matrix: Works with calcium to provide 90% of bone strength.',
+      'Cell Membrane: The primary component of phospholipid bilayers in every cell.',
+      'Acid-Base Buffer: Maintains blood pH levels during intense lactic acid buildup.'
+    ]
+  },
+  'Chloride': {
+    summary: '🌊 Hydrochloric Acid & pH Balance',
+    points: [
+      'Digestive Acid: The "Cl" in HCl—required for stomach acid and protein breakdown.',
+      'Anion Gap: Maintains electrical neutrality and osmotic pressure in fluids.',
+      'CO2 Transport: Facilitates the "chloride shift" to remove carbon dioxide.',
+      'Muscle Signaling: Regulates cell volume and membrane potential in nerve cells.'
+    ]
+  },
+  'Iodine': {
+    summary: '🔥 Thyroidal BMR Ignition',
+    points: [
+      'T3/T4 Synthesis: The only biological use for iodine is thyroid hormone creation.',
+      'Metabolic Rate: Directly dictates the speed at which you burn calories.',
+      'Cognitive Development: High impact on brain maturational speed and IQ.',
+      'Apoptosis Control: Helps the body clear damaged or unnecessary cells.'
+    ]
+  },
+  'Copper': {
+    summary: '⚡ Electron Flux & Collagen Cross-Linking',
+    points: [
+      'Cytochrome C Type: Drives the final step of the mitochondrial ETC for energy.',
+      'Lysyl Oxidase: Essential for cross-linking collagen/elastin for joint strength.',
+      'Iron Processing: Required for ferroxidase to release stored iron into the blood.',
+      'Melanin Synthesis: Necessary for the production of skin and hair pigments.'
+    ]
+  },
+  'Selenium': {
+    summary: '🛑 Selenoprotein Antioxidant Defense',
+    points: [
+      'Glutathione Peroxidase: The body\'s primary engine for flushing toxins.',
+      'Thyroid Conversion: Required to convert inactive T4 into the active T3 hormone.',
+      'Immune Regulation: Reduces the excessive inflammation of a runaway immune system.',
+      'DNA Protection: Acts as a "firewall" against oxidative damage to the genome.'
+    ]
+  },
+  'Manganese': {
+    summary: '🦴 Enzyme Activator & Glycan Flux',
+    points: [
+      'SOD-2 Activation: Key cofactor for the manganese-dependent SOD in mitochondria.',
+      'Bone Cartilage: Drives the enzymes that create proteoglycans for joints.',
+      'Metabolism: Supports gluconeogenesis and amino acid nitrogen disposal.',
+      'Wound Recovery: Potentiates the early stages of the tissue healing response.'
+    ]
+  },
+  'Chromium': {
+    summary: '🔑 Insulin Receptor Sensitizer',
+    points: [
+      'Glucose Tolerance: Enhances the binding of insulin to its cell receptors.',
+      'Carb Metabolism: Optimizes the clearing of glucose from the bloodstream.',
+      'Cravings Control: High status is linked to better appetite and hunger control.',
+      'Lipid Flux: Supports the healthy clearance of fats from the blood.'
+    ]
+  },
+  'Molybdenum': {
+    summary: '🧪 Sulfur Amino Acid Metabolism',
+    points: [
+      'Sulfite Oxidase: Crucial for converting reactive sulfites into harmless sulfates.',
+      'Xanthine Oxidase: Breaks down nucleotides into uric acid for safe excretion.',
+      'Aldehyde Oxidase: Detoxifies various drugs and toxins in the liver.',
+      'Enzyme Cofactor: Part of the "Moco" cofactor needed for metabolic health.'
+    ]
+  },
+  'Fluoride': {
+    summary: '🛡️ Enamel Matrix Reinforcement',
+    points: [
+      'Fluoroapatite: Integrates into tooth enamel to make it resistant to acid.',
+      'Remineralization: Accelerates the repair of micro-porosity in teeth.',
+      'Antibacterial: Interferes with the metabolism of plaque-causing bacteria.',
+      'Skeletal Stability: Can influence the rate of bone mineral density flux.'
     ]
   }
 };
