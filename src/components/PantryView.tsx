@@ -44,7 +44,7 @@ const EntryField = ({ label, value, onChange, placeholder }: { label: string, va
 
 export const PantryView: React.FC = () => {
   const { 
-    localCache, saveCustomFood, updateCustomFood, deleteCustomFood
+    localCache, saveCustomFood, updateCustomFood, deleteCustomFood, addFoodLog
   } = useDiary();
   
   const [form, setForm] = useState<any>({ 
@@ -462,14 +462,31 @@ export const PantryView: React.FC = () => {
             <div style={{ textAlign: 'center', padding: '40px', color: 'var(--theme-text-dim)' }}>Your pantry is empty. Add foods to save them here.</div>
           ) : (
             customFoods.map((f: any, i: number) => (
-              <div key={i} style={{ padding: '16px', background: 'var(--theme-panel)', borderRadius: '18px', border: '1px solid var(--theme-border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <div onClick={() => handleAddPreviewClick(f)} style={{ cursor: 'pointer' }}>
-                  <div style={{ fontWeight: '700', color: 'var(--theme-text)' }}>{f.name}</div>
-                  <div style={{ fontSize: '11px', color: 'var(--theme-text-dim)' }}>{f.cal} kcal • P:{f.p} C:{f.c} F:{f.f}</div>
+              <div 
+                key={i} 
+                onClick={() => handleAddPreviewClick(f)}
+                style={{ 
+                  padding: '16px', 
+                  background: 'var(--theme-panel-dim, rgba(255,255,255,0.02))', 
+                  borderRadius: '20px', 
+                  border: '1px solid var(--theme-border)', 
+                  display: 'flex', 
+                  justifyContent: 'space-between', 
+                  alignItems: 'center',
+                  cursor: 'pointer',
+                  transition: 'transform 0.2s, background 0.2s',
+                }}>
+                <div style={{ flex: 1 }}>
+                  <div style={{ fontWeight: '800', color: 'var(--theme-text)', fontSize: '15px', marginBottom: '4px' }}>{f.name}</div>
+                  <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+                    <div style={{ fontSize: '11px', color: 'var(--theme-accent)', fontWeight: '700' }}>{f.cal} kcal</div>
+                    <div style={{ width: '1px', height: '10px', background: 'rgba(255,255,255,0.1)' }} />
+                    <div style={{ fontSize: '10px', color: 'var(--theme-text-dim)', fontWeight: '600' }}>P:{f.p} C:{f.c} F:{f.f}</div>
+                  </div>
                 </div>
-                <div style={{ display: 'flex', gap: '8px' }}>
-                  <button onClick={() => { setForm(f); setEditingIndex(i); setActiveTab('manual'); }} style={{ background: 'none', border: 'none', color: 'var(--theme-text-dim)', cursor: 'pointer' }}><Edit3 size={18} /></button>
-                  <button onClick={() => deleteCustomFood(i)} style={{ background: 'none', border: 'none', color: 'var(--theme-error, #FF6B6B)', cursor: 'pointer' }}><Trash2 size={18} /></button>
+                <div style={{ display: 'flex', gap: '4px' }} onClick={e => e.stopPropagation()}>
+                  <button onClick={() => { setForm(f); setEditingIndex(i); setActiveTab('manual'); }} style={{ padding: '8px', background: 'none', border: 'none', color: 'var(--theme-text-dim)', cursor: 'pointer', borderRadius: '50%' }}><Edit3 size={18} /></button>
+                  <button onClick={() => deleteCustomFood(i)} style={{ padding: '8px', background: 'none', border: 'none', color: 'rgba(255,107,107,0.5)', cursor: 'pointer', borderRadius: '50%' }}><Trash2 size={18} /></button>
                 </div>
               </div>
             ))
@@ -569,11 +586,37 @@ export const PantryView: React.FC = () => {
                 )}
               </div>
 
-              <button 
-                onClick={handleConfirmAddPantry}
-                style={{ width: '100%', padding: '16px', background: 'var(--theme-success, #92FE9D)', border: 'none', borderRadius: '16px', color: '#000', fontWeight: '800', fontSize: '15px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px', boxShadow: '0 8px 24px rgba(146,254,157,0.2)' }}>
-                <BookmarkCheck size={20} /> SAVE TO MY PANTRY
-              </button>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                <button 
+                  onClick={() => {
+                    const mult = computeMultiplier(configuringFood.serving || '', servingUnit, parseFloat(servingQty) || 1);
+                    const scaled = scaleLegacyFoodByAmount(configuringFood, mult);
+                    addFoodLog('Breakfast', scaled); // Defaulting to Breakfast for standalone pantry
+                    setConfiguringFood(null);
+                    alert("Added to Diary!");
+                  }}
+                  style={{ width: '100%', padding: '16px', background: 'var(--theme-success, #92FE9D)', border: 'none', borderRadius: '16px', color: '#000', fontWeight: '900', fontSize: '15px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px', boxShadow: '0 8px 24px rgba(146,254,157,0.15)' }}>
+                  <Plus size={20} /> ADD TO DIARY
+                </button>
+
+                <button 
+                  onClick={() => {
+                    const qty = parseFloat(servingQty) || 1;
+                    const newItems = [...(form.ingredientItems || []), { food: configuringFood, qty: qty.toString(), unit: servingUnit }];
+                    calculateRecipeTotals(newItems);
+                    setConfiguringFood(null);
+                    setActiveTab('manual');
+                  }}
+                  style={{ width: '100%', padding: '16px', background: 'rgba(255,255,255,0.05)', border: '1px solid var(--theme-border)', borderRadius: '16px', color: 'var(--theme-text)', fontWeight: '800', fontSize: '15px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px' }}>
+                  <Sparkles size={18} color="var(--theme-accent)" /> USE AS INGREDIENT
+                </button>
+
+                <button 
+                  onClick={handleConfirmAddPantry}
+                  style={{ width: '100%', padding: '14px', background: 'none', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '16px', color: 'var(--theme-text-dim)', fontWeight: '700', fontSize: '13px', cursor: 'pointer', marginTop: '4px' }}>
+                  RE-SAVE TO PANTRY
+                </button>
+              </div>
             </div>
           </div>
       )}

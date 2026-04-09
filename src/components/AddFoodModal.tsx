@@ -194,10 +194,27 @@ export const AddFoodModal: React.FC<AddFoodModalProps> = ({ meal, onClose }) => 
               {results.length > 0 && (
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', maxHeight: '400px', overflowY: 'auto' }}>
                   {results.map((f, i) => (
-                    <div key={i} onClick={() => handleAddFoodClick(f)} style={{ padding: '16px', background: 'rgba(255,255,255,0.05)', borderRadius: '18px', border: '1px solid rgba(255,255,255,0.05)', cursor: 'pointer', transition: 'all 0.2s', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                      <div>
-                        <div style={{ fontWeight: '700', color: '#fff', fontSize: '15px' }}>{f.name}</div>
-                        <div style={{ fontSize: '12px', color: '#8b8b9b', marginTop: '4px' }}>{f.cal} kcal • P:{f.p}g C:{f.c}g F:{f.f}g</div>
+                    <div 
+                      key={i} 
+                      onClick={() => handleAddFoodClick(f)} 
+                      style={{ 
+                        padding: '16px', 
+                        background: 'rgba(255,255,255,0.04)', 
+                        borderRadius: '20px', 
+                        border: '1px solid rgba(255,255,255,0.05)', 
+                        cursor: 'pointer', 
+                        transition: 'transform 0.2s, background 0.2s',
+                        display: 'flex', 
+                        justifyContent: 'space-between', 
+                        alignItems: 'center' 
+                      }}>
+                      <div style={{ flex: 1 }}>
+                        <div style={{ fontWeight: '800', color: '#fff', fontSize: '15px', marginBottom: '4px' }}>{f.name}</div>
+                        <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+                          <div style={{ fontSize: '11px', color: 'var(--theme-accent)', fontWeight: '700' }}>{f.cal} kcal</div>
+                          <div style={{ width: '1px', height: '10px', background: 'rgba(255,255,255,0.1)' }} />
+                          <div style={{ fontSize: '10px', color: '#8b8b9b', fontWeight: '600' }}>P:{f.p}g C:{f.c}g F:{f.f}g</div>
+                        </div>
                       </div>
                       <Plus size={20} color="var(--theme-accent, #00C9FF)" />
                     </div>
@@ -291,10 +308,10 @@ export const AddFoodModal: React.FC<AddFoodModalProps> = ({ meal, onClose }) => 
 
               {/* Quick Macros */}
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '8px', marginBottom: '24px' }}>
-                <QuickMacro label="Calories" val={Math.round((Number(configuringFood.cal)||0) * computeMultiplier(configuringFood.serving||'', servingUnit, parseFloat(servingQty)||1))} color="#fff" />
-                <QuickMacro label="Protein" val={Math.round((Number(configuringFood.p)||0) * computeMultiplier(configuringFood.serving||'', servingUnit, parseFloat(servingQty)||1))} color="#00C9FF" />
-                <QuickMacro label="Carbs" val={Math.round((Number(configuringFood.c)||0) * computeMultiplier(configuringFood.serving||'', servingUnit, parseFloat(servingQty)||1))} color="#FCC419" />
-                <QuickMacro label="Fat" val={Math.round((Number(configuringFood.f)||0) * computeMultiplier(configuringFood.serving||'', servingUnit, parseFloat(servingQty)||1))} color="#FF6B6B" />
+                <QuickMacro label="Calories" val={Math.round((Number(configuringFood.cal)||0) * computeMultiplier(configuringFood.serving||'', servingUnit, parseFloat(servingQty)||1))} unit="kcal" color="#fff" />
+                <QuickMacro label="Protein" val={Math.round((Number(configuringFood.p)||0) * computeMultiplier(configuringFood.serving||'', servingUnit, parseFloat(servingQty)||1))} unit="g" color="#00C9FF" />
+                <QuickMacro label="Carbs" val={Math.round((Number(configuringFood.c)||0) * computeMultiplier(configuringFood.serving||'', servingUnit, parseFloat(servingQty)||1))} unit="g" color="#FCC419" />
+                <QuickMacro label="Fat" val={Math.round((Number(configuringFood.f)||0) * computeMultiplier(configuringFood.serving||'', servingUnit, parseFloat(servingQty)||1))} unit="g" color="#FF6B6B" />
               </div>
 
               <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', marginBottom: '24px' }}>
@@ -336,11 +353,30 @@ export const AddFoodModal: React.FC<AddFoodModalProps> = ({ meal, onClose }) => 
                 )}
               </div>
 
-              <button 
-                onClick={handleConfirmAdd}
-                style={{ width: '100%', padding: '16px', background: 'var(--theme-success, #92FE9D)', color: '#000', borderRadius: '16px', border: 'none', fontWeight: '900', fontSize: '16px', cursor: 'pointer' }}>
-                ADD TO MEAL
-              </button>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                <button 
+                  onClick={handleConfirmAdd}
+                  style={{ width: '100%', padding: '16px', background: 'var(--theme-success, #92FE9D)', color: '#000', borderRadius: '16px', border: 'none', fontWeight: '900', fontSize: '16px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px', boxShadow: '0 8px 24px rgba(146,254,157,0.2)' }}>
+                  <Check size={22} /> ADD TO MEAL
+                </button>
+
+                <button 
+                  onClick={() => {
+                    // Logic to jump to Macro Kitchen with this food
+                    // For now, we save it to pantry and suggest switching, 
+                    // or we could use a global state if we had one.
+                    // But since we are in a modal, we'll try to save it to pantry first.
+                    const qty = parseFloat(servingQty) || 1;
+                    const foodData = { ...configuringFood, name: editName, serving: `${qty} ${servingUnit}`, sQty: qty, sUnit: servingUnit };
+                    saveCustomFood(foodData);
+                    setConfiguringFood(null);
+                    onClose();
+                    alert("Food saved to Pantry! You can now add it as an ingredient in the Macro Kitchen tab.");
+                  }}
+                  style={{ width: '100%', padding: '16px', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '16px', color: '#fff', fontWeight: '800', fontSize: '14px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
+                  <Sparkles size={18} color="var(--theme-accent)" /> USE AS INGREDIENT
+                </button>
+              </div>
             </div>
           </div>
       )}
@@ -361,10 +397,10 @@ export const AddFoodModal: React.FC<AddFoodModalProps> = ({ meal, onClose }) => 
   );
 };
 
-const QuickMacro = ({ label, val, color }: any) => (
-  <div style={{ background: 'rgba(255,255,255,0.02)', padding: '10px 4px', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.05)', textAlign: 'center' }}>
-    <div style={{ fontSize: '10px', color: '#8b8b9b', fontWeight: '800', marginBottom: '4px' }}>{label}</div>
-    <div style={{ fontSize: '14px', color: color, fontWeight: '800' }}>{val}</div>
+const QuickMacro = ({ label, val, unit, color }: any) => (
+  <div style={{ background: 'rgba(255,255,255,0.03)', padding: '10px 4px', borderRadius: '14px', border: '1px solid rgba(255,255,255,0.05)', textAlign: 'center' }}>
+    <div style={{ fontSize: '9px', color: '#8b8b9b', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '4px' }}>{label}</div>
+    <div style={{ fontSize: '15px', color: color, fontWeight: '900' }}>{val}<span style={{ fontSize: '10px', fontWeight: '600', marginLeft: '1px' }}>{unit}</span></div>
   </div>
 );
 
