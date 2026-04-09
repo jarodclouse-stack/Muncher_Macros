@@ -513,10 +513,13 @@ export const PantryView: React.FC = () => {
                           key={i}
                           onClick={() => handleAddPreviewClick(f)}
                           style={{ 
-                            padding: '8px 12px', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', 
-                            borderRadius: '12px', whiteSpace: 'nowrap', cursor: 'pointer', textAlign: 'left', minWidth: '120px'
+                            padding: '10px 14px', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', 
+                            borderRadius: '12px', whiteSpace: 'nowrap', cursor: 'pointer', textAlign: 'left', minWidth: '120px', maxWidth: '180px'
                           }}>
-                          <div style={{ fontSize: '11px', fontWeight: '800', color: '#fff', marginBottom: '2px' }}>{f.name}</div>
+                          <div style={{ 
+                            fontSize: '11px', fontWeight: '800', color: '#fff', marginBottom: '2px',
+                            overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap'
+                          }}>{f.name}</div>
                           <div style={{ fontSize: '9px', color: 'var(--theme-text-dim)' }}>{f.cal} kcal</div>
                         </button>
                       ))

@@ -56,9 +56,10 @@ export const NutritionView: React.FC = () => {
         
         <div style={{ 
           display: 'flex', 
-          flexDirection: typeof window !== 'undefined' && window.innerWidth < 600 ? 'column' : 'row', 
+          flexDirection: typeof window !== 'undefined' && window.innerWidth < 1000 ? 'column' : 'row', 
           alignItems: 'center', 
-          gap: typeof window !== 'undefined' && window.innerWidth < 600 ? '24px' : '32px' 
+          gap: '32px',
+          width: '100%'
         }}>
           <div style={{ width: '140px', height: '140px', position: 'relative' }}>
             <Doughnut data={macroData} options={macroOptions} />
@@ -68,7 +69,7 @@ export const NutritionView: React.FC = () => {
             </div>
           </div>
           
-          <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '12px' }}>
+          <div style={{ width: '100%', display: 'flex', flexDirection: 'column', gap: '16px' }}>
             {['Protein', 'Carbs', 'Fat'].map((label, idx) => {
               const val = [totals.protein, totals.carbs, totals.fat][idx];
               const goal = [computed.proteinG, computed.carbG, computed.fatG][idx] || 1;
@@ -140,7 +141,7 @@ export const NutritionView: React.FC = () => {
                               
                               {/* Benefits Section */}
                               <div style={{ marginBottom: '16px' }}>
-                                <div style={{ fontWeight: '800', color: 'var(--theme-success, #92FE9D)', marginBottom: '6px', fontSize: '12px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                                <div style={{ fontWeight: '800', color: 'var(--theme-success)', marginBottom: '6px', fontSize: '12px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
                                   ✨ Metabolic Benefits
                                 </div>
                                 <div style={{ lineHeight: '1.5', color: 'var(--theme-text)' }}>{(info as any).summary || 'Essential profile for balanced nutrition.'}</div>
