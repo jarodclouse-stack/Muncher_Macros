@@ -63,11 +63,17 @@ export const WeightHistoryChart: React.FC<WeightHistoryChartProps> = ({ localCac
         label: 'Weight',
         data: entries.map(e => e.weight),
         borderColor: 'var(--theme-accent, #4DABF7)',
-        backgroundColor: 'var(--theme-accent-dim, rgba(77, 171, 247, 0.2))',
+        backgroundColor: 'var(--theme-accent-dim, rgba(77, 171, 247, 0.1))',
         borderWidth: 3,
-        pointRadius: window === '7d' ? 4 : 2,
-        pointBackgroundColor: 'var(--theme-accent, #4DABF7)',
-        tension: 0.3,
+        pointRadius: window === '7d' ? 8 : 5,
+        pointBackgroundColor: '#FFFFFF',
+        pointBorderColor: 'var(--theme-accent, #4DABF7)',
+        pointBorderWidth: 2,
+        pointHoverRadius: 10,
+        pointHoverBackgroundColor: 'var(--theme-accent, #4DABF7)',
+        pointHoverBorderColor: '#FFFFFF',
+        pointHoverBorderWidth: 2,
+        tension: 0.4,
       }
     ];
 
