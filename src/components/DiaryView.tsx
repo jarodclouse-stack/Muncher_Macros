@@ -7,8 +7,8 @@ import { MEALS, ALL_MICRO_KEYS, MICRO_UNITS } from '../lib/constants';
 import { NUTRIENT_BENEFITS } from '../lib/nutrient-info';
 import { AddFoodModal } from './AddFoodModal';
 import { PortionEditModal } from './PortionEditModal';
-import { calculateVitalityScore } from '../lib/scoring/vitality';
-import { VitalityBadge } from './VitalityBadge';
+
+
 
 export const DiaryView: React.FC = () => {
   const { localCache, currentDate, changeDate, removeFoodLog, updateDayData } = useDiary();
@@ -144,21 +144,13 @@ export const DiaryView: React.FC = () => {
         const mealTotals = sumFoods(mealFoods.map((l:any) => l.f));
         const mealCals = mealTotals.calories;
         
-        // Calculate Aggregated Vitality for the meal
-        const mealVitality = calculateVitalityScore(mealTotals);
+
 
         return (
           <div key={meal} style={{ background: 'var(--theme-panel, rgba(255,255,255,0.03))', border: '1px solid var(--theme-border, rgba(255,255,255,0.05))', borderRadius: '24px', padding: '24px' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
                 <h3 style={{ fontSize: '16px', fontWeight: '700', margin: 0, color: 'var(--theme-text)' }}>{meal}</h3>
-                {mealFoods.length > 0 && (
-                  <VitalityBadge 
-                    score={mealVitality.score} 
-                    label={mealVitality.label} 
-                    color={mealVitality.color} 
-                  />
-                )}
               </div>
               <span style={{ fontSize: '14px', color: 'var(--theme-accent, #00C9FF)', fontWeight: '600' }}>{mealCals} kcal</span>
             </div>

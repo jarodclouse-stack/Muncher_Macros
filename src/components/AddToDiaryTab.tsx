@@ -2,8 +2,7 @@ import React, { useState } from 'react';
 import { useDiary } from '../context/DiaryContext';
 import { Search, Plus, Check, Scale, ChevronDown, Utensils } from 'lucide-react';
 import { computeMultiplier, scaleLegacyFoodByAmount } from '../lib/food/serving-converter';
-import { VitalityBadge } from './VitalityBadge';
-import { calculateVitalityScore } from '../lib/scoring/vitality';
+
 
 const MEALS = ['Breakfast', 'Lunch', 'Dinner', 'Snacks'];
 const COMMON_UNITS = [
@@ -91,7 +90,7 @@ export const AddToDiaryTab: React.FC<{ customFoods: any[] }> = ({ customFoods })
                 <div style={{ flex: 1, minWidth: 0 }}>
                     <div style={{ fontWeight: '700', color: 'var(--theme-text)', display: 'flex', alignItems: 'center', gap: '8px' }}>
                       {food.name}
-                      <VitalityBadge {...calculateVitalityScore(food)} />
+
                     </div>
                     <div style={{ fontSize: '11px', color: 'var(--theme-text-dim, #8b8b9b)' }}>
                       {food.cal} kcal | P:{food.p}g C:{food.c}g F:{food.f}g

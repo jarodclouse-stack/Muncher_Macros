@@ -24,7 +24,6 @@ interface DiaryContextState {
   removeFromTray: (idx: number) => void;
   updateTrayItem: (idx: number, updates: Partial<StagedFood>) => void;
   clearTray: () => void;
-  logTrayToDiary: (meal: string) => void;
 }
 
 const DiaryContext = createContext<DiaryContextState>({} as DiaryContextState);
@@ -265,13 +264,7 @@ export const DiaryProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     updateStagingTray([]);
   };
 
-  const logTrayToDiary = (meal: string) => {
-    // Injected from components/lib for helper usage
-    // We'll rely on the components to scale, 
-    // or we could import scaling logic here.
-    // For now, let's keep the logging logic in the provider as primitive, 
-    // and let the components pass the scaled food to addFoodLog.
-  };
+
 
   return (
     <DiaryContext.Provider value={{ 
@@ -279,7 +272,7 @@ export const DiaryProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       addFoodLog, removeFoodLog, updateFoodLog, updateGoals, 
       saveCustomFood, updateCustomFood, deleteCustomFood, goToDate, 
       updateSettings, purchaseTheme,
-      stagingTray, addToTray, removeFromTray, updateTrayItem, clearTray, logTrayToDiary
+      stagingTray, addToTray, removeFromTray, updateTrayItem, clearTray
     }}>
       {children}
     </DiaryContext.Provider>
