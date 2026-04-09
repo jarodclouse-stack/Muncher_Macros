@@ -14,9 +14,9 @@ export const SearchCoaster: React.FC<SearchCoasterProps> = ({ activeTab, onTabCh
     <div style={{ position: 'relative', width: '100%', boxSizing: 'border-box' }}>
       <div className="actions-grid" style={{ padding: 'var(--space-xs) 0 var(--space-md) 0', ...style }}>
         <TabBtn active={activeTab==='describe'} onClick={() => onTabChange('describe')} icon={<FileText size={18}/>} label="Describe Meal" isPrimary />
+        <TabBtn active={activeTab==='ai-search'} onClick={() => onTabChange('ai-search')} icon={<Sparkles size={18}/>} label="AI Search" />
         <TabBtn active={activeTab==='scan'} onClick={() => onTabChange('scan')} icon={<Scan size={18}/>} label="Scan Code/Label" isPrimary />
         <TabBtn active={activeTab==='search'} onClick={() => onTabChange('search')} icon={<Search size={18}/>} label="Search" />
-        <TabBtn active={activeTab==='ai-search'} onClick={() => onTabChange('ai-search')} icon={<Sparkles size={18}/>} label="AI Search" />
       </div>
     </div>
   );

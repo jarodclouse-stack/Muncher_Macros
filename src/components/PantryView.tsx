@@ -48,7 +48,7 @@ const EntryField = ({ label, value, onChange, placeholder }: { label: string, va
 export const PantryView: React.FC = () => {
   const { 
     localCache, saveCustomFood, updateCustomFood, deleteCustomFood, addFoodLog,
-    toggleFavorite, duplicateCustomFood
+    toggleFavorite
   } = useDiary();
   
   const [form, setForm] = useState<Food>({ 
@@ -708,7 +708,7 @@ export const PantryView: React.FC = () => {
                   key={originalIdx} 
                   onClick={() => handleAddPreviewClick(f)}
                   style={{ 
-                    padding: '20px', 
+                    padding: '24px 20px', 
                     background: 'var(--theme-panel-dim, rgba(255,255,255,0.02))', 
                     borderRadius: '24px', 
                     border: '1px solid var(--theme-border)', 
@@ -716,38 +716,36 @@ export const PantryView: React.FC = () => {
                     justifyContent: 'space-between', 
                     alignItems: 'center',
                     cursor: 'pointer',
-                    transition: 'transform 0.2s, background 0.2s',
-                    minHeight: '80px',
+                    transition: 'all 0.2s',
+                    minHeight: '100px',
+                    boxShadow: '0 4px 16px rgba(0,0,0,0.15)',
                   }}>
                   <div style={{ flex: 1 }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                      <div style={{ fontWeight: '800', color: 'var(--theme-text)', fontSize: '15px' }}>{f.name}</div>
-                      {f.favorite && <span style={{ color: '#FCC419', fontSize: '14px' }}>⭐</span>}
-                      {(f.ingredientItems?.length || 0) > 0 && <span style={{ background: 'var(--theme-accent-dim)', color: 'var(--theme-accent)', padding: '2px 6px', borderRadius: '4px', fontSize: '8px', fontWeight: '900' }}>RECIPE</span>}
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px' }}>
+                      <div style={{ fontWeight: '900', color: 'var(--theme-text)', fontSize: '16px', letterSpacing: '-0.3px' }}>{f.name}</div>
+                      {f.favorite && <BookmarkCheck size={14} color="#FCC419" fill="#FCC419" />}
                     </div>
-                    <div style={{ display: 'flex', gap: '8px', alignItems: 'center', marginTop: '4px' }}>
-                      <div style={{ fontSize: '11px', color: 'var(--theme-accent)', fontWeight: '700' }}>{f.cal} kcal</div>
-                      <div style={{ width: '1px', height: '10px', background: 'rgba(255,255,255,0.1)' }} />
-                      <div style={{ fontSize: '10px', color: 'var(--theme-text-dim)', fontWeight: '600' }}>P:{f.p} C:{f.c} F:{f.f}</div>
+                    <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+                      <div style={{ fontSize: '13px', color: 'var(--theme-accent)', fontWeight: '800' }}>{f.cal} <span style={{ fontSize: '10px', fontWeight: '500', opacity: 0.8 }}>kcal</span></div>
+                      <div style={{ width: '1px', height: '12px', background: 'rgba(255,255,255,0.1)' }} />
+                      <div style={{ fontSize: '11px', color: 'var(--theme-text-dim)', fontWeight: '700', letterSpacing: '0.2px' }}>
+                        P:{f.p} <span style={{ opacity: 0.4 }}>•</span> C:{f.c} <span style={{ opacity: 0.4 }}>•</span> F:{f.f}
+                      </div>
                     </div>
-                  </div>
-                  <div style={{ display: 'flex', gap: '4px' }} onClick={e => e.stopPropagation()}>
-                    <button onClick={() => toggleFavorite(originalIdx)} style={{ padding: '8px', background: 'none', border: 'none', color: f.favorite ? '#FCC419' : 'var(--theme-text-dim)', cursor: 'pointer' }}>
-                      <BookmarkCheck size={18} fill={f.favorite ? '#FCC419' : 'none'} />
-                    </button>
-                    {(f.ingredientItems?.length || 0) > 0 ? (
-                      <button onClick={() => { setForm(f); setEditingIndex(originalIdx); setActiveTab('manual'); }} style={{ padding: '8px', background: 'none', border: 'none', color: 'var(--theme-accent)', cursor: 'pointer' }} title="Reload Recipe">
-                        <Edit3 size={18} />
-                      </button>
-                    ) : (
-                      <button onClick={() => { setForm(f); setEditingIndex(originalIdx); setActiveTab('manual'); }} style={{ padding: '8px', background: 'none', border: 'none', color: 'var(--theme-text-dim)', cursor: 'pointer' }}>
-                        <Edit3 size={18} />
-                      </button>
+                    {(f.ingredientItems?.length || 0) > 0 && (
+                      <div style={{ marginTop: '8px', display: 'inline-flex', background: 'var(--theme-accent-dim)', color: 'var(--theme-accent)', padding: '2px 8px', borderRadius: '6px', fontSize: '9px', fontWeight: '900', letterSpacing: '0.5px' }}>
+                        RECIPE LOGIC
+                      </div>
                     )}
-                    <button onClick={() => duplicateCustomFood(originalIdx)} style={{ padding: '8px', background: 'none', border: 'none', color: 'var(--theme-text-dim)', cursor: 'pointer' }}>
-                       <Plus size={18} />
+                  </div>
+                  <div style={{ display: 'flex', gap: '12px', alignItems: 'center', marginLeft: '12px' }} onClick={e => e.stopPropagation()}>
+                    <button onClick={() => toggleFavorite(originalIdx)} style={{ background: 'none', border: 'none', color: f.favorite ? '#FCC419' : 'var(--theme-text-dim)', cursor: 'pointer', opacity: f.favorite ? 1 : 0.5 }}>
+                      <BookmarkCheck size={20} fill={f.favorite ? '#FCC419' : 'none'} />
                     </button>
-                    <button onClick={() => deleteCustomFood(originalIdx)} style={{ padding: '8px', background: 'none', border: 'none', color: 'rgba(255,107,107,0.5)', cursor: 'pointer' }}>
+                    <button onClick={() => { setForm(f); setEditingIndex(originalIdx); setActiveTab('manual'); }} style={{ background: 'none', border: 'none', color: 'var(--theme-text-dim)', cursor: 'pointer', opacity: 0.5 }}>
+                      <Edit3 size={20} />
+                    </button>
+                    <button onClick={() => deleteCustomFood(originalIdx)} style={{ background: 'rgba(255,107,107,0.05)', border: 'none', borderRadius: '10px', padding: '8px', color: '#FF6B6B', cursor: 'pointer' }}>
                        <Trash2 size={18} />
                     </button>
                   </div>
