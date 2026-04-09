@@ -11,6 +11,17 @@ export interface ScanResult {
   error?: string;
 }
 
+
+/**
+ * Strict URL check to prevent websites from being processed as food
+ */
+const isURL = (text: string): boolean => {
+  const urlPattern = /^(https?:\/\/)?([\da-z.-]+)\.([a-z.]{2,6})([/\w .-]*)*\/?$/i;
+  // Also check for common starters without protocol
+  const commonTlds = /\.(com|net|org|edu|gov|io|co|digital|net|us|info|me)\b/i;
+  return urlPattern.test(text) || commonTlds.test(text) || text.includes('://');
+};
+
 /**
  * Decodes a barcode from a Blob/File
  */
@@ -20,11 +31,15 @@ export const scanBarcode = async (imageBlob: Blob): Promise<ScanResult> => {
     // Try BarcodeReader first
     try {
       const result = await barcodeReader.decodeFromImageUrl(url);
-      return { success: true, text: result.getText() };
+      const text = result.getText();
+      if (isURL(text)) return { success: false, error: "Result is a web link. Only food codes are allowed." };
+      return { success: true, text };
     } catch (e) {
       // Fallback to MultiFormatReader which is more aggressive
       const result = await multiFormatReader.decodeFromImageUrl(url);
-      return { success: true, text: result.getText() };
+      const text = result.getText();
+      if (isURL(text)) return { success: false, error: "Result is a web link. Only food codes are allowed." };
+      return { success: true, text };
     }
   } catch (err) {
     console.error("Barcode scan failed", err);
@@ -44,7 +59,7 @@ export const scanQRCode = async (imageBlob: Blob): Promise<ScanResult> => {
     const text = result.getText();
     
     // Check if it's a URL (common in QR codes)
-    if (text.startsWith('http')) {
+    if (isURL(text)) {
       return { success: false, error: "Result is a web link. This app requires nutrition labels, barcodes, or food-specific QR codes." };
     }
 

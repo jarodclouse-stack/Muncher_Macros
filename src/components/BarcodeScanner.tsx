@@ -1,24 +1,33 @@
 import React, { useRef, useState } from 'react';
 import { Camera, Loader2, AlertCircle, Hash, ArrowRight, Plus } from 'lucide-react';
+import { useDiary } from '../context/DiaryContext';
 import { scanBarcode, extractBarcodeDigits, scanQRCode } from '../lib/vision/scanner-logic';
 import { ImageCropperModal } from './ImageCropperModal';
 
 interface BarcodeScannerProps {
   onScanSuccess: (decodedText: string) => void;
   onScanError?: (error: string) => void;
-  label?: string;
 }
 
 export const BarcodeScanner: React.FC<BarcodeScannerProps> = ({ 
   onScanSuccess, 
-  onScanError,
-  label = "Scan Barcode"
+  onScanError
 }) => {
+  const { setIsScannerActive } = useDiary();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [status, setStatus] = useState<'idle' | 'scanning' | 'ai-reading' | 'failed' | 'cropping'>('idle');
   const [error, setError] = useState<string | null>(null);
   const [manualCode, setManualCode] = useState('');
   const [pendingImage, setPendingImage] = useState<string | null>(null);
+  
+  // Stealth Mode Management: Hide global UI elements during specific phases
+  React.useEffect(() => {
+    const activeStates = ['scanning', 'ai-reading', 'cropping'];
+    setIsScannerActive(activeStates.includes(status));
+    
+    // Cleanup on unmount
+    return () => setIsScannerActive(false);
+  }, [status, setIsScannerActive]);
 
   const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];

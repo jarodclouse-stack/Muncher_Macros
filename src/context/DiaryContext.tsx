@@ -38,6 +38,8 @@ interface DiaryContextState {
   clearTray: () => void;
   toggleFavorite: (idx: number) => void;
   duplicateCustomFood: (idx: number) => void;
+  isScannerActive: boolean;
+  setIsScannerActive: (val: boolean) => void;
 }
 
 const DiaryContext = createContext<DiaryContextState>({} as DiaryContextState);
@@ -53,6 +55,7 @@ export const DiaryProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   const [currentDate, setCurrentDate] = useState(getLocalDateStr());
   const [syncStatus, setSyncStatus] = useState<'ok' | 'syncing' | 'error' | 'offline'>('ok');
   const [stagingTray, setStagingTray] = useState<StagedFood[]>([]);
+  const [isScannerActive, setIsScannerActive] = useState(false);
   
   const syncTimeoutRef = useRef<number | null>(null);
 
@@ -312,7 +315,8 @@ export const DiaryProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       saveCustomFood, updateCustomFood, deleteCustomFood, goToDate, 
       updateSettings, purchaseTheme,
       stagingTray, addToTray, removeFromTray, updateTrayItem, clearTray,
-      toggleFavorite, duplicateCustomFood
+      toggleFavorite, duplicateCustomFood,
+      isScannerActive, setIsScannerActive
     }}>
       {children}
     </DiaryContext.Provider>

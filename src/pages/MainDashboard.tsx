@@ -13,7 +13,7 @@ import legacyLogo from '../assets/logo_legacy.png';
 
 export const MainDashboard: React.FC = () => {
   const { user, logout } = useAuth();
-  const { localCache } = useDiary();
+  const { localCache, isScannerActive } = useDiary();
   const [activeTab, setActiveTab] = useState<'diary' | 'nutrition' | 'progress' | 'badges' | 'pantry' | 'settings'>('diary');
   const [showRewardModal, setShowRewardModal] = useState(false);
   
@@ -24,62 +24,67 @@ export const MainDashboard: React.FC = () => {
   return (
     <div style={{ backgroundColor: 'var(--theme-bg, #080A0F)', backgroundAttachment: 'fixed', minHeight: '100vh', width: '100%', display: 'flex', flexDirection: 'column', color: 'var(--theme-text, #f1f1f1)', fontFamily: 'Inter, sans-serif' }}>
       {/* Topbar */}
-      <header style={{ 
-        display: 'flex', 
-        justifyContent: 'space-between', 
-        alignItems: 'center', 
-        padding: 'calc(16px + env(safe-area-inset-top)) 20px 16px', 
-        background: 'var(--theme-panel, rgba(255,255,255,0.02))', 
-        borderBottom: '1px solid var(--theme-border, rgba(255,255,255,0.05))', 
-        backdropFilter: 'blur(10px)', 
-        position: 'sticky', 
-        top: 0, 
-        zIndex: 10 
-      }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '12px', cursor: 'pointer' }} onClick={() => setActiveTab('settings')}>
-          <div 
-            style={{ 
-              width: '40px',
-              height: '40px',
-              borderRadius: '12px',
-              overflow: 'hidden',
-              boxShadow: '0 4px 12px rgba(0,0,0,0.2)',
-              border: '1px solid rgba(255,255,255,0.1)',
-              transition: 'transform 0.2s'
-            }}
-            onMouseEnter={(e: any) => e.currentTarget.style.transform = 'scale(1.1)'}
-            onMouseLeave={(e: any) => e.currentTarget.style.transform = 'scale(1)'}
-          >
-            <img src={legacyLogo} alt="MM" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+      {!isScannerActive && (
+        <header style={{ 
+          display: 'flex', 
+          justifyContent: 'space-between', 
+          alignItems: 'center', 
+          padding: 'calc(16px + env(safe-area-inset-top)) 20px 16px', 
+          background: 'var(--theme-panel, rgba(255,255,255,0.02))', 
+          borderBottom: '1px solid var(--theme-border, rgba(255,255,255,0.05))', 
+          backdropFilter: 'blur(10px)', 
+          position: 'sticky', 
+          top: 0, 
+          zIndex: 10 
+        }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '12px', cursor: 'pointer' }} onClick={() => setActiveTab('settings')}>
+            <div 
+              style={{ 
+                width: '40px',
+                height: '40px',
+                borderRadius: '12px',
+                overflow: 'hidden',
+                boxShadow: '0 4px 12px rgba(0,0,0,0.2)',
+                border: '1px solid rgba(255,255,255,0.1)',
+                transition: 'transform 0.2s'
+              }}
+              onMouseEnter={(e: React.MouseEvent<HTMLDivElement>) => e.currentTarget.style.transform = 'scale(1.1)'}
+              onMouseLeave={(e: React.MouseEvent<HTMLDivElement>) => e.currentTarget.style.transform = 'scale(1)'}
+            >
+              <img src={legacyLogo} alt="MM" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+            </div>
+            <div>
+              <h1 style={{ fontSize: '16px', fontWeight: '800', margin: 0, display: 'flex', alignItems: 'center', gap: '4px' }}>
+                Macro Munchers {activeTab === 'settings' && <ChevronRight size={14} color="var(--theme-accent, #00C9FF)" />}
+              </h1>
+              <p style={{ fontSize: '12px', color: '#8b8b9b', margin: 0 }}>Welcome, {user?.email?.split('@')[0] || 'Guest'}!</p>
+            </div>
           </div>
-          <div>
-            <h1 style={{ fontSize: '16px', fontWeight: '800', margin: 0, display: 'flex', alignItems: 'center', gap: '4px' }}>
-              Macro Munchers {activeTab === 'settings' && <ChevronRight size={14} color="var(--theme-accent, #00C9FF)" />}
-            </h1>
-            <p style={{ fontSize: '12px', color: '#8b8b9b', margin: 0 }}>Welcome, {user?.email?.split('@')[0] || 'Guest'}!</p>
-          </div>
-        </div>
-        
-        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginLeft: 'auto' }}>
-          {/* Rewards Section */}
-          <div style={{ display: 'flex', borderRight: '1px solid var(--theme-border, rgba(255,255,255,0.05))', paddingRight: '10px', gap: '6px' }}>
-            <RewardChip icon={<Flame size={14} color="#FF6B6B" />} value={streak} label="Strk" onClick={() => setShowRewardModal(true)} />
-            <RewardChip icon={<Gem size={14} color="#FFD700" />} value={gems} label="Gems" onClick={() => setShowRewardModal(true)} />
-          </div>
+          
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginLeft: 'auto' }}>
+            {/* Rewards Section */}
+            <div style={{ display: 'flex', borderRight: '1px solid var(--theme-border, rgba(255,255,255,0.05))', paddingRight: '10px', gap: '6px' }}>
+              <RewardChip icon={<Flame size={14} color="#FF6B6B" />} value={streak} label="Strk" onClick={() => setShowRewardModal(true)} />
+              <RewardChip icon={<Gem size={14} color="#FFD700" />} value={gems} label="Gems" onClick={() => setShowRewardModal(true)} />
+            </div>
 
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', minWidth: '32px' }}>
-            <button onClick={() => setActiveTab('settings')} style={{ background: activeTab === 'settings' ? 'var(--theme-accent-dim, rgba(0,201,255,0.1))' : 'rgba(255,255,255,0.02)', border: '1px solid var(--theme-border, rgba(255,255,255,0.1))', color: activeTab === 'settings' ? 'var(--theme-accent, #00C9FF)' : 'var(--theme-text-dim, #c0c0d0)', padding: '6px', borderRadius: '8px', cursor: 'pointer', transition: 'all 0.2s', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <Settings size={14} />
-            </button>
-            <button onClick={logout} style={{ background: 'rgba(255,107,107,0.05)', border: '1px solid var(--theme-error-dim, rgba(255,107,107,0.1))', color: '#FF6B6B', padding: '6px', borderRadius: '8px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'all 0.2s' }}>
-              <LogOut size={14} />
-            </button>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', minWidth: '32px' }}>
+              <button onClick={() => setActiveTab('settings')} style={{ background: activeTab === 'settings' ? 'var(--theme-accent-dim, rgba(0,201,255,0.1))' : 'rgba(255,255,255,0.02)', border: '1px solid var(--theme-border, rgba(255,255,255,0.1))', color: activeTab === 'settings' ? 'var(--theme-accent, #00C9FF)' : 'var(--theme-text-dim, #c0c0d0)', padding: '6px', borderRadius: '8px', cursor: 'pointer', transition: 'all 0.2s', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <Settings size={14} />
+              </button>
+              <button onClick={logout} style={{ background: 'rgba(255,107,107,0.05)', border: '1px solid var(--theme-error-dim, rgba(255,107,107,0.1))', color: '#FF6B6B', padding: '6px', borderRadius: '8px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'all 0.2s' }}>
+                <LogOut size={14} />
+              </button>
+            </div>
           </div>
-        </div>
-      </header>
+        </header>
+      )}
 
       {/* Main Content Area */}
-      <main className="app-container" style={{ paddingTop: 'var(--space-xl)', paddingBottom: 'calc(90px + env(safe-area-inset-bottom))' }}>
+      <main className="app-container" style={{ 
+        paddingTop: isScannerActive ? '0' : (activeTab === 'pantry' ? 'calc(1px + env(safe-area-inset-top))' : 'var(--space-xl)'), 
+        paddingBottom: isScannerActive ? '0' : 'calc(90px + env(safe-area-inset-bottom))' 
+      }}>
         {activeTab === 'diary' && <DiaryView />}
         {activeTab === 'nutrition' && <NutritionView />}
         {activeTab === 'progress' && <ProgressView setActiveTab={setActiveTab} />}
@@ -141,7 +146,7 @@ export const MainDashboard: React.FC = () => {
                     </div>
                 </div>
 
-                <button onClick={() => setShowRewardModal(false)} style={{ width: '100%', marginTop: '24px', padding: '12px', background: 'rgba(255,255,255,0.05)', border: 'none', borderRadius: '12px', color: '#fff', fontWeight: '700', cursor: 'pointer', transition: 'background 0.2s' }} onMouseEnter={(e: any) => e.currentTarget.style.background = 'rgba(255,255,255,0.1)'} onMouseLeave={(e: any) => e.currentTarget.style.background = 'rgba(255,255,255,0.05)'}>
+                <button onClick={() => setShowRewardModal(false)} style={{ width: '100%', marginTop: '24px', padding: '12px', background: 'rgba(255,255,255,0.05)', border: 'none', borderRadius: '12px', color: '#fff', fontWeight: '700', cursor: 'pointer', transition: 'background 0.2s' }} onMouseEnter={(e: React.MouseEvent<HTMLButtonElement>) => e.currentTarget.style.background = 'rgba(255,255,255,0.1)'} onMouseLeave={(e: React.MouseEvent<HTMLButtonElement>) => e.currentTarget.style.background = 'rgba(255,255,255,0.05)'}>
                     Got it! 🏆
                 </button>
             </div>
@@ -149,32 +154,34 @@ export const MainDashboard: React.FC = () => {
       )}
 
       {/* Bottom Navigation */}
-      <nav style={{ 
-        position: 'fixed', 
-        bottom: 0, 
-        left: 0, 
-        right: 0, 
-        display: 'flex', 
-        justifyContent: 'space-around', 
-        background: 'var(--theme-panel, rgba(20, 24, 34, 0.85))', 
-        backdropFilter: 'blur(15px)', 
-        borderTop: '1px solid var(--theme-border, rgba(255,255,255,0.05))', 
-        padding: '12px 0 calc(env(safe-area-inset-bottom) + 12px) 0', 
-        zIndex: 100 
-      }}>
-        <NavItem active={activeTab === 'diary'} onClick={() => setActiveTab('diary')} label="Diary" icon={<Utensils size={20} />} />
-        <NavItem active={activeTab === 'nutrition'} onClick={() => setActiveTab('nutrition')} label="Nutrition" icon={<Activity size={20} />} />
-        <NavItem active={activeTab === 'pantry'} onClick={() => setActiveTab('pantry')} label="Add Food" icon={<Plus size={20} />} />
-        <NavItem active={activeTab === 'progress'} onClick={() => setActiveTab('progress')} label="Goals" icon={<Flame size={20} />} />
-        <NavItem active={activeTab === 'badges'} onClick={() => setActiveTab('badges')} label="Badges/Themes" icon={<Award size={20} />} />
-      </nav>
+      {!isScannerActive && (
+        <nav style={{ 
+          position: 'fixed', 
+          bottom: 0, 
+          left: 0, 
+          right: 0, 
+          display: 'flex', 
+          justifyContent: 'space-around', 
+          background: 'var(--theme-panel, rgba(20, 24, 34, 0.85))', 
+          backdropFilter: 'blur(15px)', 
+          borderTop: '1px solid var(--theme-border, rgba(255,255,255,0.05))', 
+          padding: '12px 0 calc(env(safe-area-inset-bottom) + 12px) 0', 
+          zIndex: 100 
+        }}>
+          <NavItem active={activeTab === 'diary'} onClick={() => setActiveTab('diary')} label="Diary" icon={<Utensils size={20} />} />
+          <NavItem active={activeTab === 'nutrition'} onClick={() => setActiveTab('nutrition')} label="Nutrition" icon={<Activity size={20} />} />
+          <NavItem active={activeTab === 'pantry'} onClick={() => setActiveTab('pantry')} label="Add Food" icon={<Plus size={20} />} />
+          <NavItem active={activeTab === 'progress'} onClick={() => setActiveTab('progress')} label="Goals" icon={<Flame size={20} />} />
+          <NavItem active={activeTab === 'badges'} onClick={() => setActiveTab('badges')} label="Badges/Themes" icon={<Award size={20} />} />
+        </nav>
+      )}
 
     </div>
   );
 };
 
 
-const NavItem = ({ active, onClick, label, icon }: any) => (
+const NavItem = ({ active, onClick, label, icon }: { active: boolean, onClick: () => void, label: string, icon: React.ReactNode }) => (
   <button 
     type="button"
     onClick={onClick} 
@@ -200,10 +207,10 @@ const NavItem = ({ active, onClick, label, icon }: any) => (
   </button>
 );
 
-const RewardChip = ({ icon, value, label, onClick }: any) => (
+const RewardChip = ({ icon, value, label, onClick }: { icon: React.ReactNode, value: number, label: string, onClick: () => void }) => (
   <div onClick={onClick} style={{ display: 'flex', alignItems: 'center', gap: '6px', padding: '6px 12px', background: 'var(--theme-panel, rgba(255,255,255,0.03))', border: '1px solid var(--theme-border, rgba(255,255,255,0.05))', borderRadius: '12px', cursor: 'pointer', transition: 'all 0.2s' }}
-    onMouseEnter={(e: any) => e.currentTarget.style.background = 'rgba(255,255,255,0.08)'}
-    onMouseLeave={(e: any) => e.currentTarget.style.background = 'rgba(255,255,255,0.03)'}>
+    onMouseEnter={(e: React.MouseEvent<HTMLDivElement>) => e.currentTarget.style.background = 'rgba(255,255,255,0.08)'}
+    onMouseLeave={(e: React.MouseEvent<HTMLDivElement>) => e.currentTarget.style.background = 'rgba(255,255,255,0.03)'}>
     {icon}
     <div style={{ display: 'flex', flexDirection: 'column', lineHeight: 1 }}>
       <span style={{ fontSize: '14px', fontWeight: '900', color: 'var(--theme-text, #fff)' }}>{value}</span>

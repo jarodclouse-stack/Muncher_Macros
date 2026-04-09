@@ -235,10 +235,10 @@ export const PantryView: React.FC = () => {
           gap: '8px', 
           marginBottom: '20px', 
           position: 'sticky', 
-          top: 'calc(56px + env(safe-area-inset-top, 0px))', 
+          top: 'calc(72px + env(safe-area-inset-top, 0px))', 
           zIndex: 100, 
           background: 'var(--theme-bg, #080A0F)', 
-          padding: '12px 0 16px 0', 
+          padding: '8px 0 16px 0', 
           borderBottom: '1px solid var(--theme-border)',
         }}>
         <button onClick={() => { setActiveTab('search'); clearSearchState(); }} style={{ padding: '12px 4px', borderRadius: '14px', border: '1px solid var(--theme-border)', background: activeTab === 'search' ? 'var(--theme-accent-dim)' : 'rgba(255,255,255,0.03)', color: activeTab === 'search' ? 'var(--theme-accent)' : 'var(--theme-text-dim)', fontWeight: '800', fontSize: '11px', textTransform: 'uppercase', cursor: 'pointer', transition: 'all 0.2s', textAlign: 'center' }}>
@@ -253,7 +253,7 @@ export const PantryView: React.FC = () => {
       </div>
 
       {activeTab === 'search' && (
-        <div className="section" style={{ marginTop: '20px', paddingTop: '8px' }}>
+        <div className="section" style={{ marginTop: '12px', paddingTop: '4px' }}>
           <SearchCoaster 
             activeTab={innerGlobalSearchTab} 
             onTabChange={(t) => { setInnerGlobalSearchTab(t); clearSearchState(); }} 
@@ -263,7 +263,6 @@ export const PantryView: React.FC = () => {
             {innerGlobalSearchTab === 'scan' ? (
               <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 'var(--space-md)', padding: 'var(--space-md) 0' }}>
                 <BarcodeScanner 
-                  label="Take Photo to Scan"
                   onScanSuccess={(code) => {
                     setSearchQuery(code);
                     handleGlobalSearch();
@@ -397,7 +396,7 @@ export const PantryView: React.FC = () => {
       )}
 
       {activeTab === 'manual' && (
-        <div className="section" style={{ marginTop: '20px', paddingTop: '8px' }}>
+        <div className="section" style={{ marginTop: '12px', paddingTop: '4px' }}>
           <h2 style={{ fontSize: '18px', fontWeight: '800', marginBottom: 'var(--space-lg)', textAlign: 'center' }}>{editingIndex !== null ? 'Edit Macro Kitchen' : 'Macro Kitchen'}</h2>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-md)' }}>
             <EntryField label="Food Name" value={form.name} onChange={v => setForm({...form, name: v})} placeholder="e.g. Grilled Chicken" />
@@ -716,7 +715,7 @@ export const PantryView: React.FC = () => {
 
 
       {activeTab === 'saved' && (
-        <div className="section" style={{ marginTop: '20px', paddingTop: '8px', display: 'flex', flexDirection: 'column', gap: 'var(--space-md)' }}>
+        <div className="section" style={{ marginTop: '12px', paddingTop: '4px', display: 'flex', flexDirection: 'column', gap: 'var(--space-md)' }}>
           
           {/* Filters & Sorting */}
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '6px', marginBottom: 'var(--space-md)' }}>
