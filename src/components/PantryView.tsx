@@ -235,7 +235,7 @@ export const PantryView: React.FC = () => {
           gap: '8px', 
           marginBottom: '20px', 
           position: 'sticky', 
-          top: 'calc(76px + env(safe-area-inset-top, 0px))', 
+          top: 'calc(56px + env(safe-area-inset-top, 0px))', 
           zIndex: 100, 
           background: 'var(--theme-bg, #080A0F)', 
           padding: '12px 0 16px 0', 

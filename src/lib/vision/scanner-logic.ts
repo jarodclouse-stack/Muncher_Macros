@@ -41,7 +41,14 @@ export const scanQRCode = async (imageBlob: Blob): Promise<ScanResult> => {
   const url = URL.createObjectURL(imageBlob);
   try {
     const result = await multiFormatReader.decodeFromImageUrl(url);
-    return { success: true, text: result.getText() };
+    const text = result.getText();
+    
+    // Check if it's a URL (common in QR codes)
+    if (text.startsWith('http')) {
+      return { success: false, error: "Result is a web link. This app requires nutrition labels, barcodes, or food-specific QR codes." };
+    }
+
+    return { success: true, text };
   } catch (err) {
     console.error("QR scan failed", err);
     return { success: false, error: "No QR code detected." };

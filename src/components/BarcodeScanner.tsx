@@ -1,5 +1,5 @@
 import React, { useRef, useState } from 'react';
-import { Camera, Loader2, AlertCircle, Hash, ArrowRight } from 'lucide-react';
+import { Camera, Loader2, AlertCircle, Hash, ArrowRight, Plus } from 'lucide-react';
 import { scanBarcode, extractBarcodeDigits, scanQRCode } from '../lib/vision/scanner-logic';
 import { ImageCropperModal } from './ImageCropperModal';
 
@@ -100,35 +100,57 @@ export const BarcodeScanner: React.FC<BarcodeScannerProps> = ({
         style={{ display: 'none' }} 
       />
 
-      {/* Main Trigger */}
-      <button 
-        onClick={triggerCamera}
-        disabled={status === 'scanning' || status === 'ai-reading' || status === 'cropping'}
-        className="action-bubble"
-        style={{
-          display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
-          gap: 'var(--space-xs)', background: 'var(--theme-panel)', border: '1px solid var(--theme-border)',
-          borderRadius: 'var(--radius-lg)', padding: 'var(--space-md)', width: '100%', aspectRatio: '1',
-          cursor: 'pointer', transition: 'all 0.2s', position: 'relative', overflow: 'hidden',
-          opacity: (status === 'scanning' || status === 'ai-reading' || status === 'cropping') ? 0.7 : 1,
-        }}
-      >
-        {(status === 'scanning' || status === 'ai-reading') ? (
-          <Loader2 className="spin" size={28} color="var(--theme-accent)" />
-        ) : (
-          <Camera size={28} color="var(--theme-accent)" />
-        )}
-        <span style={{ fontSize: '12px', fontWeight: '800', color: 'var(--theme-text)', textAlign: 'center', textTransform: 'uppercase' }}>
-          {status === 'scanning' ? 'Scanning Lines...' : (status === 'ai-reading' ? 'AI Reading Numbers...' : label)}
-        </span>
-        
-        {(status === 'scanning' || status === 'ai-reading') && (
-          <div style={{
-            position: 'absolute', bottom: 0, left: 0, height: '4px', background: 'var(--theme-accent)',
-            animation: 'scan-progress 1.5s linear infinite', width: '100%'
-          }} />
-        )}
-      </button>
+      {/* Dual Controls */}
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', width: '100%' }}>
+        <button 
+          onClick={triggerCamera}
+          disabled={status === 'scanning' || status === 'ai-reading' || status === 'cropping'}
+          className="action-bubble"
+          style={{
+            display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
+            gap: '8px', background: 'var(--theme-panel)', border: '1px solid var(--theme-border)',
+            borderRadius: 'var(--radius-lg)', padding: '24px 16px', cursor: 'pointer', transition: 'all 0.2s', position: 'relative', overflow: 'hidden',
+            opacity: (status === 'scanning' || status === 'ai-reading' || status === 'cropping') ? 0.7 : 1,
+          }}
+        >
+          {(status === 'scanning' || status === 'ai-reading') ? (
+            <Loader2 className="spin" size={24} color="var(--theme-accent)" />
+          ) : (
+            <Camera size={24} color="var(--theme-accent)" />
+          )}
+          <span style={{ fontSize: '10px', fontWeight: '900', color: 'var(--theme-text)', textAlign: 'center', textTransform: 'uppercase' }}>
+            Take Photo
+          </span>
+        </button>
+
+        <button 
+          onClick={() => {
+            if (fileInputRef.current) {
+              fileInputRef.current.removeAttribute('capture');
+              fileInputRef.current.click();
+            }
+          }}
+          disabled={status === 'scanning' || status === 'ai-reading' || status === 'cropping'}
+          className="action-bubble"
+          style={{
+            display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
+            gap: '8px', background: 'rgba(255,255,255,0.03)', border: '1px solid var(--theme-border)',
+            borderRadius: 'var(--radius-lg)', padding: '24px 16px', cursor: 'pointer', transition: 'all 0.2s', position: 'relative', overflow: 'hidden',
+          }}
+        >
+          <Plus size={24} color="var(--theme-accent)" />
+          <span style={{ fontSize: '10px', fontWeight: '900', color: 'var(--theme-text)', textAlign: 'center', textTransform: 'uppercase' }}>
+            Upload Image
+          </span>
+        </button>
+      </div>
+
+      {/* Progress feedback for active state */}
+      {(status === 'scanning' || status === 'ai-reading') && (
+        <div style={{ width: '100%', padding: '0 4px', fontSize: '11px', fontWeight: '800', color: 'var(--theme-accent)', textAlign: 'center', textTransform: 'uppercase', letterSpacing: '1px' }}>
+          {status === 'scanning' ? 'Decoding Code...' : 'AI Analyzing...'}
+        </div>
+      )}
 
       {/* Manual Fallback UI */}
       {(status === 'failed' || error) && (
