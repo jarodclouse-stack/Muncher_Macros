@@ -32,14 +32,15 @@ interface TabBtnProps {
 
 const TabBtn = ({ active, onClick, icon, label, isPrimary }: TabBtnProps) => (
   <button onClick={onClick} style={{ 
-    display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '4px', textAlign: 'center',
-    padding: '10px 8px', borderRadius: '16px', 
-    background: active ? 'var(--theme-accent-dim, rgba(0,201,255,0.15))' : (isPrimary ? 'rgba(255,255,255,0.06)' : 'transparent'), 
+    display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px', textAlign: 'center',
+    padding: '16px 8px', borderRadius: '20px', 
+    background: active ? 'var(--theme-accent-dim, rgba(0,201,255,0.15))' : (isPrimary ? 'rgba(255,255,255,0.06)' : 'var(--theme-panel-dim)'), 
     color: active ? 'var(--theme-accent, #00C9FF)' : (isPrimary ? '#fff' : 'var(--theme-text-dim, #8b8b9b)'), 
     border: `1px solid ${active ? 'var(--theme-accent, rgba(0,201,255,0.3))' : (isPrimary ? 'rgba(255,255,255,0.15)' : 'var(--theme-border, rgba(255,255,255,0.05))')}`,
-    fontWeight: (active || isPrimary) ? '700' : '400', cursor: 'pointer', transition: 'all 0.2s',
-    fontSize: '10px', width: '100%', minWidth: 0,
-    boxShadow: (isPrimary && !active) ? '0 4px 12px rgba(0,0,0,0.2)' : 'none'
+    fontWeight: '800', cursor: 'pointer', transition: 'all 0.2s',
+    fontSize: '11px', width: '100%', minWidth: 0,
+    boxShadow: (isPrimary && !active) ? '0 8px 20px rgba(0,0,0,0.3)' : 'none',
+    textTransform: 'uppercase'
   }}>
     <div style={{ opacity: active ? 1 : 0.8 }}>{icon}</div>
     <span style={{ 

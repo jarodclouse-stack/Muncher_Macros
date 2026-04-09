@@ -69,7 +69,7 @@ export const PantryView: React.FC = () => {
   const [errorMsg, setErrorMsg] = useState('');
   const [activeTab, setActiveTab] = useState<SearchTab | 'saved' | 'manual'>('saved');
   
-  const [sortBy, setSortBy] = useState<'recent' | 'name' | 'cal' | 'p'>('recent');
+  const [sortBy] = useState<'recent' | 'name' | 'cal' | 'p'>('recent');
   const [filterType, setFilterType] = useState<'all' | 'fav' | 'high-p' | 'low-c' | 'recipe'>('all');
   
   const [searchQuery, setSearchQuery] = useState('');
@@ -224,30 +224,27 @@ export const PantryView: React.FC = () => {
       
       {/* Tab Switcher */}
       <div 
-        className="hide-scrollbar"
         style={{ 
-          display: 'flex', 
+          display: 'grid', 
+          gridTemplateColumns: 'repeat(3, 1fr)',
           gap: '8px', 
-          marginBottom: '24px', 
+          marginBottom: '32px', 
           position: 'sticky', 
           top: 'calc(110px + env(safe-area-inset-top, 0px))', 
           zIndex: 100, 
           background: 'var(--theme-bg, #080A0F)', 
-          padding: '12px 24px', 
-          margin: '0 -24px 24px -24px',
-          overflowX: 'auto',
-          whiteSpace: 'nowrap',
+          padding: '12px 0', 
+          margin: '0 0 24px 0',
           borderBottom: '1px solid var(--theme-border)',
-          boxShadow: '0 8px 32px rgba(0,0,0,0.4)',
         }}>
-        <button onClick={() => { setActiveTab('search'); clearSearchState(); }} style={{ minWidth: 'max-content', padding: '12px 24px', borderRadius: '14px', border: '1px solid var(--theme-border)', background: activeTab === 'search' ? 'var(--theme-accent-dim)' : 'rgba(255,255,255,0.03)', color: activeTab === 'search' ? 'var(--theme-accent)' : 'var(--theme-text-dim)', fontWeight: '700', fontSize: '13px', cursor: 'pointer', transition: 'all 0.2s' }}>
-          Discover & Search
+        <button onClick={() => { setActiveTab('search'); clearSearchState(); }} style={{ padding: '12px 4px', borderRadius: '14px', border: '1px solid var(--theme-border)', background: activeTab === 'search' ? 'var(--theme-accent-dim)' : 'rgba(255,255,255,0.03)', color: activeTab === 'search' ? 'var(--theme-accent)' : 'var(--theme-text-dim)', fontWeight: '800', fontSize: '11px', textTransform: 'uppercase', cursor: 'pointer', transition: 'all 0.2s', textAlign: 'center' }}>
+          Discover
         </button>
-        <button onClick={() => setActiveTab('manual')} style={{ minWidth: 'max-content', padding: '12px 24px', borderRadius: '14px', border: '1px solid var(--theme-border)', background: activeTab === 'manual' ? 'var(--theme-accent-dim)' : 'rgba(255,255,255,0.03)', color: activeTab === 'manual' ? 'var(--theme-accent)' : 'var(--theme-text-dim)', fontWeight: '700', fontSize: '13px', cursor: 'pointer', transition: 'all 0.2s' }}>
-          Macro Kitchen
+        <button onClick={() => setActiveTab('manual')} style={{ padding: '12px 4px', borderRadius: '14px', border: '1px solid var(--theme-border)', background: activeTab === 'manual' ? 'var(--theme-accent-dim)' : 'rgba(255,255,255,0.03)', color: activeTab === 'manual' ? 'var(--theme-accent)' : 'var(--theme-text-dim)', fontWeight: '800', fontSize: '11px', textTransform: 'uppercase', cursor: 'pointer', transition: 'all 0.2s', textAlign: 'center' }}>
+          Kitchen
         </button>
-        <button onClick={() => setActiveTab('saved')} style={{ minWidth: 'max-content', padding: '12px 24px', borderRadius: '14px', border: '1px solid var(--theme-border)', background: activeTab === 'saved' ? 'var(--theme-accent-dim)' : 'rgba(255,255,255,0.03)', color: activeTab === 'saved' ? 'var(--theme-accent)' : 'var(--theme-text-dim)', fontWeight: '700', fontSize: '13px', cursor: 'pointer', transition: 'all 0.2s' }}>
-          My Pantry ({customFoods.length})
+        <button onClick={() => setActiveTab('saved')} style={{ padding: '12px 4px', borderRadius: '14px', border: '1px solid var(--theme-border)', background: activeTab === 'saved' ? 'var(--theme-accent-dim)' : 'rgba(255,255,255,0.03)', color: activeTab === 'saved' ? 'var(--theme-accent)' : 'var(--theme-text-dim)', fontWeight: '800', fontSize: '11px', textTransform: 'uppercase', cursor: 'pointer', transition: 'all 0.2s', textAlign: 'center' }}>
+          Pantry
         </button>
       </div>
 
@@ -675,21 +672,18 @@ export const PantryView: React.FC = () => {
         <div className="section" style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-md)' }}>
           
           {/* Filters & Sorting */}
-          <div className="hide-scrollbar" style={{ display: 'flex', gap: 'var(--space-xs)', overflowX: 'auto', paddingBottom: 'var(--space-xs)' }}>
-            <select value={sortBy} onChange={e => setSortBy(e.target.value as any)} style={{ background: 'var(--theme-panel)', border: '1px solid var(--theme-border)', borderRadius: 'var(--radius-md)', color: '#fff', fontSize: '11px', padding: '6px 10px', outline: 'none' }}>
-              <option value="recent">Recently Added</option>
-              <option value="name">Name (A-Z)</option>
-              <option value="cal">Highest Calories</option>
-              <option value="p">Highest Protein</option>
-            </select>
-            <button onClick={() => setFilterType(filterType === 'fav' ? 'all' : 'fav')} style={{ background: filterType === 'fav' ? 'var(--theme-accent-dim)' : 'var(--theme-panel)', border: '1px solid var(--theme-border)', borderRadius: 'var(--radius-md)', color: filterType === 'fav' ? 'var(--theme-accent)' : '#fff', fontSize: '11px', padding: '6px 12px', whiteSpace: 'nowrap' }}>
-              ⭐ Favorites
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '6px', marginBottom: 'var(--space-md)' }}>
+            <button onClick={() => setFilterType('all')} style={{ background: filterType === 'all' ? 'var(--theme-accent-dim)' : 'rgba(255,255,255,0.03)', border: '1px solid var(--theme-border)', borderRadius: '12px', color: filterType === 'all' ? 'var(--theme-accent)' : 'var(--theme-text-dim)', fontSize: '9px', fontWeight: '800', padding: '8px 4px', textTransform: 'uppercase' }}>
+              All
             </button>
-            <button onClick={() => setFilterType(filterType === 'high-p' ? 'all' : 'high-p')} style={{ background: filterType === 'high-p' ? 'var(--theme-accent-dim)' : 'var(--theme-panel)', border: '1px solid var(--theme-border)', borderRadius: 'var(--radius-md)', color: filterType === 'high-p' ? 'var(--theme-accent)' : '#fff', fontSize: '11px', padding: '6px 12px', whiteSpace: 'nowrap' }}>
-              💪 High Protein
+            <button onClick={() => setFilterType('fav')} style={{ background: filterType === 'fav' ? 'var(--theme-accent-dim)' : 'rgba(255,255,255,0.03)', border: '1px solid var(--theme-border)', borderRadius: '12px', color: filterType === 'fav' ? 'var(--theme-accent)' : 'var(--theme-text-dim)', fontSize: '9px', fontWeight: '800', padding: '8px 4px', textTransform: 'uppercase' }}>
+              Favorites
             </button>
-            <button onClick={() => setFilterType(filterType === 'recipe' ? 'all' : 'recipe')} style={{ background: filterType === 'recipe' ? 'var(--theme-accent-dim)' : 'var(--theme-panel)', border: '1px solid var(--theme-border)', borderRadius: 'var(--radius-md)', color: filterType === 'recipe' ? 'var(--theme-accent)' : '#fff', fontSize: '11px', padding: '6px 12px', whiteSpace: 'nowrap' }}>
-              🍳 Recipes
+            <button onClick={() => setFilterType('high-p')} style={{ background: filterType === 'high-p' ? 'var(--theme-accent-dim)' : 'rgba(255,255,255,0.03)', border: '1px solid var(--theme-border)', borderRadius: '12px', color: filterType === 'high-p' ? 'var(--theme-accent)' : 'var(--theme-text-dim)', fontSize: '9px', fontWeight: '800', padding: '8px 4px', textTransform: 'uppercase' }}>
+              Protein
+            </button>
+            <button onClick={() => setFilterType('recipe')} style={{ background: filterType === 'recipe' ? 'var(--theme-accent-dim)' : 'rgba(255,255,255,0.03)', border: '1px solid var(--theme-border)', borderRadius: '12px', color: filterType === 'recipe' ? 'var(--theme-accent)' : 'var(--theme-text-dim)', fontSize: '9px', fontWeight: '800', padding: '8px 4px', textTransform: 'uppercase' }}>
+              Recipes
             </button>
           </div>
 
@@ -714,15 +708,16 @@ export const PantryView: React.FC = () => {
                   key={originalIdx} 
                   onClick={() => handleAddPreviewClick(f)}
                   style={{ 
-                    padding: 'var(--space-md)', 
+                    padding: '20px', 
                     background: 'var(--theme-panel-dim, rgba(255,255,255,0.02))', 
-                    borderRadius: 'var(--radius-lg)', 
+                    borderRadius: '24px', 
                     border: '1px solid var(--theme-border)', 
                     display: 'flex', 
                     justifyContent: 'space-between', 
                     alignItems: 'center',
                     cursor: 'pointer',
                     transition: 'transform 0.2s, background 0.2s',
+                    minHeight: '80px',
                   }}>
                   <div style={{ flex: 1 }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
