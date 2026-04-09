@@ -35,9 +35,11 @@ export const AddFoodModal: React.FC<AddFoodModalProps> = ({ meal, onClose }) => 
   const abortControllerRef = useRef<AbortController | null>(null);
 
   const clearSearchState = () => {
-    setQuery('');
+    // setQuery(''); // Don't clear query, user might want to switch tabs with same query
     setResults([]);
     setErrorMsg('');
+    setAiStagedResults([]);
+    setIsAiReviewing(false);
   };
   
   const [mealDesc, setMealDesc] = useState('');
@@ -145,16 +147,24 @@ export const AddFoodModal: React.FC<AddFoodModalProps> = ({ meal, onClose }) => 
     e.preventDefault();
     if (!query) return;
     setSearching(true);
+    setErrorMsg('');
     try {
       const res = await fetch('/api/ai-lookup', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ query })
       });
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
       const body = await res.json();
-      setResults(body.foods || []);
+      const detected = body.foods || [];
+      if (detected.length === 0) {
+        setErrorMsg("No AI results found. Try being more specific.");
+      } else {
+        setAiStagedResults(detected.map((f: any) => ({ ...f, stagedQty: f.sQty?.toString() || '1', stagedUnit: f.sUnit || 'serving' })));
+        setIsAiReviewing(true);
+      }
     } catch (err) {
-      setErrorMsg("AI Lookup failed.");
+      setErrorMsg("AI Lookup failed. Please try again.");
     }
     setSearching(false);
   };
@@ -197,9 +207,19 @@ export const AddFoodModal: React.FC<AddFoodModalProps> = ({ meal, onClose }) => 
         <SearchCoaster 
           activeTab={activeTab} 
           onTabChange={(tab) => {
-            clearSearchState();
-            setMealDesc('');
-            setActiveTab(tab);
+            if (tab !== activeTab) {
+              setErrorMsg('');
+              // If switching TO search tab, clear AI results
+              if (tab === 'search') {
+                setIsAiReviewing(false);
+                setAiStagedResults([]);
+              }
+              // If switching TO AI tabs, keep query but clear standard results
+              if (tab === 'ai-search' || tab === 'describe') {
+                setResults([]);
+              }
+              setActiveTab(tab);
+            }
           }} 
         />
 
