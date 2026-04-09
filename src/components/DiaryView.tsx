@@ -566,31 +566,59 @@ const HydrationCard = ({ current, goal, onAdd, onReset }: { current: number, goa
           borderRadius: '24px',
           pointerEvents: 'none',
           animation: 'water-pulse 2s infinite',
-          zIndex: 0
+          zIndex: 0,
+          overflow: 'hidden'
         }}>
+          {/* Top Lip Overflow Glow */}
           <div style={{
             position: 'absolute',
             top: 0,
-            left: '10%',
-            right: '10%',
-            height: '4px',
-            background: 'var(--theme-accent, #00C9FF)',
+            left: 0,
+            right: 0,
+            height: '8px',
+            background: 'linear-gradient(180deg, var(--theme-accent, #00C9FF) 0%, transparent 100%)',
             filter: 'blur(4px)',
-            opacity: 0.6,
+            opacity: 0.8,
             animation: 'spill-flow 3s infinite ease-in-out'
           }} />
+
+          {/* Dripping Droplets */}
+          {[15, 45, 75, 90].map((left, i) => (
+            <div 
+              key={i}
+              style={{
+                position: 'absolute',
+                top: -10,
+                left: `${left}%`,
+                width: '4px',
+                height: '14px',
+                background: 'var(--theme-accent, #00C9FF)',
+                borderRadius: '50% 50% 2px 2px',
+                filter: 'blur(1px)',
+                opacity: 0.6,
+                animation: `drip ${2 + i * 0.5}s infinite ease-in`,
+                animationDelay: `${i * 0.7}s`
+              }} 
+            />
+          ))}
         </div>
       )}
 
       <style>{`
         @keyframes water-pulse {
-          0% { box-shadow: 0 0 0 0 rgba(0,201,255,0.4); }
-          70% { box-shadow: 0 0 0 10px rgba(0,201,255,0); }
-          100% { box-shadow: 0 0 0 0 rgba(0,201,255,0); }
+          0% { box-shadow: 0 0 0 0 rgba(0,201,255,0.4); border-color: rgba(0,201,255,1); }
+          70% { box-shadow: 0 0 0 15px rgba(0,201,255,0); border-color: rgba(0,201,255,0.5); }
+          100% { box-shadow: 0 0 0 0 rgba(0,201,255,0); border-color: rgba(0,201,255,1); }
         }
         @keyframes spill-flow {
-          0%, 100% { transform: translateY(0) scaleX(1); opacity: 0.3; }
-          50% { transform: translateY(4px) scaleX(1.1); opacity: 0.7; }
+          0%, 100% { transform: translateY(0) scaleX(1); opacity: 0.5; }
+          50% { transform: translateY(2px) scaleX(1.1); opacity: 0.8; }
+        }
+        @keyframes drip {
+          0% { transform: translateY(0) scaleY(1); opacity: 0; }
+          10% { opacity: 0.7; }
+          70% { transform: translateY(120px) scaleY(1.5); opacity: 0.3; }
+          100% { transform: translateY(150px) scaleY(0.5); opacity: 0; }
         }
       `}</style>
 
