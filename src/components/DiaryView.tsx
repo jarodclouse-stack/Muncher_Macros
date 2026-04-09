@@ -175,6 +175,7 @@ export const DiaryView: React.FC = () => {
                 log={log} 
                 onRemove={() => removeFoodLog(meal, idx)} 
                 onEditPortion={() => setEditingPortion({ meal, idx, food: log.f })}
+                onMove={(newMeal: string) => moveFoodLog(meal, idx, newMeal)}
               />
             ))}
 
@@ -246,7 +247,7 @@ const NutrientDetailRow = ({ label, value, unit, benefit }: any) => {
   );
 };
 
-const DiaryEntryItem = ({ log, onRemove, onEditPortion }: any) => {
+const DiaryEntryItem = ({ log, onRemove, onEditPortion, onMove }: any) => {
   const [isOpen, setIsOpen] = useState(false);
   const f = log.f;
 
@@ -329,7 +330,7 @@ const DiaryEntryItem = ({ log, onRemove, onEditPortion }: any) => {
               {MEALS.filter(m => m !== log.meal).map(m => (
                 <button
                   key={m}
-                  onClick={() => moveFoodLog(log.meal, log.idx || 0, m)}
+                  onClick={() => onMove(m)}
                   style={{
                     padding: '8px 12px',
                     borderRadius: '8px',

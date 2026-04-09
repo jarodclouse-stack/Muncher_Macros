@@ -92,13 +92,7 @@ export const AddFoodModal: React.FC<AddFoodModalProps> = ({ meal, onClose }) => 
   const [isAiReviewing, setIsAiReviewing] = useState(false);
   const abortControllerRef = useRef<AbortController | null>(null);
 
-  const clearSearchState = () => {
-    // setQuery(''); // Don't clear query, user might want to switch tabs with same query
-    setResults([]);
-    setErrorMsg('');
-    setAiStagedResults([]);
-    setIsAiReviewing(false);
-  };
+
   
   const [mealDesc, setMealDesc] = useState('');
   const [targetMeal, setTargetMeal] = useState(meal);
@@ -259,8 +253,9 @@ export const AddFoodModal: React.FC<AddFoodModalProps> = ({ meal, onClose }) => 
         }));
         setIsAiReviewing(true);
       }
-    } catch (err: any) {
-      setErrorMsg("AI Parsing failed. Please try again.");
+    } catch (err) {
+      console.error("AI Describe error:", err);
+      setErrorMsg("Meal analysis failed. Please try again.");
     }
     setSearching(false);
   };
