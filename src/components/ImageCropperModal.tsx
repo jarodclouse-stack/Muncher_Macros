@@ -84,10 +84,7 @@ export const ImageCropperModal: React.FC<ImageCropperModalProps> = ({ image, onC
       }}>
         <button onClick={onCancel} style={{ background: 'none', border: 'none', color: '#fff' }}><X /></button>
         <div style={{ color: '#fff', fontWeight: '800', fontSize: '14px', textTransform: 'uppercase', letterSpacing: '1px' }}>Crop Scan Target</div>
-        <button onClick={onConfirm} style={{ 
-          background: 'var(--theme-accent)', border: 'none', color: '#000', 
-          borderRadius: '50%', width: '36px', height: '36px', display: 'flex', alignItems: 'center', justifyContent: 'center'
-        }}><Check size={20} /></button>
+        <div style={{ width: '36px' }} /> {/* Spacer to keep title centered */}
       </div>
 
       {/* Cropper Container */}
@@ -140,6 +137,17 @@ export const ImageCropperModal: React.FC<ImageCropperModalProps> = ({ image, onC
               transition: 'all 0.2s'
             }}>
             FREEFORM
+          </button>
+          
+          <button 
+            onClick={onConfirm}
+            style={{ 
+              flex: 1.2, padding: '10px', borderRadius: '12px', fontSize: '11px', fontWeight: '900', cursor: 'pointer',
+              background: 'var(--theme-accent)', border: 'none', color: '#000',
+              display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px',
+              boxShadow: '0 4px 15px rgba(0,201,255,0.3)', transition: 'all 0.2s'
+            }}>
+            <Check size={18} /> ACCEPT
           </button>
         </div>
 
