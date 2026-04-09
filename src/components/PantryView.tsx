@@ -307,20 +307,36 @@ export const PantryView: React.FC = () => {
               </form>
 
               {ingResults.length > 0 && (
-                <div style={{ background: 'rgba(0,0,0,0.2)', borderRadius: '12px', padding: '8px', marginBottom: '12px', maxHeight: '180px', overflowY: 'auto' }}>
+                <div style={{ background: 'rgba(0,0,0,0.2)', borderRadius: '16px', padding: '12px', marginBottom: '16px', maxHeight: '250px', overflowY: 'auto', border: '1px solid var(--theme-border)' }}>
+                  <div style={{ fontSize: '10px', color: 'var(--theme-text-dim)', fontWeight: '800', marginBottom: '8px', textTransform: 'uppercase' }}>Search Results</div>
                   {ingResults.map((r, i) => (
-                    <div key={i} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '8px', borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
-                      <div style={{ fontSize: '12px', fontWeight: '600' }}>{r.name} <span style={{ fontSize: '10px', opacity: 0.5 }}>({r.cal} cal)</span></div>
-                      <button 
-                        onClick={() => {
-                          const newItems = [...(form.ingredientItems || []), { food: r, qty: '1', unit: r.sUnit || 'serving' }];
-                          calculateRecipeTotals(newItems);
-                          setIngResults([]);
-                          setIngQuery('');
-                        }}
-                        style={{ background: 'var(--theme-accent-dim)', border: 'none', color: 'var(--theme-accent)', padding: '4px 8px', borderRadius: '6px', fontSize: '10px', fontWeight: '700', cursor: 'pointer' }}>
-                        ADD
-                      </button>
+                    <div 
+                      key={i} 
+                      onClick={() => handleAddPreviewClick(r)}
+                      style={{ 
+                        display: 'flex', 
+                        justifyContent: 'space-between', 
+                        alignItems: 'center', 
+                        padding: '12px', 
+                        background: 'rgba(255,255,255,0.02)',
+                        borderRadius: '12px',
+                        marginBottom: '6px',
+                        cursor: 'pointer',
+                        borderLeft: r.isLocal ? '3px solid var(--theme-success)' : '1px solid rgba(255,255,255,0.05)',
+                        transition: 'background 0.2s'
+                      }}>
+                      <div style={{ flex: 1 }}>
+                        <div style={{ fontSize: '13px', fontWeight: '800', color: '#fff', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                          {r.name} 
+                          {r.isLocal && <BookmarkCheck size={12} color="var(--theme-success)" />}
+                        </div>
+                        <div style={{ fontSize: '11px', color: 'var(--theme-text-dim)', marginTop: '2px' }}>
+                          {r.cal} kcal • P:{r.p}g C:{r.c}g F:{r.f}g
+                        </div>
+                      </div>
+                      <div style={{ background: 'var(--theme-accent-dim)', color: 'var(--theme-accent)', padding: '4px 8px', borderRadius: '8px', fontSize: '10px', fontWeight: '800' }}>
+                        PREVIEW
+                      </div>
                     </div>
                   ))}
                 </div>
@@ -605,6 +621,8 @@ export const PantryView: React.FC = () => {
                     const newItems = [...(form.ingredientItems || []), { food: configuringFood, qty: qty.toString(), unit: servingUnit }];
                     calculateRecipeTotals(newItems);
                     setConfiguringFood(null);
+                    setIngResults([]);
+                    setIngQuery('');
                     setActiveTab('manual');
                   }}
                   style={{ width: '100%', padding: '16px', background: 'rgba(255,255,255,0.05)', border: '1px solid var(--theme-border)', borderRadius: '16px', color: 'var(--theme-text)', fontWeight: '800', fontSize: '15px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px' }}>
