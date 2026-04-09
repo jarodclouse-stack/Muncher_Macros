@@ -29,14 +29,15 @@ const CollapsibleEntrySection = ({ title, isOpen, onToggle, children }: { title:
   </div>
 );
 
-const EntryField = ({ label, value, onChange }: { label: string, value: string, onChange: (v: string) => void }) => (
+const EntryField = ({ label, value, onChange, placeholder }: { label: string, value: string, onChange: (v: string) => void, placeholder?: string }) => (
   <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
-    <label style={{ fontSize: '10px', color: 'var(--theme-text-dim)', fontWeight: '800' }}>{label}</label>
+    <label style={{ fontSize: '10px', color: 'var(--theme-text-dim)', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.5px' }}>{label}</label>
     <input 
       className="inp" 
       value={value || ''} 
+      placeholder={placeholder}
       onChange={e => onChange(e.target.value)} 
-      style={{ padding: '8px 10px', fontSize: '12px' }}
+      style={{ padding: '10px 12px', fontSize: '13px', background: 'var(--theme-input-bg)', border: '1px solid var(--theme-border)', borderRadius: '12px', color: '#fff', outline: 'none' }}
     />
   </div>
 );
@@ -47,7 +48,9 @@ export const PantryView: React.FC = () => {
   } = useDiary();
   
   const [form, setForm] = useState<any>({ 
-    name: '', cal: '', p: '', c: '', f: '', fiber: '', sugars: '', 
+    name: '', 
+    sQty: '100', sUnit: 'g',
+    cal: '', p: '', c: '', f: '', fiber: '', sugars: '', 
     sat: '', mono: '', poly: '', trans: '', chol: '', 
     Sodium: '', Potassium: '', Calcium: '', Magnesium: '',
     ...ALL_MICRO_KEYS.reduce((acc, k) => ({ ...acc, [k]: '' }), {}),
@@ -230,17 +233,37 @@ export const PantryView: React.FC = () => {
         <div style={{ background: 'var(--theme-panel)', borderRadius: '24px', padding: '18px', border: '1px solid var(--theme-border)', maxWidth: '480px', margin: '0 auto', width: '100%', boxSizing: 'border-box' }}>
           <h2 style={{ fontSize: '18px', fontWeight: '800', marginBottom: '20px', textAlign: 'center' }}>{editingIndex !== null ? 'Edit Macro Kitchen' : 'Macro Kitchen'}</h2>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-            <input placeholder="Food Name" className="inp" value={form.name} onChange={e => setForm({...form, name: e.target.value})} />
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '8px' }}>
-               <input placeholder="Cal" className="inp" value={form.cal} onChange={e => setForm({...form, cal: e.target.value})} />
-               <input placeholder="P" className="inp" value={form.p} onChange={e => setForm({...form, p: e.target.value})} />
-               <input placeholder="C" className="inp" value={form.c} onChange={e => setForm({...form, c: e.target.value})} />
-               <input placeholder="F" className="inp" value={form.f} onChange={e => setForm({...form, f: e.target.value})} />
+            <EntryField label="Food Name" value={form.name} onChange={v => setForm({...form, name: v})} placeholder="e.g. Grilled Chicken" />
+            
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
+              <EntryField label="Serving Amount" value={form.sQty} onChange={v => setForm({...form, sQty: v})} placeholder="100" />
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                <label style={{ fontSize: '10px', color: 'var(--theme-text-dim)', fontWeight: '800' }}>SERVING UNIT</label>
+                <select 
+                  className="inp"
+                  value={form.sUnit}
+                  onChange={e => setForm({...form, sUnit: e.target.value})}
+                  style={{ padding: '8px 10px', fontSize: '13px', background: 'var(--theme-input-bg)', border: '1px solid var(--theme-border)', borderRadius: '12px', color: '#fff' }}>
+                  {SERVING_UNITS.map(u => <option key={u.v} value={u.v}>{u.v}</option>)}
+                </select>
+              </div>
+            </div>
+
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '12px' }}>
+               <EntryField label="Calories (kcal)" value={form.cal} onChange={v => setForm({...form, cal: v})} placeholder="0" />
+               <EntryField label="Protein (g)" value={form.p} onChange={v => setForm({...form, p: v})} placeholder="0" />
+               <EntryField label="Carbs (g)" value={form.c} onChange={v => setForm({...form, c: v})} placeholder="0" />
+               <EntryField label="Fat (g)" value={form.f} onChange={v => setForm({...form, f: v})} placeholder="0" />
             </div>
             <div style={{ display: 'flex', gap: '12px' }}>
               <button 
                 onClick={() => {
-                  const foodData: any = { ...form };
+                  const foodData: any = { 
+                    ...form,
+                    serving: `${form.sQty || '1'} ${form.sUnit || 'serving'}`,
+                    sQty: parseFloat(form.sQty) || 1,
+                    sUnit: form.sUnit || 'serving'
+                  };
                   ['cal', 'p', 'c', 'f', 'fiber', 'sugars', 'sat', 'mono', 'poly', 'trans', 'chol', 'Sodium', 'Potassium', 'Calcium', 'Magnesium', ...ALL_MICRO_KEYS].forEach(k => {
                     if (foodData[k] !== undefined && foodData[k] !== '') {
                       foodData[k] = Number(foodData[k]);
@@ -251,7 +274,7 @@ export const PantryView: React.FC = () => {
                   setActiveTab('saved');
                   setEditingIndex(null);
                   setForm({
-                    name:'',cal:'',p:'',c:'',f:'', fiber: '', sugars: '', 
+                    name:'', sQty: '100', sUnit: 'g', cal:'',p:'',c:'',f:'', fiber: '', sugars: '', 
                     sat: '', mono: '', poly: '', trans: '', chol: '', 
                     Sodium: '', Potassium: '', Calcium: '', Magnesium: '',
                     ...ALL_MICRO_KEYS.reduce((acc, k) => ({ ...acc, [k]: '' }), {}),
@@ -265,7 +288,7 @@ export const PantryView: React.FC = () => {
                 onClick={() => {
                   setEditingIndex(null);
                   setForm({
-                    name:'',cal:'',p:'',c:'',f:'', fiber: '', sugars: '', 
+                    name:'', sQty: '100', sUnit: 'g', cal:'',p:'',c:'',f:'', fiber: '', sugars: '', 
                     sat: '', mono: '', poly: '', trans: '', chol: '', 
                     Sodium: '', Potassium: '', Calcium: '', Magnesium: '',
                     ...ALL_MICRO_KEYS.reduce((acc, k) => ({ ...acc, [k]: '' }), {}),
