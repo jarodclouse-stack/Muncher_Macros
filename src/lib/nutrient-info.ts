@@ -244,7 +244,7 @@ export const NUTRIENT_BENEFITS: Record<string, { summary: string; points: string
       'Lipid Profile: High dosages can improve HDL-C and lower triglyceride levels.'
     ]
   },
-  'Vitamin B5 (Pantothenic Acid)': {
+  'Vitamin B5': {
     summary: '🚜 Coenzyme A & Steroid synthesis',
     points: [
       'CoA Production: The gateway molecule for carb, fat, and protein metabolism.',
@@ -271,13 +271,13 @@ export const NUTRIENT_BENEFITS: Record<string, { summary: string; points: string
       'Epigenetic Control: Plays a role in histone biotinylation for gene expression.'
     ]
   },
-  'Vitamin B9 (Folate)': {
-    summary: '🧬 DNA Methylation & Genomic Renewal',
+  'Vitamin B9': {
+    summary: '🧬 DNA Methylation & Genomic Integrity',
     points: [
-      'Nucleotide Synthesis: Required for create the "building blocks" of DNA and RNA.',
-      'One-Carbon Metabolism: Vital for cellular division and rapid tissue growth.',
-      'Neural Development: Prevents major defects and supports brain signaling.',
-      'Vascular Health: Regulates homocysteine to prevent arterial inflammation.'
+      'Purine Synthesis: Required for create adenine and guanine, the building blocks of DNA.',
+      'Methylation Cycle: Critical for silencing or activating genes via one-carbon metabolism.',
+      'Erythropoiesis: Drives the rapid cell division needed for red blood cell production.',
+      'Neural Tube Support: Essential for spinal cord development and nervous system repair.'
     ]
   },
   'Vitamin E': {

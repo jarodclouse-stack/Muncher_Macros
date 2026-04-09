@@ -231,7 +231,7 @@ export const BadgesView: React.FC = () => {
                   
                   <div style={{ flex: 1 }}>
                     <div style={{ fontSize: '15px', fontWeight: '800', color: 'var(--theme-text)', display: 'flex', alignItems: 'center', gap: '6px' }}>
-                      {t.name} <span style={{ fontSize: '11px', color: 'var(--theme-accent)', fontWeight: '400', background: 'var(--theme-accent-dim)', padding: '1px 6px', borderRadius: '4px' }}>{t.price} Gems</span>
+                      <span style={{ fontSize: '18px' }}>{t.emoji}</span> {t.name} <span style={{ fontSize: '11px', color: 'var(--theme-accent)', fontWeight: '400', background: 'var(--theme-accent-dim)', padding: '1px 6px', borderRadius: '4px' }}>{t.price} Gems</span>
                     </div>
                     <div style={{ fontSize: '11px', color: 'var(--theme-text-dim)', textTransform: 'uppercase', letterSpacing: '0.5px', marginTop: '2px', display: 'flex', alignItems: 'center', gap: '8px' }}>
                       {isPurchased ? (

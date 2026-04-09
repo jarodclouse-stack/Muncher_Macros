@@ -236,26 +236,29 @@ export const NutritionView: React.FC = () => {
               <h3 style={{ fontSize: '13px', color: 'var(--theme-accent, #00C9FF)', marginBottom: '12px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>{cat.cat}</h3>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
                 {cat.keys.map((nutrient: any) => {
-                  const val = totals[nutrient.k.toLowerCase()] || totals[nutrient.k] || 0;
-                  const goal = computed.micros ? computed.micros[nutrient.k] : computed.computedMicros[nutrient.k];
+                  const label = nutrient.k;
+                  const unit = nutrient.u;
+                  const val = totals[label.toLowerCase()] || totals[label] || 0;
+                  const goal = computed.micros ? computed.micros[label] : computed.computedMicros[label];
                   const pct = goal ? Math.min(100, (val / goal) * 100) : 0;
-                  const isExpanded = expandedMicro === nutrient.k;
-                  const info = DEFICIENCY_INFO[nutrient.k as keyof typeof DEFICIENCY_INFO] || NUTRIENT_BENEFITS[nutrient.k as keyof typeof NUTRIENT_BENEFITS];
-                  const defInfo = DEFICIENCY_INFO[nutrient.k as keyof typeof DEFICIENCY_INFO];
+                  const isExpanded = expandedMicro === label;
+                  const benefitsInfo = NUTRIENT_BENEFITS[label as keyof typeof NUTRIENT_BENEFITS];
+                  const defInfo = DEFICIENCY_INFO[label as keyof typeof DEFICIENCY_INFO];
+                  const info = benefitsInfo || defInfo;
                   
                   return (
-                    <div key={nutrient.k} style={{ background: isExpanded ? 'var(--theme-accent-dim, rgba(0,201,255,0.05))' : 'transparent', padding: isExpanded ? '8px 12px' : '0 8px', borderRadius: '12px', transition: 'all 0.2s', margin: isExpanded ? '0 -4px' : '0' }}>
+                    <div key={label} style={{ background: isExpanded ? 'var(--theme-accent-dim, rgba(0,201,255,0.05))' : 'transparent', padding: isExpanded ? '8px 12px' : '0 8px', borderRadius: '12px', transition: 'all 0.2s', margin: isExpanded ? '0 -4px' : '0' }}>
                       <div 
-                        onClick={() => info && setExpandedMicro(isExpanded ? null : nutrient.k)}
+                        onClick={() => info && setExpandedMicro(isExpanded ? null : label)}
                         style={{ display: 'grid', gridTemplateColumns: '120px 1fr 60px', gap: '12px', alignItems: 'center', cursor: info ? 'pointer' : 'default' }}
                       >
-                        <span style={{ fontSize: '12px', color: 'var(--theme-text-dim, #c0c0d0)', display: 'flex', alignItems: 'center', gap: '4px' }}>
-                          {nutrient.k} {info && <Info size={12} color="var(--theme-text-dim, #8b8b9b)" style={{ minWidth: '12px' }} />}
-                        </span>
-                        <div style={{ height: '4px', background: 'var(--theme-panel-dim, rgba(255,255,255,0.1))', borderRadius: '2px' }}>
-                          <div style={{ width: `${pct}%`, height: '100%', background: pct >= 100 ? 'var(--theme-success, #92FE9D)' : 'var(--theme-accent, #4DABF7)', borderRadius: '2px', transition: 'width 0.3s' }} />
+                        <div style={{ fontSize: '12px', fontWeight: '700', color: isExpanded ? 'var(--theme-accent)' : 'var(--theme-text)', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                          {label} {info && <Info size={10} color="var(--theme-text-dim)" />}
                         </div>
-                        <span style={{ fontSize: '11px', textAlign: 'right', color: 'var(--theme-text-dim, #8b8b9b)' }}>{Math.round(val)}{nutrient.u}</span>
+                        <div style={{ height: '4px', background: 'var(--theme-panel-dim, rgba(255,255,255,0.05))', borderRadius: '4px', position: 'relative' }}>
+                          <div style={{ width: `${pct}%`, height: '100%', background: 'var(--theme-accent)', borderRadius: '4px', boxShadow: pct >= 100 ? '0 0 8px var(--theme-accent)' : 'none' }} />
+                        </div>
+                        <div style={{ fontSize: '11px', fontWeight: '800', textAlign: 'right', color: pct >= 100 ? 'var(--theme-success)' : 'var(--theme-text)' }}>{Math.round(val)}{unit}</div>
                       </div>
                       
                       {isExpanded && info && (
@@ -266,11 +269,11 @@ export const NutritionView: React.FC = () => {
                             <div style={{ fontWeight: '800', color: 'var(--theme-success, #92FE9D)', marginBottom: '6px', fontSize: '12px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
                               ✨ Clinical Benefits
                             </div>
-                            <div style={{ marginBottom: '10px', lineHeight: '1.5', color: 'var(--theme-text)' }}>{(info as any).summary || 'Essential micronutrient for cellular health.'}</div>
+                            <div style={{ marginBottom: '10px', lineHeight: '1.5', color: 'var(--theme-text)' }}>{benefitsInfo?.summary || 'Vital biological support for systemic homeostatis.'}</div>
                             
-                            {(info as any).points && (
+                            {benefitsInfo?.points && (
                               <ul style={{ paddingLeft: '18px', margin: '0', color: 'var(--theme-text-dim, #8b8b9b)', display: 'flex', flexDirection: 'column', gap: '4px' }}>
-                                {(info as any).points.map((p: string, i: number) => <li key={i}>{p}</li>)}
+                                {benefitsInfo.points.map((p: string, i: number) => <li key={i}>{p}</li>)}
                               </ul>
                             )}
                           </div>
