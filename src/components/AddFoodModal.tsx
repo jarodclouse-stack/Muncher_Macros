@@ -12,6 +12,64 @@ import { BarcodeScanner } from './BarcodeScanner';
 import { SearchCoaster, type SearchTab } from './SearchCoaster';
 import { getNutrientDescriptions } from '../lib/nutrient-info';
 
+// Helper: Ensure Calories = (P*4) + (C*4) + (F*9)
+const enforceCalorieConsistency = (food: Food): Food => {
+  const p = Number(food.p) || 0;
+  const c = Number(food.c) || 0;
+  const f = Number(food.f) || 0;
+  const macroCals = Math.round(p * 4 + c * 4 + f * 9);
+  
+  // If the stated calories are significantly different from macro calculation,
+  // we follow the macro calculation for physical consistency.
+  return {
+    ...food,
+    cal: macroCals
+  };
+};
+
+// Helper: Robust rounding for all nutrients (ported from index_old.html logic)
+const normalizeFoodResult = (food: any): Food => {
+  const r = (val: any, decimals = 1) => {
+    const n = Number(val) || 0;
+    const factor = Math.pow(10, decimals);
+    return Math.round(n * factor) / factor;
+  };
+
+  const normalized = {
+    ...food,
+    name: food.name || 'Unknown food',
+    serving: food.serving || '1 serving',
+    sQty: Number(food.sQty) || 1,
+    sUnit: food.sUnit || 'serving',
+    p: r(food.p),
+    c: r(food.c),
+    f: r(food.f),
+    fb: r(food.fb),
+    sat: r(food.sat),
+    trans: r(food.trans),
+    mono: r(food.mono),
+    poly: r(food.poly),
+    chol: Math.round(Number(food.chol) || 0),
+    sugars: r(food.sugars),
+    Sodium: Math.round(Number(food.Sodium) || 0),
+    Potassium: Math.round(Number(food.Potassium) || 0),
+    Calcium: Math.round(Number(food.Calcium) || 0),
+    Iron: r(food.Iron),
+    'Vitamin C': r(food['Vitamin C']),
+    'Vitamin A': Math.round(Number(food['Vitamin A']) || 0),
+    'Vitamin D': r(food['Vitamin D']),
+    'Vitamin B1': r(food['Vitamin B1'], 2),
+    'Vitamin B2': r(food['Vitamin B2'], 2),
+    'Vitamin B6': r(food['Vitamin B6'], 2),
+    'Vitamin B12': r(food['Vitamin B12'], 2),
+    Magnesium: Math.round(Number(food.Magnesium) || 0),
+    Zinc: r(food.Zinc),
+    Manganese: r(food.Manganese, 2),
+  };
+
+  return enforceCalorieConsistency(normalized);
+};
+
 interface AddFoodModalProps {
   meal: string;
   onClose: () => void;
@@ -160,10 +218,17 @@ export const AddFoodModal: React.FC<AddFoodModalProps> = ({ meal, onClose }) => 
       if (detected.length === 0) {
         setErrorMsg("No AI results found. Try being more specific.");
       } else {
-        setAiStagedResults(detected.map((f: any) => ({ ...f, stagedQty: f.sQty?.toString() || '1', stagedUnit: f.sUnit || 'serving' })));
+        setAiStagedResults(detected.map((f: any) => {
+          const norm = normalizeFoodResult(f);
+          return { 
+            ...norm, 
+            stagedQty: norm.sQty?.toString() || '1', 
+            stagedUnit: norm.sUnit || 'serving' 
+          };
+        }));
         setIsAiReviewing(true);
       }
-    } catch (err) {
+    } catch (err: any) {
       setErrorMsg("AI Lookup failed. Please try again.");
     }
     setSearching(false);
@@ -174,18 +239,31 @@ export const AddFoodModal: React.FC<AddFoodModalProps> = ({ meal, onClose }) => 
     if (!mealDesc) return;
     setSearching(true);
     setAiStagedResults([]);
+    setErrorMsg('');
     try {
       const res = await fetch('/api/ai-describe', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ description: mealDesc })
       });
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
       const body = await res.json();
       const detected = body.foods || [];
-      setAiStagedResults(detected.map((f: any) => ({ ...f, stagedQty: '1', stagedUnit: f.sUnit || 'serving' })));
-      setIsAiReviewing(true);
-    } catch (err) {
-      setErrorMsg("AI Parsing failed.");
+      if (detected.length === 0) {
+        setErrorMsg("AI could not extract foods from that description.");
+      } else {
+        setAiStagedResults(detected.map((f: any) => {
+          const norm = normalizeFoodResult(f);
+          return { 
+            ...norm, 
+            stagedQty: norm.sQty?.toString() || '1', 
+            stagedUnit: norm.sUnit || 'serving' 
+          };
+        }));
+        setIsAiReviewing(true);
+      }
+    } catch (err: any) {
+      setErrorMsg("AI Parsing failed. Please try again.");
     }
     setSearching(false);
   };

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Search, Sparkles, FileText, Scan } from 'lucide-react';
+import { Search, Sparkles, Check } from 'lucide-react';
 
 export type SearchTab = 'search' | 'ai-search' | 'describe' | 'scan';
 
@@ -19,10 +19,30 @@ export const SearchCoaster: React.FC<SearchCoasterProps> = ({ activeTab, onTabCh
         padding: '12px 0 24px 0', 
         ...style 
       }}>
-        <TabBtn active={activeTab==='describe'} onClick={() => onTabChange('describe')} icon={<FileText size={20}/>} label="Describe Meal" />
-        <TabBtn active={activeTab==='ai-search'} onClick={() => onTabChange('ai-search')} icon={<Sparkles size={20}/>} label="AI Search" />
-        <TabBtn active={activeTab==='scan'} onClick={() => onTabChange('scan')} icon={<Scan size={20}/>} label="Scan Label/Code/QR" />
-        <TabBtn active={activeTab==='search'} onClick={() => onTabChange('search')} icon={<Search size={22}/>} label="Search" />
+        <TabBtn 
+        active={activeTab === 'search'} 
+        onClick={() => onTabChange('search')} 
+        icon={<Search size={18} />} 
+        label="Search" 
+      />
+      <TabBtn 
+        active={activeTab === 'describe'} 
+        onClick={() => onTabChange('describe')} 
+        icon={<Sparkles size={18} />} 
+        label="Describe" 
+      />
+      <TabBtn 
+        active={activeTab === 'ai-search'} 
+        onClick={() => onTabChange('ai-search')} 
+        icon={<Search size={18} />} 
+        label="AI Search" 
+      />
+      <TabBtn 
+        active={activeTab === 'scan'} 
+        onClick={() => onTabChange('scan')} 
+        icon={<Check size={18} />} 
+        label="Scan" 
+      />
       </div>
     </div>
   );
@@ -33,36 +53,36 @@ interface TabBtnProps {
   onClick: () => void;
   icon: React.ReactNode;
   label: string;
-  isSearch?: boolean;
 }
 
-const TabBtn = ({ active, onClick, icon, label, isSearch }: TabBtnProps) => (
-  <button onClick={onClick} style={{ 
-    display: 'flex', 
-    flexDirection: 'column', 
-    alignItems: 'center', 
-    justifyContent: 'center',
-    gap: '12px', 
-    textAlign: 'center',
-    padding: '24px 12px', 
-    borderRadius: '32px', 
-    background: active ? 'rgba(255,255,255,0.08)' : 'rgba(255,255,255,0.04)', 
-    color: '#fff', 
-    border: `1px solid ${active ? 'var(--theme-accent, #00C9FF)' : 'rgba(255,255,255,0.15)'}`,
-    fontWeight: '800', 
-    cursor: 'pointer', 
-    transition: 'all 0.2s',
-    fontSize: '11px', 
-    width: '100%', 
-    minWidth: 0,
-    boxShadow: active ? '0 0 20px rgba(0, 201, 255, 0.1)' : 'none',
-    textTransform: 'uppercase',
-    letterSpacing: '0.5px'
-  }}>
-    <div style={{ opacity: active || isSearch ? 1 : 0.8 }}>{icon}</div>
-    <span style={{ 
-      fontWeight: '900',
-      fontSize: '10px'
-    }}>{label}</span>
-  </button>
-);
+const TabBtn: React.FC<TabBtnProps> = ({ active, onClick, icon, label }) => {
+  return (
+    <button
+      onClick={onClick}
+      style={{
+        flex: 1,
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+        gap: '4px',
+        padding: '10px 0',
+        background: active ? 'rgba(255,255,255,0.08)' : 'transparent',
+        border: '1px solid var(--theme-accent, #00C9FF)',
+        borderRadius: '16px',
+        color: active ? 'var(--theme-accent, #00C9FF)' : '#fff',
+        cursor: 'pointer',
+        transition: 'all 0.2s cubic-bezier(0.4, 0, 0.2, 1)',
+        boxShadow: active ? '0 0 15px rgba(0, 201, 255, 0.25)' : 'none',
+        opacity: active ? 1 : 0.7
+      }}
+    >
+      <div style={{ transform: active ? 'scale(1.1)' : 'scale(1)', transition: 'transform 0.2s' }}>
+        {icon}
+      </div>
+      <span style={{ fontSize: '10px', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+        {label}
+      </span>
+    </button>
+  );
+};
