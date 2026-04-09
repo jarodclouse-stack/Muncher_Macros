@@ -178,17 +178,13 @@ export const AddFoodModal: React.FC<AddFoodModalProps> = ({ meal, onClose }) => 
       });
       if (res.ok) {
         const body = await res.json();
-        const globalResults = body.foods || body.results || [];
-        
-        const seenNames = new Set(localMatches.map(f => f.name.toLowerCase()));
-        const uniqueGlobal = globalResults.filter((f: any) => !seenNames.has(f.name.toLowerCase()));
-        
-        setResults([...localMatches, ...uniqueGlobal]);
+        const apiResults: Food[] = (body.foods || []).map((f: any) => ({ ...f, isLocal: false }));
+        setResults([...localMatches, ...apiResults]);
       } else {
         console.warn("Global results unavailable");
       }
-    } catch (err: any) {
-      if (err.name === 'AbortError') return;
+    } catch (err: unknown) {
+      if ((err as Error).name === 'AbortError') return;
       console.error("Search error:", err);
       if (localMatches.length === 0) {
         setErrorMsg("Global Search error. Please try again.");
@@ -218,7 +214,7 @@ export const AddFoodModal: React.FC<AddFoodModalProps> = ({ meal, onClose }) => 
       if (detected.length === 0) {
         setErrorMsg("No AI results found. Try being more specific.");
       } else {
-        setAiStagedResults(detected.map((f: any) => {
+        setAiStagedResults(detected.map((f: Food) => {
           const norm = normalizeFoodResult(f);
           return { 
             ...norm, 
@@ -228,7 +224,8 @@ export const AddFoodModal: React.FC<AddFoodModalProps> = ({ meal, onClose }) => 
         }));
         setIsAiReviewing(true);
       }
-    } catch (err: any) {
+    } catch (err: unknown) {
+      console.error("AI Lookup error:", err);
       setErrorMsg("AI Lookup failed. Please try again.");
     }
     setSearching(false);
@@ -435,6 +432,35 @@ export const AddFoodModal: React.FC<AddFoodModalProps> = ({ meal, onClose }) => 
                             style={{ flex: 1, background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '10px', color: '#fff', fontSize: '12px', padding: '8px', outline: 'none' }}>
                             {SERVING_UNITS.map(u => <option key={u.v} value={u.v} style={{ background: '#111' }}>{u.v}</option>)}
                           </select>
+                        </div>
+
+                        {/* Action Row: Save & Edit */}
+                        <div style={{ display: 'flex', gap: '8px', marginTop: '12px', borderTop: '1px solid rgba(255,255,255,0.05)', paddingTop: '10px' }}>
+                          <button 
+                            onClick={() => {
+                              const qty = parseFloat(f.stagedQty) || 1;
+                              const foodToSave = { 
+                                ...f, 
+                                serving: `${qty} ${f.stagedUnit}`,
+                                sQty: qty,
+                                sUnit: f.stagedUnit
+                              };
+                              // Using the already scoped saveCustomFood helper
+                              const existing = JSON.parse(localStorage.getItem('mm_custom_foods') || '[]');
+                              localStorage.setItem('mm_custom_foods', JSON.stringify([...existing, foodToSave]));
+                              alert(`'${f.name}' saved to your Pantry!`);
+                            }}
+                            style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', padding: '8px', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '10px', color: 'var(--theme-accent)', fontSize: '11px', fontWeight: '700', cursor: 'pointer' }}
+                          >
+                            <Sparkles size={12} /> SAVE TO PANTRY
+                          </button>
+                          
+                          <button 
+                            onClick={() => setConfiguringFood(f)}
+                            style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', padding: '8px', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '10px', color: '#fff', fontSize: '11px', fontWeight: '700', cursor: 'pointer' }}
+                          >
+                            <Info size={12} /> TWEAK DATA
+                          </button>
                         </div>
                       </div>
                     ))}

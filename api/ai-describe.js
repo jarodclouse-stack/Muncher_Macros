@@ -230,6 +230,20 @@ async function lookupUSDA(foodName, usdaKey) {
       'Vitamin C': Math.round(gd(1162) * scale * 10) / 10,
       'Vitamin A': Math.round(gd(1106) * scale),
       'Vitamin D': Math.round(gd(1114) * scale * 10) / 10,
+      'Vitamin B1': Math.round(gd(1165) * scale * 100) / 100,
+      'Vitamin B2': Math.round(gd(1166) * scale * 100) / 100,
+      'Vitamin B3': Math.round(gd(1167) * scale * 10) / 10,
+      'Vitamin B5': Math.round(gd(1170) * scale * 10) / 10,
+      'Vitamin B6': Math.round(gd(1175) * scale * 100) / 100,
+      'Vitamin B12': Math.round(gd(1178) * scale * 100) / 100,
+      'Vitamin E': Math.round(gd(1109) * scale * 10) / 10,
+      'Vitamin K': Math.round(gd(1185) * scale * 10) / 10,
+      Magnesium: Math.round(gd(1090) * scale),
+      Phosphorus: Math.round(gd(1091) * scale),
+      Zinc: Math.round(gd(1095) * scale * 10) / 10,
+      Copper: Math.round(gd(1098) * scale * 1000) / 1000,
+      Manganese: Math.round(gd(1101) * scale * 100) / 100,
+      Selenium: Math.round(gd(1103) * scale * 10) / 10,
       _src: 'usda'
     };
   } catch (e) {
@@ -318,14 +332,30 @@ function estimateServingRatio(parsedItem, usdaFood) {
     return qty / srvQty;
   }
 
-  // Conservative fallback: do NOT multiply a count directly against a 100g USDA basis.
-  // Use one USDA serving instead of a wildly inflated estimate.
+  // Conservative fallback
   return 1;
 }
 
-function scaleFood(food, ratio, label) {
-  function r(v) { return Math.round((Number(v || 0)) * ratio * 10) / 10; }
+function enforceCalorieConsistency(f) {
+  const p = Number(f.p) || 0;
+  const c = Number(f.c) || 0;
+  const fat = Number(f.f) || 0;
+  const macroCals = Math.round(p * 4 + c * 4 + fat * 9);
+  
+  // Follow the macro calculation for physical consistency.
   return {
+    ...f,
+    cal: macroCals
+  };
+}
+
+function scaleFood(food, ratio, label) {
+  function r(v, d = 1) { 
+    const factor = Math.pow(10, d);
+    return Math.round((Number(v || 0)) * ratio * factor) / factor; 
+  }
+  
+  const scaled = {
     name: food.name,
     serving: label || food.serving,
     sQty: food.sQty,
@@ -348,8 +378,24 @@ function scaleFood(food, ratio, label) {
     'Vitamin C': r(food['Vitamin C']),
     'Vitamin A': Math.round((Number(food['Vitamin A']) || 0) * ratio),
     'Vitamin D': r(food['Vitamin D']),
+    'Vitamin B1': r(food['Vitamin B1'], 2),
+    'Vitamin B2': r(food['Vitamin B2'], 2),
+    'Vitamin B3': r(food['Vitamin B3']),
+    'Vitamin B5': r(food['Vitamin B5']),
+    'Vitamin B6': r(food['Vitamin B6'], 2),
+    'Vitamin B12': r(food['Vitamin B12'], 2),
+    'Vitamin E': r(food['Vitamin E']),
+    'Vitamin K': r(food['Vitamin K']),
+    Magnesium: Math.round((Number(food.Magnesium) || 0) * ratio),
+    Phosphorus: Math.round((Number(food.Phosphorus) || 0) * ratio),
+    Zinc: r(food.Zinc),
+    Copper: r(food.Copper, 3),
+    Manganese: r(food.Manganese, 2),
+    Selenium: r(food.Selenium),
     _src: food._src || 'usda'
   };
+
+  return enforceCalorieConsistency(scaled);
 }
 
 
@@ -388,6 +434,20 @@ function normalizeResult(f) {
     'Vitamin C': Math.round((Number(f['Vitamin C']) || 0) * 10) / 10,
     'Vitamin A': Math.round(Number(f['Vitamin A']) || 0),
     'Vitamin D': Math.round((Number(f['Vitamin D']) || 0) * 10) / 10,
+    'Vitamin B1': Math.round((Number(f['Vitamin B1']) || 0) * 100) / 100,
+    'Vitamin B2': Math.round((Number(f['Vitamin B2']) || 0) * 100) / 100,
+    'Vitamin B3': Math.round((Number(f['Vitamin B3']) || 0) * 10) / 10,
+    'Vitamin B5': Math.round((Number(f['Vitamin B5']) || 0) * 10) / 10,
+    'Vitamin B6': Math.round((Number(f['Vitamin B6']) || 0) * 100) / 100,
+    'Vitamin B12': Math.round((Number(f['Vitamin B12']) || 0) * 100) / 100,
+    'Vitamin E': Math.round((Number(f['Vitamin E']) || 0) * 10) / 10,
+    'Vitamin K': Math.round((Number(f['Vitamin K']) || 0) * 10) / 10,
+    Magnesium: Math.round(Number(f.Magnesium) || 0),
+    Phosphorus: Math.round(Number(f.Phosphorus) || 0),
+    Zinc: Math.round((Number(f.Zinc) || 0) * 10) / 10,
+    Copper: Math.round((Number(f.Copper) || 0) * 1000) / 1000,
+    Manganese: Math.round((Number(f.Manganese) || 0) * 100) / 100,
+    Selenium: Math.round((Number(f.Selenium) || 0) * 10) / 10,
     _src: f._src || 'ai'
   };
 }
