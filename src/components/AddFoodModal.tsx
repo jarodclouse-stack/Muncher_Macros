@@ -8,7 +8,7 @@ import {
   Search, Sparkles, Plus, Check, 
   X, Loader2, Info, FileText
 } from 'lucide-react';
-import { ScannerModal } from './ScannerModal';
+import { BarcodeScanner } from './BarcodeScanner';
 import { SearchCoaster, type SearchTab } from './SearchCoaster';
 import { getNutrientDescriptions } from '../lib/nutrient-info';
 
@@ -24,7 +24,6 @@ export const AddFoodModal: React.FC<AddFoodModalProps> = ({ meal, onClose }) => 
   } = useDiary();
   
   const [activeTab, setActiveTab] = useState<SearchTab>('search');
-  const [activeScanner, setActiveScanner] = useState<SearchTab | null>(null);
   
   const [query, setQuery] = useState('');
   const [results, setResults] = useState<Food[]>([]);
@@ -307,6 +306,21 @@ export const AddFoodModal: React.FC<AddFoodModalProps> = ({ meal, onClose }) => 
                 </div>
               )}
             </div>
+          ) : activeTab === 'scan' ? (
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '20px', padding: '20px 0' }}>
+              <BarcodeScanner 
+                label="Take Photo to Scan"
+                onScanSuccess={(code) => {
+                  setQuery(code);
+                  handleStandardSearch({ preventDefault: () => {} } as React.FormEvent);
+                  setActiveTab('search');
+                }}
+                onScanError={(err) => setErrorMsg(err)}
+              />
+              <p style={{ fontSize: '13px', color: '#8b8b9b', textAlign: 'center', maxWidth: '240px' }}>
+                Point at a barcode or QR code. Take a clear photo for best results.
+              </p>
+            </div>
           ) : null}
         </div>
 
@@ -442,16 +456,6 @@ export const AddFoodModal: React.FC<AddFoodModalProps> = ({ meal, onClose }) => 
           </div>
       )}
 
-      {activeScanner && (
-        <ScannerModal 
-          type={activeScanner as any} 
-          onClose={() => setActiveScanner(null)} 
-          onResult={(data) => {
-            handleAddFoodClick(data);
-            setActiveScanner(null);
-          }} 
-        />
-      )}
 
     </div>,
     document.body
