@@ -1,5 +1,5 @@
 import React from 'react';
-import { Search, Camera, FileText, Sparkles, Plus, Scan } from 'lucide-react';
+import { Search, Camera, FileText, Sparkles, Scan } from 'lucide-react';
 
 export type SearchTab = 'search' | 'ai-search' | 'describe' | 'barcode' | 'label' | 'pantry';
 
@@ -21,7 +21,6 @@ export const SearchCoaster: React.FC<SearchCoasterProps> = ({ activeTab, onTabCh
           ...style 
         }}>
         <TabBtn active={activeTab==='search'} onClick={() => onTabChange('search')} icon={<Search size={14}/>} label="Search" isPrimary />
-        <TabBtn active={activeTab==='pantry'} onClick={() => onTabChange('pantry')} icon={<Plus size={14}/>} label="Pantry" isPrimary />
         <TabBtn active={activeTab==='ai-search'} onClick={() => onTabChange('ai-search')} icon={<Sparkles size={14}/>} label="AI Search" />
         <TabBtn active={activeTab==='describe'} onClick={() => onTabChange('describe')} icon={<FileText size={14}/>} label="Describe" />
         <TabBtn active={activeTab==='barcode'} onClick={() => onTabChange('barcode')} icon={<Scan size={14}/>} label="Barcode" />

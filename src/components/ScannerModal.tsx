@@ -1,8 +1,8 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 import ReactDOM from 'react-dom';
 import { X, Search, Scan, Keyboard, AlertCircle, Loader2 } from 'lucide-react';
-import { Html5Qrcode, Html5QrcodeSupportedFormats } from 'html5-qrcode';
 import { lookupBarcode } from '../lib/vision/scanner-logic';
+import { ScannerEngine } from '../lib/vision/scanner-engine';
 
 interface ScannerModalProps {
   type: 'barcode' | 'qr' | 'label';
@@ -16,75 +16,50 @@ export const ScannerModal: React.FC<ScannerModalProps> = ({ type, onClose, onRes
   const [manualCode, setManualCode] = useState('');
   const [showManual, setShowManual] = useState(false);
 
-  const scannerRef = useRef<Html5Qrcode | null>(null);
+  const engineRef = useRef<ScannerEngine | null>(null);
   const containerId = 'interactive-scanner-region';
 
   const stopScanner = useCallback(async () => {
-    if (scannerRef.current && scannerRef.current.isScanning) {
-      try {
-        await scannerRef.current.stop();
-      } catch (e) {
-        // Silently fail on stop
-      }
+    if (engineRef.current) {
+      await engineRef.current.stop();
+      engineRef.current = null;
     }
   }, []);
 
-  const handleScanSuccess = useCallback(async (text: string) => {
+  const handleScanSuccess = useCallback(async (result: { type: string, value: string }) => {
     await stopScanner();
     setIsProcessing(true);
     try {
-      const res = await lookupBarcode(text);
+      const res = await lookupBarcode(result.value);
       if (res.success) {
         onResult(res.data);
         onClose();
       } else {
-        setError(res.error || "Product not found in database. Try another item.");
+        setError(res.error || "Product not found. Try a clearer scan or manual input.");
         setIsProcessing(false);
-        // Let user decide to retry or go manual
       }
     } catch (e) {
-      setError("Database connection error. Using manual entry instead.");
+      setError("Database connection error. Try manual entry.");
       setIsProcessing(false);
     }
-  }, [onClose, onResult]);
+  }, [onClose, onResult, stopScanner]);
 
   const startScanner = useCallback(async () => {
     setError(null);
-    
     try {
-      if (!scannerRef.current) {
-        scannerRef.current = new Html5Qrcode(containerId);
+      if (!engineRef.current) {
+        engineRef.current = new ScannerEngine({
+          containerId,
+          type: type === 'barcode' ? 'barcode' : (type === 'qr' ? 'qr' : 'both'),
+          fps: 15,
+          qrbox: { width: 260, height: type === 'barcode' ? 160 : 260 },
+          onResult: (res) => handleScanSuccess(res)
+        });
       }
-
-      const config = {
-        fps: 10,
-        qrbox: { width: 250, height: type === 'barcode' ? 150 : 250 },
-        aspectRatio: 1.0,
-        formatsToSupport: type === 'qr' 
-          ? [Html5QrcodeSupportedFormats.QR_CODE]
-          : [
-              Html5QrcodeSupportedFormats.EAN_13,
-              Html5QrcodeSupportedFormats.EAN_8,
-              Html5QrcodeSupportedFormats.UPC_A,
-              Html5QrcodeSupportedFormats.UPC_E,
-              Html5QrcodeSupportedFormats.CODE_128
-            ]
-      };
-
-      await scannerRef.current.start(
-        { facingMode: "environment" },
-        config,
-        (decodedText) => {
-          handleScanSuccess(decodedText);
-        },
-        () => {
-          // Quietly ignore frame errors until multiple failures
-          // This is a continuous loop
-        }
-      );
-    } catch (err) {
-      console.error("Scanner start error:", err);
-      setError("Camera access required. Please check permissions and lighting.");
+      await engineRef.current.start();
+    } catch (err: any) {
+      console.error("Scanner startup failed:", err);
+      setError(err.message || "Failed to access camera. Check permissions.");
     }
   }, [type, handleScanSuccess]);
 

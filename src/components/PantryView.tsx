@@ -221,7 +221,7 @@ export const PantryView: React.FC = () => {
   };
 
   return (
-    <div style={{ paddingBottom: '40px' }}>
+    <div style={{ paddingBottom: '40px', width: '100%', maxWidth: '100vw', overflowX: 'hidden', boxSizing: 'border-box' }}>
       
       {/* Tab Switcher */}
       <div 
@@ -234,12 +234,11 @@ export const PantryView: React.FC = () => {
           top: '78px', 
           zIndex: 5, 
           background: 'var(--theme-bg)', 
-          padding: '8px 20px', 
-          margin: '0 -20px',
+          padding: '8px 4px', 
           overflowX: 'auto',
           whiteSpace: 'nowrap',
-          maskImage: 'linear-gradient(to right, transparent, black 20px, black calc(100% - 20px), transparent)',
-          WebkitMaskImage: 'linear-gradient(to right, transparent, black 20px, black calc(100% - 20px), transparent)',
+          maskImage: 'linear-gradient(to right, transparent, black 16px, black calc(100% - 16px), transparent)',
+          WebkitMaskImage: 'linear-gradient(to right, transparent, black 16px, black calc(100% - 16px), transparent)',
         }}>
         <button onClick={() => { setActiveTab('search'); clearSearchState(); }} style={{ minWidth: 'max-content', padding: '12px 20px', borderRadius: '14px', border: '1px solid var(--theme-border)', background: activeTab === 'search' ? 'var(--theme-accent-dim)' : 'rgba(255,255,255,0.03)', color: activeTab === 'search' ? 'var(--theme-accent)' : 'var(--theme-text-dim)', fontWeight: '700', fontSize: '13px', cursor: 'pointer', transition: 'all 0.2s' }}>
           Discover & Search
@@ -379,7 +378,7 @@ export const PantryView: React.FC = () => {
       )}
 
       {activeTab === 'manual' && (
-        <div style={{ background: 'var(--theme-panel)', borderRadius: '24px', padding: '18px', border: '1px solid var(--theme-border)', maxWidth: '480px', margin: '0 auto', width: '100%', boxSizing: 'border-box' }}>
+        <div style={{ background: 'var(--theme-panel)', borderRadius: '24px', padding: '16px', border: '1px solid var(--theme-border)', maxWidth: '100%', width: '100%', boxSizing: 'border-box' }}>
           <h2 style={{ fontSize: '18px', fontWeight: '800', marginBottom: '20px', textAlign: 'center' }}>{editingIndex !== null ? 'Edit Macro Kitchen' : 'Macro Kitchen'}</h2>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
             <EntryField label="Food Name" value={form.name} onChange={v => setForm({...form, name: v})} placeholder="e.g. Grilled Chicken" />
