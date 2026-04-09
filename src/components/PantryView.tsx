@@ -4,19 +4,56 @@ import {
   Trash2, ChevronDown, Search, Loader2, 
   BookmarkCheck, Edit3, Sparkles, X, Info
 } from 'lucide-react';
-import { ALL_MICRO_KEYS, MICRO_UNITS, SERVING_UNITS } from '../lib/constants';
+import { ALL_MICRO_KEYS, MICRO_UNITS, SERVING_UNITS, MICRO_CATEGORIES } from '../lib/constants';
 import { getNutrientDescriptions } from '../lib/nutrient-info';
 import { computeMultiplier, scaleLegacyFoodByAmount } from '../lib/food/serving-converter';
 
 import { ScannerModal } from './ScannerModal';
 import { SearchCoaster, type SearchTab } from './SearchCoaster';
 
+const CollapsibleEntrySection = ({ title, isOpen, onToggle, children }: { title: string, isOpen: boolean, onToggle: () => void, children: React.ReactNode }) => (
+  <div style={{ border: '1px solid var(--theme-border)', borderRadius: '16px', overflow: 'hidden', background: 'var(--theme-panel-dim)', marginBottom: '8px' }}>
+    <button 
+      onClick={onToggle}
+      type="button"
+      style={{ width: '100%', padding: '12px 16px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: 'none', border: 'none', cursor: 'pointer', color: 'var(--theme-text)', fontWeight: '700', fontSize: '13px' }}>
+      {title.toUpperCase()}
+      <ChevronDown size={16} style={{ transform: isOpen ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s' }} />
+    </button>
+    {isOpen && (
+      <div style={{ padding: '0 16px 16px', borderTop: '1px solid rgba(255,255,255,0.05)' }}>
+        <div style={{ height: '12px' }} />
+        {children}
+      </div>
+    )}
+  </div>
+);
+
+const EntryField = ({ label, value, onChange }: { label: string, value: string, onChange: (v: string) => void }) => (
+  <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+    <label style={{ fontSize: '10px', color: 'var(--theme-text-dim)', fontWeight: '800' }}>{label}</label>
+    <input 
+      className="inp" 
+      value={value || ''} 
+      onChange={e => onChange(e.target.value)} 
+      style={{ padding: '8px 10px', fontSize: '12px' }}
+    />
+  </div>
+);
+
 export const PantryView: React.FC = () => {
   const { 
     localCache, saveCustomFood, updateCustomFood, deleteCustomFood
   } = useDiary();
   
-  const [form, setForm] = useState<any>({ name: '', cal: '', p: '', c: '', f: '', ingredients: '' });
+  const [form, setForm] = useState<any>({ 
+    name: '', cal: '', p: '', c: '', f: '', fiber: '', sugars: '', 
+    sat: '', mono: '', poly: '', trans: '', chol: '', 
+    Sodium: '', Potassium: '', Calcium: '', Magnesium: '',
+    ...ALL_MICRO_KEYS.reduce((acc, k) => ({ ...acc, [k]: '' }), {}),
+    ingredients: '' 
+  });
+  const [openSection, setOpenSection] = useState<string | null>(null);
   const [editingIndex, setEditingIndex] = useState<number | null>(null);
   const [errorMsg, setErrorMsg] = useState('');
   const [activeTab, setActiveTab] = useState<'search' | 'manual' | 'saved'>('search');
@@ -203,12 +240,23 @@ export const PantryView: React.FC = () => {
             <div style={{ display: 'flex', gap: '12px' }}>
               <button 
                 onClick={() => {
-                  const foodData = { ...form, cal: Number(form.cal)||0, p: Number(form.p)||0, c: Number(form.c)||0, f: Number(form.f)||0 };
+                  const foodData: any = { ...form };
+                  ['cal', 'p', 'c', 'f', 'fiber', 'sugars', 'sat', 'mono', 'poly', 'trans', 'chol', 'Sodium', 'Potassium', 'Calcium', 'Magnesium', ...ALL_MICRO_KEYS].forEach(k => {
+                    if (foodData[k] !== undefined && foodData[k] !== '') {
+                      foodData[k] = Number(foodData[k]);
+                    }
+                  });
                   if (editingIndex !== null) updateCustomFood(editingIndex, foodData);
                   else saveCustomFood(foodData);
                   setActiveTab('saved');
                   setEditingIndex(null);
-                  setForm({name:'',cal:'',p:'',c:'',f:'',ingredients:''});
+                  setForm({
+                    name:'',cal:'',p:'',c:'',f:'', fiber: '', sugars: '', 
+                    sat: '', mono: '', poly: '', trans: '', chol: '', 
+                    Sodium: '', Potassium: '', Calcium: '', Magnesium: '',
+                    ...ALL_MICRO_KEYS.reduce((acc, k) => ({ ...acc, [k]: '' }), {}),
+                    ingredients:''
+                  });
                 }}
                 style={{ flex: 2, padding: '14px', background: 'var(--theme-accent)', border: 'none', borderRadius: '12px', color: '#000', fontWeight: '800', cursor: 'pointer' }}>
                 {editingIndex !== null ? 'Update Food' : 'Save to Pantry'}
@@ -216,12 +264,64 @@ export const PantryView: React.FC = () => {
               <button 
                 onClick={() => {
                   setEditingIndex(null);
-                  setForm({name:'',cal:'',p:'',c:'',f:'',ingredients:''});
+                  setForm({
+                    name:'',cal:'',p:'',c:'',f:'', fiber: '', sugars: '', 
+                    sat: '', mono: '', poly: '', trans: '', chol: '', 
+                    Sodium: '', Potassium: '', Calcium: '', Magnesium: '',
+                    ...ALL_MICRO_KEYS.reduce((acc, k) => ({ ...acc, [k]: '' }), {}),
+                    ingredients:''
+                  });
                 }}
                 style={{ flex: 1, padding: '14px', background: 'rgba(255,255,255,0.05)', border: '1px solid var(--theme-border)', borderRadius: '12px', color: 'var(--theme-text-dim)', fontWeight: '700', cursor: 'pointer' }}>
                 Reset
               </button>
             </div>
+
+            <hr style={{ border: 'none', borderTop: '1px solid var(--theme-border)', opacity: 0.3, margin: '8px 0' }} />
+
+            {/* Collapsible Sections */}
+            <CollapsibleEntrySection 
+              title="Fats & Fiber" 
+              isOpen={openSection === 'fats'} 
+              onToggle={() => setOpenSection(openSection === 'fats' ? null : 'fats')}
+            >
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
+                <EntryField label="Fiber (g)" value={form.fiber} onChange={v => setForm({...form, fiber: v})} />
+                <EntryField label="Sugars (g)" value={form.sugars} onChange={v => setForm({...form, sugars: v})} />
+                <EntryField label="Sat Fat (g)" value={form.sat} onChange={v => setForm({...form, sat: v})} />
+                <EntryField label="Trans Fat (g)" value={form.trans} onChange={v => setForm({...form, trans: v})} />
+                <EntryField label="Mono Fat (g)" value={form.mono} onChange={v => setForm({...form, mono: v})} />
+                <EntryField label="Poly Fat (g)" value={form.poly} onChange={v => setForm({...form, poly: v})} />
+                <EntryField label="Chol (mg)" value={form.chol} onChange={v => setForm({...form, chol: v})} />
+              </div>
+            </CollapsibleEntrySection>
+
+            {MICRO_CATEGORIES.map(cat => (
+              <CollapsibleEntrySection 
+                key={cat.cat}
+                title={cat.cat} 
+                isOpen={openSection === cat.cat} 
+                onToggle={() => setOpenSection(openSection === cat.cat ? null : cat.cat)}
+              >
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
+                  {cat.keys.map(k => (
+                    <EntryField 
+                      key={k.k} 
+                      label={`${k.k} (${k.u})`} 
+                      value={form[k.k]} 
+                      onChange={v => setForm({...form, [k.k]: v})} 
+                    />
+                  ))}
+                </div>
+              </CollapsibleEntrySection>
+            ))}
+
+            <textarea 
+              placeholder="Ingredients List (Description)" 
+              style={{ width: '100%', background: 'var(--theme-input-bg)', border: '1px solid var(--theme-border)', borderRadius: '14px', padding: '14px', color: 'var(--theme-text)', fontSize: '13px', minHeight: '100px', outline: 'none' }}
+              value={form.ingredients}
+              onChange={e => setForm({...form, ingredients: e.target.value})}
+            />
           </div>
         </div>
       )}
