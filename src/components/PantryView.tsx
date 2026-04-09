@@ -79,6 +79,7 @@ export const PantryView: React.FC = () => {
   
   const [aiStagedResults, setAiStagedResults] = useState<Food[]>([]);
   const [isAiReviewing, setIsAiReviewing] = useState(false);
+  const [isPantryPickerOpen, setIsPantryPickerOpen] = useState(false);
   
   const customFoods: Food[] = localCache.customFoods || [];
   
@@ -486,6 +487,43 @@ export const PantryView: React.FC = () => {
                   {isIngSearching ? <Loader2 className="spin" size={16} /> : <Search size={16} />}
                 </button>
               </form>
+
+              {/* Pantry Picker Toggle & Row */}
+              <div style={{ marginBottom: '12px' }}>
+                <button 
+                  onClick={() => setIsPantryPickerOpen(!isPantryPickerOpen)}
+                  style={{ 
+                    width: '100%', padding: '8px', 
+                    background: isPantryPickerOpen ? 'var(--theme-accent-dim)' : 'rgba(255,255,255,0.03)', 
+                    border: '1px solid var(--theme-border)', borderRadius: '10px',
+                    color: isPantryPickerOpen ? 'var(--theme-accent)' : 'var(--theme-text-dim)',
+                    fontSize: '10px', fontWeight: '800', textTransform: 'uppercase', cursor: 'pointer',
+                    display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px'
+                  }}>
+                  <BookmarkCheck size={14} /> {isPantryPickerOpen ? 'Hide Pantry' : 'Quick Add from Pantry'}
+                </button>
+                
+                {isPantryPickerOpen && (
+                  <div style={{ marginTop: '8px', display: 'flex', gap: '6px', overflowX: 'auto', paddingBottom: '8px' }}>
+                    {customFoods.length === 0 ? (
+                      <div style={{ fontSize: '10px', color: 'var(--theme-text-dim)', padding: '10px' }}>Your pantry is empty.</div>
+                    ) : (
+                      customFoods.map((f: Food, i: number) => (
+                        <button 
+                          key={i}
+                          onClick={() => handleAddPreviewClick(f)}
+                          style={{ 
+                            padding: '8px 12px', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', 
+                            borderRadius: '12px', whiteSpace: 'nowrap', cursor: 'pointer', textAlign: 'left', minWidth: '120px'
+                          }}>
+                          <div style={{ fontSize: '11px', fontWeight: '800', color: '#fff', marginBottom: '2px' }}>{f.name}</div>
+                          <div style={{ fontSize: '9px', color: 'var(--theme-text-dim)' }}>{f.cal} kcal</div>
+                        </button>
+                      ))
+                    )}
+                  </div>
+                )}
+              </div>
 
               {/* Pairing Suggestions */}
               {pairingSuggestions.length > 0 && (
