@@ -18,6 +18,7 @@ export const SearchCoaster: React.FC<SearchCoasterProps> = ({ activeTab, onTabCh
           gridTemplateColumns: 'repeat(2, 1fr)', 
           gap: '12px', 
           padding: '4px 0 12px 0', 
+          marginTop: '8px',
           ...style 
         }}>
         <TabBtn active={activeTab==='search'} onClick={() => onTabChange('search')} icon={<Search size={18}/>} label="Search" isPrimary />

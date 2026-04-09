@@ -229,16 +229,19 @@ export const PantryView: React.FC = () => {
         style={{ 
           display: 'flex', 
           gap: '8px', 
-          marginBottom: '24px', 
+          marginBottom: '16px', 
           position: 'sticky', 
-          top: '78px', 
-          zIndex: 5, 
+          top: '76px', 
+          zIndex: 10, 
           background: 'var(--theme-bg)', 
-          padding: '8px 4px', 
+          padding: '12px 20px', 
+          margin: '0 -20px 24px -20px',
           overflowX: 'auto',
           whiteSpace: 'nowrap',
-          maskImage: 'linear-gradient(to right, transparent, black 16px, black calc(100% - 16px), transparent)',
-          WebkitMaskImage: 'linear-gradient(to right, transparent, black 16px, black calc(100% - 16px), transparent)',
+          borderBottom: '1px solid var(--theme-border)',
+          boxShadow: '0 8px 16px rgba(0,0,0,0.2)',
+          maskImage: 'linear-gradient(to right, transparent, black 20px, black calc(100% - 20px), transparent)',
+          WebkitMaskImage: 'linear-gradient(to right, transparent, black 20px, black calc(100% - 20px), transparent)',
         }}>
         <button onClick={() => { setActiveTab('search'); clearSearchState(); }} style={{ minWidth: 'max-content', padding: '12px 20px', borderRadius: '14px', border: '1px solid var(--theme-border)', background: activeTab === 'search' ? 'var(--theme-accent-dim)' : 'rgba(255,255,255,0.03)', color: activeTab === 'search' ? 'var(--theme-accent)' : 'var(--theme-text-dim)', fontWeight: '700', fontSize: '13px', cursor: 'pointer', transition: 'all 0.2s' }}>
           Discover & Search
@@ -252,7 +255,7 @@ export const PantryView: React.FC = () => {
       </div>
 
       {activeTab === 'search' && (
-        <div>
+        <div style={{ marginTop: '12px' }}>
           <SearchCoaster 
             activeTab={innerGlobalSearchTab} 
             onTabChange={(t) => { setInnerGlobalSearchTab(t); clearSearchState(); if (t==='scan') setActiveScanner('barcode'); }} 
@@ -654,7 +657,7 @@ export const PantryView: React.FC = () => {
       )}
 
       {activeTab === 'saved' && (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', marginTop: '12px' }}>
           
           {/* Filters & Sorting */}
           <div style={{ display: 'flex', gap: '8px', overflowX: 'auto', paddingBottom: '4px' }}>
