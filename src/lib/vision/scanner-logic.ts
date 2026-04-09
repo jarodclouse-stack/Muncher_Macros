@@ -87,6 +87,38 @@ export const scanNutritionLabel = async (imageBlob: Blob): Promise<ScanResult> =
 };
 
 /**
+ * Extracts barcode numbers via AI OCR if standard scanning fails
+ */
+export const extractBarcodeDigits = async (imageBlob: Blob): Promise<ScanResult> => {
+  return new Promise((resolve) => {
+    const reader = new FileReader();
+    reader.onload = async () => {
+      try {
+        const base64Str = (reader.result as string).split(',')[1];
+        const res = await fetch('/api/ai-barcode', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ base64: base64Str, mediaType: imageBlob.type })
+        });
+
+        const body = await res.json();
+        
+        if (res.ok && body.code) {
+          resolve({ success: true, text: body.code });
+        } else {
+          resolve({ success: false, error: body.error || 'AI could not read the numbers either.' });
+        }
+      } catch (err) {
+        console.error("AI Barcode read failed", err);
+        resolve({ success: false, error: "Network error during AI analysis." });
+      }
+    };
+    reader.onerror = () => resolve({ success: false, error: "Failed to read image file." });
+    reader.readAsDataURL(imageBlob);
+  });
+};
+
+/**
  * Centralized Barcode/QR Lookup Logic
  */
 export const lookupBarcode = async (code: string): Promise<ScanResult> => {
