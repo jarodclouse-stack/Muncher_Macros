@@ -1,9 +1,4 @@
-/* ===== BASE & RESET ===== */
-* {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
-}
+/* Global Reset in Root - Box Sizing handled in * reset above */
 
 /* ===== GLOBAL VARIABLES (fallback dark theme) ===== */
 :root {
@@ -25,6 +20,52 @@
   --radius-lg: 24px;
   --transition-fast: 0.2s ease;
   --transition-smooth: 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+
+  /* Standardized Spacing Scale */
+  --space-xs: 8px;
+  --space-sm: 12px;
+  --space-md: 16px;
+  --space-lg: 20px;
+  --space-xl: 24px;
+}
+
+/* ===== GLOBAL RESETS ===== */
+* {
+  box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent;
+}
+
+html, body {
+  width: 100%;
+  overflow-x: hidden;
+  margin: 0;
+  padding: 0;
+}
+
+/* ===== LAYOUT SYSTEM ===== */
+.app-container {
+  width: 100%;
+  max-width: 480px;
+  margin: 0 auto;
+  padding: 0 var(--space-md);
+  box-sizing: border-box;
+}
+
+.section {
+  margin-top: var(--space-lg);
+}
+
+.actions-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--space-sm);
+}
+
+.search-bar-wrap {
+  width: 100%;
+  display: flex;
+  gap: var(--space-xs);
+  margin-top: var(--space-md);
 }
 
 @media (max-width: 530px) {

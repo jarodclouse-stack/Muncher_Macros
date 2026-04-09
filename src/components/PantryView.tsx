@@ -10,7 +10,7 @@ import { getNutrientDescriptions } from '../lib/nutrient-info';
 import { computeMultiplier, scaleLegacyFoodByAmount, calculateMacroBalance, scaleToTarget } from '../lib/food/serving-converter';
 import { getPairingSuggestions } from '../lib/food/smart-pairing';
 
-import { ScannerModal } from './ScannerModal';
+import { BarcodeScanner } from './BarcodeScanner';
 import { SearchCoaster, type SearchTab } from './SearchCoaster';
 import type { Food, RecipeItem } from '../types/food';
 
@@ -67,8 +67,7 @@ export const PantryView: React.FC = () => {
   const [openSection, setOpenSection] = useState<string | null>(null);
   const [editingIndex, setEditingIndex] = useState<number | null>(null);
   const [errorMsg, setErrorMsg] = useState('');
-  const [activeTab, setActiveTab] = useState<SearchTab | 'saved' | 'manual' | 'pantry'>('saved');
-  const [activeScanner, setActiveScanner] = useState<'barcode' | 'qr' | 'label' | null>(null);
+  const [activeTab, setActiveTab] = useState<SearchTab | 'saved' | 'manual'>('saved');
   
   const [sortBy, setSortBy] = useState<'recent' | 'name' | 'cal' | 'p'>('recent');
   const [filterType, setFilterType] = useState<'all' | 'fav' | 'high-p' | 'low-c' | 'recipe'>('all');
@@ -255,28 +254,46 @@ export const PantryView: React.FC = () => {
       </div>
 
       {activeTab === 'search' && (
-        <div style={{ marginTop: '12px' }}>
+        <div className="section">
           <SearchCoaster 
             activeTab={innerGlobalSearchTab} 
-            onTabChange={(t) => { setInnerGlobalSearchTab(t); clearSearchState(); if (t==='scan') setActiveScanner('barcode'); }} 
-            style={{ marginBottom: '16px' }}
+            onTabChange={(t) => { setInnerGlobalSearchTab(t); clearSearchState(); }} 
           />
           
-          <div style={{ background: 'var(--theme-panel, rgba(255,255,255,0.03))', border: '1px solid var(--theme-border, rgba(255,255,255,0.05))', borderRadius: '24px', padding: '20px', marginBottom: '24px' }}>
-            <form onSubmit={innerGlobalSearchTab === 'search' ? handleGlobalSearch : (innerGlobalSearchTab === 'ai-search' ? handleGlobalAISearch : handleGlobalAIDescribe)} style={{ display: 'flex', gap: '8px' }}>
-              <input 
-                type="text" 
-                placeholder={innerGlobalSearchTab === 'search' ? "Search for foods, brands..." : (innerGlobalSearchTab === 'ai-search' ? "Explain the food (e.g. 'grilled salmon')..." : "Describe your whole meal...")}
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                style={{ flex: 1, background: 'var(--theme-input-bg, rgba(0,0,0,0.3))', border: '1px solid var(--theme-border, rgba(255,255,255,0.1))', borderRadius: '14px', padding: '12px 16px', color: 'var(--theme-text, #fff)', fontSize: '14px', outline: 'none' }}
-              />
-              <button 
-                type="submit"
-                style={{ padding: '12px 20px', background: 'var(--theme-accent, #00C9FF)', border: 'none', borderRadius: '14px', color: '#000', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                {isSearching ? <Loader2 className="spin" size={20} /> : (innerGlobalSearchTab === 'search' ? <Search size={20} /> : <Sparkles size={20} />)}
-              </button>
-            </form>
+          <div className="section" style={{ background: 'var(--theme-panel, rgba(255,255,255,0.03))', border: '1px solid var(--theme-border)', borderRadius: 'var(--radius-lg)', padding: 'var(--space-lg)', marginBottom: 'var(--space-xl)' }}>
+            {innerGlobalSearchTab === 'scan' ? (
+              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 'var(--space-md)', padding: 'var(--space-md) 0' }}>
+                <BarcodeScanner 
+                  label="Take Photo to Scan"
+                  onScanSuccess={(code) => {
+                    setSearchQuery(code);
+                    handleGlobalSearch();
+                    setInnerGlobalSearchTab('search');
+                  }}
+                  onScanError={(err) => setErrorMsg(err)}
+                />
+                <p style={{ fontSize: '12px', color: 'var(--theme-text-dim)', textAlign: 'center', maxWidth: '200px' }}>
+                  Point at a barcode or QR code. Take a clear photo for best results.
+                </p>
+              </div>
+            ) : (
+              <form 
+                className="search-bar-wrap" 
+                onSubmit={innerGlobalSearchTab === 'search' ? handleGlobalSearch : (innerGlobalSearchTab === 'ai-search' ? handleGlobalAISearch : handleGlobalAIDescribe)}>
+                <input 
+                  type="text" 
+                  placeholder={innerGlobalSearchTab === 'search' ? "Search for foods, brands..." : (innerGlobalSearchTab === 'ai-search' ? "Explain the food..." : "Describe your whole meal...")}
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  style={{ flex: 1, background: 'var(--theme-input-bg)', border: '1px solid var(--theme-border)', borderRadius: 'var(--radius-md)', padding: '12px var(--space-md)', color: 'var(--theme-text)', fontSize: '14px', outline: 'none' }}
+                />
+                <button 
+                  type="submit"
+                  style={{ padding: '12px var(--space-lg)', background: 'var(--theme-accent)', border: 'none', borderRadius: 'var(--radius-md)', color: '#000', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  {isSearching ? <Loader2 className="spin" size={20} /> : (innerGlobalSearchTab === 'search' ? <Search size={20} /> : <Sparkles size={20} />)}
+                </button>
+              </form>
+            )}
 
             {searchResults.length > 0 && (
               <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginTop: '20px', maxHeight: '400px', overflowY: 'auto', paddingRight: '4px' }}>
@@ -381,26 +398,26 @@ export const PantryView: React.FC = () => {
       )}
 
       {activeTab === 'manual' && (
-        <div style={{ background: 'var(--theme-panel)', borderRadius: '24px', padding: '16px', border: '1px solid var(--theme-border)', maxWidth: '100%', width: '100%', boxSizing: 'border-box' }}>
-          <h2 style={{ fontSize: '18px', fontWeight: '800', marginBottom: '20px', textAlign: 'center' }}>{editingIndex !== null ? 'Edit Macro Kitchen' : 'Macro Kitchen'}</h2>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+        <div className="section" style={{ background: 'var(--theme-panel)', borderRadius: 'var(--radius-lg)', padding: 'var(--space-md)', border: '1px solid var(--theme-border)' }}>
+          <h2 style={{ fontSize: '18px', fontWeight: '800', marginBottom: 'var(--space-lg)', textAlign: 'center' }}>{editingIndex !== null ? 'Edit Macro Kitchen' : 'Macro Kitchen'}</h2>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-md)' }}>
             <EntryField label="Food Name" value={form.name} onChange={v => setForm({...form, name: v})} placeholder="e.g. Grilled Chicken" />
             
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 'var(--space-sm)' }}>
               <EntryField label="Serving Amount" value={String(form.sQty || 100)} onChange={v => setForm({...form, sQty: parseFloat(v) || 0})} placeholder="100" />
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-xs)' }}>
                 <label style={{ fontSize: '10px', color: 'var(--theme-text-dim)', fontWeight: '800' }}>SERVING UNIT</label>
                 <select 
                   className="inp"
                   value={form.sUnit}
                   onChange={e => setForm({...form, sUnit: e.target.value})}
-                  style={{ padding: '8px 10px', fontSize: '13px', background: 'var(--theme-input-bg)', border: '1px solid var(--theme-border)', borderRadius: '12px', color: '#fff' }}>
+                  style={{ padding: '8px 10px', fontSize: '13px', background: 'var(--theme-input-bg)', border: '1px solid var(--theme-border)', borderRadius: 'var(--radius-md)', color: '#fff' }}>
                   {SERVING_UNITS.map(u => <option key={u.v} value={u.v}>{u.v}</option>)}
                 </select>
               </div>
             </div>
 
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '12px' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 'var(--space-sm)' }}>
                <EntryField label="Calories (kcal)" value={String(form.cal || 0)} onChange={v => setForm({...form, cal: parseFloat(v) || 0})} placeholder="0" />
                <EntryField label="Protein (g)" value={String(form.p || 0)} onChange={v => setForm({...form, p: parseFloat(v) || 0})} placeholder="0" />
                <EntryField label="Carbs (g)" value={String(form.c || 0)} onChange={v => setForm({...form, c: parseFloat(v) || 0})} placeholder="0" />
@@ -657,23 +674,23 @@ export const PantryView: React.FC = () => {
       )}
 
       {activeTab === 'saved' && (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', marginTop: '12px' }}>
+        <div className="section" style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-md)' }}>
           
           {/* Filters & Sorting */}
-          <div style={{ display: 'flex', gap: '8px', overflowX: 'auto', paddingBottom: '4px' }}>
-            <select value={sortBy} onChange={e => setSortBy(e.target.value as any)} style={{ background: 'var(--theme-panel)', border: '1px solid var(--theme-border)', borderRadius: '10px', color: '#fff', fontSize: '11px', padding: '6px 10px', outline: 'none' }}>
+          <div className="hide-scrollbar" style={{ display: 'flex', gap: 'var(--space-xs)', overflowX: 'auto', paddingBottom: 'var(--space-xs)' }}>
+            <select value={sortBy} onChange={e => setSortBy(e.target.value as any)} style={{ background: 'var(--theme-panel)', border: '1px solid var(--theme-border)', borderRadius: 'var(--radius-md)', color: '#fff', fontSize: '11px', padding: '6px 10px', outline: 'none' }}>
               <option value="recent">Recently Added</option>
               <option value="name">Name (A-Z)</option>
               <option value="cal">Highest Calories</option>
               <option value="p">Highest Protein</option>
             </select>
-            <button onClick={() => setFilterType(filterType === 'fav' ? 'all' : 'fav')} style={{ background: filterType === 'fav' ? 'var(--theme-accent-dim)' : 'var(--theme-panel)', border: '1px solid var(--theme-border)', borderRadius: '10px', color: filterType === 'fav' ? 'var(--theme-accent)' : '#fff', fontSize: '11px', padding: '6px 12px', whiteSpace: 'nowrap' }}>
+            <button onClick={() => setFilterType(filterType === 'fav' ? 'all' : 'fav')} style={{ background: filterType === 'fav' ? 'var(--theme-accent-dim)' : 'var(--theme-panel)', border: '1px solid var(--theme-border)', borderRadius: 'var(--radius-md)', color: filterType === 'fav' ? 'var(--theme-accent)' : '#fff', fontSize: '11px', padding: '6px 12px', whiteSpace: 'nowrap' }}>
               ⭐ Favorites
             </button>
-            <button onClick={() => setFilterType(filterType === 'high-p' ? 'all' : 'high-p')} style={{ background: filterType === 'high-p' ? 'var(--theme-accent-dim)' : 'var(--theme-panel)', border: '1px solid var(--theme-border)', borderRadius: '10px', color: filterType === 'high-p' ? 'var(--theme-accent)' : '#fff', fontSize: '11px', padding: '6px 12px', whiteSpace: 'nowrap' }}>
+            <button onClick={() => setFilterType(filterType === 'high-p' ? 'all' : 'high-p')} style={{ background: filterType === 'high-p' ? 'var(--theme-accent-dim)' : 'var(--theme-panel)', border: '1px solid var(--theme-border)', borderRadius: 'var(--radius-md)', color: filterType === 'high-p' ? 'var(--theme-accent)' : '#fff', fontSize: '11px', padding: '6px 12px', whiteSpace: 'nowrap' }}>
               💪 High Protein
             </button>
-            <button onClick={() => setFilterType(filterType === 'recipe' ? 'all' : 'recipe')} style={{ background: filterType === 'recipe' ? 'var(--theme-accent-dim)' : 'var(--theme-panel)', border: '1px solid var(--theme-border)', borderRadius: '10px', color: filterType === 'recipe' ? 'var(--theme-accent)' : '#fff', fontSize: '11px', padding: '6px 12px', whiteSpace: 'nowrap' }}>
+            <button onClick={() => setFilterType(filterType === 'recipe' ? 'all' : 'recipe')} style={{ background: filterType === 'recipe' ? 'var(--theme-accent-dim)' : 'var(--theme-panel)', border: '1px solid var(--theme-border)', borderRadius: 'var(--radius-md)', color: filterType === 'recipe' ? 'var(--theme-accent)' : '#fff', fontSize: '11px', padding: '6px 12px', whiteSpace: 'nowrap' }}>
               🍳 Recipes
             </button>
           </div>
@@ -699,9 +716,9 @@ export const PantryView: React.FC = () => {
                   key={originalIdx} 
                   onClick={() => handleAddPreviewClick(f)}
                   style={{ 
-                    padding: '16px', 
+                    padding: 'var(--space-md)', 
                     background: 'var(--theme-panel-dim, rgba(255,255,255,0.02))', 
-                    borderRadius: '20px', 
+                    borderRadius: 'var(--radius-lg)', 
                     border: '1px solid var(--theme-border)', 
                     display: 'flex', 
                     justifyContent: 'space-between', 
@@ -751,17 +768,7 @@ export const PantryView: React.FC = () => {
         </div>
       )}
 
-      {/* Scanner Modal */}
-      {activeScanner && (
-        <ScannerModal 
-          type={activeScanner as any} 
-          onClose={() => setActiveScanner(null)} 
-          onResult={(data) => {
-            handleAddPreviewClick(data);
-            setActiveScanner(null);
-          }} 
-        />
-      )}
+      {/* Scanner Placeholder (Removed Modal) */}
 
       {/* Food Preview Configuration Overlay */}
       {configuringFood && (

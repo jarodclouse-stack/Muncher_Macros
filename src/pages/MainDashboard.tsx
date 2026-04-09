@@ -79,7 +79,7 @@ export const MainDashboard: React.FC = () => {
       </header>
 
       {/* Main Content Area */}
-      <main style={{ padding: '24px 20px', maxWidth: '800px', margin: '0 auto', paddingBottom: '90px' }}>
+      <main className="app-container" style={{ paddingTop: 'var(--space-xl)', paddingBottom: 'calc(90px + env(safe-area-inset-bottom))' }}>
         {activeTab === 'diary' && <DiaryView />}
         {activeTab === 'nutrition' && <NutritionView />}
         {activeTab === 'progress' && <ProgressView setActiveTab={setActiveTab} />}

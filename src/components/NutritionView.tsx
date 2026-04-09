@@ -12,17 +12,19 @@ ChartJS.register(ArcElement, Tooltip, Legend);
 
 export const NutritionView: React.FC = () => {
   const { localCache, currentDate } = useDiary();
-  const dayData = localCache[currentDate] || {};
-  const foodLog = dayData.foodLog || [];
-  const goals = localCache.goals || {};
   
+  const goals = useMemo(() => localCache.goals || {}, [localCache.goals]);
+  const computed = useMemo(() => computeGoals(goals), [goals]);
+  const totals = useMemo(() => {
+    const dayData = localCache[currentDate] || {};
+    const foodLog = dayData.foodLog || [];
+    return sumFoods(foodLog.map((l: any) => l.f));
+  }, [localCache, currentDate]);
+
   const [expandedMicro, setExpandedMicro] = useState<string | null>(null);
 
-  const computed = useMemo(() => computeGoals(goals), [goals]);
-  const totals = useMemo(() => sumFoods(foodLog.map((l: any) => l.f)), [foodLog]);
-
   // Get CSS Variables for Chart
-  const getVar = (name: string) => getComputedStyle(document.body).getPropertyValue(name).trim();
+  const getVar = (name: string) => typeof window !== 'undefined' ? getComputedStyle(document.body).getPropertyValue(name).trim() : '';
   const proteinColor = getVar('--theme-error') || '#FF6B6B';
   const carbsColor = getVar('--theme-accent') || '#4DABF7';
   const fatColor = getVar('--theme-warning') || '#FCC419';
@@ -47,16 +49,16 @@ export const NutritionView: React.FC = () => {
   };
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+    <div className="section" style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-lg)' }}>
       {/* Overview Card */}
-      <div style={{ background: 'linear-gradient(145deg, var(--theme-panel, rgba(255,255,255,0.05)) 0%, rgba(255,255,255,0.01) 100%)', border: '1px solid var(--theme-border, rgba(255,255,255,0.05))', borderRadius: '24px', padding: '24px' }}>
-        <h2 style={{ fontSize: '18px', fontWeight: '800', marginBottom: '20px', color: 'var(--theme-text)' }}>Macronutrients</h2>
+      <div className="section" style={{ background: 'linear-gradient(145deg, var(--theme-panel) 0%, rgba(255,255,255,0.01) 100%)', border: '1px solid var(--theme-border)', borderRadius: 'var(--radius-lg)', padding: 'var(--space-xl)' }}>
+        <h2 style={{ fontSize: '18px', fontWeight: '800', marginBottom: 'var(--space-lg)', color: 'var(--theme-text)' }}>Macronutrients</h2>
         
         <div style={{ 
           display: 'flex', 
-          flexDirection: window.innerWidth < 600 ? 'column' : 'row', 
+          flexDirection: typeof window !== 'undefined' && window.innerWidth < 600 ? 'column' : 'row', 
           alignItems: 'center', 
-          gap: window.innerWidth < 600 ? '24px' : '32px' 
+          gap: typeof window !== 'undefined' && window.innerWidth < 600 ? '24px' : '32px' 
         }}>
           <div style={{ width: '140px', height: '140px', position: 'relative' }}>
             <Doughnut data={macroData} options={macroOptions} />
@@ -225,9 +227,9 @@ export const NutritionView: React.FC = () => {
       </div>
 
       {/* Micronutrients */}
-      <div style={{ background: 'var(--theme-panel, rgba(255,255,255,0.03))', border: '1px solid var(--theme-border, rgba(255,255,255,0.05))', borderRadius: '24px', padding: '24px' }}>
-        <h2 style={{ fontSize: '18px', fontWeight: '700', marginBottom: '20px', color: 'var(--theme-text)' }}>Micronutrients</h2>
-        <div style={{ display: 'grid', gap: '20px' }}>
+      <div className="section" style={{ background: 'var(--theme-panel)', border: '1px solid var(--theme-border)', borderRadius: 'var(--radius-lg)', padding: 'var(--space-xl)' }}>
+        <h2 style={{ fontSize: '18px', fontWeight: '800', marginBottom: 'var(--space-lg)', color: 'var(--theme-text)' }}>Micronutrients</h2>
+        <div style={{ display: 'grid', gap: 'var(--space-lg)' }}>
           {MICRO_CATEGORIES.map((cat: any) => (
             <div key={cat.cat}>
               <h3 style={{ fontSize: '13px', color: 'var(--theme-accent, #00C9FF)', marginBottom: '12px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>{cat.cat}</h3>

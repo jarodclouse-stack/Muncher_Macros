@@ -82,24 +82,24 @@ export const DiaryView: React.FC = () => {
   }, [currentDate]);
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+    <div className="section" style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-lg)' }}>
       
       {/* Daily Cheer Banner */}
-      <div style={{ background: 'var(--theme-accent-dim, rgba(255,215,0,0.05))', border: '1px solid var(--theme-border, rgba(255,215,0,0.1))', borderRadius: '16px', padding: '12px 16px', display: 'flex', alignItems: 'center', gap: '10px' }}>
+      <div style={{ background: 'var(--theme-accent-dim, rgba(255,215,0,0.05))', border: '1px solid var(--theme-border)', borderRadius: 'var(--radius-md)', padding: 'var(--space-md)', display: 'flex', alignItems: 'center', gap: 'var(--space-sm)' }}>
           <span style={{ fontSize: '18px' }}>✨</span>
           <span style={{ fontSize: '13px', fontWeight: '600', color: 'var(--theme-accent, #FFD700)', fontStyle: 'italic' }}>{randomCheer}</span>
       </div>
 
       {/* Daily Summary Card */}
-      <div style={{ background: 'linear-gradient(145deg, var(--theme-panel, rgba(255,255,255,0.05)) 0%, rgba(255,255,255,0.01) 100%)', border: '1px solid var(--theme-border, rgba(255,255,255,0.05))', borderRadius: '24px', padding: '24px', position: 'relative', overflow: 'hidden' }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '14px', flex: 1, justifyContent: 'center' }}>
-            <button onClick={() => changeDate(-1)} style={{ background: 'var(--theme-panel, rgba(255,255,255,0.05))', border: 'none', color: 'var(--theme-text)', cursor: 'pointer', padding: '10px', borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><ChevronLeft size={20} /></button>
+      <div className="section" style={{ background: 'linear-gradient(145deg, var(--theme-panel) 0%, rgba(255,255,255,0.01) 100%)', border: '1px solid var(--theme-border)', borderRadius: 'var(--radius-lg)', padding: 'var(--space-xl)', position: 'relative', overflow: 'hidden' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 'var(--space-lg)' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-md)', flex: 1, justifyContent: 'center' }}>
+            <button onClick={() => changeDate(-1)} style={{ background: 'var(--theme-panel)', border: 'none', color: 'var(--theme-text)', cursor: 'pointer', padding: '10px', borderRadius: 'var(--radius-md)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><ChevronLeft size={20} /></button>
             <div style={{ textAlign: 'center' }}>
-              <h2 style={{ fontSize: '18px', fontWeight: '8400', margin: 0, color: 'var(--theme-text)' }}>{displayDate}</h2>
-              <div style={{ fontSize: '11px', color: 'var(--theme-text-dim, #8b8b9b)', fontWeight: '600', textTransform: 'uppercase', letterSpacing: '0.05em', marginTop: '2px' }}>Personal Diary</div>
+              <h2 style={{ fontSize: '18px', fontWeight: '800', margin: 0, color: 'var(--theme-text)' }}>{displayDate}</h2>
+              <div style={{ fontSize: '11px', color: 'var(--theme-text-dim)', fontWeight: '600', textTransform: 'uppercase', letterSpacing: '0.05em', marginTop: '2px' }}>Personal Diary</div>
             </div>
-            <button onClick={() => changeDate(1)} style={{ background: 'var(--theme-panel, rgba(255,255,255,0.05))', border: 'none', color: 'var(--theme-text)', cursor: 'pointer', padding: '10px', borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><ChevronRight size={20} /></button>
+            <button onClick={() => changeDate(1)} style={{ background: 'var(--theme-panel)', border: 'none', color: 'var(--theme-text)', cursor: 'pointer', padding: '10px', borderRadius: 'var(--radius-md)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><ChevronRight size={20} /></button>
           </div>
         </div>
 
@@ -147,12 +147,12 @@ export const DiaryView: React.FC = () => {
 
 
         return (
-          <div key={meal} style={{ background: 'var(--theme-panel, rgba(255,255,255,0.03))', border: '1px solid var(--theme-border, rgba(255,255,255,0.05))', borderRadius: '24px', padding: '24px' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+          <div key={meal} className="section" style={{ background: 'var(--theme-panel)', border: '1px solid var(--theme-border)', borderRadius: 'var(--radius-lg)', padding: 'var(--space-xl)' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 'var(--space-md)' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-sm)' }}>
                 <h3 style={{ fontSize: '16px', fontWeight: '700', margin: 0, color: 'var(--theme-text)' }}>{meal}</h3>
               </div>
-              <span style={{ fontSize: '14px', color: 'var(--theme-accent, #00C9FF)', fontWeight: '600' }}>{mealCals} kcal</span>
+              <span style={{ fontSize: '14px', color: 'var(--theme-accent)', fontWeight: '600' }}>{mealCals} kcal</span>
             </div>
             
             {mealFoods.map((log: any, idx: number) => (

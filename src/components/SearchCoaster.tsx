@@ -12,15 +12,7 @@ interface SearchCoasterProps {
 export const SearchCoaster: React.FC<SearchCoasterProps> = ({ activeTab, onTabChange, style }) => {
   return (
     <div style={{ position: 'relative', width: '100%', boxSizing: 'border-box' }}>
-      <div 
-        style={{ 
-          display: 'grid', 
-          gridTemplateColumns: 'repeat(2, 1fr)', 
-          gap: '12px', 
-          padding: '4px 0 12px 0', 
-          marginTop: '8px',
-          ...style 
-        }}>
+      <div className="actions-grid" style={{ padding: 'var(--space-xs) 0 var(--space-md) 0', ...style }}>
         <TabBtn active={activeTab==='search'} onClick={() => onTabChange('search')} icon={<Search size={18}/>} label="Search" isPrimary />
         <TabBtn active={activeTab==='ai-search'} onClick={() => onTabChange('ai-search')} icon={<Sparkles size={18}/>} label="AI Search" />
         <TabBtn active={activeTab==='describe'} onClick={() => onTabChange('describe')} icon={<FileText size={18}/>} label="Describe Meal" />
