@@ -155,7 +155,12 @@ export const DiaryView: React.FC = () => {
               <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
                 <h3 style={{ fontSize: '16px', fontWeight: '700', margin: 0, color: 'var(--theme-text)' }}>{meal}</h3>
                 {mealFoods.length > 0 && (
-                  <VitalityBadge score={mealVitality.score} label={mealVitality.label} color={mealVitality.color} />
+                  <VitalityBadge 
+                    score={mealVitality.score} 
+                    label={mealVitality.label} 
+                    color={mealVitality.color} 
+                    alwaysShow={true}
+                  />
                 )}
               </div>
               <span style={{ fontSize: '14px', color: 'var(--theme-accent, #00C9FF)', fontWeight: '600' }}>{mealCals} kcal</span>

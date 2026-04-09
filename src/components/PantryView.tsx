@@ -197,9 +197,7 @@ export const PantryView: React.FC = () => {
     setIsSearching(false);
   };
 
-  const updateTrayItemProxy = (idx: number, updates: any) => {
-    updateTrayItem(idx, updates);
-  };
+
 
   const getCombinedTrayNutrition = () => {
     const totals = stagingTray.reduce((acc, item) => {
