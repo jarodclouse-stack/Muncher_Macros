@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import ReactDOM from 'react-dom';
 import { useDiary } from '../context/DiaryContext';
 import { ALL_MICRO_KEYS, MICRO_UNITS, SERVING_UNITS } from '../lib/constants';
@@ -19,7 +19,7 @@ interface AddFoodModalProps {
 
 export const AddFoodModal: React.FC<AddFoodModalProps> = ({ meal, onClose }) => {
   const { 
-    addFoodLog, saveCustomFood, 
+    localCache, addFoodLog, saveCustomFood, 
     stagingTray, addToTray, clearTray 
   } = useDiary();
   
@@ -32,6 +32,7 @@ export const AddFoodModal: React.FC<AddFoodModalProps> = ({ meal, onClose }) => 
   
   const [aiStagedResults, setAiStagedResults] = useState<any[]>([]);
   const [isAiReviewing, setIsAiReviewing] = useState(false);
+  const abortControllerRef = useRef<AbortController | null>(null);
 
   const clearSearchState = () => {
     setQuery('');
@@ -90,20 +91,52 @@ export const AddFoodModal: React.FC<AddFoodModalProps> = ({ meal, onClose }) => 
   const handleStandardSearch = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!query) return;
+    
+    // Abort any existing search request
+    if (abortControllerRef.current) {
+      abortControllerRef.current.abort();
+    }
+    const controller = new AbortController();
+    abortControllerRef.current = controller;
+
     setSearching(true);
     setErrorMsg('');
+
+    // --- PANTRY FIRST LOGIC ---
+    const customFoods: Food[] = localCache.customFoods || [];
+    const localMatches = customFoods.filter(f => 
+      f.name.toLowerCase().includes(query.toLowerCase())
+    ).map(f => ({ ...f, isLocal: true }));
+    
+    setResults(localMatches);
+
     try {
-      const res = await fetch(`/api/food-search?q=${encodeURIComponent(query)}`);
+      const res = await fetch(`/api/food-search?q=${encodeURIComponent(query)}`, {
+        signal: controller.signal
+      });
       if (res.ok) {
         const body = await res.json();
-        setResults(body.foods || body.results || []);
+        const globalResults = body.foods || body.results || [];
+        
+        const seenNames = new Set(localMatches.map(f => f.name.toLowerCase()));
+        const uniqueGlobal = globalResults.filter((f: any) => !seenNames.has(f.name.toLowerCase()));
+        
+        setResults([...localMatches, ...uniqueGlobal]);
       } else {
-        throw new Error('API down');
+        console.warn("Global results unavailable");
       }
-    } catch (err) {
-      setErrorMsg("Global Search error. Please try again.");
+    } catch (err: any) {
+      if (err.name === 'AbortError') return;
+      console.error("Search error:", err);
+      if (localMatches.length === 0) {
+        setErrorMsg("Global Search error. Please try again.");
+      }
+    } finally {
+      if (abortControllerRef.current === controller) {
+        setSearching(false);
+        abortControllerRef.current = null;
+      }
     }
-    setSearching(false);
   };
 
   const handleAISearch = async (e: React.FormEvent) => {
@@ -189,31 +222,32 @@ export const AddFoodModal: React.FC<AddFoodModalProps> = ({ meal, onClose }) => 
               </form>
 
               {results.length > 0 && (
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', maxHeight: '400px', overflowY: 'auto' }}>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', maxHeight: '400px', overflowY: 'auto', paddingRight: '4px' }}>
                   {results.map((f, i) => (
                     <div 
                       key={i} 
                       onClick={() => handleAddFoodClick(f)} 
                       style={{ 
                         padding: '16px', 
-                        background: 'rgba(255,255,255,0.04)', 
+                        background: 'rgba(0,0,0,0.4)', 
                         borderRadius: '20px', 
-                        border: '1px solid rgba(255,255,255,0.05)', 
+                        border: '1px solid rgba(255,255,255,0.08)', 
                         cursor: 'pointer', 
-                        transition: 'transform 0.2s, background 0.2s',
+                        transition: 'all 0.2s cubic-bezier(0.4, 0, 0.2, 1)',
                         display: 'flex', 
                         justifyContent: 'space-between', 
-                        alignItems: 'center' 
+                        alignItems: 'center',
+                        backdropFilter: 'blur(5px)'
                       }}>
                       <div style={{ flex: 1 }}>
                         <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
                           <div style={{ fontWeight: '800', color: '#fff', fontSize: '15px' }}>{f.name}</div>
-                          {f.brand && <div style={{ fontSize: '10px', color: '#8b8b9b', opacity: 0.6 }}>• {f.brand}</div>}
+                          {f.brand && <div style={{ fontSize: '10px', color: 'rgba(255,255,255,0.5)', opacity: 0.6 }}>• {f.brand}</div>}
                         </div>
                         <div style={{ display: 'flex', gap: '8px', alignItems: 'center', marginTop: '4px' }}>
                           <div style={{ fontSize: '11px', color: 'var(--theme-accent)', fontWeight: '700' }}>{f.cal} kcal</div>
                           <div style={{ width: '1px', height: '10px', background: 'rgba(255,255,255,0.1)' }} />
-                          <div style={{ fontSize: '10px', color: '#8b8b9b', fontWeight: '600' }}>P:{f.p}g C:{f.c}g F:{f.f}g</div>
+                          <div style={{ fontSize: '10px', color: 'rgba(255,255,255,0.5)', fontWeight: '600' }}>P:{f.p}g C:{f.c}g F:{f.f}g</div>
                         </div>
                       </div>
                       <Plus size={20} color="var(--theme-accent, #00C9FF)" />
@@ -245,25 +279,34 @@ export const AddFoodModal: React.FC<AddFoodModalProps> = ({ meal, onClose }) => 
 
               {/* AI Review Step */}
               {isAiReviewing && aiStagedResults.length > 0 && (
-                <div style={{ padding: '20px', background: 'rgba(0,180,255,0.05)', borderRadius: '24px', border: '1px solid rgba(0,180,255,0.2)' }}>
+                <div style={{ padding: '20px', background: 'rgba(0,180,255,0.03)', borderRadius: '24px', border: '1px solid rgba(0,180,255,0.15)', backdropFilter: 'blur(10px)' }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
-                    <div style={{ fontSize: '13px', fontWeight: '900', color: '#fff', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <div style={{ fontSize: '13px', fontWeight: '900', color: '#fff', display: 'flex', alignItems: 'center', gap: '8px', letterSpacing: '0.5px' }}>
                       <Sparkles size={18} color="var(--theme-accent)" /> REVIEW DETECTED MEAL
                     </div>
-                    <button onClick={() => { setIsAiReviewing(false); setAiStagedResults([]); }} style={{ background: 'none', border: 'none', color: '#8b8b9b', cursor: 'pointer' }}><X size={18} /></button>
+                    <button onClick={() => { setIsAiReviewing(false); setAiStagedResults([]); }} style={{ background: 'rgba(255,255,255,0.05)', border: 'none', color: 'rgba(255,255,255,0.4)', borderRadius: '50%', padding: '4px', cursor: 'pointer' }}><X size={18} /></button>
                   </div>
                   
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', marginBottom: '16px' }}>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', marginBottom: '20px' }}>
                     {aiStagedResults.map((f, i) => (
-                      <div key={i} style={{ background: 'rgba(0,0,0,0.2)', padding: '12px', borderRadius: '16px', border: '1px solid rgba(255,255,255,0.05)' }}>
-                        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
-                          <div style={{ fontWeight: '700', fontSize: '13px', color: '#fff' }}>{f.name}</div>
+                      <div key={i} style={{ background: 'rgba(0,0,0,0.3)', padding: '16px', borderRadius: '18px', border: '1px solid rgba(255,255,255,0.08)' }}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '10px' }}>
+                          <div style={{ fontWeight: '800', fontSize: '14px', color: '#fff' }}>{f.name}</div>
                           <button onClick={() => {
                             const next = aiStagedResults.filter((_, idx) => idx !== i);
                             setAiStagedResults(next);
                             if (next.length === 0) setIsAiReviewing(false);
-                          }} style={{ background: 'none', border: 'none', color: '#FF6B6B', cursor: 'pointer' }}><X size={14} /></button>
+                          }} style={{ background: 'none', border: 'none', color: 'rgba(255,107,107,0.6)', cursor: 'pointer' }}><X size={16} /></button>
                         </div>
+
+                        {/* Nutritional Breakdown Inline */}
+                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '6px', marginBottom: '12px', background: 'rgba(255,255,255,0.03)', padding: '8px', borderRadius: '12px' }}>
+                          <div style={{ textAlign: 'center' }}><div style={{ fontSize: '9px', color: 'rgba(255,255,255,0.4)', fontWeight: '700' }}>KCAL</div><div style={{ fontSize: '12px', fontWeight: '900', color: '#fff' }}>{f.cal}</div></div>
+                          <div style={{ textAlign: 'center' }}><div style={{ fontSize: '9px', color: 'rgba(255,255,255,0.4)', fontWeight: '700' }}>P</div><div style={{ fontSize: '12px', fontWeight: '900', color: 'var(--theme-success, #92FE9D)' }}>{f.p}g</div></div>
+                          <div style={{ textAlign: 'center' }}><div style={{ fontSize: '9px', color: 'rgba(255,255,255,0.4)', fontWeight: '700' }}>C</div><div style={{ fontSize: '12px', fontWeight: '900', color: 'var(--theme-accent, #00C9FF)' }}>{f.c}g</div></div>
+                          <div style={{ textAlign: 'center' }}><div style={{ fontSize: '9px', color: 'rgba(255,255,255,0.4)', fontWeight: '700' }}>F</div><div style={{ fontSize: '12px', fontWeight: '900', color: '#FF6B6B' }}>{f.f}g</div></div>
+                        </div>
+                        
                         <div style={{ display: 'flex', gap: '8px' }}>
                           <input 
                             type="number" 
@@ -273,7 +316,7 @@ export const AddFoodModal: React.FC<AddFoodModalProps> = ({ meal, onClose }) => 
                               next[i] = { ...f, stagedQty: e.target.value };
                               setAiStagedResults(next);
                             }}
-                            style={{ width: '50px', background: 'rgba(0,0,0,0.3)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '8px', color: '#fff', fontSize: '11px', padding: '4px' }} 
+                            style={{ width: '60px', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '10px', color: '#fff', fontSize: '12px', padding: '8px', outline: 'none' }} 
                           />
                           <select 
                             value={f.stagedUnit} 
@@ -282,8 +325,8 @@ export const AddFoodModal: React.FC<AddFoodModalProps> = ({ meal, onClose }) => 
                               next[i] = { ...f, stagedUnit: e.target.value };
                               setAiStagedResults(next);
                             }}
-                            style={{ flex: 1, background: 'rgba(0,0,0,0.3)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '8px', color: '#fff', fontSize: '11px', padding: '4px' }}>
-                            {SERVING_UNITS.map(u => <option key={u.v} value={u.v}>{u.v}</option>)}
+                            style={{ flex: 1, background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '10px', color: '#fff', fontSize: '12px', padding: '8px', outline: 'none' }}>
+                            {SERVING_UNITS.map(u => <option key={u.v} value={u.v} style={{ background: '#111' }}>{u.v}</option>)}
                           </select>
                         </div>
                       </div>
@@ -300,8 +343,8 @@ export const AddFoodModal: React.FC<AddFoodModalProps> = ({ meal, onClose }) => 
                       setIsAiReviewing(false);
                       setAiStagedResults([]);
                     }}
-                    style={{ width: '100%', padding: '14px', background: 'var(--theme-accent)', border: 'none', borderRadius: '14px', color: '#000', fontWeight: '900', fontSize: '13px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
-                    <Check size={18} /> CONFIRM DETECTED MEAL
+                    style={{ width: '100%', padding: '16px', background: 'var(--theme-accent)', border: 'none', borderRadius: '16px', color: '#000', fontWeight: '900', fontSize: '14px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', boxShadow: '0 8px 20px rgba(0,201,255,0.2)' }}>
+                    <Check size={20} /> CONFIRM ALL ITEMS
                   </button>
                 </div>
               )}

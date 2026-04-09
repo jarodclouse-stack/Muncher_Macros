@@ -60,9 +60,8 @@ function extractJSON(text) {
 
 // Models available on this account (verified via /api/check)
 var MODELS = [
-  'claude-haiku-4-5-20251001',
-  'claude-sonnet-4-6',
-  'claude-sonnet-4-5-20250929',
+  'claude-3-haiku-20240307',
+  'claude-3-5-sonnet-20240620',
 ];
 
 export default async function handler(req, res) {

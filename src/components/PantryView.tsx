@@ -346,13 +346,13 @@ export const PantryView: React.FC = () => {
               {searchResults.length > 0 && (
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginTop: '20px', maxHeight: '400px', overflowY: 'auto', paddingRight: '4px' }}>
                   {searchResults.map((f: Food, i) => (
-                    <div key={i} onClick={() => handleAddPreviewClick(f)} style={{ padding: '12px', background: 'var(--theme-panel, rgba(255,255,255,0.05))', borderRadius: '12px', cursor: 'pointer', borderLeft: f.isLocal ? '3px solid var(--theme-success, #92FE9D)' : '3px solid var(--theme-accent, #00C9FF)', transition: 'background 0.2s', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <div key={i} onClick={() => handleAddPreviewClick(f)} style={{ padding: '12px', background: 'rgba(0,0,0,0.4)', borderRadius: '12px', cursor: 'pointer', borderLeft: f.isLocal ? '3px solid var(--theme-success, #92FE9D)' : '3px solid var(--theme-accent, #00C9FF)', transition: 'background 0.2s', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                       <div style={{ flex: 1 }}>
                         <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                          <div style={{ fontWeight: '700', fontSize: '14px', color: 'var(--theme-text)' }}>{f.name}</div>
-                          {f.brand && <div style={{ fontSize: '10px', color: 'var(--theme-text-dim)', opacity: 0.6 }}>• {f.brand}</div>}
+                          <div style={{ fontWeight: '700', fontSize: '14px', color: '#fff' }}>{f.name}</div>
+                          {f.brand && <div style={{ fontSize: '10px', color: 'rgba(255,255,255,0.6)', opacity: 0.6 }}>• {f.brand}</div>}
                         </div>
-                        <div style={{ fontSize: '11px', color: 'var(--theme-text-dim, #8b8b9b)', marginTop: '2px' }}>{f.serving} • {f.cal} kcal • P:{f.p}g C:{f.c}g F:{f.f}g</div>
+                        <div style={{ fontSize: '11px', color: 'rgba(255,255,255,0.5)', marginTop: '2px' }}>{f.serving} • {f.cal} kcal • P:{f.p}g C:{f.c}g F:{f.f}g</div>
                       </div>
                       {f.isLocal && <BookmarkCheck size={16} color="var(--theme-success, #92FE9D)" />}
                     </div>
@@ -364,25 +364,34 @@ export const PantryView: React.FC = () => {
 
               {/* AI Review Step */}
               {isAiReviewing && aiStagedResults.length > 0 && (
-                <div style={{ marginTop: '20px', padding: '20px', background: 'rgba(0,180,255,0.05)', borderRadius: '24px', border: '1px solid rgba(0,180,255,0.2)' }}>
+                <div style={{ marginTop: '20px', padding: '20px', background: 'rgba(0,0,0,0.5)', borderRadius: '24px', border: '1px solid rgba(0,180,255,0.2)' }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
                     <div style={{ fontSize: '14px', fontWeight: '900', color: '#fff', display: 'flex', alignItems: 'center', gap: '8px' }}>
                       <Sparkles size={18} color="var(--theme-accent)" /> REVIEW DETECTED MEAL
                     </div>
-                    <button onClick={() => { setIsAiReviewing(false); setAiStagedResults([]); }} style={{ background: 'none', border: 'none', color: 'var(--theme-text-dim)', cursor: 'pointer' }}><X size={18} /></button>
+                    <button onClick={() => { setIsAiReviewing(false); setAiStagedResults([]); }} style={{ background: 'none', border: 'none', color: 'rgba(255,255,255,0.5)', cursor: 'pointer' }}><X size={18} /></button>
                   </div>
                   
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', marginBottom: '16px' }}>
                     {aiStagedResults.map((f, i) => (
-                      <div key={i} style={{ background: 'rgba(0,0,0,0.2)', padding: '12px', borderRadius: '16px', border: '1px solid rgba(255,255,255,0.05)' }}>
+                      <div key={i} style={{ background: 'rgba(255,255,255,0.03)', padding: '16px', borderRadius: '18px', border: '1px solid rgba(255,255,255,0.08)', backdropFilter: 'blur(5px)' }}>
                         <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
-                          <div style={{ fontWeight: '700', fontSize: '13px', color: '#fff' }}>{f.name}</div>
+                          <div style={{ fontWeight: '800', fontSize: '14px', color: '#fff' }}>{f.name}</div>
                           <button onClick={() => {
                             const next = aiStagedResults.filter((_, idx) => idx !== i);
                             setAiStagedResults(next);
                             if (next.length === 0) setIsAiReviewing(false);
                           }} style={{ background: 'none', border: 'none', color: '#FF6B6B', cursor: 'pointer' }}><X size={14} /></button>
                         </div>
+                        
+                        {/* Nutrients Display */}
+                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '8px', marginBottom: '12px', background: 'rgba(255,255,255,0.03)', padding: '8px', borderRadius: '12px' }}>
+                          <div style={{ textAlign: 'center' }}><div style={{ fontSize: '9px', color: 'rgba(255,255,255,0.4)', fontWeight: '700' }}>KCAL</div><div style={{ fontSize: '13px', fontWeight: '900', color: '#fff' }}>{f.cal}</div></div>
+                          <div style={{ textAlign: 'center' }}><div style={{ fontSize: '9px', color: 'rgba(255,255,255,0.4)', fontWeight: '700' }}>P</div><div style={{ fontSize: '13px', fontWeight: '900', color: 'var(--theme-success)' }}>{f.p}g</div></div>
+                          <div style={{ textAlign: 'center' }}><div style={{ fontSize: '9px', color: 'rgba(255,255,255,0.4)', fontWeight: '700' }}>C</div><div style={{ fontSize: '13px', fontWeight: '900', color: 'var(--theme-accent)' }}>{f.c}g</div></div>
+                          <div style={{ textAlign: 'center' }}><div style={{ fontSize: '9px', color: 'rgba(255,255,255,0.4)', fontWeight: '700' }}>F</div><div style={{ fontSize: '13px', fontWeight: '900', color: 'var(--theme-error)' }}>{f.f}g</div></div>
+                        </div>
+
                         <div style={{ display: 'flex', gap: '8px' }}>
                           <input 
                             type="number" 
@@ -392,7 +401,7 @@ export const PantryView: React.FC = () => {
                               next[i] = { ...f, stagedQty: e.target.value };
                               setAiStagedResults(next);
                             }}
-                            style={{ width: '50px', background: 'rgba(0,0,0,0.3)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '8px', color: '#fff', fontSize: '11px', padding: '4px' }} 
+                            style={{ width: '60px', background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '8px', color: '#fff', fontSize: '12px', padding: '6px' }} 
                           />
                           <select 
                             value={f.stagedUnit} 
@@ -401,8 +410,8 @@ export const PantryView: React.FC = () => {
                               next[i] = { ...f, stagedUnit: e.target.value };
                               setAiStagedResults(next);
                             }}
-                            style={{ flex: 1, background: 'rgba(0,0,0,0.3)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '8px', color: '#fff', fontSize: '11px', padding: '4px' }}>
-                            {SERVING_UNITS.map(u => <option key={u.v} value={u.v}>{u.v}</option>)}
+                            style={{ flex: 1, background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '8px', color: '#fff', fontSize: '12px', padding: '6px' }}>
+                            {SERVING_UNITS.map(u => <option key={u.v} value={u.v} style={{ background: '#222' }}>{u.v}</option>)}
                           </select>
                         </div>
                       </div>
@@ -415,11 +424,12 @@ export const PantryView: React.FC = () => {
                         aiStagedResults.forEach(f => {
                           const mult = computeMultiplier(f.serving || '', f.stagedUnit || 'serving', parseFloat(String(f.stagedQty)) || 1);
                           const scaled = scaleLegacyFoodByAmount(f, mult);
+                          // Default to Breakfast if used from PantryView without a target meal
                           addFoodLog('Breakfast', scaled);
                         });
                         setIsAiReviewing(false);
                         setAiStagedResults([]);
-                        alert("Meal logged to diary!");
+                        alert("Meal logged to Breakfast!");
                       }}
                       style={{ flex: 2, padding: '14px', background: 'var(--theme-accent)', border: 'none', borderRadius: '14px', color: '#000', fontWeight: '900', fontSize: '13px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
                       <Check size={18} /> CONFIRM ALL
@@ -435,7 +445,7 @@ export const PantryView: React.FC = () => {
                         setAiStagedResults([]);
                         alert("Items saved to Pantry!");
                       }}
-                      style={{ flex: 1, padding: '14px', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '14px', color: '#fff', fontWeight: '800', fontSize: '11px', cursor: 'pointer' }}>
+                      style={{ flex: 1, padding: '14px', background: 'rgba(255,255,255,0.1)', border: '1px solid rgba(255,255,255,0.2)', borderRadius: '14px', color: '#fff', fontWeight: '800', fontSize: '11px', cursor: 'pointer' }}>
                       SAVE TO PANTRY
                     </button>
                   </div>
@@ -799,18 +809,21 @@ export const PantryView: React.FC = () => {
                   key={originalIdx} 
                   onClick={() => handleAddPreviewClick(f)}
                   style={{ 
-                    padding: '30px 20px', 
-                    background: '#222', 
-                    borderRadius: '16px', 
+                    padding: '12px', 
+                    background: 'rgba(0,0,0,0.4)', 
+                    borderRadius: '12px', 
+                    cursor: 'pointer', 
+                    borderLeft: '3px solid var(--theme-accent, #00C9FF)', 
+                    transition: 'background 0.2s', 
                     display: 'flex', 
-                    justifyContent: 'center', 
-                    alignItems: 'center',
-                    cursor: 'pointer',
-                    minHeight: '120px',
-                    width: '100%',
-                    boxSizing: 'border-box'
+                    justifyContent: 'space-between', 
+                    alignItems: 'center' 
                   }}>
-                  <div style={{ color: '#fff', fontSize: '38px', fontWeight: '400', textAlign: 'center' }}>{f.name}</div>
+                  <div style={{ flex: 1 }}>
+                    <div style={{ fontWeight: '700', fontSize: '14px', color: '#fff' }}>{f.name}</div>
+                    <div style={{ fontSize: '11px', color: 'rgba(255,255,255,0.5)', marginTop: '2px' }}>{f.serving} • {f.cal} kcal • P:{f.p}g C:{f.c}g F:{f.f}g</div>
+                  </div>
+                  <Plus size={18} color="var(--theme-accent)" />
                 </div>
               );
             })
