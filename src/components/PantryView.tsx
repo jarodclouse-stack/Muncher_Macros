@@ -230,11 +230,11 @@ export const PantryView: React.FC = () => {
           gap: '8px', 
           marginBottom: '32px', 
           position: 'sticky', 
-          top: 'calc(110px + env(safe-area-inset-top, 0px))', 
+          top: 'calc(76px + env(safe-area-inset-top, 0px))', 
           zIndex: 100, 
           background: 'var(--theme-bg, #080A0F)', 
           padding: '12px 0', 
-          margin: '0 0 24px 0',
+          margin: '0 0 32px 0',
           borderBottom: '1px solid var(--theme-border)',
         }}>
         <button onClick={() => { setActiveTab('search'); clearSearchState(); }} style={{ padding: '12px 4px', borderRadius: '14px', border: '1px solid var(--theme-border)', background: activeTab === 'search' ? 'var(--theme-accent-dim)' : 'rgba(255,255,255,0.03)', color: activeTab === 'search' ? 'var(--theme-accent)' : 'var(--theme-text-dim)', fontWeight: '800', fontSize: '11px', textTransform: 'uppercase', cursor: 'pointer', transition: 'all 0.2s', textAlign: 'center' }}>
@@ -249,7 +249,7 @@ export const PantryView: React.FC = () => {
       </div>
 
       {activeTab === 'search' && (
-        <div className="section" style={{ marginTop: '0', paddingTop: '20px' }}>
+        <div className="section" style={{ marginTop: '0', paddingTop: '40px' }}>
           <SearchCoaster 
             activeTab={innerGlobalSearchTab} 
             onTabChange={(t) => { setInnerGlobalSearchTab(t); clearSearchState(); }} 
