@@ -255,7 +255,7 @@ export const PantryView: React.FC = () => {
         <div>
           <SearchCoaster 
             activeTab={innerGlobalSearchTab} 
-            onTabChange={(t) => { setInnerGlobalSearchTab(t); clearSearchState(); if (t==='barcode'||t==='label') setActiveScanner(t); }} 
+            onTabChange={(t) => { setInnerGlobalSearchTab(t); clearSearchState(); if (t==='scan') setActiveScanner('barcode'); }} 
             style={{ marginBottom: '16px' }}
           />
           

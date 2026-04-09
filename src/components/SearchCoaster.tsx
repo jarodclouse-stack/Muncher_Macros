@@ -1,7 +1,7 @@
 import React from 'react';
 import { Search, Camera, FileText, Sparkles, Scan } from 'lucide-react';
 
-export type SearchTab = 'search' | 'ai-search' | 'describe' | 'barcode' | 'label' | 'pantry';
+export type SearchTab = 'search' | 'ai-search' | 'describe' | 'scan';
 
 interface SearchCoasterProps {
   activeTab: SearchTab;
@@ -11,20 +11,19 @@ interface SearchCoasterProps {
 
 export const SearchCoaster: React.FC<SearchCoasterProps> = ({ activeTab, onTabChange, style }) => {
   return (
-    <div style={{ position: 'relative', width: '100%' }}>
+    <div style={{ position: 'relative', width: '100%', boxSizing: 'border-box' }}>
       <div 
         style={{ 
           display: 'grid', 
-          gridTemplateColumns: 'repeat(3, 1fr)', 
-          gap: '8px', 
+          gridTemplateColumns: 'repeat(2, 1fr)', 
+          gap: '12px', 
           padding: '4px 0 12px 0', 
           ...style 
         }}>
-        <TabBtn active={activeTab==='search'} onClick={() => onTabChange('search')} icon={<Search size={14}/>} label="Search" isPrimary />
-        <TabBtn active={activeTab==='ai-search'} onClick={() => onTabChange('ai-search')} icon={<Sparkles size={14}/>} label="AI Search" />
-        <TabBtn active={activeTab==='describe'} onClick={() => onTabChange('describe')} icon={<FileText size={14}/>} label="Describe" />
-        <TabBtn active={activeTab==='barcode'} onClick={() => onTabChange('barcode')} icon={<Scan size={14}/>} label="Barcode" />
-        <TabBtn active={activeTab==='label'} onClick={() => onTabChange('label')} icon={<Camera size={14}/>} label="Label" />
+        <TabBtn active={activeTab==='search'} onClick={() => onTabChange('search')} icon={<Search size={18}/>} label="Search" isPrimary />
+        <TabBtn active={activeTab==='ai-search'} onClick={() => onTabChange('ai-search')} icon={<Sparkles size={18}/>} label="AI Search" />
+        <TabBtn active={activeTab==='describe'} onClick={() => onTabChange('describe')} icon={<FileText size={18}/>} label="Describe Meal" />
+        <TabBtn active={activeTab==='scan'} onClick={() => onTabChange('scan')} icon={<Scan size={18}/>} label="Scan Code/Label" />
       </div>
     </div>
   );

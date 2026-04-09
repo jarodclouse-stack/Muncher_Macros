@@ -1,8 +1,7 @@
-import React, { useState, useRef, useEffect, useCallback } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import ReactDOM from 'react-dom';
-import { X, Search, Scan, Keyboard, AlertCircle, Loader2 } from 'lucide-react';
-import { lookupBarcode } from '../lib/vision/scanner-logic';
-import { ScannerEngine } from '../lib/vision/scanner-engine';
+import { X, Search, Scan, Keyboard, AlertCircle, Loader2, Camera } from 'lucide-react';
+import { lookupBarcode, scanBarcode, scanNutritionLabel, type ScanResult } from '../lib/vision/scanner-logic';
 
 interface ScannerModalProps {
   type: 'barcode' | 'qr' | 'label';
@@ -16,62 +15,66 @@ export const ScannerModal: React.FC<ScannerModalProps> = ({ type, onClose, onRes
   const [manualCode, setManualCode] = useState('');
   const [showManual, setShowManual] = useState(false);
 
-  const engineRef = useRef<ScannerEngine | null>(null);
-  const containerId = 'interactive-scanner-region';
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const stopScanner = useCallback(async () => {
-    if (engineRef.current) {
-      await engineRef.current.stop();
-      engineRef.current = null;
-    }
-  }, []);
+  const handleImageChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
 
-  const handleScanSuccess = useCallback(async (result: { type: string, value: string }) => {
-    await stopScanner();
+    // Show preview
+    const url = URL.createObjectURL(file);
+    setPreviewUrl(url);
     setIsProcessing(true);
+    setError(null);
+
     try {
-      const res = await lookupBarcode(result.value);
-      if (res.success) {
-        onResult(res.data);
-        onClose();
+      // Process image based on type
+      let scanRes: ScanResult;
+      
+      if (type === 'label') {
+        scanRes = await scanNutritionLabel(file);
       } else {
-        setError(res.error || "Product not found. Try a clearer scan or manual input.");
-        setIsProcessing(false);
+        // Try barcode/QR
+        scanRes = await scanBarcode(file);
+        if (!scanRes.success && type === 'barcode') {
+           // Fallback to label if barcode fails in mixed mode, but here we just try barcode
+        }
       }
-    } catch (e) {
-      setError("Database connection error. Try manual entry.");
+
+      if (scanRes.success) {
+        if (type === 'label') {
+          onResult(scanRes.data);
+          onClose();
+        } else if (scanRes.text) {
+          const lookup = await lookupBarcode(scanRes.text);
+          if (lookup.success) {
+            onResult(lookup.data);
+            onClose();
+          } else {
+            setError(lookup.error || 'Barcode recognized but not found in database.');
+          }
+        }
+      } else {
+        setError(scanRes.error || "No data detected in photo. Try another angle or manual entry.");
+      }
+    } catch (err) {
+      setError("Processing error. Try manual entry.");
+    } finally {
       setIsProcessing(false);
     }
-  }, [onClose, onResult, stopScanner]);
+  };
 
-  const startScanner = useCallback(async () => {
-    setError(null);
-    try {
-      if (!engineRef.current) {
-        engineRef.current = new ScannerEngine({
-          containerId,
-          type: type === 'barcode' ? 'barcode' : (type === 'qr' ? 'qr' : 'both'),
-          fps: 15,
-          qrbox: { width: 260, height: type === 'barcode' ? 160 : 260 },
-          onResult: (res) => handleScanSuccess(res)
-        });
-      }
-      await engineRef.current.start();
-    } catch (err: any) {
-      console.error("Scanner startup failed:", err);
-      setError(err.message || "Failed to access camera. Check permissions.");
-    }
-  }, [type, handleScanSuccess]);
+  const triggerCamera = () => {
+    fileInputRef.current?.click();
+  };
 
-  // --- Initialize Live Scanner ---
   useEffect(() => {
+    // Auto-trigger camera on mount if not manual
     if (!showManual && type !== 'label') {
-      startScanner();
+      triggerCamera();
     }
-    return () => {
-      stopScanner();
-    };
-  }, [showManual, type, startScanner, stopScanner]);
+  }, [showManual, type]);
 
   const handleManualSubmit = async () => {
     if (!manualCode.trim()) return;
@@ -90,15 +93,25 @@ export const ScannerModal: React.FC<ScannerModalProps> = ({ type, onClose, onRes
   return ReactDOM.createPortal(
     <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.95)', backdropFilter: 'blur(20px)', zIndex: 6000, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
       
+      {/* Hidden File Input for Native Camera */}
+      <input 
+        type="file" 
+        ref={fileInputRef} 
+        onChange={handleImageChange} 
+        accept="image/*" 
+        capture="environment" 
+        style={{ display: 'none' }} 
+      />
+
       {/* Header */}
       <div style={{ width: '100%', padding: '24px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', zIndex: 10 }}>
         <div style={{ display: 'flex', flexDirection: 'column' }}>
            <h2 style={{ color: 'white', fontSize: '18px', fontWeight: '900', margin: 0, display: 'flex', alignItems: 'center', gap: '8px' }}>
             <Scan size={20} color="var(--theme-accent, #00C9FF)" />
-            {type.toUpperCase()} SCANNER
+            NATIVE {type.toUpperCase()} SCAN
           </h2>
           <div style={{ fontSize: '10px', color: 'rgba(255,255,255,0.4)', fontWeight: '700', letterSpacing: '1px', marginTop: '4px' }}>
-            {showManual ? 'MANUAL INPUT MODE' : 'LIVE DETECTION ACTIVE'}
+            {showManual ? 'MANUAL INPUT' : 'SYSTEM CAMERA READY'}
           </div>
         </div>
         <button onClick={onClose} style={{ background: 'rgba(255,255,255,0.05)', border: 'none', borderRadius: '50%', width: '40px', height: '40px', color: 'white', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
@@ -108,43 +121,45 @@ export const ScannerModal: React.FC<ScannerModalProps> = ({ type, onClose, onRes
 
       <div style={{ flex: 1, width: '100%', position: 'relative', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
         
-        {/* Scanner Region */}
+        {/* Preview / Instructions */}
         {!showManual && (
-          <div style={{ width: '100%', height: '100%', position: 'relative', background: '#000' }}>
-            <div id={containerId} style={{ width: '100%', height: '100%' }}></div>
-            
-            {/* Visual Guide Overlay */}
-            <div style={{ position: 'absolute', inset: 0, pointerEvents: 'none', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
-               <div style={{ 
-                 width: '260px', 
-                 height: type === 'barcode' ? '160px' : '260px', 
-                 border: '2px solid var(--theme-accent, #00C9FF)', 
-                 borderRadius: '24px',
-                 boxShadow: '0 0 0 4000px rgba(0,0,0,0.6)',
-                 position: 'relative'
-               }}>
-                 {/* Decorative Corners */}
-                 <div style={{ position: 'absolute', top: -2, left: -2, width: 20, height: 20, borderTop: '4px solid #fff', borderLeft: '4px solid #fff', borderRadius: '4px 0 0 0' }} />
-                 <div style={{ position: 'absolute', top: -2, right: -2, width: 20, height: 20, borderTop: '4px solid #fff', borderRight: '4px solid #fff', borderRadius: '0 4px 0 0' }} />
-                 <div style={{ position: 'absolute', bottom: -2, left: -2, width: 20, height: 20, borderBottom: '4px solid #fff', borderLeft: '4px solid #fff', borderRadius: '0 0 0 4px' }} />
-                 <div style={{ position: 'absolute', bottom: -2, right: -2, width: 20, height: 20, borderBottom: '4px solid #fff', borderRight: '4px solid #fff', borderRadius: '0 0 4px 0' }} />
-                 
-                 {/* Scanning Laser Animation */}
-                 <div className="laser-line" style={{ 
-                   position: 'absolute', 
-                   top: 0, 
-                   left: '10%', 
-                   right: '10%', 
-                   height: '2px', 
-                   background: 'var(--theme-accent, #00C9FF)',
-                   boxShadow: '0 0 15px var(--theme-accent, #00C9FF)',
-                   animation: 'scan-anim 2s linear infinite'
-                 }} />
-               </div>
-               <div style={{ marginTop: '24px', color: 'white', fontWeight: '700', fontSize: '13px', textShadow: '0 2px 4px rgba(0,0,0,0.5)' }}>
-                 Center the {type} within the box
-               </div>
-            </div>
+          <div 
+            onClick={triggerCamera}
+            style={{ 
+              width: '85%', 
+              maxWidth: '350px', 
+              aspectRatio: '3/4', 
+              background: 'rgba(255,255,255,0.02)', 
+              borderRadius: '32px', 
+              border: '2px dashed var(--theme-border)', 
+              display: 'flex', 
+              flexDirection: 'column', 
+              alignItems: 'center', 
+              justifyContent: 'center',
+              cursor: 'pointer',
+              position: 'relative',
+              overflow: 'hidden'
+            }}>
+            {previewUrl ? (
+              <img src={previewUrl} style={{ width: '100%', height: '100%', objectFit: 'cover', opacity: isProcessing ? 0.3 : 1 }} alt="Captured" />
+            ) : (
+              <>
+                <div style={{ padding: '20px', borderRadius: '50%', background: 'var(--theme-accent-dim)', marginBottom: '16px' }}>
+                  <Scan size={40} color="var(--theme-accent)" />
+                </div>
+                <div style={{ fontWeight: '800', color: 'white', fontSize: '16px' }}>TAP TO TAKE PHOTO</div>
+                <div style={{ color: 'rgba(255,255,255,0.4)', fontSize: '12px', marginTop: '8px', textAlign: 'center', padding: '0 20px' }}>
+                   Use the phone's native camera for the best focus and results.
+                </div>
+              </>
+            )}
+
+            {isProcessing && (
+              <div style={{ position: 'absolute', inset: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', background: 'rgba(0,0,0,0.4)', backdropFilter: 'blur(4px)' }}>
+                <Loader2 className="spin" size={48} color="var(--theme-accent)" />
+                <div style={{ marginTop: '16px', color: 'white', fontWeight: '900', letterSpacing: '2px', fontSize: '12px' }}>PROCESSING MATRIX...</div>
+              </div>
+            )}
           </div>
         )}
 
@@ -174,30 +189,12 @@ export const ScannerModal: React.FC<ScannerModalProps> = ({ type, onClose, onRes
           </div>
         )}
 
-        {/* Processing State */}
-        {isProcessing && (
-          <div style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.8)', backdropFilter: 'blur(10px)', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', zIndex: 100 }}>
-             <Loader2 className="spin" size={64} color="var(--theme-accent, #00C9FF)" />
-             <div style={{ marginTop: '24px', textAlign: 'center' }}>
-                <div style={{ color: '#fff', fontSize: '20px', fontWeight: '900', marginBottom: '8px' }}>FETCHING DATA</div>
-                <div style={{ color: 'rgba(255,255,255,0.5)', fontSize: '14px' }}>Scaling nutrient intelligence matrix...</div>
-             </div>
-          </div>
-        )}
-
         {/* Error Feedback */}
         {error && (
-          <div style={{ position: 'absolute', bottom: '100px', left: '24px', right: '24px', background: 'rgba(255,107,107,0.15)', border: '1px solid rgba(255,107,107,0.4)', borderRadius: '20px', padding: '20px', display: 'flex', gap: '16px', alignItems: 'center', zIndex: 150, backdropFilter: 'blur(10px)' }}>
-            <div style={{ width: '40px', height: '40px', borderRadius: '50%', background: 'rgba(255,107,107,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#FF6B6B', flexShrink: 0 }}>
-              <AlertCircle size={22} />
-            </div>
-            <div style={{ flex: 1 }}>
-              <div style={{ color: '#FF6B6B', fontWeight: '800', fontSize: '14px' }}>Scan Issues Detected</div>
-              <div style={{ color: 'rgba(255,255,255,0.7)', fontSize: '12px', lineHeight: '1.4' }}>{error}</div>
-            </div>
-            <button onClick={() => setError(null)} style={{ background: 'none', border: 'none', color: 'rgba(255,255,255,0.5)', cursor: 'pointer' }}>
-               <X size={18} />
-            </button>
+          <div style={{ position: 'absolute', bottom: '20px', left: '24px', right: '24px', background: 'rgba(255,107,107,0.15)', border: '1px solid rgba(255,107,107,0.4)', borderRadius: '20px', padding: '20px', display: 'flex', gap: '16px', alignItems: 'center', zIndex: 150, backdropFilter: 'blur(10px)' }}>
+             <AlertCircle size={22} color="#FF6B6B" />
+             <div style={{ flex: 1, color: 'white', fontSize: '13px', fontWeight: '600' }}>{error}</div>
+             <X size={18} onClick={() => setError(null)} style={{ cursor: 'pointer', opacity: 0.5 }} />
           </div>
         )}
 
@@ -212,33 +209,19 @@ export const ScannerModal: React.FC<ScannerModalProps> = ({ type, onClose, onRes
           }}
           style={{ flex: 1, padding: '16px', borderRadius: '18px', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', color: 'white', fontWeight: '700', fontSize: '14px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px', cursor: 'pointer' }}>
           {showManual ? <Scan size={20} /> : <Keyboard size={20} />}
-          {showManual ? 'Back to Scanner' : 'Enter Manually'}
+          {showManual ? 'Back to Camera' : 'Manual Entry'}
         </button>
         
         {!showManual && (
           <button 
-            onClick={() => {
-               stopScanner();
-               onClose();
-               // Here we could trigger a specific tab change or search trigger
-            }}
-            style={{ flex: 1, padding: '16px', borderRadius: '18px', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', color: 'white', fontWeight: '700', fontSize: '14px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px', cursor: 'pointer' }}>
-            <Search size={20} /> Use Search
+            onClick={triggerCamera}
+            style={{ flex: 1, padding: '16px', borderRadius: '18px', background: 'var(--theme-accent)', color: '#000', fontWeight: '900', fontSize: '14px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px', cursor: 'pointer' }}>
+            <Camera size={20} /> Open Camera
           </button>
         )}
       </div>
 
       <style>{`
-        @keyframes scan-anim {
-          0% { top: 10%; }
-          50% { top: 90%; }
-          100% { top: 10%; }
-        }
-        .laser-line {
-          left: 5%;
-          right: 5%;
-          transition: all 0.3s;
-        }
         .spin { animation: spin 1s linear infinite; }
         @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
       `}</style>
