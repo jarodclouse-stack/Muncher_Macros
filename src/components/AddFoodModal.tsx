@@ -41,6 +41,7 @@ export const AddFoodModal: React.FC<AddFoodModalProps> = ({ meal, onClose }) => 
   };
   
   const [mealDesc, setMealDesc] = useState('');
+  const [targetMeal, setTargetMeal] = useState(meal);
   const [configuringFood, setConfiguringFood] = useState<Food | null>(null);
   const [editName, setEditName] = useState('');
   const [saveToPantry, setSaveToPantry] = useState(false);
@@ -55,6 +56,7 @@ export const AddFoodModal: React.FC<AddFoodModalProps> = ({ meal, onClose }) => 
     setServingQty('1');
     setServingUnit(food.sUnit || 'serving');
     setShowFullNutrition(false);
+    setTargetMeal(meal);
   };
 
   const handleConfirmAdd = (e: React.FormEvent) => {
@@ -82,8 +84,8 @@ export const AddFoodModal: React.FC<AddFoodModalProps> = ({ meal, onClose }) => 
           sUnit: servingUnit
         });
       }
-
-      addToTray(scaledFood);
+      
+      addFoodLog(targetMeal, scaledFood);
       setConfiguringFood(null);
     }
   };
@@ -207,7 +209,14 @@ export const AddFoodModal: React.FC<AddFoodModalProps> = ({ meal, onClose }) => 
           
           {activeTab === 'search' || activeTab === 'ai-search' ? (
             <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-              <form onSubmit={activeTab === 'search' ? handleStandardSearch : handleAISearch} style={{ display: 'flex', gap: '8px' }}>
+              <form 
+                onSubmit={(e) => {
+                  e.preventDefault();
+                  if (activeTab === 'search') handleStandardSearch(e);
+                  else if (activeTab === 'ai-search') handleAISearch(e);
+                }} 
+                style={{ display: 'flex', gap: '8px' }}
+              >
                 <div style={{ position: 'relative', flex: 1 }}>
                   <input 
                     placeholder={activeTab === 'search' ? "Search for foods, brands..." : "Describe food (e.g. '1/2 cup of blueberries')"}
@@ -430,6 +439,32 @@ export const AddFoodModal: React.FC<AddFoodModalProps> = ({ meal, onClose }) => 
                   </div>
                 );
               })()}
+
+              <div style={{ marginBottom: '24px' }}>
+                <label style={{ fontSize: '11px', fontWeight: '800', color: '#8b8b9b', display: 'block', marginBottom: '8px', textTransform: 'uppercase' }}>Assign to Meal</label>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '8px' }}>
+                  {['Breakfast', 'Lunch', 'Dinner', 'Snacks'].map(m => (
+                    <button
+                      key={m}
+                      onClick={() => setTargetMeal(m)}
+                      style={{
+                        padding: '10px 4px',
+                        borderRadius: '12px',
+                        border: '1px solid',
+                        borderColor: targetMeal === m ? 'var(--theme-accent, #00C9FF)' : 'rgba(255,255,255,0.1)',
+                        background: targetMeal === m ? 'rgba(0, 201, 255, 0.1)' : 'rgba(255,255,255,0.05)',
+                        color: targetMeal === m ? 'var(--theme-accent, #00C9FF)' : '#fff',
+                        fontSize: '11px',
+                        fontWeight: '700',
+                        cursor: 'pointer',
+                        transition: 'all 0.2s'
+                      }}
+                    >
+                      {m}
+                    </button>
+                  ))}
+                </div>
+              </div>
 
               <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', marginBottom: '24px' }}>
                 <div style={{ display: 'flex', gap: '12px' }}>

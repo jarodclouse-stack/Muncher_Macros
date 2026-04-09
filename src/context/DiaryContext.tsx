@@ -25,6 +25,7 @@ interface DiaryContextState {
   addFoodLog: (meal: string, food: Food) => void;
   removeFoodLog: (meal: string, idx: number) => void;
   updateFoodLog: (meal: string, idx: number, updatedFood: Food) => void;
+  moveFoodLog: (oldMeal: string, idx: number, newMeal: string) => void;
   updateGoals: (partialGoals: Record<string, any>) => void;
   saveCustomFood: (food: Food) => void;
   updateCustomFood: (idx: number, food: Food) => void;
@@ -215,6 +216,31 @@ export const DiaryProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     updateCacheDebounced(updated);
   };
 
+  const moveFoodLog = (oldMeal: string, idx: number, newMeal: string) => {
+    const updated = { ...localCache };
+    const day = updated[currentDate] || {};
+    const log = [...(day.foodLog || [])];
+    
+    let localIdx = 0;
+    const globalIdx = log.findIndex(item => {
+      if (item.meal === oldMeal) {
+        if (localIdx === idx) return true;
+        localIdx++;
+      }
+      return false;
+    });
+
+    if (globalIdx !== -1) {
+      const item = { ...log[globalIdx], meal: newMeal };
+      log.splice(globalIdx, 1);
+      log.push(item);
+    }
+    
+    day.foodLog = log;
+    updated[currentDate] = day;
+    updateCacheDebounced(updated);
+  };
+
   const updateGoals = (partialGoals: Record<string, any>) => {
     const updated = { ...localCache, goals: { ...(localCache.goals || {}), ...partialGoals } };
     updateCacheDebounced(updated);
@@ -315,7 +341,7 @@ export const DiaryProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       saveCustomFood, updateCustomFood, deleteCustomFood, goToDate, 
       updateSettings, purchaseTheme,
       stagingTray, addToTray, removeFromTray, updateTrayItem, clearTray,
-      toggleFavorite, duplicateCustomFood,
+      toggleFavorite, duplicateCustomFood, moveFoodLog,
       isScannerActive, setIsScannerActive
     }}>
       {children}

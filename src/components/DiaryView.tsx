@@ -11,7 +11,7 @@ import { PortionEditModal } from './PortionEditModal';
 
 
 export const DiaryView: React.FC = () => {
-  const { localCache, currentDate, changeDate, removeFoodLog, updateDayData } = useDiary();
+  const { localCache, currentDate, changeDate, removeFoodLog, updateDayData, moveFoodLog } = useDiary();
   const [searchOpenFor, setSearchOpenFor] = useState<string | null>(null);
   const [editingPortion, setEditingPortion] = useState<{ meal: string, idx: number, food: any } | null>(null);
 
@@ -320,6 +320,31 @@ const DiaryEntryItem = ({ log, onRemove, onEditPortion }: any) => {
                }
                return null;
             })}
+          </div>
+
+          {/* Move to another meal */}
+          <div style={{ marginTop: '20px', paddingTop: '16px', borderTop: '1px solid var(--theme-border, rgba(255,255,255,0.05))' }}>
+            <div style={{ fontSize: '10px', fontWeight: '900', color: 'var(--theme-accent, #00C9FF)', letterSpacing: '2px', marginBottom: '10px', textTransform: 'uppercase' }}>Correction & Adjustments</div>
+            <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+              {MEALS.filter(m => m !== log.meal).map(m => (
+                <button
+                  key={m}
+                  onClick={() => moveFoodLog(log.meal, log.idx || 0, m)}
+                  style={{
+                    padding: '8px 12px',
+                    borderRadius: '8px',
+                    border: '1px solid rgba(255,255,255,0.1)',
+                    background: 'rgba(255,255,255,0.05)',
+                    color: '#fff',
+                    fontSize: '11px',
+                    fontWeight: '700',
+                    cursor: 'pointer'
+                  }}
+                >
+                  Move to {m}
+                </button>
+              ))}
+            </div>
           </div>
 
           {/* Ingredients Section */}
