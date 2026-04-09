@@ -12,11 +12,17 @@ interface SearchCoasterProps {
 export const SearchCoaster: React.FC<SearchCoasterProps> = ({ activeTab, onTabChange, style }) => {
   return (
     <div style={{ position: 'relative', width: '100%', boxSizing: 'border-box' }}>
-      <div className="actions-grid" style={{ padding: 'var(--space-xs) 0 var(--space-md) 0', ...style }}>
-        <TabBtn active={activeTab==='describe'} onClick={() => onTabChange('describe')} icon={<FileText size={18}/>} label="Describe Meal" isPrimary />
-        <TabBtn active={activeTab==='ai-search'} onClick={() => onTabChange('ai-search')} icon={<Sparkles size={18}/>} label="AI Search" />
-        <TabBtn active={activeTab==='scan'} onClick={() => onTabChange('scan')} icon={<Scan size={18}/>} label="Scan Label/Code/QR" isPrimary />
-        <TabBtn active={activeTab==='search'} onClick={() => onTabChange('search')} icon={<Search size={18}/>} label="Search" />
+      <div className="actions-grid" style={{ 
+        display: 'grid',
+        gridTemplateColumns: '1fr 1fr',
+        gap: '12px',
+        padding: '12px 0 24px 0', 
+        ...style 
+      }}>
+        <TabBtn active={activeTab==='describe'} onClick={() => onTabChange('describe')} icon={<FileText size={20}/>} label="Describe Meal" />
+        <TabBtn active={activeTab==='ai-search'} onClick={() => onTabChange('ai-search')} icon={<Sparkles size={20}/>} label="AI Search" />
+        <TabBtn active={activeTab==='scan'} onClick={() => onTabChange('scan')} icon={<Scan size={20}/>} label="Scan Label/Code/QR" />
+        <TabBtn active={activeTab==='search'} onClick={() => onTabChange('search')} icon={<Search size={22}/>} label="Search" isSearch />
       </div>
     </div>
   );
@@ -27,28 +33,36 @@ interface TabBtnProps {
   onClick: () => void;
   icon: React.ReactNode;
   label: string;
-  isPrimary?: boolean;
+  isSearch?: boolean;
 }
 
-const TabBtn = ({ active, onClick, icon, label, isPrimary }: TabBtnProps) => (
+const TabBtn = ({ active, onClick, icon, label, isSearch }: TabBtnProps) => (
   <button onClick={onClick} style={{ 
-    display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px', textAlign: 'center',
-    padding: '16px 8px', borderRadius: '20px', 
-    background: active ? 'var(--theme-accent-dim, rgba(0,201,255,0.15))' : (isPrimary ? 'rgba(255,255,255,0.06)' : 'var(--theme-panel-dim)'), 
-    color: active ? 'var(--theme-accent, #00C9FF)' : (isPrimary ? '#fff' : 'var(--theme-text-dim, #8b8b9b)'), 
-    border: `1px solid ${active ? 'var(--theme-accent, rgba(0,201,255,0.3))' : (isPrimary ? 'rgba(255,255,255,0.15)' : 'var(--theme-border, rgba(255,255,255,0.05))')}`,
-    fontWeight: '800', cursor: 'pointer', transition: 'all 0.2s',
-    fontSize: '11px', width: '100%', minWidth: 0,
-    boxShadow: (isPrimary && !active) ? '0 8px 20px rgba(0,0,0,0.3)' : 'none',
-    textTransform: 'uppercase'
+    display: 'flex', 
+    flexDirection: 'column', 
+    alignItems: 'center', 
+    justifyContent: 'center',
+    gap: '12px', 
+    textAlign: 'center',
+    padding: '24px 12px', 
+    borderRadius: '32px', 
+    background: active ? 'rgba(255,255,255,0.08)' : 'rgba(255,255,255,0.04)', 
+    color: isSearch ? 'var(--theme-accent, #00C9FF)' : '#fff', 
+    border: `1px solid ${isSearch ? 'var(--theme-accent, #00C9FF)' : (active ? 'rgba(255,255,255,0.3)' : 'rgba(255,255,255,0.15)')}`,
+    fontWeight: '800', 
+    cursor: 'pointer', 
+    transition: 'all 0.2s',
+    fontSize: '11px', 
+    width: '100%', 
+    minWidth: 0,
+    boxShadow: isSearch ? '0 0 20px rgba(0, 201, 255, 0.1)' : 'none',
+    textTransform: 'uppercase',
+    letterSpacing: '0.5px'
   }}>
-    <div style={{ opacity: active ? 1 : 0.8 }}>{icon}</div>
+    <div style={{ opacity: active || isSearch ? 1 : 0.8 }}>{icon}</div>
     <span style={{ 
-      whiteSpace: 'nowrap', 
-      overflow: 'hidden', 
-      textOverflow: 'ellipsis', 
-      width: '100%',
-      letterSpacing: '0.2px'
+      fontWeight: '900',
+      fontSize: '10px'
     }}>{label}</span>
   </button>
 );

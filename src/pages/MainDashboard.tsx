@@ -82,7 +82,7 @@ export const MainDashboard: React.FC = () => {
 
       {/* Main Content Area */}
       <main className="app-container" style={{ 
-        paddingTop: isScannerActive ? '0' : (activeTab === 'pantry' ? 'calc(1px + env(safe-area-inset-top))' : 'var(--space-xl)'), 
+        paddingTop: isScannerActive ? '0' : (activeTab === 'pantry' ? '0' : 'var(--space-xl)'), 
         paddingBottom: isScannerActive ? '0' : 'calc(90px + env(safe-area-inset-bottom))' 
       }}>
         {activeTab === 'diary' && <DiaryView />}

@@ -22,12 +22,12 @@ export const BarcodeScanner: React.FC<BarcodeScannerProps> = ({
   
   // Stealth Mode Management: Hide global UI elements during specific phases
   React.useEffect(() => {
-    const activeStates = ['scanning', 'ai-reading', 'cropping'];
-    setIsScannerActive(activeStates.includes(status));
+    // Hide header/footer as long as the scanner component is mounted
+    setIsScannerActive(true);
     
     // Cleanup on unmount
     return () => setIsScannerActive(false);
-  }, [status, setIsScannerActive]);
+  }, [setIsScannerActive]);
 
   const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];

@@ -309,7 +309,6 @@ export const AddFoodModal: React.FC<AddFoodModalProps> = ({ meal, onClose }) => 
           ) : activeTab === 'scan' ? (
             <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '20px', padding: '20px 0' }}>
               <BarcodeScanner 
-                label="Take Photo to Scan"
                 onScanSuccess={(code) => {
                   setQuery(code);
                   handleStandardSearch({ preventDefault: () => {} } as React.FormEvent);
