@@ -11,21 +11,30 @@ interface SearchCoasterProps {
 
 export const SearchCoaster: React.FC<SearchCoasterProps> = ({ activeTab, onTabChange, style }) => {
   return (
-    <div style={{ 
-      display: 'flex', 
-      overflowX: 'auto', 
-      gap: '8px', 
-      paddingBottom: '12px', 
-      msOverflowStyle: 'none', 
-      scrollbarWidth: 'none',
-      ...style 
-    }}>
-      <TabBtn active={activeTab==='search'} onClick={() => onTabChange('search')} icon={<Search size={14}/>} label="Search" />
-      <TabBtn active={activeTab==='pantry'} onClick={() => onTabChange('pantry')} icon={<Plus size={14}/>} label="Pantry" />
-      <TabBtn active={activeTab==='ai-search'} onClick={() => onTabChange('ai-search')} icon={<Sparkles size={14}/>} label="AI Search" />
-      <TabBtn active={activeTab==='describe'} onClick={() => onTabChange('describe')} icon={<FileText size={14}/>} label="Describe Meal" />
-      <TabBtn active={activeTab==='barcode'} onClick={() => onTabChange('barcode')} icon={<Scan size={14}/>} label="Barcode" />
-      <TabBtn active={activeTab==='label'} onClick={() => onTabChange('label')} icon={<Camera size={14}/>} label="Label Scan" />
+    <div style={{ position: 'relative', width: '100%', overflow: 'hidden' }}>
+      <div 
+        className="hide-scrollbar"
+        style={{ 
+          display: 'flex', 
+          overflowX: 'auto', 
+          gap: '8px', 
+          padding: '4px 20px 12px 20px', 
+          margin: '0 -20px',
+          scrollSnapType: 'x proximity',
+          WebkitOverflowScrolling: 'touch',
+          scrollbarWidth: 'none',
+          msOverflowStyle: 'none',
+          maskImage: 'linear-gradient(to right, transparent, black 40px, black calc(100% - 40px), transparent)',
+          WebkitMaskImage: 'linear-gradient(to right, transparent, black 40px, black calc(100% - 40px), transparent)',
+          ...style 
+        }}>
+        <TabBtn active={activeTab==='search'} onClick={() => onTabChange('search')} icon={<Search size={14}/>} label="Search" />
+        <TabBtn active={activeTab==='pantry'} onClick={() => onTabChange('pantry')} icon={<Plus size={14}/>} label="Pantry" />
+        <TabBtn active={activeTab==='ai-search'} onClick={() => onTabChange('ai-search')} icon={<Sparkles size={14}/>} label="AI Search" />
+        <TabBtn active={activeTab==='describe'} onClick={() => onTabChange('describe')} icon={<FileText size={14}/>} label="Describe Meal" />
+        <TabBtn active={activeTab==='barcode'} onClick={() => onTabChange('barcode')} icon={<Scan size={14}/>} label="Barcode" />
+        <TabBtn active={activeTab==='label'} onClick={() => onTabChange('label')} icon={<Camera size={14}/>} label="Label Scan" />
+      </div>
     </div>
   );
 };
