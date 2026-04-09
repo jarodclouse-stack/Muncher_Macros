@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useDiary } from '../context/DiaryContext';
 import { 
   Trash2, ChevronDown, Search, Loader2, 
-  BookmarkCheck, Edit3, Sparkles, X, Info
+  BookmarkCheck, Edit3, Sparkles, X, Info, Plus
 } from 'lucide-react';
 import { ALL_MICRO_KEYS, MICRO_UNITS, SERVING_UNITS, MICRO_CATEGORIES } from '../lib/constants';
 import { getNutrientDescriptions } from '../lib/nutrient-info';
@@ -53,9 +53,13 @@ export const PantryView: React.FC = () => {
     cal: '', p: '', c: '', f: '', fiber: '', sugars: '', 
     sat: '', mono: '', poly: '', trans: '', chol: '', 
     Sodium: '', Potassium: '', Calcium: '', Magnesium: '',
-    ...ALL_MICRO_KEYS.reduce((acc, k) => ({ ...acc, [k]: '' }), {}),
-    ingredients: '' 
+    ingredients: '',
+    ingredientItems: [] as any[]
   });
+  const [ingQuery, setIngQuery] = useState('');
+  const [ingResults, setIngResults] = useState<any[]>([]);
+  const [isIngSearching, setIsIngSearching] = useState(false);
+
   const [openSection, setOpenSection] = useState<string | null>(null);
   const [editingIndex, setEditingIndex] = useState<number | null>(null);
   const [errorMsg, setErrorMsg] = useState('');
@@ -142,6 +146,39 @@ export const PantryView: React.FC = () => {
       setErrorMsg("AI Describe failed.");
     }
     setIsSearching(false);
+  };
+
+  const handleIngSearch = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!ingQuery) return;
+    setIsIngSearching(true);
+    const localMatches = customFoods.filter((f: any) => f.name.toLowerCase().includes(ingQuery.toLowerCase())).map((f: any) => ({ ...f, isLocal: true }));
+    try {
+      const res = await fetch(`/api/food-search?q=${encodeURIComponent(ingQuery)}`);
+      if (res.ok) {
+        const body = await res.json();
+        setIngResults([...localMatches, ...(body.foods || body.results || [])]);
+      } else setIngResults(localMatches);
+    } catch (err) { setIngResults(localMatches); }
+    setIsIngSearching(false);
+  };
+
+  const calculateRecipeTotals = (items: any[]) => {
+    const totals: any = { cal: 0, p: 0, c: 0, f: 0 };
+    ALL_MICRO_KEYS.forEach(k => { totals[k] = 0; });
+    ['fiber', 'sugars', 'sat', 'mono', 'poly', 'trans', 'chol', 'Sodium', 'Potassium', 'Calcium', 'Magnesium'].forEach(k => { totals[k] = 0; });
+
+    items.forEach(item => {
+      const mult = computeMultiplier(item.food.serving || '', item.unit, parseFloat(item.qty) || 0);
+      const scaled = scaleLegacyFoodByAmount(item.food, mult);
+      ['cal', 'p', 'c', 'f', 'fiber', 'sugars', 'sat', 'mono', 'poly', 'trans', 'chol', 'Sodium', 'Potassium', 'Calcium', 'Magnesium', ...ALL_MICRO_KEYS].forEach(k => {
+        if (scaled[k] != null) totals[k] += Number(scaled[k]);
+      });
+    });
+
+    const newForm = { ...form, ingredientItems: items };
+    Object.keys(totals).forEach(k => { newForm[k] = totals[k] ? totals[k].toFixed(1) : ''; });
+    setForm(newForm);
   };
 
   const handleAddPreviewClick = (food: any) => {
@@ -255,6 +292,74 @@ export const PantryView: React.FC = () => {
                <EntryField label="Carbs (g)" value={form.c} onChange={v => setForm({...form, c: v})} placeholder="0" />
                <EntryField label="Fat (g)" value={form.f} onChange={v => setForm({...form, f: v})} placeholder="0" />
             </div>
+
+            <div style={{ background: 'rgba(255,255,255,0.03)', borderRadius: '16px', padding: '16px', border: '1px solid var(--theme-border)' }}>
+              <label style={{ fontSize: '10px', fontWeight: '800', color: 'var(--theme-accent)', marginBottom: '8px', display: 'block' }}>ADD INGREDIENTS</label>
+              <form onSubmit={handleIngSearch} style={{ display: 'flex', gap: '8px', marginBottom: '12px' }}>
+                <input 
+                  className="inp" placeholder="Search recipe ingredients..." 
+                  value={ingQuery} onChange={e => setIngQuery(e.target.value)}
+                  style={{ flex: 1, padding: '10px', fontSize: '12px' }}
+                />
+                <button type="submit" style={{ background: 'var(--theme-accent)', border: 'none', borderRadius: '10px', padding: '0 12px', color: '#000' }}>
+                  {isIngSearching ? <Loader2 className="spin" size={16} /> : <Plus size={16} />}
+                </button>
+              </form>
+
+              {ingResults.length > 0 && (
+                <div style={{ background: 'rgba(0,0,0,0.2)', borderRadius: '12px', padding: '8px', marginBottom: '12px', maxHeight: '180px', overflowY: 'auto' }}>
+                  {ingResults.map((r, i) => (
+                    <div key={i} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '8px', borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
+                      <div style={{ fontSize: '12px', fontWeight: '600' }}>{r.name} <span style={{ fontSize: '10px', opacity: 0.5 }}>({r.cal} cal)</span></div>
+                      <button 
+                        onClick={() => {
+                          const newItems = [...(form.ingredientItems || []), { food: r, qty: '1', unit: r.sUnit || 'serving' }];
+                          calculateRecipeTotals(newItems);
+                          setIngResults([]);
+                          setIngQuery('');
+                        }}
+                        style={{ background: 'var(--theme-accent-dim)', border: 'none', color: 'var(--theme-accent)', padding: '4px 8px', borderRadius: '6px', fontSize: '10px', fontWeight: '700', cursor: 'pointer' }}>
+                        ADD
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                {(form.ingredientItems || []).map((item: any, i: number) => (
+                  <div key={i} style={{ display: 'flex', gap: '8px', alignItems: 'center', padding: '8px', background: 'rgba(255,255,255,0.03)', borderRadius: '10px', border: '1px solid rgba(255,255,255,0.05)' }}>
+                    <div style={{ flex: 1, minWidth: 0 }}>
+                      <div style={{ fontSize: '12px', fontWeight: '700', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{item.food.name}</div>
+                    </div>
+                    <input 
+                      type="number" className="inp" value={item.qty} 
+                      onChange={e => {
+                        const newItems = [...form.ingredientItems];
+                        newItems[i] = { ...item, qty: e.target.value };
+                        calculateRecipeTotals(newItems);
+                      }}
+                      style={{ width: '50px', padding: '4px 6px', fontSize: '11px' }}
+                    />
+                    <select 
+                      value={item.unit}
+                      onChange={e => {
+                        const newItems = [...form.ingredientItems];
+                        newItems[i] = { ...item, unit: e.target.value };
+                        calculateRecipeTotals(newItems);
+                      }}
+                      style={{ padding: '4px 6px', fontSize: '11px', background: 'rgba(0,0,0,0.3)', color: '#fff', border: 'none', borderRadius: '6px' }}>
+                      {SERVING_UNITS.map(u => <option key={u.v} value={u.v}>{u.v}</option>)}
+                    </select>
+                    <button onClick={() => {
+                        const newItems = form.ingredientItems.filter((_: any, idx: number) => idx !== i);
+                        calculateRecipeTotals(newItems);
+                      }} 
+                      style={{ background: 'none', border: 'none', color: 'rgba(255,107,107,0.7)', cursor: 'pointer' }}><Trash2 size={14} /></button>
+                  </div>
+                ))}
+              </div>
+            </div>
             <div style={{ display: 'flex', gap: '12px' }}>
               <button 
                 onClick={() => {
@@ -278,7 +383,8 @@ export const PantryView: React.FC = () => {
                     sat: '', mono: '', poly: '', trans: '', chol: '', 
                     Sodium: '', Potassium: '', Calcium: '', Magnesium: '',
                     ...ALL_MICRO_KEYS.reduce((acc, k) => ({ ...acc, [k]: '' }), {}),
-                    ingredients:''
+                    ingredients:'',
+                    ingredientItems: []
                   });
                 }}
                 style={{ flex: 2, padding: '14px', background: 'var(--theme-accent)', border: 'none', borderRadius: '12px', color: '#000', fontWeight: '800', cursor: 'pointer' }}>
@@ -292,7 +398,8 @@ export const PantryView: React.FC = () => {
                     sat: '', mono: '', poly: '', trans: '', chol: '', 
                     Sodium: '', Potassium: '', Calcium: '', Magnesium: '',
                     ...ALL_MICRO_KEYS.reduce((acc, k) => ({ ...acc, [k]: '' }), {}),
-                    ingredients:''
+                    ingredients:'',
+                    ingredientItems: []
                   });
                 }}
                 style={{ flex: 1, padding: '14px', background: 'rgba(255,255,255,0.05)', border: '1px solid var(--theme-border)', borderRadius: '12px', color: 'var(--theme-text-dim)', fontWeight: '700', cursor: 'pointer' }}>
