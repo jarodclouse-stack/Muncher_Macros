@@ -1,5 +1,5 @@
 import React from 'react';
-import { Search, Camera, FileText, Sparkles, Scan } from 'lucide-react';
+import { Search, Sparkles, FileText, Scan } from 'lucide-react';
 
 export type SearchTab = 'search' | 'ai-search' | 'describe' | 'scan';
 
@@ -29,7 +29,15 @@ export const SearchCoaster: React.FC<SearchCoasterProps> = ({ activeTab, onTabCh
   );
 };
 
-const TabBtn = ({ active, onClick, icon, label, isPrimary }: any) => (
+interface TabBtnProps {
+  active: boolean;
+  onClick: () => void;
+  icon: React.ReactNode;
+  label: string;
+  isPrimary?: boolean;
+}
+
+const TabBtn = ({ active, onClick, icon, label, isPrimary }: TabBtnProps) => (
   <button onClick={onClick} style={{ 
     display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '4px', textAlign: 'center',
     padding: '12px 4px', borderRadius: '16px', 

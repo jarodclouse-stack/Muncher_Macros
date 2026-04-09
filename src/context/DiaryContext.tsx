@@ -3,19 +3,31 @@ import { useAuth } from './AuthContext';
 import { supabase } from '../lib/supabase';
 import type { Food, StagedFood } from '../types/food';
 
+interface LocalCache {
+  customFoods?: Food[];
+  stagingTray?: StagedFood[];
+  goals?: Record<string, number>;
+  settings?: {
+    units: { weight: string; height: string };
+    notifications: Record<string, boolean>;
+    purchasedThemes: string[];
+  };
+  [date: string]: any; // Keep per-day logs flexible for now but typed better
+}
+
 interface DiaryContextState {
-  localCache: any;
+  localCache: LocalCache;
   stagingTray: StagedFood[];
   currentDate: string; // YYYY-MM-DD
   syncStatus: 'ok' | 'syncing' | 'error' | 'offline';
   changeDate: (delta: number) => void;
   updateDayData: (date: string, partialData: any) => void;
-  addFoodLog: (meal: string, food: any) => void;
+  addFoodLog: (meal: string, food: Food) => void;
   removeFoodLog: (meal: string, idx: number) => void;
-  updateFoodLog: (meal: string, idx: number, updatedFood: any) => void;
-  updateGoals: (partialGoals: any) => void;
-  saveCustomFood: (food: any) => void;
-  updateCustomFood: (idx: number, food: any) => void;
+  updateFoodLog: (meal: string, idx: number, updatedFood: Food) => void;
+  updateGoals: (partialGoals: Partial<Record<string, number>>) => void;
+  saveCustomFood: (food: Food) => void;
+  updateCustomFood: (idx: number, food: Food) => void;
   deleteCustomFood: (idx: number) => void;
   goToDate: (date: string) => void;
   updateSettings: (partialSettings: any) => void;
@@ -37,7 +49,7 @@ const getLocalDateStr = (d = new Date()) => {
 
 export const DiaryProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { user, isGuest } = useAuth();
-  const [localCache, setLocalCache] = useState<any>({});
+  const [localCache, setLocalCache] = useState<LocalCache>({});
   const [currentDate, setCurrentDate] = useState(getLocalDateStr());
   const [syncStatus, setSyncStatus] = useState<'ok' | 'syncing' | 'error' | 'offline'>('ok');
   const [stagingTray, setStagingTray] = useState<StagedFood[]>([]);
@@ -93,7 +105,7 @@ export const DiaryProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   }, [user, isGuest]);
 
   // Save Data
-  const saveCloudData = useCallback(async (dataToSave: any) => {
+  const saveCloudData = useCallback(async (dataToSave: LocalCache) => {
     if (!user) return;
     if (isGuest) {
       localStorage.setItem('ft_guest', JSON.stringify(dataToSave));
@@ -113,7 +125,7 @@ export const DiaryProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     }
   }, [user, isGuest]);
 
-  const updateCacheDebounced = useCallback((newCache: any) => {
+  const updateCacheDebounced = useCallback((newCache: LocalCache) => {
     setLocalCache(newCache);
     if (syncStatus === 'syncing') return; // Don't interrupt
     if (syncTimeoutRef.current) clearTimeout(syncTimeoutRef.current);
@@ -142,7 +154,7 @@ export const DiaryProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     updateCacheDebounced(updated);
   };
 
-  const addFoodLog = (meal: string, food: any) => {
+  const addFoodLog = (meal: string, food: Food) => {
     const updated = { ...localCache };
     const day = updated[currentDate] || {};
     const log = [...(day.foodLog || [])];
@@ -173,7 +185,7 @@ export const DiaryProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     updateCacheDebounced(updated);
   };
 
-  const updateFoodLog = (meal: string, idx: number, updatedFood: any) => {
+  const updateFoodLog = (meal: string, idx: number, updatedFood: Food) => {
     const updated = { ...localCache };
     const day = updated[currentDate] || {};
     const log = [...(day.foodLog || [])];
@@ -196,7 +208,7 @@ export const DiaryProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     updateCacheDebounced(updated);
   };
 
-  const updateGoals = (partialGoals: any) => {
+  const updateGoals = (partialGoals: Partial<Record<string, number>>) => {
     const updated = { ...localCache, goals: { ...(localCache.goals || {}), ...partialGoals } };
     updateCacheDebounced(updated);
   };
@@ -206,7 +218,7 @@ export const DiaryProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     updateCacheDebounced(updated);
   };
 
-  const saveCustomFood = (food: any) => {
+  const saveCustomFood = (food: Food) => {
     const updated = { ...localCache };
     const foods = [...(updated.customFoods || [])];
     if (food.barcode) {
@@ -218,7 +230,7 @@ export const DiaryProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     updateCacheDebounced(updated);
   };
 
-  const updateCustomFood = (idx: number, food: any) => {
+  const updateCustomFood = (idx: number, food: Food) => {
     const updated = { ...localCache };
     const foods = [...(updated.customFoods || [])];
     foods[idx] = food;

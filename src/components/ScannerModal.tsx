@@ -1,12 +1,13 @@
 import React, { useState, useRef, useEffect } from 'react';
 import ReactDOM from 'react-dom';
-import { X, Search, Scan, Keyboard, AlertCircle, Loader2, Camera } from 'lucide-react';
+import { X, Scan, Keyboard, AlertCircle, Loader2, Camera } from 'lucide-react';
 import { lookupBarcode, scanBarcode, scanNutritionLabel, type ScanResult } from '../lib/vision/scanner-logic';
+import type { Food } from '../types/food';
 
 interface ScannerModalProps {
   type: 'barcode' | 'qr' | 'label';
   onClose: () => void;
-  onResult: (data: any) => void;
+  onResult: (data: Food) => void;
 }
 
 export const ScannerModal: React.FC<ScannerModalProps> = ({ type, onClose, onResult }) => {
@@ -37,9 +38,6 @@ export const ScannerModal: React.FC<ScannerModalProps> = ({ type, onClose, onRes
       } else {
         // Try barcode/QR
         scanRes = await scanBarcode(file);
-        if (!scanRes.success && type === 'barcode') {
-           // Fallback to label if barcode fails in mixed mode, but here we just try barcode
-        }
       }
 
       if (scanRes.success) {
@@ -58,7 +56,7 @@ export const ScannerModal: React.FC<ScannerModalProps> = ({ type, onClose, onRes
       } else {
         setError(scanRes.error || "No data detected in photo. Try another angle or manual entry.");
       }
-    } catch (err) {
+    } catch {
       setError("Processing error. Try manual entry.");
     } finally {
       setIsProcessing(false);

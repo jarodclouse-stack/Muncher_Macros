@@ -1,3 +1,9 @@
+export interface RecipeItem {
+  food: Food;
+  qty: string;
+  unit: string;
+}
+
 export interface Food {
   id?: string;
   name: string;
@@ -8,7 +14,7 @@ export interface Food {
   p: number;
   c: number;
   f: number;
-  fb?: number;
+  fiber?: number;
   sugars?: number;
   sat?: number;
   mono?: number;
@@ -17,12 +23,14 @@ export interface Food {
   chol?: number;
   Sodium?: number;
   Potassium?: number;
+  Calcium?: number;
+  Magnesium?: number;
   ingredients?: string;
   type?: 'food' | 'recipe';
   favorite?: boolean;
-  ingredientItems?: any[]; 
+  ingredientItems?: RecipeItem[]; 
   tags?: string[];
-  [key: string]: any; // For other micro-nutrients
+  isLocal?: boolean;
 }
 
 export interface StagedFood extends Food {

@@ -12,6 +12,7 @@ import { getPairingSuggestions } from '../lib/food/smart-pairing';
 
 import { ScannerModal } from './ScannerModal';
 import { SearchCoaster, type SearchTab } from './SearchCoaster';
+import { Food, RecipeItem } from '../types/food';
 
 const CollapsibleEntrySection = ({ title, isOpen, onToggle, children }: { title: string, isOpen: boolean, onToggle: () => void, children: React.ReactNode }) => (
   <div style={{ border: '1px solid var(--theme-border)', borderRadius: '16px', overflow: 'hidden', background: 'var(--theme-panel-dim)', marginBottom: '8px' }}>
@@ -50,17 +51,16 @@ export const PantryView: React.FC = () => {
     toggleFavorite, duplicateCustomFood
   } = useDiary();
   
-  const [form, setForm] = useState<any>({ 
+  const [form, setForm] = useState<Food>({ 
     name: '', 
-    sQty: '100', sUnit: 'g',
-    cal: '', p: '', c: '', f: '', fiber: '', sugars: '', 
-    sat: '', mono: '', poly: '', trans: '', chol: '', 
-    Sodium: '', Potassium: '', Calcium: '', Magnesium: '',
+    serving: '100 g',
+    sQty: 100, sUnit: 'g',
+    cal: 0, p: 0, c: 0, f: 0, 
     ingredients: '',
-    ingredientItems: [] as { food: any, qty: string, unit: string }[]
+    ingredientItems: []
   });
   const [ingQuery, setIngQuery] = useState('');
-  const [ingResults, setIngResults] = useState<any[]>([]);
+  const [ingResults, setIngResults] = useState<Food[]>([]);
   const [isIngSearching, setIsIngSearching] = useState(false);
   const [pairingSuggestions, setPairingSuggestions] = useState<string[]>([]);
 
@@ -75,15 +75,15 @@ export const PantryView: React.FC = () => {
   
   const [searchQuery, setSearchQuery] = useState('');
   const [isSearching, setIsSearching] = useState(false);
-  const [searchResults, setSearchResults] = useState<any[]>([]);
+  const [searchResults, setSearchResults] = useState<Food[]>([]);
   const [innerGlobalSearchTab, setInnerGlobalSearchTab] = useState<SearchTab>('search');
   
-  const [aiStagedResults, setAiStagedResults] = useState<any[]>([]);
+  const [aiStagedResults, setAiStagedResults] = useState<Food[]>([]);
   const [isAiReviewing, setIsAiReviewing] = useState(false);
   
-  const customFoods = localCache.customFoods || [];
+  const customFoods: Food[] = localCache.customFoods || [];
   
-  const [configuringFood, setConfiguringFood] = useState<any | null>(null);
+  const [configuringFood, setConfiguringFood] = useState<Food | null>(null);
   const [editName, setEditName] = useState('');
   const [servingQty, setServingQty] = useState('1');
   const [servingUnit, setServingUnit] = useState('serving');
@@ -101,9 +101,9 @@ export const PantryView: React.FC = () => {
     setIsSearching(true);
     setErrorMsg('');
     
-    const localMatches = customFoods.filter((f: any) => 
+    const localMatches = customFoods.filter((f: Food) => 
       f.name.toLowerCase().includes(searchQuery.toLowerCase())
-    ).map((f: any) => ({ ...f, isLocal: true }));
+    ).map((f: Food) => ({ ...f, isLocal: true }));
 
     try {
       const res = await fetch(`/api/food-search?q=${encodeURIComponent(searchQuery)}`);
@@ -150,8 +150,8 @@ export const PantryView: React.FC = () => {
         body: JSON.stringify({ description: searchQuery })
       });
       const body = await res.json();
-      const detected = body.foods || [];
-      setAiStagedResults(detected.map((f: any) => ({ ...f, stagedQty: '1', stagedUnit: f.sUnit || 'serving' })));
+      const detected = (body.foods || []) as Food[];
+      setAiStagedResults(detected.map((f: Food) => ({ ...f, stagedQty: '1', stagedUnit: f.sUnit || 'serving' })));
       setIsAiReviewing(true);
     } catch {
       setErrorMsg("AI Describe failed.");
@@ -164,7 +164,7 @@ export const PantryView: React.FC = () => {
     const q = forcedQuery || ingQuery;
     if (!q) return;
     setIsIngSearching(true);
-    const localMatches = customFoods.filter((f: any) => f.name.toLowerCase().includes(q.toLowerCase())).map((f: any) => ({ ...f, isLocal: true }));
+    const localMatches = customFoods.filter((f: Food) => f.name.toLowerCase().includes(q.toLowerCase())).map((f: Food) => ({ ...f, isLocal: true }));
     try {
       const res = await fetch(`/api/food-search?q=${encodeURIComponent(q)}`);
       if (res.ok) {
@@ -175,8 +175,8 @@ export const PantryView: React.FC = () => {
     setIsIngSearching(false);
   };
 
-  const calculateRecipeTotals = (items: any[]) => {
-    const totals: any = { cal: 0, p: 0, c: 0, f: 0 };
+  const calculateRecipeTotals = (items: RecipeItem[]) => {
+    const totals: Record<string, number> = { cal: 0, p: 0, c: 0, f: 0 };
     ALL_MICRO_KEYS.forEach(k => { totals[k] = 0; });
     ['fiber', 'sugars', 'sat', 'mono', 'poly', 'trans', 'chol', 'Sodium', 'Potassium', 'Calcium', 'Magnesium'].forEach(k => { totals[k] = 0; });
 
@@ -277,7 +277,7 @@ export const PantryView: React.FC = () => {
 
             {searchResults.length > 0 && (
               <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginTop: '20px', maxHeight: '400px', overflowY: 'auto', paddingRight: '4px' }}>
-                {searchResults.map((f, i) => (
+                {searchResults.map((f: Food, i) => (
                   <div key={i} onClick={() => handleAddPreviewClick(f)} style={{ padding: '12px', background: 'var(--theme-panel, rgba(255,255,255,0.05))', borderRadius: '12px', cursor: 'pointer', borderLeft: f.isLocal ? '3px solid var(--theme-success, #92FE9D)' : '3px solid var(--theme-accent, #00C9FF)', transition: 'background 0.2s', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                     <div style={{ flex: 1 }}>
                       <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
@@ -675,19 +675,19 @@ export const PantryView: React.FC = () => {
           </div>
 
           {[...customFoods]
-            .filter((f: any) => {
+            .filter((f: Food) => {
               if (filterType === 'fav') return f.favorite;
               if (filterType === 'high-p') return (f.p * 4) / (f.cal || 1) > 0.3;
-              if (filterType === 'recipe') return f.ingredientItems?.length > 0;
+              if (filterType === 'recipe') return (f.ingredientItems?.length || 0) > 0;
               return true;
             })
-            .sort((a: any, b: any) => {
+            .sort((a: Food, b: Food) => {
               if (sortBy === 'name') return a.name.localeCompare(b.name);
               if (sortBy === 'cal') return b.cal - a.cal;
               if (sortBy === 'p') return b.p - a.p;
               return 0; // Default to recent (existing order)
             })
-            .map((f: any) => {
+            .map((f: Food) => {
               // Map index back to original for delete/update
               const originalIdx = customFoods.indexOf(f);
               return (
