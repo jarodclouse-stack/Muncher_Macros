@@ -22,7 +22,7 @@ export const SearchCoaster: React.FC<SearchCoasterProps> = ({ activeTab, onTabCh
         <TabBtn active={activeTab==='describe'} onClick={() => onTabChange('describe')} icon={<FileText size={20}/>} label="Describe Meal" />
         <TabBtn active={activeTab==='ai-search'} onClick={() => onTabChange('ai-search')} icon={<Sparkles size={20}/>} label="AI Search" />
         <TabBtn active={activeTab==='scan'} onClick={() => onTabChange('scan')} icon={<Scan size={20}/>} label="Scan Label/Code/QR" />
-        <TabBtn active={activeTab==='search'} onClick={() => onTabChange('search')} icon={<Search size={22}/>} label="Search" isSearch />
+        <TabBtn active={activeTab==='search'} onClick={() => onTabChange('search')} icon={<Search size={22}/>} label="Search" />
       </div>
     </div>
   );
@@ -47,15 +47,15 @@ const TabBtn = ({ active, onClick, icon, label, isSearch }: TabBtnProps) => (
     padding: '24px 12px', 
     borderRadius: '32px', 
     background: active ? 'rgba(255,255,255,0.08)' : 'rgba(255,255,255,0.04)', 
-    color: isSearch ? 'var(--theme-accent, #00C9FF)' : '#fff', 
-    border: `1px solid ${isSearch ? 'var(--theme-accent, #00C9FF)' : (active ? 'rgba(255,255,255,0.3)' : 'rgba(255,255,255,0.15)')}`,
+    color: '#fff', 
+    border: `1px solid ${active ? 'var(--theme-accent, #00C9FF)' : 'rgba(255,255,255,0.15)'}`,
     fontWeight: '800', 
     cursor: 'pointer', 
     transition: 'all 0.2s',
     fontSize: '11px', 
     width: '100%', 
     minWidth: 0,
-    boxShadow: isSearch ? '0 0 20px rgba(0, 201, 255, 0.1)' : 'none',
+    boxShadow: active ? '0 0 20px rgba(0, 201, 255, 0.1)' : 'none',
     textTransform: 'uppercase',
     letterSpacing: '0.5px'
   }}>
