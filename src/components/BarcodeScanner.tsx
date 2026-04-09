@@ -1,6 +1,7 @@
 import React, { useRef, useState } from 'react';
 import { Camera, Loader2, AlertCircle, Hash, ArrowRight } from 'lucide-react';
 import { scanBarcode, extractBarcodeDigits } from '../lib/vision/scanner-logic';
+import { ImageCropperModal } from './ImageCropperModal';
 
 interface BarcodeScannerProps {
   onScanSuccess: (decodedText: string) => void;
@@ -14,21 +15,33 @@ export const BarcodeScanner: React.FC<BarcodeScannerProps> = ({
   label = "Scan Barcode"
 }) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const [status, setStatus] = useState<'idle' | 'scanning' | 'ai-reading' | 'failed'>('idle');
+  const [status, setStatus] = useState<'idle' | 'scanning' | 'ai-reading' | 'failed' | 'cropping'>('idle');
   const [error, setError] = useState<string | null>(null);
   const [manualCode, setManualCode] = useState('');
+  const [pendingImage, setPendingImage] = useState<string | null>(null);
 
-  const handleFileSelect = async (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (!file) return;
 
+    const reader = new FileReader();
+    reader.onload = () => {
+      setPendingImage(reader.result as string);
+      setStatus('cropping');
+    };
+    reader.readAsDataURL(file);
+    if (fileInputRef.current) fileInputRef.current.value = "";
+  };
+
+  const processImage = async (imageBlob: Blob) => {
     setStatus('scanning');
     setError(null);
+    setPendingImage(null);
 
     try {
       // PHASE 1: Standard Barcode Line Scan
-      console.log("Stage 1: Attempting to read barcode lines...");
-      const scanResult = await scanBarcode(file);
+      console.log("Stage 1: Attempting to read barcode lines from cropped image...");
+      const scanResult = await scanBarcode(imageBlob);
       
       if (scanResult.success && scanResult.text) {
         onScanSuccess(scanResult.text);
@@ -37,9 +50,9 @@ export const BarcodeScanner: React.FC<BarcodeScannerProps> = ({
       }
 
       // PHASE 2: AI Second Chance (Look at the numbers)
-      console.log("Stage 1 failed. Stage 2: Asking AI to read numbers...");
+      console.log("Stage 1 failed. Stage 2: Asking AI to read numbers from cropped image...");
       setStatus('ai-reading');
-      const aiResult = await extractBarcodeDigits(file);
+      const aiResult = await extractBarcodeDigits(imageBlob);
 
       if (aiResult.success && aiResult.text) {
         onScanSuccess(aiResult.text);
@@ -54,8 +67,6 @@ export const BarcodeScanner: React.FC<BarcodeScannerProps> = ({
       setError(errorMessage);
       setStatus('failed');
       if (onScanError) onScanError(errorMessage);
-    } finally {
-      if (fileInputRef.current) fileInputRef.current.value = "";
     }
   };
 
@@ -85,14 +96,14 @@ export const BarcodeScanner: React.FC<BarcodeScannerProps> = ({
       {/* Main Trigger */}
       <button 
         onClick={triggerCamera}
-        disabled={status === 'scanning' || status === 'ai-reading'}
+        disabled={status === 'scanning' || status === 'ai-reading' || status === 'cropping'}
         className="action-bubble"
         style={{
           display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
           gap: 'var(--space-xs)', background: 'var(--theme-panel)', border: '1px solid var(--theme-border)',
           borderRadius: 'var(--radius-lg)', padding: 'var(--space-md)', width: '100%', aspectRatio: '1',
           cursor: 'pointer', transition: 'all 0.2s', position: 'relative', overflow: 'hidden',
-          opacity: (status === 'scanning' || status === 'ai-reading') ? 0.7 : 1,
+          opacity: (status === 'scanning' || status === 'ai-reading' || status === 'cropping') ? 0.7 : 1,
         }}
       >
         {(status === 'scanning' || status === 'ai-reading') ? (
@@ -153,6 +164,18 @@ export const BarcodeScanner: React.FC<BarcodeScannerProps> = ({
             </form>
           </div>
         </div>
+      )}
+
+      {/* Cropper Modal */}
+      {status === 'cropping' && pendingImage && (
+        <ImageCropperModal 
+          image={pendingImage}
+          onCropComplete={processImage}
+          onCancel={() => {
+            setStatus('idle');
+            setPendingImage(null);
+          }}
+        />
       )}
 
       <style>{`

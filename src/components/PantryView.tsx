@@ -249,7 +249,7 @@ export const PantryView: React.FC = () => {
       </div>
 
       {activeTab === 'search' && (
-        <div className="section" style={{ marginTop: '0', paddingTop: '40px' }}>
+        <div className="section" style={{ marginTop: '0', paddingTop: '60px' }}>
           <SearchCoaster 
             activeTab={innerGlobalSearchTab} 
             onTabChange={(t) => { setInnerGlobalSearchTab(t); clearSearchState(); }} 
@@ -393,7 +393,7 @@ export const PantryView: React.FC = () => {
       )}
 
       {activeTab === 'manual' && (
-        <div className="section" style={{ marginTop: '0', paddingTop: '40px' }}>
+        <div className="section" style={{ marginTop: '0', paddingTop: '60px' }}>
           <h2 style={{ fontSize: '18px', fontWeight: '800', marginBottom: 'var(--space-lg)', textAlign: 'center' }}>{editingIndex !== null ? 'Edit Macro Kitchen' : 'Macro Kitchen'}</h2>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-md)' }}>
             <EntryField label="Food Name" value={form.name} onChange={v => setForm({...form, name: v})} placeholder="e.g. Grilled Chicken" />
@@ -670,7 +670,7 @@ export const PantryView: React.FC = () => {
 
 
       {activeTab === 'saved' && (
-        <div className="section" style={{ marginTop: '0', paddingTop: '40px', display: 'flex', flexDirection: 'column', gap: 'var(--space-md)' }}>
+        <div className="section" style={{ marginTop: '0', paddingTop: '60px', display: 'flex', flexDirection: 'column', gap: 'var(--space-md)' }}>
           
           {/* Filters & Sorting */}
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '6px', marginBottom: 'var(--space-md)' }}>

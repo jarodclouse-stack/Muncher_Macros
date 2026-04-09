@@ -1,0 +1,127 @@
+import React, { useState, useCallback } from 'react';
+import Cropper, { type Area } from 'react-easy-crop';
+import { X, Check, ZoomIn, Crop } from 'lucide-react';
+
+interface ImageCropperModalProps {
+  image: string;
+  onCropComplete: (croppedImage: Blob) => void;
+  onCancel: () => void;
+}
+
+export const ImageCropperModal: React.FC<ImageCropperModalProps> = ({ image, onCropComplete, onCancel }) => {
+  const [crop, setCrop] = useState({ x: 0, y: 0 });
+  const [zoom, setZoom] = useState(1);
+  const [croppedAreaPixels, setCroppedAreaPixels] = useState<Area | null>(null);
+
+  const onCropChange = useCallback((c: { x: number, y: number }) => setCrop(c), []);
+  const onZoomChange = useCallback((z: number) => setZoom(z), []);
+  
+  const handleCropComplete = useCallback((_area: Area, pixels: Area) => {
+    setCroppedAreaPixels(pixels);
+  }, []);
+
+  const createImage = (url: string): Promise<HTMLImageElement> =>
+    new Promise((resolve, reject) => {
+      const img = new Image();
+      img.addEventListener('load', () => resolve(img));
+      img.addEventListener('error', (error) => reject(error));
+      img.src = url;
+    });
+
+  const getCroppedImg = async (imageSrc: string, pixelCrop: Area): Promise<Blob> => {
+    const image = await createImage(imageSrc);
+    const canvas = document.createElement('canvas');
+    const ctx = canvas.getContext('2d');
+
+    if (!ctx) throw new Error('No 2d context');
+
+    canvas.width = pixelCrop.width;
+    canvas.height = pixelCrop.height;
+
+    ctx.drawImage(
+      image,
+      pixelCrop.x,
+      pixelCrop.y,
+      pixelCrop.width,
+      pixelCrop.height,
+      0,
+      0,
+      pixelCrop.width,
+      pixelCrop.height
+    );
+
+    return new Promise((resolve, reject) => {
+      canvas.toBlob((blob) => {
+        if (!blob) reject(new Error('Canvas is empty'));
+        else resolve(blob);
+      }, 'image/jpeg');
+    });
+  };
+
+  const onConfirm = async () => {
+    if (!croppedAreaPixels) return;
+    try {
+      const croppedBlob = await getCroppedImg(image, croppedAreaPixels);
+      onCropComplete(croppedBlob);
+    } catch (e) {
+      console.error(e);
+      onCancel();
+    }
+  };
+
+  return (
+    <div style={{
+      position: 'fixed', top: 0, left: 0, width: '100%', height: '100%',
+      zIndex: 9999, background: '#000', display: 'flex', flexDirection: 'column'
+    }}>
+      {/* Header */}
+      <div style={{
+        padding: '20px', display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+        background: 'rgba(0,0,0,0.8)', borderBottom: '1px solid rgba(255,255,255,0.1)'
+      }}>
+        <button onClick={onCancel} style={{ background: 'none', border: 'none', color: '#fff' }}><X /></button>
+        <div style={{ color: '#fff', fontWeight: '800', fontSize: '14px', textTransform: 'uppercase', letterSpacing: '1px' }}>Crop Image</div>
+        <button onClick={onConfirm} style={{ 
+          background: 'var(--theme-accent)', border: 'none', color: '#000', 
+          borderRadius: '50%', width: '36px', height: '36px', display: 'flex', alignItems: 'center', justifyContent: 'center'
+        }}><Check size={20} /></button>
+      </div>
+
+      {/* Cropper Container */}
+      <div style={{ flex: 1, position: 'relative', background: '#111' }}>
+        <Cropper
+          image={image}
+          crop={crop}
+          zoom={zoom}
+          aspect={1}
+          onCropChange={onCropChange}
+          onCropComplete={handleCropComplete}
+          onZoomChange={onZoomChange}
+        />
+      </div>
+
+      {/* Bottom Controls */}
+      <div style={{
+        padding: '30px', background: 'rgba(0,0,0,0.9)', display: 'flex', flexDirection: 'column', gap: '20px'
+      }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
+          <ZoomIn size={18} color="rgba(255,255,255,0.5)" />
+          <input
+            type="range"
+            value={zoom}
+            min={1}
+            max={3}
+            step={0.1}
+            aria-labelledby="Zoom"
+            onChange={(e) => onZoomChange(Number(e.target.value))}
+            style={{ flex: 1, accentColor: 'var(--theme-accent)' }}
+          />
+        </div>
+        
+        <div style={{ display: 'flex', justifyContent: 'center', gap: '10px', color: 'rgba(255,255,255,0.4)', fontSize: '11px', fontWeight: '700' }}>
+          <Crop size={14} /> PINCH OR DRAG TO ISOLATE BARCODE/LABEL
+        </div>
+      </div>
+    </div>
+  );
+};
