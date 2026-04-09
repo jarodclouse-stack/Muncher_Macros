@@ -396,7 +396,11 @@ export const AddFoodModal: React.FC<AddFoodModalProps> = ({ meal, onClose }) => 
                     <input 
                       type="number" 
                       value={servingQty}
-                      onChange={(e) => setServingQty(e.target.value)}
+                      onChange={(e) => {
+                        const v = e.target.value;
+                        const cleaned = (v.length > 1 && v.startsWith('0') && !v.startsWith('0.')) ? v.substring(1) : v;
+                        setServingQty(cleaned);
+                      }}
                       style={{ width: '100%', background: 'rgba(0,0,0,0.2)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '12px', padding: '12px', color: '#fff', outline: 'none' }}
                     />
                   </div>

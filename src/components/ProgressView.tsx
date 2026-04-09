@@ -13,15 +13,20 @@ export const ProgressView: React.FC<{ setActiveTab: (tab: any) => void }> = ({ s
   const goals = localCache.goals || {};
   const currentDayData = localCache[currentDate] || {};
   
-  const [dailyWeight, setDailyWeight] = useState<number>(Number(currentDayData.weight) || 0);
+  const cleanNumInput = (v: string) => {
+    if (v.length > 1 && v.startsWith('0') && !v.startsWith('0.')) return v.substring(1);
+    return v;
+  };
+  
+  const [dailyWeight, setDailyWeight] = useState<string>(currentDayData.weight?.toString() || '');
   const [sex, setSex] = useState(goals.sex || 'male');
-  const [age, setAge] = useState(goals.age || 30);
-  const [heightIn, setHeightIn] = useState(goals.height || 70);
-  const [weightLb, setWeightLb] = useState(goals.weight || 175);
+  const [age, setAge] = useState(goals.age?.toString() || '30');
+  const [heightIn, setHeightIn] = useState(goals.height?.toString() || '70');
+  const [weightLb, setWeightLb] = useState(goals.weight?.toString() || '175');
   
   const [goalType, setGoalType] = useState(goals.goalType || 'maintain');
-  const [goalRate, setGoalRate] = useState(goals.rate || 0.5);
-  const [targetWeight, setTargetWeight] = useState(goals.targetWeight || 165);
+  const [goalRate, setGoalRate] = useState(goals.rate?.toString() || '0.5');
+  const [targetWeight, setTargetWeight] = useState(goals.targetWeight?.toString() || '165');
 
   const [activityId, setActivityId] = useState(goals.activityId || 'moderate');
   const [proteinLevelId, setProteinLevelId] = useState(goals.proteinLevelId || 'custom');
@@ -57,7 +62,7 @@ export const ProgressView: React.FC<{ setActiveTab: (tab: any) => void }> = ({ s
 
   const handleSaveActivity = (e: React.FormEvent) => {
     e.preventDefault();
-    updateGoals({ activityId, proteinLevelId, customRatioLb: proteinLevelId === 'custom' ? Number(customRatioLb) : undefined });
+    updateGoals({ activityId, proteinLevelId, customRatioLb: proteinLevelId === 'custom' ? parseFloat(customRatioLb.toString()) : undefined });
   };
 
   const handleSaveMacrosAndWater = () => {
@@ -72,11 +77,11 @@ export const ProgressView: React.FC<{ setActiveTab: (tab: any) => void }> = ({ s
 
   const handleSaveDailyWeight = (e: React.FormEvent) => {
     e.preventDefault();
-    const w = Number(dailyWeight);
+    const w = parseFloat(dailyWeight);
     if (!isNaN(w) && w > 0) {
       updateDayData(currentDate, { weight: w });
       updateGoals({ weight: w });
-      setWeightLb(w); // sync form visually
+      setWeightLb(w.toString()); // sync form visually
     }
   };
 
@@ -90,23 +95,6 @@ export const ProgressView: React.FC<{ setActiveTab: (tab: any) => void }> = ({ s
       <div style={{ padding: 'var(--space-md)', background: 'var(--theme-accent-dim, rgba(0, 201, 255, 0.1))', color: 'var(--theme-accent)', borderRadius: 'var(--radius-md)', fontSize: '13px', display: 'flex', gap: 'var(--space-sm)', alignItems: 'flex-start', border: '1px solid var(--theme-border)' }}>
         <Info size={16} style={{ flexShrink: 0, marginTop: '2px' }} />
         <span>Your targets power everything in the app. Updates save automatically when you confirm them.</span>
-      </div>
-
-      {/* 1. Weight Goal Weight (Target) */}
-      <div className="section" style={{ background: 'linear-gradient(135deg, var(--theme-accent-dim, rgba(0,201,255,0.05)), var(--theme-success-dim, rgba(146,254,157,0.05)))', borderRadius: 'var(--radius-lg)', padding: 'var(--space-xl)', border: '1px solid var(--theme-border)' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '16px', fontWeight: '700', marginBottom: 'var(--space-lg)', color: 'var(--theme-text)' }}><Flame size={18} color="var(--theme-error, #FF6B6B)" /> Weight Goal Weight</div>
-        <div style={{ display: 'flex', gap: 'var(--space-md)', alignItems: 'flex-end', flexWrap: 'wrap' }}>
-          <div style={{ flex: 1, minWidth: '150px' }}>
-            <label className="lbl">Target Body Weight (lbs)</label>
-            <input type="number" step="0.1" className="inp" value={targetWeight} onChange={e => setTargetWeight(parseFloat(e.target.value) || 0)} style={{ fontSize: '18px', fontWeight: '800' }} />
-          </div>
-          <button 
-            onClick={() => updateGoals({ targetWeight: Number(targetWeight) })} 
-            className="btn" 
-            style={{ background: 'var(--theme-accent)', color: 'var(--theme-panel-base, #000)', marginTop: '0', height: '48px', minWidth: '120px', fontSize: '14px' }}>
-            Set Goal
-          </button>
-        </div>
       </div>
 
       {/* 2. Monthly History (Calendar) */}
@@ -136,7 +124,7 @@ export const ProgressView: React.FC<{ setActiveTab: (tab: any) => void }> = ({ s
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '16px', fontWeight: '700', marginBottom: 'var(--space-lg)', color: 'var(--theme-text)' }}><Activity size={18} color="var(--theme-success, #92FE9D)" /> Progress to Goal Visualization</div>
         <div style={{ textAlign: 'center', marginBottom: 'var(--space-xl)' }}>
           <div style={{ fontSize: '48px', fontWeight: '900', color: 'var(--theme-text)', lineHeight: 1 }}>
-            {Math.abs(weightLb - targetWeight).toFixed(1)}
+            {Math.abs(parseFloat(weightLb.toString()) - parseFloat(targetWeight.toString())).toFixed(1)}
           </div>
           <div style={{ fontSize: '12px', color: 'var(--theme-text-dim)', textTransform: 'uppercase', letterSpacing: '1px', marginTop: 'var(--space-xs)' }}>lbs remaining to {targetWeight} lbs goal</div>
         </div>
@@ -163,7 +151,7 @@ export const ProgressView: React.FC<{ setActiveTab: (tab: any) => void }> = ({ s
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '16px', fontWeight: '700', marginBottom: 'var(--space-lg)', color: 'var(--theme-text)' }}><Scale size={18} color="var(--theme-accent, #4DABF7)" /> Log Today's Weight</div>
         <form onSubmit={handleSaveDailyWeight} style={{ display: 'flex', gap: 'var(--space-md)', flexWrap: 'wrap' }}>
           <div style={{ flex: 1, minWidth: '120px' }}>
-            <input type="number" step="0.1" className="inp" placeholder="Log weight for day..." value={dailyWeight} onChange={e => setDailyWeight(parseFloat(e.target.value) || 0)} />
+            <input type="number" step="0.1" className="inp" placeholder="Log weight for day..." value={dailyWeight} onChange={e => setDailyWeight(cleanNumInput(e.target.value))} />
             <div style={{ fontSize: '11px', color: 'var(--theme-accent)', marginTop: '6px', fontWeight: '500' }}>💡 Note: Logging weight here updates your body stats & TDEE app-wide.</div>
           </div>
           <button type="submit" className="btn" style={{ marginTop: 0, padding: '0 24px' }}><Check size={16} /> Save Weight</button>
@@ -189,17 +177,24 @@ export const ProgressView: React.FC<{ setActiveTab: (tab: any) => void }> = ({ s
                 </div>
                 <div style={{ flex: 1 }}>
                   <label className="lbl">Age</label>
-                  <input type="number" className="inp" value={age} onChange={e => setAge(parseInt(e.target.value) || 0)} />
+                  <input type="number" className="inp" value={age} onChange={e => setAge(cleanNumInput(e.target.value))} />
                 </div>
               </div>
-              <div style={{ display: 'flex', gap: 'var(--space-sm)' }}>
+               <div style={{ display: 'flex', gap: 'var(--space-sm)' }}>
                 <div style={{ flex: 1 }}>
                   <label className="lbl">Height (in)</label>
-                  <input type="number" className="inp" value={heightIn} onChange={e => setHeightIn(parseFloat(e.target.value) || 0)} />
+                  <input type="number" className="inp" value={heightIn} onChange={e => setHeightIn(cleanNumInput(e.target.value))} />
                 </div>
                 <div style={{ flex: 1 }}>
                   <label className="lbl">Weight (lb)</label>
-                  <input type="number" className="inp" value={weightLb} onChange={e => setWeightLb(parseFloat(e.target.value) || 0)} />
+                  <input type="number" className="inp" value={weightLb} onChange={e => setWeightLb(cleanNumInput(e.target.value))} />
+                </div>
+              </div>
+
+              <div style={{ display: 'flex', gap: 'var(--space-sm)' }}>
+                <div style={{ flex: 1 }}>
+                  <label className="lbl">Goal Weight (Target)</label>
+                  <input type="number" step="0.1" className="inp" value={targetWeight} onChange={e => setTargetWeight(cleanNumInput(e.target.value))} style={{ color: 'var(--theme-accent)' }} />
                 </div>
               </div>
 
@@ -217,8 +212,7 @@ export const ProgressView: React.FC<{ setActiveTab: (tab: any) => void }> = ({ s
                   <label className="lbl">Rate (lbs per week)</label>
                   <div style={{ display: 'flex', gap: 'var(--space-xs)' }}>
                     <input type="number" step="0.25" min="0" max="1.25" className="inp" value={goalRate} onChange={e => {
-                      const val = Math.min(1.25, Math.max(0, Number(e.target.value)));
-                      setGoalRate(val);
+                      setGoalRate(cleanNumInput(e.target.value));
                     }} />
                   </div>
                 </div>

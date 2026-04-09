@@ -39,7 +39,11 @@ const EntryField = ({ label, value, onChange, placeholder }: { label: string, va
       className="inp" 
       value={value || ''} 
       placeholder={placeholder}
-      onChange={e => onChange(e.target.value)} 
+      onChange={e => {
+        const v = e.target.value;
+        const cleaned = (v.length > 1 && v.startsWith('0') && !v.startsWith('0.')) ? v.substring(1) : v;
+        onChange(cleaned);
+      }}
       style={{ padding: '10px 12px', fontSize: '13px', background: 'var(--theme-input-bg)', border: '1px solid var(--theme-border)', borderRadius: '12px', color: '#fff', outline: 'none' }}
     />
   </div>
