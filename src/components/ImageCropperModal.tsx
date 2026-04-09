@@ -13,6 +13,8 @@ export const ImageCropperModal: React.FC<ImageCropperModalProps> = ({ image, onC
   const [zoom, setZoom] = useState(1);
   const [croppedAreaPixels, setCroppedAreaPixels] = useState<Area | null>(null);
 
+  const [aspect, setAspect] = useState<number | undefined>(1);
+
   const onCropChange = useCallback((c: { x: number, y: number }) => setCrop(c), []);
   const onZoomChange = useCallback((z: number) => setZoom(z), []);
   
@@ -35,6 +37,7 @@ export const ImageCropperModal: React.FC<ImageCropperModalProps> = ({ image, onC
 
     if (!ctx) throw new Error('No 2d context');
 
+    // High quality scaling for barcodes/QR
     canvas.width = pixelCrop.width;
     canvas.height = pixelCrop.height;
 
@@ -54,7 +57,7 @@ export const ImageCropperModal: React.FC<ImageCropperModalProps> = ({ image, onC
       canvas.toBlob((blob) => {
         if (!blob) reject(new Error('Canvas is empty'));
         else resolve(blob);
-      }, 'image/jpeg');
+      }, 'image/jpeg', 0.95);
     });
   };
 
@@ -80,7 +83,7 @@ export const ImageCropperModal: React.FC<ImageCropperModalProps> = ({ image, onC
         background: 'rgba(0,0,0,0.8)', borderBottom: '1px solid rgba(255,255,255,0.1)'
       }}>
         <button onClick={onCancel} style={{ background: 'none', border: 'none', color: '#fff' }}><X /></button>
-        <div style={{ color: '#fff', fontWeight: '800', fontSize: '14px', textTransform: 'uppercase', letterSpacing: '1px' }}>Crop Image</div>
+        <div style={{ color: '#fff', fontWeight: '800', fontSize: '14px', textTransform: 'uppercase', letterSpacing: '1px' }}>Crop Scan Target</div>
         <button onClick={onConfirm} style={{ 
           background: 'var(--theme-accent)', border: 'none', color: '#000', 
           borderRadius: '50%', width: '36px', height: '36px', display: 'flex', alignItems: 'center', justifyContent: 'center'
@@ -93,7 +96,7 @@ export const ImageCropperModal: React.FC<ImageCropperModalProps> = ({ image, onC
           image={image}
           crop={crop}
           zoom={zoom}
-          aspect={1}
+          aspect={aspect}
           onCropChange={onCropChange}
           onCropComplete={handleCropComplete}
           onZoomChange={onZoomChange}
@@ -104,6 +107,42 @@ export const ImageCropperModal: React.FC<ImageCropperModalProps> = ({ image, onC
       <div style={{
         padding: '30px', background: 'rgba(0,0,0,0.9)', display: 'flex', flexDirection: 'column', gap: '20px'
       }}>
+        <div style={{ display: 'flex', justifyContent: 'center', gap: '8px' }}>
+          <button 
+            onClick={() => setAspect(1)}
+            style={{ 
+              flex: 1, padding: '10px', borderRadius: '12px', fontSize: '11px', fontWeight: '800', cursor: 'pointer',
+              background: aspect === 1 ? 'var(--theme-accent)' : 'rgba(255,255,255,0.05)',
+              border: aspect === 1 ? 'none' : '1px solid rgba(255,255,255,0.1)',
+              color: aspect === 1 ? '#000' : '#fff',
+              transition: 'all 0.2s'
+            }}>
+            SQUARE (LABEL/QR)
+          </button>
+          <button 
+            onClick={() => setAspect(3)}
+            style={{ 
+              flex: 1, padding: '10px', borderRadius: '12px', fontSize: '11px', fontWeight: '800', cursor: 'pointer',
+              background: aspect === 3 ? 'var(--theme-accent)' : 'rgba(255,255,255,0.05)',
+              border: aspect === 3 ? 'none' : '1px solid rgba(255,255,255,0.1)',
+              color: aspect === 3 ? '#000' : '#fff',
+              transition: 'all 0.2s'
+            }}>
+            WIDE (BARCODE)
+          </button>
+          <button 
+            onClick={() => setAspect(undefined)}
+            style={{ 
+              flex: 1, padding: '10px', borderRadius: '12px', fontSize: '11px', fontWeight: '800', cursor: 'pointer',
+              background: aspect === undefined ? 'var(--theme-accent)' : 'rgba(255,255,255,0.05)',
+              border: aspect === undefined ? 'none' : '1px solid rgba(255,255,255,0.1)',
+              color: aspect === undefined ? '#000' : '#fff',
+              transition: 'all 0.2s'
+            }}>
+            FREEFORM
+          </button>
+        </div>
+
         <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
           <ZoomIn size={18} color="rgba(255,255,255,0.5)" />
           <input

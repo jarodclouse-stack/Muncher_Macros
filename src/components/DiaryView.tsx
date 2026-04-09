@@ -2,7 +2,7 @@ import React, { useState, useMemo } from 'react';
 import { useDiary } from '../context/DiaryContext';
 import { sumFoods } from '../lib/food/serving-converter';
 import { computeGoals } from '../lib/goals/compute';
-import { Utensils, Trash2, AlertCircle, Droplets, Minus, Plus, Info, ChevronLeft, ChevronRight, ChevronDown, ChevronUp, Scale, Activity } from 'lucide-react';
+import { Utensils, Trash2, Sparkles, Droplets, Minus, Plus, Info, ChevronLeft, ChevronRight, ChevronDown, ChevronUp, Scale, Activity } from 'lucide-react';
 import { MEALS, ALL_MICRO_KEYS, MICRO_UNITS } from '../lib/constants';
 import { NUTRIENT_BENEFITS } from '../lib/nutrient-info';
 import { AddFoodModal } from './AddFoodModal';
@@ -116,9 +116,23 @@ export const DiaryView: React.FC = () => {
           </div>
         </div>
 
-        <div style={{ background: 'var(--theme-accent-dim, rgba(0,201,255,0.05))', borderLeft: '3px solid var(--theme-accent, #00C9FF)', padding: '12px', borderRadius: '8px', marginBottom: '24px', fontSize: '13px', color: 'var(--theme-text-dim, #c0c0d0)', display: 'flex', alignItems: 'flex-start', gap: '8px' }}>
-          <AlertCircle size={16} color="var(--theme-accent, #00C9FF)" style={{ flexShrink: 0, marginTop: '2px' }} />
-          <span>{generateDailyStatus()}</span>
+        <div style={{ 
+          background: 'var(--theme-accent-dim, rgba(0,201,255,0.05))', 
+          border: '1px solid rgba(0,201,255,0.1)',
+          borderLeft: '4px solid var(--theme-accent, #00C9FF)', 
+          padding: '16px 20px', 
+          borderRadius: '16px', 
+          marginBottom: '24px', 
+          fontSize: '14px', 
+          lineHeight: '1.5',
+          color: 'var(--theme-text)', 
+          display: 'flex', 
+          alignItems: 'flex-start', 
+          gap: '12px',
+          margin: '0 4px 24px 4px'
+        }}>
+          <Sparkles size={18} color="var(--theme-accent, #00C9FF)" style={{ flexShrink: 0, marginTop: '2px' }} />
+          <span style={{ fontWeight: '600' }}>{generateDailyStatus()}</span>
         </div>
 
         {/* Macros */}
@@ -421,7 +435,9 @@ const WeeklyReport = ({ localCache, currentDate, targetCal }: any) => {
             <div style={{ background: 'var(--theme-panel-dim, rgba(0,0,0,0.2))', padding: '16px', borderRadius: '16px', textAlign: 'center' }}>
               <div style={{ fontSize: '10px', color: 'var(--theme-text-dim, #8b8b9b)', textTransform: 'uppercase', marginBottom: '8px', fontWeight: '700' }}>Avg Calories</div>
               <div style={{ fontSize: '20px', fontWeight: '900', color: Math.abs(calDiff) < 150 ? 'var(--theme-success, #92FE9D)' : calDiff > 0 ? 'var(--theme-error, #FF6B6B)' : 'var(--theme-accent, #4DABF7)' }}>{avgCal}</div>
-              <div style={{ fontSize: '10px', color: 'var(--theme-text-dim, #8b8b9b)', marginTop: '4px' }}>goal: {targetCal}</div>
+              <p style={{ fontSize: '13px', color: '#8b8b9b', textAlign: 'center', maxWidth: '280px', lineHeight: '1.4' }}>
+                Scans **Nutrition Labels**, **Barcodes**, and **QR Codes**. Take a clear photo for best results.
+              </p>
             </div>
             <div style={{ background: 'var(--theme-panel-dim, rgba(0,0,0,0.2))', padding: '16px', borderRadius: '16px', textAlign: 'center' }}>
               <div style={{ fontSize: '10px', color: 'var(--theme-text-dim, #8b8b9b)', textTransform: 'uppercase', marginBottom: '8px', fontWeight: '700' }}>On Target</div>
@@ -575,11 +591,11 @@ const HydrationCard = ({ current, goal, onAdd, onReset }: { current: number, goa
             top: 0,
             left: 0,
             right: 0,
-            height: '8px',
+            height: '12px',
             background: 'linear-gradient(180deg, var(--theme-accent, #00C9FF) 0%, transparent 100%)',
-            filter: 'blur(4px)',
-            opacity: 0.8,
-            animation: 'spill-flow 3s infinite ease-in-out'
+            filter: 'blur(6px)',
+            opacity: 0.9,
+            animation: 'spill-flow 2s infinite ease-in-out'
           }} />
 
           {/* Dripping Droplets */}

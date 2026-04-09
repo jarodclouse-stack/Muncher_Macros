@@ -317,8 +317,8 @@ export const AddFoodModal: React.FC<AddFoodModalProps> = ({ meal, onClose }) => 
                 }}
                 onScanError={(err) => setErrorMsg(err)}
               />
-              <p style={{ fontSize: '13px', color: '#8b8b9b', textAlign: 'center', maxWidth: '240px' }}>
-                Point at a barcode or QR code. Take a clear photo for best results.
+              <p style={{ fontSize: '13px', color: '#8b8b9b', textAlign: 'center', maxWidth: '280px', lineHeight: '1.4' }}>
+                Scans **Nutrition Labels**, **Barcodes**, and **QR Codes**. Take a clear photo for best results.
               </p>
             </div>
           ) : null}

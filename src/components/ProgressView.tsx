@@ -122,11 +122,13 @@ export const ProgressView: React.FC<{ setActiveTab: (tab: any) => void }> = ({ s
       {/* 4. Progress to Goal Visualization */}
       <div className="section" style={{ background: 'var(--theme-panel)', border: '1px solid var(--theme-border)', borderRadius: 'var(--radius-lg)', padding: 'var(--space-xl)', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '16px', fontWeight: '700', marginBottom: 'var(--space-lg)', color: 'var(--theme-text)' }}><Activity size={18} color="var(--theme-success, #92FE9D)" /> Progress to Goal Visualization</div>
-        <div style={{ textAlign: 'center', marginBottom: 'var(--space-xl)' }}>
+        <div style={{ textAlign: 'center', marginBottom: 'var(--space-xl)', padding: '0 var(--space-xl)' }}>
           <div style={{ fontSize: '48px', fontWeight: '900', color: 'var(--theme-text)', lineHeight: 1 }}>
             {Math.abs(parseFloat(weightLb.toString()) - parseFloat(targetWeight.toString())).toFixed(1)}
           </div>
-          <div style={{ fontSize: '12px', color: 'var(--theme-text-dim)', textTransform: 'uppercase', letterSpacing: '1px', marginTop: 'var(--space-xs)' }}>lbs remaining to {targetWeight} lbs goal</div>
+          <div style={{ fontSize: '13px', color: 'var(--theme-text-dim)', textTransform: 'uppercase', letterSpacing: '1px', marginTop: 'var(--space-xs)', maxWidth: '400px', margin: 'var(--space-xs) auto 0' }}>
+            lbs remaining to Reach Your {targetWeight} lbs goal
+          </div>
         </div>
 
         <div style={{ padding: '0 var(--space-xs)' }}>

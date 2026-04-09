@@ -1,6 +1,6 @@
 import React, { useRef, useState } from 'react';
 import { Camera, Loader2, AlertCircle, Hash, ArrowRight } from 'lucide-react';
-import { scanBarcode, extractBarcodeDigits } from '../lib/vision/scanner-logic';
+import { scanBarcode, extractBarcodeDigits, scanQRCode } from '../lib/vision/scanner-logic';
 import { ImageCropperModal } from './ImageCropperModal';
 
 interface BarcodeScannerProps {
@@ -39,26 +39,33 @@ export const BarcodeScanner: React.FC<BarcodeScannerProps> = ({
     setPendingImage(null);
 
     try {
-      // PHASE 1: Standard Barcode Line Scan
-      console.log("Stage 1: Attempting to read barcode lines from cropped image...");
+      // PHASE 1: Try QR Code Decoding (Standard)
+      console.log("Stage 1: Attempting to read QR code...");
+      const qrResult = await scanQRCode(imageBlob);
+      if (qrResult.success && qrResult.text) {
+        onScanSuccess(qrResult.text);
+        setStatus('idle');
+        return;
+      }
+
+      // PHASE 2: Standard Barcode Line Scan
+      console.log("Stage 2: Attempting to read barcode lines...");
       const scanResult = await scanBarcode(imageBlob);
-      
       if (scanResult.success && scanResult.text) {
         onScanSuccess(scanResult.text);
         setStatus('idle');
         return;
       }
 
-      // PHASE 2: AI Second Chance (Look at the numbers)
-      console.log("Stage 1 failed. Stage 2: Asking AI to read numbers from cropped image...");
+      // PHASE 3: AI OCR (Numbers)
+      console.log("Stage 1 & 2 failed. Stage 3: Asking AI to read numbers...");
       setStatus('ai-reading');
       const aiResult = await extractBarcodeDigits(imageBlob);
-
       if (aiResult.success && aiResult.text) {
         onScanSuccess(aiResult.text);
         setStatus('idle');
       } else {
-        throw new Error(aiResult.error || "Could not read barcode or numbers.");
+        throw new Error(aiResult.error || "Could not read code. Ensure the code is clear and fills the crop area.");
       }
       
     } catch (err: any) {
