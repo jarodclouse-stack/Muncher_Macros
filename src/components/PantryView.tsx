@@ -228,19 +228,17 @@ export const PantryView: React.FC = () => {
         style={{ 
           display: 'flex', 
           gap: '8px', 
-          marginBottom: '16px', 
+          marginBottom: '24px', 
           position: 'sticky', 
-          top: 'calc(70px + env(safe-area-inset-top, 0px))', 
-          zIndex: 10, 
+          top: 'calc(84px + env(safe-area-inset-top, 0px))', 
+          zIndex: 100, 
           background: 'var(--theme-bg, #080A0F)', 
-          padding: '12px 20px', 
-          margin: '0 -20px 24px -20px',
+          padding: '12px 24px', 
+          margin: '0 -24px 24px -24px',
           overflowX: 'auto',
           whiteSpace: 'nowrap',
           borderBottom: '1px solid var(--theme-border)',
-          boxShadow: '0 8px 16px rgba(0,0,0,0.2)',
-          maskImage: 'linear-gradient(to right, transparent, black 20px, black calc(100% - 20px), transparent)',
-          WebkitMaskImage: 'linear-gradient(to right, transparent, black 20px, black calc(100% - 20px), transparent)',
+          boxShadow: '0 8px 24px rgba(0,0,0,0.3)',
         }}>
         <button onClick={() => { setActiveTab('search'); clearSearchState(); }} style={{ minWidth: 'max-content', padding: '12px 20px', borderRadius: '14px', border: '1px solid var(--theme-border)', background: activeTab === 'search' ? 'var(--theme-accent-dim)' : 'rgba(255,255,255,0.03)', color: activeTab === 'search' ? 'var(--theme-accent)' : 'var(--theme-text-dim)', fontWeight: '700', fontSize: '13px', cursor: 'pointer', transition: 'all 0.2s' }}>
           Discover & Search
@@ -254,7 +252,7 @@ export const PantryView: React.FC = () => {
       </div>
 
       {activeTab === 'search' && (
-        <div className="section">
+        <div className="section" style={{ marginTop: '0' }}>
           <SearchCoaster 
             activeTab={innerGlobalSearchTab} 
             onTabChange={(t) => { setInnerGlobalSearchTab(t); clearSearchState(); }} 

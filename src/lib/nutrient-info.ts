@@ -122,7 +122,9 @@ export const NUTRIENT_BENEFITS: Record<string, { summary: string; points: string
     points: [
       "Glycemic Control: Prevents rapid blood sugar spikes by slowing digestion.",
       "Lipid Management: Binds cholesterol in the gut, reducing cardiovascular risk.",
-      "Microbiome Fuel: Feeds beneficial gut bacteria to support systemic immunity."
+      "Microbiome Fuel: Feeds beneficial gut bacteria to support systemic immunity.",
+      "Appetite Regulation: Increases satiety signaling to the brain (GLP-1 pathway).",
+      "Digestive Transit: Optimizes intestinal motility and prevents toxin reabsorption."
     ]
   },
   'Protein': {
@@ -130,7 +132,9 @@ export const NUTRIENT_BENEFITS: Record<string, { summary: string; points: string
     points: [
       "Muscle Preservation: Maintains lean mass even during caloric deficits.",
       "Enzyme Production: Essential for the creation of all metabolic enzymes.",
-      "Immune Defense: Building blocks for antibodies and critical for repair."
+      "Immune Defense: Building blocks for antibodies and critical for repair.",
+      "Structural Integrity: Forms the collagen matrix for skin, hair, and connective tissue.",
+      "Thermic Effect: Increases metabolic rate by requiring more energy to digest than fats/carbs."
     ]
   },
   'Complex Carbs': {
@@ -138,7 +142,9 @@ export const NUTRIENT_BENEFITS: Record<string, { summary: string; points: string
     points: [
       'Steady Fuel: Provides long-lasting energy without the insulin crash.',
       'Glycogen Loading: Required for high-intensity training and endurance caps.',
-      'Satiety: Keeps you full longer compared to simple sugar sources.'
+      'Satiety: Keeps you full longer compared to simple sugar sources.',
+      'Fiber Synergies: Often bundled with essential prebiotics for gut health.',
+      'Brain Glucose: Provides the primary stable fuel source for cognitive focus.'
     ]
   },
   'Simple (Sugars)': {
@@ -146,7 +152,8 @@ export const NUTRIENT_BENEFITS: Record<string, { summary: string; points: string
     points: [
       'Instant Energy: Absorbs in minutes for high-output physical demands.',
       'Glycemic Hit: Use strategically around workouts for peak power.',
-      'Risk Factor: High intake without activity triggers fat storage.'
+      'Risk Factor: High intake without activity triggers fat storage.',
+      'Brain Reward: Can trigger dopamine release; use with precision and caution.'
     ]
   },
   'Saturated': {
@@ -154,7 +161,8 @@ export const NUTRIENT_BENEFITS: Record<string, { summary: string; points: string
     points: [
       'Hormonal Support: Base material for steroid hormone synthesis.',
       'Cell Membrane: Provides structural integrity and rigidity to cell walls.',
-      'Flavor Profile: Increases satiety and carries fat-soluble vitamins.'
+      'Flavor Profile: Increases satiety and carries fat-soluble vitamins.',
+      'Heat Stability: Resistant to oxidation during high-heat cooking.'
     ]
   },
   'Monounsaturated': {
@@ -162,7 +170,8 @@ export const NUTRIENT_BENEFITS: Record<string, { summary: string; points: string
     points: [
       'Heart Health: Strongly improves blood lipid and HDL/LDL profiles.',
       'Insulin Sensitivity: Helps cells process glucose more efficiently.',
-      'Systemic Calm: Reduces markers of long-term cellular inflammation.'
+      'Systemic Calm: Reduces markers of long-term cellular inflammation.',
+      'Vessel Integrity: Maintains the elasticity of the arterial walls.'
     ]
   },
   'Polyunsaturated': {
@@ -170,23 +179,144 @@ export const NUTRIENT_BENEFITS: Record<string, { summary: string; points: string
     points: [
       'Brain Clarity: Omega-3s (DHA/EPA) are vital for cognitive function.',
       'Anti-Inflammatory: Regulates recovery signaling after heavy exercise.',
-      'Cell Signaling: Critical for healthy communication between cells.'
+      'Cell Signaling: Critical for healthy communication between cells.',
+      'Skin Barrier: Maintains moisture and prevents trans-epidermal water loss.'
     ]
   },
-  'Vitamin C': { summary: '🛡️ Collagen & Immunity Protocol', points: ['Essential for tissue growth and repair.', 'Defends against oxidative stress.'] },
-  'Vitamin D': { summary: '☀️ Bone & Immune Master Hormone', points: ['Triggers calcium absorption in the gut.', 'Regulates innate immune responses.'] },
-  'Magnesium': { summary: '🧘 Signal & Sleep Conductivity', points: ['Calms the nervous system for better sleep.', 'Prevents muscular cramps and tension.'] },
-  'Iron': { summary: '🎈 Oxygenation & Vitality Surge', points: ['Necessary for red blood cell hemoglobin.', 'Powers metabolic energy and warmth.'] },
-  'Zinc': { summary: '🛡️ T-Cell & Genomic Repair', points: ['Essential for heavy-duty immune defense.', 'Drives protein synthesis and healing.'] },
-  'Potassium': { summary: '⚖️ Cardiac Pulse & Pressure Control', points: ['Maintains the electrical rhythm of the heart.', 'Eliminates excess water and sodium.'] },
-  'Vitamin B12': { summary: '🛰️ Neuro-Clarity & Nerve Defense', points: ['Protects the myelin sheath around nerves.', 'Crucial for producing red blood cells.'] },
-  'Calcium': { summary: '🦴 Structural Integrity Hub', points: ['Hardens skeletal tissue and teeth.', 'Enables muscular signaling and contraction.'] },
-  'Vitamin A': { summary: '👁️ Ocular & Barrier Immunity', points: ['Directly fuels the night-vision cycle.', 'Keeps skin and internal linings healthy.'] },
-  'Sodium': { summary: '🧂 Hydration & Signal Osmolarity', points: ['Controls the volume of blood and pressure.', 'Enables rapid nerve impulse firing.'] },
-  'Vitamin B6': { summary: '🧠 Mood & Hormone Balance', points: ['Catalyst for serotonin and dopamine.', 'Regulates blood sugar and hemoglobin.'] },
-  'Vitamin B1': { summary: '⚡ Energy & Nerve Catalyst', points: ['Turns carbohydrates into nervous system fuel.', 'Supports healthy cardiac muscle tone.'] },
-  'Vitamin B2': { summary: '🔋 Cellular Respiration Core', points: ['Essential for ATP and cellular energy.', 'Protects against oxidative stress.'] },
-  'Vitamin B3': { summary: '🛡️ Lipid & DNA Repair', points: ['Supports healthy cholesterol levels.', 'Critical for cellular energy signaling.'] }
+  'Vitamin C': {
+    summary: '🛡️ Collagen & Immunity Protocol',
+    points: [
+      'Collagen Synthesis: Critical for hydroxyproline production for skin/joints.',
+      'Antioxidant Shield: Neutralizes free radicals generated during intense training.',
+      'Immune Training: Enhances neutrophil and lymphocyte motility.',
+      'Iron Absorption: Dramatically increases the uptake of non-heme (plant) iron.',
+      'Adrenal Support: High concentrations found in adrenal glands to manage stress.'
+    ]
+  },
+  'Vitamin D': {
+    summary: '☀️ Bone & Immune Master Hormone',
+    points: [
+      'Calcium Transport: Enables the gut to absorb calcium into the bloodstream.',
+      'Gene Modulation: Regulates over 1,000 different genes in human tissue.',
+      'Immune Sentinel: Activates the "killer" T-cells to identify pathogens.',
+      'Mood Regulation: Linked to serotonin synthesis and Seasonal Affective Disorder.',
+      'Muscular Power: Low D levels are correlated with reduced explosive strength.'
+    ]
+  },
+  'Magnesium': {
+    summary: '🧘 Signal & Sleep Conductivity',
+    points: [
+      'ATP Transfer: The "spark plug" that releases energy from ATP molecules.',
+      'Nervous System: Blocks NMDA receptors to lower systemic "noise" and anxiety.',
+      'Muscle Relaxation: Acts as a natural calcium channel blocker to prevent cramps.',
+      'Blood Pressure: Relaxes the walls of blood vessels for better circulation.',
+      'Sleep Quality: Regulates melatonin production and GABA signaling.'
+    ]
+  },
+  'Iron': {
+    summary: '🎈 Oxygenation & Vitality Surge',
+    points: [
+      'Heme Delivery: Central atom of hemoglobin for systemic oxygen transport.',
+      'Brain Energy: Required for the synthesis of myelin and neurotransmitters.',
+      'Metabolic Rate: Essential for thyroid peroxidase and calorie burning.',
+      'Immune Function: Powers the enzymes that destroy bacteria and viruses.'
+    ]
+  },
+  'Zinc': {
+    summary: '🛡️ T-Cell & Genomic Repair',
+    points: [
+      'DNA Integrity: Component of "zinc finger" proteins that repair code.',
+      'Immune Catalyst: Drives the maturation of the thymus and T-lymphocytes.',
+      'Testosterone Support: Essential for male reproductive health and hormones.',
+      'Protein Synthesis: Required for muscle repair following micro-tears.',
+      'Sense Profile: Critical for maintaining acute taste and smell sensitivity.'
+    ]
+  },
+  'Potassium': {
+    summary: '⚖️ Cardiac Pulse & Pressure Control',
+    points: [
+      'Sodium Balance: Actively pumps sodium out of cells to reduce water retention.',
+      'Electrical Signal: Conducts the electrical impulses that trigger heartbeats.',
+      'Blood Pressure: Relaxes arterial walls to prevent hypertension.',
+      'Kidney Health: Protects against the formation of calcium oxalate stones.',
+      'Nerve Firing: Essential for restoring the membrane potential after a signal.'
+    ]
+  },
+  'Vitamin B12': {
+    summary: '🛰️ Neuro-Clarity & Nerve Defense',
+    points: [
+      'Myelin Sheath: Insulates nerve fibers for fast and accurate signaling.',
+      'DNA Protocol: Acts as a cofactor for DNA synthesis in every single cell.',
+      'Red Blood Cells: Prevents megaloblastic anemia and ensures oxygen flow.',
+      'Brain Longevity: Linked to slower rates of age-related brain atrophy.',
+      'Homocysteine: Lowers levels to protect the heart and vascular system.'
+    ]
+  },
+  'Calcium': {
+    summary: '🦴 Structural Integrity Hub',
+    points: [
+      'Bone Reservoir: Provides the mineral matrix for skeletal strength.',
+      'Muscular Trigger: The signal that causes actin and myosin to contract.',
+      'Blood Clotting: Plays a vital role in the coagulation cascade.',
+      'Nerve Conduction: Triggers the release of neurotransmitters at synapses.',
+      'Enzyme Activation: Works as a co-factor for various metabolic enzymes.'
+    ]
+  },
+  'Vitamin A': {
+    summary: '👁️ Ocular & Barrier Immunity',
+    points: [
+      'Retinal Cycle: Regenerates the visual pigments needed for low-light vision.',
+      'Epithelial Health: Maintains the "first line of defense" in skin and lungs.',
+      'Stem Cell Signal: Directs the differentiation of cells into specific tissues.',
+      'Antioxidant: Protects lipids from oxidative damage in high-oxygen tissue.',
+      'Skeletal Growth: Supports bone remodeling and osteoblast activity.'
+    ]
+  },
+  'Sodium': {
+    summary: '🧂 Hydration & Signal Osmolarity',
+    points: [
+      'Fluid Balance: The primary driver of extracellular fluid and hydration.',
+      'Muscle Action: Generates the electrical charge needed for contraction.',
+      'Nutrient Uptake: Drives the transport of glucose and amino acids into cells.',
+      'Nerve Pulse: Required for the rapid depolarization of nerve membranes.'
+    ]
+  },
+  'Vitamin B6': {
+    summary: '🧠 Mood & Hormone Balance',
+    points: [
+      'Neuro-Chemistry: Essential for creating serotonin, dopamine, and GABA.',
+      'Heme Production: Required for the first step of hemoglobin synthesis.',
+      'Gluconeogenesis: Helps convert stored proteins into glucose for energy.',
+      'Anticipatory Stress: Regulates the body\'s response to psychological stress.'
+    ]
+  },
+  'Vitamin B1': {
+    summary: '⚡ Energy & Nerve Catalyst',
+    points: [
+      'Energy Conversion: Converts pyruvate into acetyl-CoA for the Krebs cycle.',
+      'Heart Rhythm: Supports the high energy demands of cardiac tissue.',
+      'Nerve Conduct: Protective role in the development of the nervous system.',
+      'Brain Energy: Essential for glucose metabolism in the cerebral cortex.'
+    ]
+  },
+  'Vitamin B2': {
+    summary: '🔋 Cellular Respiration Core',
+    points: [
+      'FAD/FMN Energy: Core component of flavoproteins for energy capture.',
+      'Antioxidant Power: Required for the recycling of glutathione.',
+      'Iron Metabolism: Essential for iron processing and hemoglobin health.',
+      'Eye Health: Protects the lens of the eye from oxidative clouding.'
+    ]
+  },
+  'Vitamin B3': {
+    summary: '🛡️ Lipid & DNA Repair',
+    points: [
+      'NAD+ Protocol: Critical for the longevity and energy signaling molecule NAD+.',
+      'Genomic Repair: Activates PARP enzymes to repair damaged DNA sequences.',
+      'Fatty Acid Flux: Regulates the breakdown and synthesis of essential fats.',
+      'Mental Focus: Supports brain health by preventing metabolic exhaustion.'
+    ]
+  }
 };
 
 export const getNutrientDescriptions = () => NUTRIENT_BENEFITS;
