@@ -3,7 +3,7 @@ import { useDiary } from '../context/DiaryContext';
 import { ACTIVITY_LEVELS, MICRO_CATEGORIES } from '../lib/constants';
 import { computeGoals } from '../lib/goals/compute';
 import { sumFoods } from '../lib/food/serving-converter';
-import { Save, Scale, Droplet, User, Flame, Activity, PieChart, Info, Check } from 'lucide-react';
+import { X, Search, Plus, Filter, Star, Edit3, Trash2, Camera, Scan, FileText, Sparkles, ChevronDown, Flame, Activity, Save, Scale, Droplet, User, PieChart, Info, Check } from 'lucide-react';
 import { HistoryCalendar } from './HistoryCalendar';
 import { WeightHistoryChart } from './WeightHistoryChart';
 
@@ -309,7 +309,13 @@ export const ProgressView: React.FC<{ setActiveTab: (tab: any) => void }> = ({ s
             
             <div>
               <div style={{ marginBottom: '16px' }}>Customize your calorie ratio. Must equal exactly 100%.</div>
-              <div style={{ display: 'flex', gap: '12px', marginBottom: '16px' }}>
+              <div 
+                style={{ 
+                  display: 'flex', 
+                  gap: '12px', 
+                  marginBottom: '16px',
+                  flexDirection: window.innerWidth < 600 ? 'column' : 'row'
+                }}>
                 <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '8px' }}>
                   <label className="lbl" style={{ color: 'var(--theme-error, #FF6B6B)' }}>Protein % (Locked by Diet)</label>
                   <input type="number" className="inp" value={macroP} disabled style={{ borderLeft: '3px solid var(--theme-error, #FF6B6B)', opacity: 0.6 }} />

@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
 import { useDiary } from '../context/DiaryContext';
 import { 
-  Trash2, ChevronDown, Search, Loader2, 
-  BookmarkCheck, Edit3, Sparkles, X, Info, Plus, Check
+  X, Search, Plus, Edit3, Trash2, 
+  Sparkles, ChevronDown, Flame, Activity, Check, 
+  Info, Loader2, BookmarkCheck 
 } from 'lucide-react';
 import { ALL_MICRO_KEYS, MICRO_UNITS, SERVING_UNITS, MICRO_CATEGORIES } from '../lib/constants';
 import { getNutrientDescriptions } from '../lib/nutrient-info';
@@ -832,6 +833,49 @@ export const PantryView: React.FC = () => {
                     </select>
                   </div>
                 </div>
+
+                {/* Intelligence Scaling Row */}
+                <div style={{ display: 'flex', gap: '8px' }}>
+                  <button 
+                    onClick={() => {
+                      const target = prompt("Enter target Calories (kcal):", "500");
+                      if (target && !isNaN(Number(target))) {
+                        const targetKcal = Number(target);
+                        const baseKcal = Number(configuringFood.cal) || 0;
+                        if (baseKcal > 0) {
+                          // servingUnit and servingQty need to reach targetKcal
+                          // currentKcal = baseKcal * multiplier
+                          // multiplier = targetKcal / baseKcal
+                          // We need to find qty such that computeMultiplier(...) = targetKcal / baseKcal
+                          // This is complex because computeMultiplier handles density. 
+                          // Simplest: find the multiplier for "1 unit" of current selection, then scale.
+                          const multForOne = computeMultiplier(configuringFood.serving, servingUnit, 1);
+                          const needed = targetKcal / (baseKcal * multForOne);
+                          setServingQty(needed.toFixed(1));
+                        }
+                      }
+                    }}
+                    style={{ flex: 1, padding: '10px', background: 'rgba(255,255,255,0.05)', border: '1px solid var(--theme-border)', borderRadius: '12px', color: 'var(--theme-accent, #00C9FF)', fontSize: '10px', fontWeight: '800', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '4px' }}>
+                    <Flame size={12}/> SCALE TO KCAL
+                  </button>
+                  <button 
+                    onClick={() => {
+                      const target = prompt("Enter target Protein (g):", "30");
+                      if (target && !isNaN(Number(target))) {
+                        const targetP = Number(target);
+                        const baseP = Number(configuringFood.p) || 0;
+                        if (baseP > 0) {
+                          const multForOne = computeMultiplier(configuringFood.serving, servingUnit, 1);
+                          const needed = targetP / (baseP * multForOne);
+                          setServingQty(needed.toFixed(1));
+                        }
+                      }
+                    }}
+                    style={{ flex: 1, padding: '10px', background: 'rgba(255,255,255,0.05)', border: '1px solid var(--theme-border)', borderRadius: '12px', color: 'var(--theme-success, #92FE9D)', fontSize: '10px', fontWeight: '800', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '4px' }}>
+                    <Activity size={12}/> SCALE TO PROTEIN
+                  </button>
+                </div>
+
 
                 <div 
                   onClick={() => setShowFullNutrition(!showFullNutrition)}
