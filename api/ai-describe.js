@@ -29,6 +29,7 @@ function extractJSON(text) {
 
 const MODELS = [
   'claude-3-5-sonnet-20240620',
+  'claude-3-5-haiku-20241022',
   'claude-3-haiku-20240307',
 ];
 
@@ -146,7 +147,7 @@ function normalizeResult(f) {
   };
 }
 
-export default async function handler(req, res) {
+module.exports = async (req, res) => {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
   if (req.method === 'OPTIONS') return res.status(200).end();
