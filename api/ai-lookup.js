@@ -86,8 +86,8 @@ function normalizeResult(f) {
 
   return {
     name: String(f.name || 'Unknown Item'),
-    serving: String(f.serving || (f.sQty ? `${f.sQty}${f.sUnit}` : '1 serving')),
-    sQty: Number(f.sQty || f.qty || f.quantity || 1),
+    serving: String(f.serving || (f.detectedCount || f.sQty ? `${f.detectedCount || f.sQty}${f.sUnit || f.unit || 'piece'}` : '1 serving')),
+    sQty: Number(f.detectedCount || f.sQty || f.qty || f.quantity || 1),
     sUnit: String(f.sUnit || f.unit || 'piece'),
     cal, p, c, f: fat,
     fb: Math.round((Number(f.fb) || 0) * 10) / 10,
@@ -118,8 +118,8 @@ function normalizeResult(f) {
     sodium: Math.round(Number(f.Sodium) || 0),
     potassium: Math.round(Number(f.Potassium) || 0),
     cholesterol: Math.round(Number(f.chol) || 0),
-    stagedQty: (f.sQty || 1).toString(),
-    stagedUnit: String(f.sUnit || 'serving')
+    stagedQty: String(f.detectedCount || f.sQty || f.qty || f.quantity || 1),
+    stagedUnit: String(f.sUnit || f.unit || 'serving')
   };
 }
 
@@ -137,13 +137,18 @@ export default async function handler(req, res) {
 
   const prompt = `Search for nutritional data for: "${query}".
   Return a JSON array of the 5 most likely food matches.
-  For each match, provide a complete nutrient breakdown scaled to a standard 100g or 1 serving size.
+  For each match, provide a complete nutrient breakdown scaled to a standard serving (e.g. 1 egg, 28g chicken, 1 cup milk).
 
-  JSON keys: name, serving, sQty, sUnit, cal, p, c, f, fb, sat, trans, mono, poly, chol, sugars, Sodium, Potassium, Calcium, Iron, "Vitamin C", "Vitamin A", "Vitamin D", "Magnesium", "Zinc".
+  DIETARY PERCEPTION PROTOCOL:
+  1. ITEM COUNT: How many units are described? (e.g. "2 eggs" -> detectedCount: 2).
+  2. PER UNIT NUTRITION: Nutrition for exactly ONE (1) unit. 
+
+  JSON keys: name, serving, detectedCount, sUnit, cal, p, c, f, fb, sat, trans, mono, poly, chol, sugars, Sodium, Potassium, Calcium, Iron, "Vitamin C", "Vitamin A", "Vitamin D", "Magnesium", "Zinc".
 
   Rules:
   - Return ONLY raw JSON. No markdown fences.
-  - Accuracy is paramount. Use P*4 + C*4 + F*9 for calories.`;
+  - Accuracy is paramount. Use P*4 + C*4 + F*9 for calories.
+  - CRITICAL: detectedCount = count of units. cal = calories for ONE of those units.`;
 
   try {
     const aiResults = await anthropicJson(prompt, apiKey);
