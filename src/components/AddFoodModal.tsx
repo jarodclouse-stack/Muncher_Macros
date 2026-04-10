@@ -605,6 +605,7 @@ export const AddFoodModal: React.FC<AddFoodModalProps> = ({ meal, onClose }) => 
                     ))}
                   </div>
 
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px', marginTop: '10px' }}>
                     <button 
                       onClick={() => {
                         aiStagedResults.forEach(f => {
