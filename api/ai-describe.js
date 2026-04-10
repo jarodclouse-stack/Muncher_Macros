@@ -181,17 +181,25 @@ export default async function handler(req, res) {
   3. sQty POPULATION: Set sQty to the count you detected in Step 1. NEVER default to 1 if a larger number was mentioned.
 
   EXAMPLES:
-  - "2 eggs" -> sQty: 2, cal: 70 (approx for 1 egg)
-  - "3 pieces of bacon" -> sQty: 3, cal: 45 (approx for 1 slice)
-  - "Bowl of cereal with 1 cup of milk" -> sQty: 1, sUnit: "cup", cal: 120 (for 1 cup)
+  - "2 eggs" -> sQty: 2, cal: 70 (for 1)
+  - "3 slices of toast" -> sQty: 3, cal: 80 (for 1)
 
-  FORMAT RULES:
+  Return ONLY a JSON array of objects. Format:
+  [{
+    "name": "specific ingredient name",
+    "serving": "e.g. 1 Medium Egg (50g)",
+    "sQty": number, "sUnit": "piece|slice|whole|serving|oz|cup|tbsp|tsp|g|ml",
+    "cal": number, "p": number, "c": number, "f": number, "fb": number,
+    "sat": number, "trans": number, "mono": number, "poly": number, "chol": number, "sugars": number,
+    "Sodium": number, "Potassium": number, "Calcium": number, "Iron": number,
+    "Vitamin C": number, "Vitamin A": number, "Vitamin D": number, 
+    "Vitamin B1": number, "Vitamin B2": number, "Vitamin B3": number, "Vitamin B5": number, "Vitamin B6": number, "Vitamin B12": number,
+    "Vitamin E": number, "Vitamin K": number,
+    "Magnesium": number, "Zinc": number, "Phosphorus": number, "Manganese": number, "Selenium": number, "Copper": number
+  }]
+
+  RULES:
   - Return ONLY raw JSON. No markdown fences.
-  - If the meal is a composite dish (Burrito, Sandwich, etc), split it into ingredients.
-  - Use NATURAL units (piece, slice, tbsp, cup).
-  - Provide weight info in "serving" string (e.g. "1 medium egg (50g)").
-  
-  Rules:
   - CRITICAL: sQty = count of units. cal = calories for ONE of those units.
   - Calorie Math: P*4 + C*4 + F*9.`;
 
