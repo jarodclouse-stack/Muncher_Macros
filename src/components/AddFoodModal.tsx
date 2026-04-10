@@ -115,7 +115,7 @@ export const AddFoodModal: React.FC<AddFoodModalProps> = ({ meal, onClose }) => 
     setConfiguringFood(food);
     setEditName(food.name || '');
     setSaveToPantry(false);
-    setServingQty('1');
+    setServingQty(String(food.sQty || '1'));
     setServingUnit(food.sUnit || 'serving');
     setShowFullNutrition(false);
     setTargetMeal(meal);
@@ -284,6 +284,7 @@ export const AddFoodModal: React.FC<AddFoodModalProps> = ({ meal, onClose }) => 
 
   return ReactDOM.createPortal(
     <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.85)', backdropFilter: 'blur(15px)', zIndex: 5000, display: 'flex', flexDirection: 'column', alignItems: 'center', transition: 'all 0.3s' }}>
+      <div style={{ position: 'fixed', bottom: '10px', right: '10px', fontSize: '9px', color: 'rgba(255,255,255,0.2)', pointerEvents: 'none', zIndex: 9999 }}>v2.3-GLOBAL-SYNC</div>
       
       {/* Header */}
       <div style={{ width: '100%', maxWidth: '600px', padding: '24px 20px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
