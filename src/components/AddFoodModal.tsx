@@ -179,7 +179,12 @@ export const AddFoodModal: React.FC<AddFoodModalProps> = ({ meal, onClose }) => 
       });
       if (res.ok) {
         const body = await res.json();
-        const apiResults: Food[] = (body.foods || []).map((f: any) => ({ ...f, isLocal: false }));
+        let apiResults: Food[] = (body.foods || []).map((f: any) => ({ ...f, isLocal: false }));
+        
+        if (highProteinOnly) {
+          apiResults = apiResults.filter(f => (Number(f.p) || 0) >= 20);
+        }
+
         setResults([...localMatches, ...apiResults]);
       } else {
         console.warn("Global results unavailable");
@@ -280,7 +285,8 @@ export const AddFoodModal: React.FC<AddFoodModalProps> = ({ meal, onClose }) => 
         <button onClick={onClose} style={{ background: 'rgba(255,255,255,0.05)', border: 'none', borderRadius: '50%', width: '40px', height: '40px', color: 'white', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><X size={24} /></button>
       </div>
 
-      <div style={{ flex: 1, width: '100%', maxWidth: '500px', display: 'flex', flexDirection: 'column', padding: '10px 20px 40px', gap: '24px', overflowY: 'auto' }}>
+      {/* Scrollable Content Container */}
+      <div style={{ flex: 1, width: '100%', maxWidth: '500px', display: 'flex', flexDirection: 'column', padding: '10px 20px 100px', gap: '24px', overflowY: 'auto', WebkitOverflowScrolling: 'touch' }}>
         
         <SearchCoaster 
           activeTab={activeTab} 
@@ -343,7 +349,7 @@ export const AddFoodModal: React.FC<AddFoodModalProps> = ({ meal, onClose }) => 
                       {highProteinOnly ? <Check size={12} /> : <div style={{width:12, height:12, borderRadius:'50%', border:'1px solid currentColor'}} />}
                       PROTEIN 20G+
                     </button>
-                    <span style={{ fontSize: '10px', color: 'rgba(255,255,255,0.3)', fontWeight: '600' }}>Filter Pantry results</span>
+                    <span style={{ fontSize: '10px', color: 'rgba(255,255,255,0.3)', fontWeight: '600' }}>Filter Kitchen & Global results</span>
                  </div>
               )}
 
@@ -381,7 +387,7 @@ export const AddFoodModal: React.FC<AddFoodModalProps> = ({ meal, onClose }) => 
                             <button 
                               onClick={(e) => {
                                 e.stopPropagation();
-                                if (confirm(`Remove "${f.name}" from your Pantry?`)) {
+                                if (confirm(`Remove "${f.name}" from your Kitchen?`)) {
                                   const idx = (f as any).localIdx;
                                   if (typeof idx === 'number') {
                                     deleteCustomFood(idx);
@@ -562,11 +568,11 @@ export const AddFoodModal: React.FC<AddFoodModalProps> = ({ meal, onClose }) => 
                               // Using the already scoped saveCustomFood helper
                               const existing = JSON.parse(localStorage.getItem('mm_custom_foods') || '[]');
                               localStorage.setItem('mm_custom_foods', JSON.stringify([...existing, foodToSave]));
-                              alert(`'${f.name}' saved to your Pantry!`);
+                              alert(`'${f.name}' saved to your Kitchen!`);
                             }}
                             style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', padding: '8px', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '10px', color: 'var(--theme-accent)', fontSize: '11px', fontWeight: '700', cursor: 'pointer' }}
                           >
-                            <Sparkles size={12} /> SAVE TO PANTRY
+                            <Sparkles size={12} /> ADD TO KITCHEN
                           </button>
                           
                           <button 
@@ -733,7 +739,7 @@ export const AddFoodModal: React.FC<AddFoodModalProps> = ({ meal, onClose }) => 
                 {/* Save to Pantry Checkbox */}
                 <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
                   <input type="checkbox" checked={saveToPantry} onChange={() => setSaveToPantry(!saveToPantry)} />
-                  <label style={{ color: 'white', fontSize: '12px', fontWeight: '700' }}>Save to My Pantry</label>
+                  <label style={{ color: 'white', fontSize: '12px', fontWeight: '700' }}>ADD TO KITCHEN</label>
                 </div>
 
                 <div onClick={() => setShowFullNutrition(!showFullNutrition)} style={{ textAlign: 'center', fontSize: '13px', color: 'var(--theme-accent)', cursor: 'pointer', fontWeight: '700' }}>
