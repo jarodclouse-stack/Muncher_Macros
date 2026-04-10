@@ -251,8 +251,17 @@ export const PantryView: React.FC = () => {
   const handleAddPreviewClick = (food: Food) => {
     setConfiguringFood(food);
     setEditName(food.name || '');
-    setServingQty('1');
-    setServingUnit(food.sUnit || 'serving');
+    
+    // SMART PORTIONING: Try to extract weight (e.g. 174g) from serving string
+    const weightMatch = (food.serving || '').match(/(\d+)\s?(g|oz)/i);
+    if (weightMatch) {
+      setServingQty(weightMatch[1]);
+      setServingUnit(weightMatch[2].toLowerCase());
+    } else {
+      setServingQty(String(food.sQty || '1'));
+      setServingUnit(food.sUnit || 'serving');
+    }
+
     setShowFullNutrition(false);
   };
 
