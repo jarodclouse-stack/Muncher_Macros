@@ -143,8 +143,8 @@ function normalizeResult(f) {
     polyunsaturatedFat: Math.round((Number(f.poly) || 0) * 10) / 10,
     transFat: Math.round((Number(f.trans) || 0) * 10) / 10,
     // Staging pre-population - CRITICAL: Preserve natural units from AI
-    stagedQty: (f.sQty || 1).toString(),
-    stagedUnit: String(f.sUnit || 'serving')
+    stagedQty: String(f.sQty || 1),
+    stagedUnit: String(f.sUnit || 'piece')
   };
 }
 
@@ -177,8 +177,8 @@ export default async function handler(req, res) {
 
   DIETARY BREAKDOWN RULES:
   - If the meal is a composite dish (e.g. burrito, sandwich, burger, bowl, taco, salad), you MUST split it into its component ingredients.
-  - Return components in NATURAL units (e.g. "1 large egg", "2 slices of bread", "1 cup of milk") rather than defaulting to generic mass like "1 gram".
-  - For every item, if valid weight/volume info exists, provide it in the "serving" string (e.g. "1 cup (240g)").
+  - Return components in NATURAL units (e.g. "1 medium egg", "2 slices of bread", "1 tablespoon of oil") rather than defaulting to generic mass like "1 gram".
+  - For every item, if valid weight/volume info exists, provide it in the "serving" string (e.g. "1 medium egg (50g)").
   - Provide a complete nutrient profile for EVERY component.
 
   For each ingredient, identify:
@@ -190,8 +190,8 @@ export default async function handler(req, res) {
   Return ONLY a JSON array of objects. Format:
   [{
     "name": "specific ingredient name",
-    "serving": "e.g. 1 Large Egg (50g)",
-    "sQty": number, "sUnit": "g|oz|cup|tbsp|piece|slice|whole|etc",
+    "serving": "e.g. 1 Medium Egg (50g)",
+    "sQty": number, "sUnit": "piece|slice|whole|serving|oz|cup|tbsp|tsp|g|ml",
     "cal": number, "p": number, "c": number, "f": number, "fb": number,
     "sat": number, "trans": number, "mono": number, "poly": number, "chol": number, "sugars": number,
     "Sodium": number, "Potassium": number, "Calcium": number, "Iron": number,
@@ -203,7 +203,7 @@ export default async function handler(req, res) {
 
   Rules:
   - Return ONLY raw JSON. No markdown fences.
-  - Scale all values to the amount described.
+  - Scale all values to the exact amount described.
   - Calorie Math: P*4 + C*4 + F*9.`;
 
   try {

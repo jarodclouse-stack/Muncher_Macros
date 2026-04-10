@@ -33,8 +33,10 @@ export interface Food {
   isLocal?: boolean;
   barcode?: string;
   brand?: string;
-  stagedQty?: string | number;
+  stagedQty?: string;
   stagedUnit?: string;
+  showNutrientIntel?: boolean;
+  [key: string]: any; // Allow for flexible micronutrient keys
 }
 
 export interface StagedFood extends Food {

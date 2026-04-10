@@ -267,9 +267,9 @@ export const AddFoodModal: React.FC<AddFoodModalProps> = ({ meal, onClose }) => 
           const norm = normalizeFoodResult(f);
           return { 
             ...norm, 
-            // PREVENT 1G OVERRIDE: Prioritize AI-provided values
+            // FINAL FIX: Ensure AI's natural units are the default state
             stagedQty: norm.stagedQty || f.sQty?.toString() || '1', 
-            stagedUnit: norm.stagedUnit || f.sUnit || 'serving',
+            stagedUnit: norm.stagedUnit || f.sUnit || 'piece',
             showNutrientIntel: false
           };
         }));
@@ -536,7 +536,7 @@ export const AddFoodModal: React.FC<AddFoodModalProps> = ({ meal, onClose }) => 
                         {/* Expandable Health Intel Section */}
                         {f.showNutrientIntel && (
                           <div style={{ marginBottom: '16px', background: 'rgba(255,255,255,0.02)', padding: '12px', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.05)', animation: 'fadeIn 0.2s ease-out' }}>
-                            <NutritionFactsDisplay food={f} multiplier={computeMultiplier(f.serving || '100g', f.stagedUnit, parseFloat(f.stagedQty) || 0)} />
+                            <NutritionFactsDisplay food={f} multiplier={computeMultiplier(f.serving || '100g', f.stagedUnit || 'piece', parseFloat(f.stagedQty || '0') || 0)} />
                           </div>
                         )}
                         
