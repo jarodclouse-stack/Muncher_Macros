@@ -360,26 +360,62 @@ export const AddFoodModal: React.FC<AddFoodModalProps> = ({ meal, onClose }) => 
             </div>
           ) : activeTab === 'describe' ? (
             <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-              <div style={{ background: 'rgba(255,255,255,0.03)', borderRadius: '24px', padding: '24px', border: '1px solid rgba(255,255,255,0.05)' }}>
-                <h3 style={{ margin: '0 0 12px 0', fontSize: '15px', fontWeight: '800', color: '#fff', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                  <Sparkles size={18} color="var(--theme-accent, #00C9FF)" /> Describe your meal
-                </h3>
-                <textarea 
-                  placeholder="e.g. 'I had two slices of pizza and a small garden salad with ranch dressing'"
-                  value={mealDesc}
-                  onChange={(e) => {
-                    setMealDesc(e.target.value);
-                    if (errorMsg) setErrorMsg('');
-                  }}
-                  style={{ width: '100%', minHeight: '120px', background: 'rgba(0,0,0,0.2)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '14px', padding: '16px', color: '#fff', fontSize: '14px', lineHeight: '1.5', outline: 'none', resize: 'none' }}
-                />
-                <button 
-                  onClick={handleAIDescribe}
-                  disabled={searching || !mealDesc.trim()}
-                  style={{ width: '100%', marginTop: '16px', padding: '14px', background: 'var(--theme-accent, #00C9FF)', color: '#000', borderRadius: '14px', border: 'none', fontWeight: '900', cursor: 'pointer', display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '8px' }}>
-                  {searching ? <Loader2 className="spin" size={20} /> : <FileText size={20} />}
-                  Analyze Meal
-                </button>
+              <div style={{ background: 'rgba(255,255,255,0.03)', borderRadius: '24px', padding: '24px', border: '1px solid rgba(255,255,255,0.1)', boxShadow: '0 10px 30px rgba(0,0,0,0.2)' }}>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '10px', color: 'var(--theme-accent, #00C9FF)' }}>
+                    <Sparkles size={24} style={{ filter: 'drop-shadow(0 0 8px var(--theme-accent))' }} />
+                    <h3 style={{ margin: 0, fontSize: '16px', fontWeight: '900', color: '#fff', textTransform: 'uppercase', letterSpacing: '1px' }}>
+                      Analyze Meal Intelligence
+                    </h3>
+                  </div>
+
+                  <button 
+                    onClick={handleAIDescribe}
+                    disabled={searching || !mealDesc.trim()}
+                    style={{ 
+                      width: '100%', 
+                      padding: '16px', 
+                      background: 'rgba(0, 201, 255, 0.1)', 
+                      border: '1px solid var(--theme-accent, #00C9FF)', 
+                      borderRadius: '16px', 
+                      color: 'var(--theme-accent, #00C9FF)', 
+                      fontWeight: '900', 
+                      fontSize: '14px',
+                      cursor: 'pointer', 
+                      display: 'flex', 
+                      justifyContent: 'center', 
+                      alignItems: 'center', 
+                      gap: '10px',
+                      transition: 'all 0.3s ease',
+                      boxShadow: '0 4px 15px rgba(0, 201, 255, 0.1)'
+                    }}>
+                    {searching ? <Loader2 className="spin" size={20} /> : <FileText size={20} />}
+                    <span style={{ letterSpacing: '1px' }}>{searching ? 'ANALYZING...' : 'ANALYZE MEAL DESCRIPTION'}</span>
+                  </button>
+
+                  <textarea 
+                    placeholder="Type your whole meal here... (e.g. '2 scrambled eggs and 1 piece of toast')"
+                    value={mealDesc}
+                    onChange={(e) => {
+                      setMealDesc(e.target.value);
+                      if (errorMsg) setErrorMsg('');
+                    }}
+                    style={{ 
+                      width: '100%', 
+                      minHeight: '140px', 
+                      background: 'rgba(0,0,0,0.2)', 
+                      border: '1px solid rgba(255,255,255,0.1)', 
+                      borderRadius: '18px', 
+                      padding: '18px', 
+                      color: '#fff', 
+                      fontSize: '15px', 
+                      lineHeight: '1.6', 
+                      outline: 'none', 
+                      resize: 'none',
+                      transition: 'border-color 0.2s'
+                    }}
+                  />
+                </div>
               </div>
 
               {/* AI Review Step */}
