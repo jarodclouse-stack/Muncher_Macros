@@ -91,7 +91,7 @@ function normalizeResult(f) {
   return {
     name: String(f.name || 'Unknown Item'),
     serving: String(f.serving || '1 serving'),
-    sQty: Number(f.sQty || f.qty || f.quantity || 1),
+    sQty: Number(f.detectedCount || f.sQty || f.qty || f.quantity || 1),
     sUnit: String(f.sUnit || f.unit || 'piece'),
     cal,
     p,
@@ -143,7 +143,7 @@ function normalizeResult(f) {
     polyunsaturatedFat: Math.round((Number(f.poly) || 0) * 10) / 10,
     // Staging pre-population - CRITICAL: Preserve natural units from AI
     // Check multiple possible keys from AI: sQty, qty, quantity
-    stagedQty: String(f.sQty || f.qty || f.quantity || 1),
+    stagedQty: String(f.detectedCount || f.sQty || f.qty || f.quantity || 1),
     stagedUnit: String(f.sUnit || f.unit || 'piece')
   };
 }
@@ -175,32 +175,30 @@ export default async function handler(req, res) {
   
   Meal: "${description}"
 
-  DIETARY PERCEPTION PROTOCOL:
-  1. ANALYZE COUNTS: For every item, identify the EXACT quantity mentioned by the user (e.g. "2 eggs" -> 2).
-  2. PER UNIT DATA: You MUST return nutritional data **PER SINGLE UNIT** (e.g. for 1 single egg).
-  3. sQty POPULATION: Set sQty to the count you detected in Step 1. NEVER default to 1 if a larger number was mentioned.
+  DIETARY PERCEPTION PROTOCOL (MANDATORY):
+  1. ITEM COUNT: How many of this item did the user describe? (e.g. "2 eggs" -> 2).
+  2. PER UNIT NUTRITION: What is the nutrition for exactly ONE (1) of this item? 
+  3. JSON POPULATION:
+     - Set "detectedCount" to the number from step 1.
+     - Set "cal", "p", "c", "f" to the values from step 2.
+
+  IF YOU DEFAULT TO 1 WHEN THE USER MENTIONED A DIFFERENT NUMBER, THE DATA WILL BE REJECTED.
 
   EXAMPLES:
-  - "2 eggs" -> sQty: 2, cal: 70 (for 1)
-  - "3 slices of toast" -> sQty: 3, cal: 80 (for 1)
+  - "2 eggs" -> detectedCount: 2, cal: 70 (for 1 unit)
+  - "3 slices of toast" -> detectedCount: 3, cal: 80 (for 1 unit)
 
   Return ONLY a JSON array of objects. Format:
   [{
     "name": "specific ingredient name",
-    "serving": "e.g. 1 Medium Egg (50g)",
-    "sQty": number, "sUnit": "piece|slice|whole|serving|oz|cup|tbsp|tsp|g|ml",
-    "cal": number, "p": number, "c": number, "f": number, "fb": number,
-    "sat": number, "trans": number, "mono": number, "poly": number, "chol": number, "sugars": number,
-    "Sodium": number, "Potassium": number, "Calcium": number, "Iron": number,
-    "Vitamin C": number, "Vitamin A": number, "Vitamin D": number, 
-    "Vitamin B1": number, "Vitamin B2": number, "Vitamin B3": number, "Vitamin B5": number, "Vitamin B6": number, "Vitamin B12": number,
-    "Vitamin E": number, "Vitamin K": number,
-    "Magnesium": number, "Zinc": number, "Phosphorus": number, "Manganese": number, "Selenium": number, "Copper": number
+    "detectedCount": number,
+    "sUnit": "piece|slice|whole|serving|oz|cup|tbsp|tsp|g|ml",
+    "cal": number, "p": number, "c": number, "f": number, ...
   }]
 
-  RULES:
+  Rules:
   - Return ONLY raw JSON. No markdown fences.
-  - CRITICAL: sQty = count of units. cal = calories for ONE of those units.
+  - CRITICAL: detectedCount = count of units. cal = calories for ONE of those units.
   - Calorie Math: P*4 + C*4 + F*9.`;
 
   try {

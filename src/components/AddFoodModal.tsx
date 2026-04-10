@@ -482,7 +482,11 @@ export const AddFoodModal: React.FC<AddFoodModalProps> = ({ meal, onClose }) => 
                 <div style={{ padding: '20px', background: 'rgba(0,180,255,0.03)', borderRadius: '24px', border: '1px solid rgba(0,180,255,0.15)', backdropFilter: 'blur(10px)' }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
                     <div style={{ fontSize: '13px', fontWeight: '900', color: '#fff', display: 'flex', alignItems: 'center', gap: '8px', letterSpacing: '0.5px' }}>
-                      <Sparkles size={18} color="var(--theme-accent)" /> REVIEW DETECTED MEAL
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                      <Sparkles size={18} color="var(--theme-accent)" />
+                      <span style={{ fontSize: '15px', fontWeight: '800' }}>REVIEW DETECTED MEAL</span>
+                      <span style={{ fontSize: '9px', color: 'rgba(255,255,255,0.3)', background: 'rgba(255,255,255,0.05)', padding: '2px 6px', borderRadius: '6px' }}>v2.2-QTY-FORCE</span>
+                    </div>
                     </div>
                     <button onClick={() => { setIsAiReviewing(false); setAiStagedResults([]); }} style={{ background: 'rgba(255,255,255,0.05)', border: 'none', color: 'rgba(255,255,255,0.4)', borderRadius: '50%', padding: '4px', cursor: 'pointer' }}><X size={18} /></button>
                   </div>
