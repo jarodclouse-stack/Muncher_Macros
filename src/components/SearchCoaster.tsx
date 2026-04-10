@@ -16,11 +16,11 @@ export const SearchCoaster: React.FC<SearchCoasterProps> = ({ activeTab, onTabCh
       width: '100%', 
       boxSizing: 'border-box',
       padding: '8px 16px 24px',
-      background: 'linear-gradient(180deg, rgba(255,255,255,0.02) 0%, transparent 100%)',
+      background: 'linear-gradient(135deg, rgba(255,255,255,0.03) 0%, rgba(0, 201, 255, 0.04) 50%, rgba(146, 254, 157, 0.04) 100%)',
       borderRadius: '24px',
-      border: '1px solid rgba(255,255,255,0.05)',
-      backdropFilter: 'blur(15px)',
-      boxShadow: '0 10px 40px rgba(0,0,0,0.2)',
+      border: '1px solid rgba(255,255,255,0.08)',
+      backdropFilter: 'blur(18px)',
+      boxShadow: '0 15px 45px rgba(0,0,0,0.3)',
       margin: '0 0 16px 0'
     }}>
       <div className="actions-grid" style={{ 

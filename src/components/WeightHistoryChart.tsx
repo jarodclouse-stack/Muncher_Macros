@@ -62,15 +62,24 @@ export const WeightHistoryChart: React.FC<WeightHistoryChartProps> = ({ localCac
       {
         label: 'Weight',
         data: entries.map(e => e.weight),
-        borderColor: 'var(--theme-accent, #4DABF7)',
-        backgroundColor: 'var(--theme-accent-dim, rgba(77, 171, 247, 0.1))',
-        borderWidth: 3,
-        pointRadius: window === '7d' ? 8 : 5,
+        borderColor: 'var(--theme-accent, #00C9FF)',
+        backgroundColor: (context: any) => {
+          const chart = context.chart;
+          const {ctx, chartArea} = chart;
+          if (!chartArea) return null;
+          const gradient = ctx.createLinearGradient(0, chartArea.top, 0, chartArea.bottom);
+          gradient.addColorStop(0, 'rgba(0, 201, 255, 0.4)');
+          gradient.addColorStop(1, 'rgba(0, 201, 255, 0)');
+          return gradient;
+        },
+        fill: true,
+        borderWidth: 4,
+        pointRadius: window === '7d' ? 6 : 4,
         pointBackgroundColor: '#FFFFFF',
-        pointBorderColor: 'var(--theme-accent, #4DABF7)',
+        pointBorderColor: 'var(--theme-accent, #00C9FF)',
         pointBorderWidth: 2,
-        pointHoverRadius: 10,
-        pointHoverBackgroundColor: 'var(--theme-accent, #4DABF7)',
+        pointHoverRadius: 8,
+        pointHoverBackgroundColor: 'var(--theme-accent, #00C9FF)',
         pointHoverBorderColor: '#FFFFFF',
         pointHoverBorderWidth: 2,
         tension: 0.4,
@@ -81,10 +90,10 @@ export const WeightHistoryChart: React.FC<WeightHistoryChartProps> = ({ localCac
         datasets.push({
             label: 'Goal',
             data: entries.map(() => targetWeight),
-            borderColor: 'var(--theme-error, #FF6B6B)',
+            borderColor: 'rgba(255, 255, 255, 0.2)',
             backgroundColor: 'transparent',
-            borderWidth: 2,
-            borderDash: [5, 5] as any,
+            borderWidth: 1.5,
+            borderDash: [8, 8] as any,
             pointRadius: 0,
             tension: 0,
         } as any);
@@ -149,20 +158,27 @@ export const WeightHistoryChart: React.FC<WeightHistoryChartProps> = ({ localCac
     },
     scales: {
       x: {
-        ticks: { color: 'var(--theme-text-dim, #8b8b9b)', font: { size: 10 }, maxTicksLimit: 8 },
+        ticks: { color: 'rgba(255,255,255,0.4)', font: { size: 10, weight: '700' }, maxTicksLimit: 8 },
         grid: { display: false },
       },
       y: {
         suggestedMin: (targetWeight || 150) - 10,
         suggestedMax: (targetWeight || 150) + 10,
-        ticks: { color: 'var(--theme-text-dim, #8b8b9b)', font: { size: 10 } },
-        grid: { color: 'var(--theme-border, rgba(255,255,255,0.05))' },
+        ticks: { color: 'rgba(255,255,255,0.4)', font: { size: 10, weight: '700' } },
+        grid: { color: 'rgba(255,255,255,0.03)' },
       },
     },
   };
 
   return (
-    <div className="card" style={{ background: 'var(--theme-panel, rgba(255,255,255,0.02))', border: '1px solid var(--theme-border, rgba(255,255,255,0.05))', borderRadius: '20px', padding: '24px' }}>
+    <div className="card" style={{ 
+      background: 'linear-gradient(135deg, rgba(255,255,255,0.03) 0%, rgba(255,255,255,0.01) 50%, rgba(0,201,255,0.05) 100%)', 
+      border: '1px solid rgba(255,255,255,0.08)', 
+      borderRadius: '24px', 
+      padding: '24px',
+      backdropFilter: 'blur(15px)',
+      boxShadow: '0 12px 40px rgba(0,0,0,0.3)'
+    }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
         <h3 style={{ fontSize: '16px', fontWeight: '700', margin: 0, display: 'flex', alignItems: 'center', gap: '8px', color: 'var(--theme-text, #fff)' }}>
           <Scale size={18} color="var(--theme-accent, #00C9FF)" /> Weight History Chart
