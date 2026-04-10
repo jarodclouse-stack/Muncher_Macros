@@ -1,10 +1,10 @@
 // api/ai-barcode.js
-const BARCODE_PROMPT = `Look at the barcode in this image. 
-Specifically, look at the numerical digits either printed below the bars or anywhere clear.
-Return ONLY the numerical digits (0-9). 
-If you see multiple sets or check digits, return the most complete string.
-If you CANNOT find any numerical digits, return the single word: "FAILED".
-No conversational text, only the raw number string or FAILED.`;
+const BARCODE_PROMPT = `Analyze the barcode or QR code in this image.
+1. Primary Goal: Extract the numerical digits (0-9) printed below/near the bars or within the code.
+2. Secondary Goal: If you see a product name or brand near the code, mention it in parentheses after the code (e.g. "012345678901 (Brand Name)").
+3. Special: If you see a QR code content that looks like a product ID or SmartLabel URL, extract the ID.
+Return ONLY the raw result. If nothing is found, return "FAILED".
+No conversational text.`;
 
 export default async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');

@@ -117,7 +117,7 @@ export const AddFoodModal: React.FC<AddFoodModalProps> = ({ meal, onClose }) => 
     setSaveToPantry(false);
     
     // SMART PORTIONING: Try to extract weight (e.g. 174g) from serving string
-    const weightMatch = (food.serving || '').match(/\((\d+)\s?(g|oz)\)/i);
+    const weightMatch = (food.serving || '').match(/(\d+)\s?(g|oz)/i);
     if (weightMatch) {
       setServingQty(weightMatch[1]);
       setServingUnit(weightMatch[2].toLowerCase());

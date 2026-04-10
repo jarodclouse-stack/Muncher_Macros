@@ -17,8 +17,11 @@ export interface ScanResult {
  */
 const isURL = (text: string): boolean => {
   const urlPattern = /^(https?:\/\/)?([\da-z.-]+)\.([a-z.]{2,6})([/\w .-]*)*\/?$/i;
-  // Also check for common starters without protocol
   const commonTlds = /\.(com|net|org|edu|gov|io|co|digital|net|us|info|me)\b/i;
+  
+  // Specific check: Is this a SmartLabel or product details URL?
+  if (text.includes('smartlabel.') || text.includes('/product/')) return false;
+
   return urlPattern.test(text) || commonTlds.test(text) || text.includes('://');
 };
 
@@ -62,6 +65,10 @@ export const scanQRCode = async (imageBlob: Blob): Promise<ScanResult> => {
     if (isURL(text)) {
       return { success: false, error: "Result is a web link. This app requires nutrition labels, barcodes, or food-specific QR codes." };
     }
+
+    // Extraction logic: If it's a product URL, extract the GTIN/UPC
+    const gtinMatch = text.match(/\/(\d{12,14})\/?$/);
+    if (gtinMatch) return { success: true, text: gtinMatch[1].replace(/^0+/, '') };
 
     return { success: true, text };
   } catch (err) {

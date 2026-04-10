@@ -1,12 +1,13 @@
-// api/ai-label.js
-const LABEL_PROMPT = `Extract ALL nutrition data from this nutrition facts label image. 
+const LABEL_PROMPT = `Extract ALL nutrition data from this image (Nutrition Facts or Supplement Facts).
 Return ONLY a valid JSON object. 
 Requirements:
-1. Keys: name, brand, serving, sUnit (g, oz, cup, tbsp, tsp, piece, slice, whole, medium, scoop, serving), sQty (number), cal, p (protein g), c (carbs g), f (fat g), fb (fiber g), sugars (g), chol (dietary cholesterol mg), sat (saturated fat g), trans (trans fat g), mono (g), poly (g), Sodium (mg), Potassium (mg), Magnesium (mg), Calcium (mg), Iron (mg), Zinc (mg), and any other vitamins/minerals found.
-2. For numeric fields, return only the number. If not found, use 0.
-3. For 'name', provide a descriptive name for the food.
-4. For 'ingredients', extract the ingredients list if visible.
-5. Ensure the JSON is flat and minified. 
+1. Handle images at any angle. If text is inverted or rotated, re-orient it mentally to extract data.
+2. Recognition: Look for 'Nutrition Facts', 'Supplement Facts', or 'Nutritional Information'.
+3. Keys: name, brand, serving, sUnit (g, oz, cup, tbsp, tsp, piece, slice, whole, medium, scoop, serving), sQty (number), cal (use 0 for supplements if calories aren't listed), p (protein g), c (carbs g), f (fat g), fb (fiber g), sugars (g), chol (dietary cholesterol mg), sat (saturated fat g), trans (trans fat g), mono (g), poly (g), Sodium (mg), Potassium (mg), Magnesium (mg), Calcium (mg), Iron (mg), Zinc (mg), and any other vitamins/minerals found.
+4. For numeric fields, return only the number. If not found, use 0.
+5. For 'name', provide a descriptive name for the food.
+6. For 'ingredients', extract the ingredients list if visible.
+7. Ensure the JSON is flat and minified. 
 No conversational text, only the raw JSON string starting with { and ending with }.`;
 
 export default async function handler(req, res) {
