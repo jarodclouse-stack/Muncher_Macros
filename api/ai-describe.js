@@ -227,6 +227,7 @@ export default async function handler(req, res) {
 
   try {
     const aiResults = await anthropicJson(prompt, apiKey);
+    console.log('AI Describe Result:', JSON.stringify(aiResults));
     const finalFoods = (Array.isArray(aiResults) ? aiResults : []).map(f => normalizeResult(f));
     return res.status(200).json({ foods: finalFoods, meal });
   } catch (e) {
