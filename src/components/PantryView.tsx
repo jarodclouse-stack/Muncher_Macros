@@ -101,7 +101,7 @@ const EntryField = ({ label, value, onChange, placeholder }: { label: string, va
 
 export const PantryView: React.FC = () => {
   const { 
-    localCache, saveCustomFood, addFoodLog, updateCustomFood
+    localCache, saveCustomFood, addFoodLog, updateCustomFood, deleteCustomFood
   } = useDiary();
   
   const [form, setForm] = useState<Food>({ 
@@ -823,7 +823,19 @@ export const PantryView: React.FC = () => {
                     <div style={{ fontWeight: '700', fontSize: '14px', color: '#fff' }}>{f.name}</div>
                     <div style={{ fontSize: '11px', color: 'rgba(255,255,255,0.5)', marginTop: '2px' }}>{f.serving} • {f.cal} kcal • P:{f.p}g C:{f.c}g F:{f.f}g</div>
                   </div>
-                  <Plus size={18} color="var(--theme-accent)" />
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                    <button 
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        if (confirm(`Are you sure you want to delete "${f.name}" from your Pantry?`)) {
+                          deleteCustomFood(originalIdx);
+                        }
+                      }}
+                      style={{ background: 'none', border: 'none', color: 'rgba(255,107,107,0.5)', cursor: 'pointer', padding: '4px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                      <Trash2 size={18} />
+                    </button>
+                    <Plus size={18} color="var(--theme-accent)" />
+                  </div>
                 </div>
               );
             })
