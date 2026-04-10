@@ -94,7 +94,9 @@ function normalizeResult(f) {
     'Vitamin B12': Math.round((Number(f['Vitamin B12']) || 0) * 100) / 100,
     Magnesium: Math.round(Number(f.Magnesium) || 0),
     Zinc: Math.round((Number(f.Zinc) || 0) * 10) / 10,
-    _src: 'ai'
+    _src: 'ai',
+    stagedQty: (Number(f.sQty) || 100).toString(),
+    stagedUnit: String(f.sUnit || 'g')
   };
 }
 
@@ -114,7 +116,7 @@ export default async function handler(req, res) {
   Return a JSON array of the 5 most likely food matches.
   For each match, provide a complete nutrient breakdown scaled to a standard 100g or 1 serving size.
 
-  JSON keys: name, serving, sQty, sUnit, cal, p, c, f, fb, sat, trans, mono, poly, chol, sugars, Sodium, Potassium, Calcium, Iron, "Vitamin C", "Vitamin A", "Vitamin D".
+  JSON keys: name, serving, sQty, sUnit, cal, p, c, f, fb, sat, trans, mono, poly, chol, sugars, Sodium, Potassium, Calcium, Iron, "Vitamin C", "Vitamin A", "Vitamin D", "Magnesium", "Zinc".
 
   Rules:
   - Return ONLY raw JSON. No markdown fences.

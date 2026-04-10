@@ -111,7 +111,10 @@ function normalizeResult(f) {
     Copper: Math.round((Number(f.Copper) || 0) * 1000) / 1000,
     Manganese: Math.round((Number(f.Manganese) || 0) * 100) / 100,
     Selenium: Math.round((Number(f.Selenium) || 0) * 10) / 10,
-    _src: f._src || 'ai'
+    _src: f._src || 'ai',
+    // Staging pre-population
+    stagedQty: (Number(f.sQty) || 1).toString(),
+    stagedUnit: String(f.sUnit || 'serving')
   };
 }
 
@@ -159,7 +162,7 @@ export default async function handler(req, res) {
 
   try {
     const aiResults = await anthropicJson(prompt, apiKey);
-    const finalFoods = aiResults.map(f => normalizeResult(f));
+    const finalFoods = (Array.isArray(aiResults) ? aiResults : []).map(f => normalizeResult(f));
     return res.status(200).json({ foods: finalFoods, meal });
   } catch (e) {
     console.error('AI Describe Error:', e);

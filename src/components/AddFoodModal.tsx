@@ -29,7 +29,7 @@ const enforceCalorieConsistency = (food: Food): Food => {
 
 // Helper: Robust rounding for all nutrients (ported from index_old.html logic)
 const normalizeFoodResult = (food: any): Food => {
-  const r = (val: any, decimals = 1) => {
+  const r = (val: number | string | undefined, decimals = 1) => {
     const n = Number(val) || 0;
     const factor = Math.pow(10, decimals);
     return Math.round(n * factor) / factor;
@@ -127,12 +127,12 @@ export const AddFoodModal: React.FC<AddFoodModalProps> = ({ meal, onClose }) => 
       
       if (saveToPantry) {
         saveCustomFood({
-          ...configuringFood,
-          name: editName || configuringFood.name,
-          p: Number(configuringFood.p) || 0,
-          c: Number(configuringFood.c) || 0,
-          f: Number(configuringFood.f) || 0,
-          cal: Number(configuringFood.cal) || 0,
+          ...scaledFood,
+          id: crypto.randomUUID(),
+          p: Number(scaledFood.p) || 0,
+          c: Number(scaledFood.c) || 0,
+          f: Number(scaledFood.f) || 0,
+          cal: Number(scaledFood.cal) || 0,
           serving: `${qty} ${servingUnit}`,
           sQty: qty,
           sUnit: servingUnit
@@ -243,12 +243,12 @@ export const AddFoodModal: React.FC<AddFoodModalProps> = ({ meal, onClose }) => 
       if (detected.length === 0) {
         setErrorMsg("AI could not extract foods from that description.");
       } else {
-        setAiStagedResults(detected.map((f: any) => {
+        setAiStagedResults(detected.map((f: Food) => {
           const norm = normalizeFoodResult(f);
           return { 
             ...norm, 
-            stagedQty: norm.sQty?.toString() || '1', 
-            stagedUnit: norm.sUnit || 'serving' 
+            stagedQty: norm.stagedQty || norm.sQty?.toString() || '1', 
+            stagedUnit: norm.stagedUnit || norm.sUnit || 'serving' 
           };
         }));
         setIsAiReviewing(true);
