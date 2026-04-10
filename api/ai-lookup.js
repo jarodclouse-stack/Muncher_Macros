@@ -31,7 +31,7 @@ const MODELS = [
   'claude-3-haiku-20240307',
 ];
 
-const https = require('https');
+import https from 'https';
 
 async function anthropicJson(prompt, apiKey, maxTokens = 4000) {
   let lastError = 'Initialization error';
