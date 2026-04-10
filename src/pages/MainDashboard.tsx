@@ -87,7 +87,7 @@ export const MainDashboard: React.FC = () => {
       }}>
         {activeTab === 'diary' && <DiaryView />}
         {activeTab === 'nutrition' && <NutritionView />}
-        {activeTab === 'progress' && <ProgressView setActiveTab={setActiveTab} />}
+        {activeTab === 'progress' && <ProgressView />}
         {activeTab === 'badges' && <BadgesView />}
         {activeTab === 'pantry' && <PantryView />}
         {activeTab === 'settings' && <SettingsView />}
