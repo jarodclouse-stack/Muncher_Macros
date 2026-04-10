@@ -1,14 +1,12 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState } from 'react';
 import { useDiary } from '../context/DiaryContext';
 import { ACTIVITY_LEVELS, MICRO_CATEGORIES } from '../lib/constants';
 import { computeGoals } from '../lib/goals/compute';
-import { sumFoods } from '../lib/food/serving-converter';
 import { Flame, Activity, Save, Scale, Droplet, User, PieChart, Info, Check } from 'lucide-react';
-import { HistoryCalendar } from './HistoryCalendar';
 import { WeightHistoryChart } from './WeightHistoryChart';
 
-export const ProgressView: React.FC<{ setActiveTab: (tab: any) => void }> = ({ setActiveTab }) => {
-  const { localCache, updateGoals, updateDayData, currentDate, goToDate } = useDiary();
+export const ProgressView: React.FC = () => {
+  const { localCache, updateGoals, updateDayData, currentDate } = useDiary();
   const goals = localCache.goals || {};
   const currentDayData = localCache[currentDate] || {};
   
