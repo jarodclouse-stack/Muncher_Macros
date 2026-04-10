@@ -11,12 +11,22 @@ interface SearchCoasterProps {
 
 export const SearchCoaster: React.FC<SearchCoasterProps> = ({ activeTab, onTabChange, style }) => {
   return (
-    <div style={{ position: 'relative', width: '100%', boxSizing: 'border-box' }}>
+    <div style={{ 
+      position: 'relative', 
+      width: '100%', 
+      boxSizing: 'border-box',
+      padding: '8px 16px 24px',
+      background: 'linear-gradient(180deg, rgba(255,255,255,0.02) 0%, transparent 100%)',
+      borderRadius: '24px',
+      border: '1px solid rgba(255,255,255,0.05)',
+      backdropFilter: 'blur(15px)',
+      boxShadow: '0 10px 40px rgba(0,0,0,0.2)',
+      margin: '0 0 16px 0'
+    }}>
       <div className="actions-grid" style={{ 
         display: 'grid',
         gridTemplateColumns: '1fr 1fr',
         gap: '12px',
-        padding: '12px 0 24px 0', 
         ...style 
       }}>
         <TabBtn 
@@ -73,16 +83,17 @@ const TabBtn: React.FC<TabBtnProps> = ({ active, onClick, icon, label }) => {
         justifyContent: 'center',
         gap: '4px',
         padding: '10px 0',
-        background: active ? 'rgba(255,255,255,0.08)' : 'rgba(255,255,255,0.03)',
-        border: '1px solid var(--theme-accent, #00C9FF)',
-        borderRadius: '16px',
-        color: active ? 'var(--theme-accent, #00C9FF)' : '#fff',
+        background: active ? 'rgba(0, 201, 255, 0.1)' : 'rgba(255, 255, 255, 0.03)',
+        border: '1px solid',
+        borderColor: active ? 'var(--theme-accent, #00C9FF)' : 'rgba(255,255,255,0.08)',
+        borderRadius: '18px',
+        color: active ? 'var(--theme-accent, #00C9FF)' : 'rgba(255,255,255,0.6)',
         cursor: 'pointer',
-        transition: 'all 0.2s cubic-bezier(0.4, 0, 0.2, 1)',
+        transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
         boxShadow: active 
-          ? '0 0 15px var(--theme-accent-dim, rgba(0, 201, 255, 0.25))' 
-          : '0 0 5px var(--theme-accent-dim, rgba(0, 201, 255, 0.1))',
-        opacity: active ? 1 : 0.8
+          ? '0 0 20px var(--theme-accent-dim, rgba(0, 201, 255, 0.2))' 
+          : 'none',
+        opacity: 1
       }}
     >
       <div style={{ transform: active ? 'scale(1.1)' : 'scale(1)', transition: 'transform 0.2s', filter: active ? 'drop-shadow(0 0 8px var(--theme-accent))' : 'none' }}>

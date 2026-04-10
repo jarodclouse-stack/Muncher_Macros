@@ -147,7 +147,6 @@ export const DiaryView: React.FC = () => {
           current={currentWater} 
           goal={waterGoal} 
           onAdd={handleAddWater} 
-          onReset={() => updateDayData(currentDate, { water: 0 })}
         />
       </div>
 
@@ -552,7 +551,7 @@ const WeeklyMacro = ({ label, val, color }: any) => (
   </div>
 );
 
-const HydrationCard = ({ current, goal, onAdd, onReset }: { current: number, goal: number, onAdd: (v: number) => void, onReset: () => void }) => {
+const HydrationCard = ({ current, goal, onAdd }: { current: number, goal: number, onAdd: (v: number) => void }) => {
   const pct = Math.min(100, (current / (goal || 120)) * 100);
   const [customVal, setCustomVal] = useState('');
   const [isCustom, setIsCustom] = useState(false);
@@ -685,17 +684,9 @@ const HydrationCard = ({ current, goal, onAdd, onReset }: { current: number, goa
                </button>
             </div>
           </div>
-          <div style={{ textAlign: 'right', display: 'flex', alignItems: 'center', gap: '12px' }}>
-            <div>
-              <div style={{ fontSize: '24px', fontWeight: '900', color: 'var(--theme-text)' }}>{(current || 0).toFixed(1)} <span style={{ fontSize: '14px', color: 'var(--theme-text-dim, #8b8b9b)', fontWeight: '500' }}>oz</span></div>
-              <div style={{ fontSize: '11px', color: 'var(--theme-text-dim, #8b8b9b)', fontWeight: '700' }}>GOAL: {goal} oz</div>
-            </div>
-            <button 
-              onClick={onReset}
-              title="Reset Water for Today"
-              style={{ background: 'var(--theme-error-dim, rgba(255,107,107,0.1))', border: 'none', color: 'var(--theme-error, #FF6B6B)', padding: '10px', borderRadius: '12px', cursor: 'pointer' }}>
-              <Trash2 size={18} />
-            </button>
+          <div style={{ textAlign: 'right' }}>
+            <div style={{ fontSize: '24px', fontWeight: '900', color: 'var(--theme-text)' }}>{(current || 0).toFixed(1)} <span style={{ fontSize: '14px', color: 'var(--theme-text-dim, #8b8b9b)', fontWeight: '500' }}>oz</span></div>
+            <div style={{ fontSize: '11px', color: 'var(--theme-text-dim, #8b8b9b)', fontWeight: '700' }}>GOAL: {goal} oz</div>
           </div>
         </div>
 
