@@ -91,7 +91,7 @@ export const scanNutritionLabel = async (imageBlob: Blob): Promise<ScanResult> =
         const res = await fetch('/api/ai-label', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ base64: base64Str, mediaType: imageBlob.type })
+          body: JSON.stringify({ base64: base64Str, mediaType: 'image/jpeg' })
         });
 
         if (res.status === 529) {
@@ -127,7 +127,7 @@ export const extractBarcodeDigits = async (imageBlob: Blob): Promise<ScanResult>
         const res = await fetch('/api/ai-barcode', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ base64: base64Str, mediaType: imageBlob.type })
+          body: JSON.stringify({ base64: base64Str, mediaType: 'image/jpeg' })
         });
 
         const body = await res.json();

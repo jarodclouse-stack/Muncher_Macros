@@ -37,9 +37,22 @@ export const ImageCropperModal: React.FC<ImageCropperModalProps> = ({ image, onC
 
     if (!ctx) throw new Error('No 2d context');
 
-    // High quality scaling for barcodes/QR
-    canvas.width = pixelCrop.width;
-    canvas.height = pixelCrop.height;
+    // AI OPTIMIZATION: Cap resolution at 2048px to stay under API limits while keeping texture
+    const MAX_SIZE = 2048;
+    let targetWidth = pixelCrop.width;
+    let targetHeight = pixelCrop.height;
+
+    if (targetWidth > MAX_SIZE || targetHeight > MAX_SIZE) {
+      const ratio = Math.min(MAX_SIZE / targetWidth, MAX_SIZE / targetHeight);
+      targetWidth *= ratio;
+      targetHeight *= ratio;
+    }
+
+    canvas.width = targetWidth;
+    canvas.height = targetHeight;
+
+    ctx.imageSmoothingEnabled = true;
+    ctx.imageSmoothingQuality = 'high';
 
     ctx.drawImage(
       image,
@@ -49,15 +62,16 @@ export const ImageCropperModal: React.FC<ImageCropperModalProps> = ({ image, onC
       pixelCrop.height,
       0,
       0,
-      pixelCrop.width,
-      pixelCrop.height
+      targetWidth,
+      targetHeight
     );
 
     return new Promise((resolve, reject) => {
+      // Normalize to high-quality JPEG for fastest AI processing
       canvas.toBlob((blob) => {
         if (!blob) reject(new Error('Canvas is empty'));
         else resolve(blob);
-      }, 'image/jpeg', 0.95);
+      }, 'image/jpeg', 0.92);
     });
   };
 
