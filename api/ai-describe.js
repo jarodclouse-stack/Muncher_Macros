@@ -157,7 +157,12 @@ export default async function handler(req, res) {
   const meal = body.meal || 'Snacks';
 
   const apiKey = (process.env.ANTHROPIC_API_KEY || '').trim();
-  if (!apiKey) return res.status(500).json({ error: 'Environment variable ANTHROPIC_API_KEY missing' });
+  if (!apiKey) {
+    return res.status(200).json({ 
+      error: 'Anthropic API Key is missing in Vercel settings. Please add ANTHROPIC_API_KEY to your environment variables.',
+      setupRequired: true
+    });
+  }
 
   const prompt = `You are a world-class nutrition scientist. Breakdown the following meal description into individual INGREDIENTS or components with precise nutritional data.
   

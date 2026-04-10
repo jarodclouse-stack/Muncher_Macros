@@ -311,7 +311,10 @@ export const AddFoodModal: React.FC<AddFoodModalProps> = ({ meal, onClose }) => 
                   <input 
                     placeholder={activeTab === 'search' ? "Search for foods, brands..." : "Describe food (e.g. '1/2 cup of blueberries')"}
                     value={query}
-                    onChange={(e) => setQuery(e.target.value)}
+                    onChange={(e) => {
+                      setQuery(e.target.value);
+                      if (errorMsg) setErrorMsg('');
+                    }}
                     style={{ width: '100%', padding: '16px 16px 16px 44px', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '18px', color: 'white', outline: 'none', fontSize: '15px' }}
                   />
                   <div style={{ position: 'absolute', left: '16px', top: '50%', transform: 'translateY(-50%)', color: '#8b8b9b' }}>
@@ -364,7 +367,10 @@ export const AddFoodModal: React.FC<AddFoodModalProps> = ({ meal, onClose }) => 
                 <textarea 
                   placeholder="e.g. 'I had two slices of pizza and a small garden salad with ranch dressing'"
                   value={mealDesc}
-                  onChange={(e) => setMealDesc(e.target.value)}
+                  onChange={(e) => {
+                    setMealDesc(e.target.value);
+                    if (errorMsg) setErrorMsg('');
+                  }}
                   style={{ width: '100%', minHeight: '120px', background: 'rgba(0,0,0,0.2)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '14px', padding: '16px', color: '#fff', fontSize: '14px', lineHeight: '1.5', outline: 'none', resize: 'none' }}
                 />
                 <button 
