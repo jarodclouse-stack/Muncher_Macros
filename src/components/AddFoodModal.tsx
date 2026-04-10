@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom';
 import { useDiary } from '../context/DiaryContext';
 import { ALL_MICRO_KEYS, MICRO_UNITS, SERVING_UNITS } from '../lib/constants';
 import type { Food } from '../types/food';
-import { computeMultiplier, scaleLegacyFoodByAmount } from '../lib/food/serving-converter';
+import { computeMultiplier, scaleLegacyFoodByAmount, sumFoods } from '../lib/food/serving-converter';
 import { 
   Search, Sparkles, Plus, Check, 
   X, Loader2, Info, FileText, Trash2
