@@ -1,5 +1,4 @@
-import React from 'react';
-import { Search, Sparkles, Check } from 'lucide-react';
+import { Search, Sparkles, Check, FileText, Barcode, QrCode } from 'lucide-react';
 
 export type SearchTab = 'search' | 'ai-search' | 'describe' | 'scan';
 
@@ -34,8 +33,14 @@ export const SearchCoaster: React.FC<SearchCoasterProps> = ({ activeTab, onTabCh
         <TabBtn 
           active={activeTab === 'scan'} 
           onClick={() => onTabChange('scan')} 
-          icon={<Check size={18} />} 
-          label="Scan Label/Barcode/QR" 
+          icon={(
+            <div style={{ display: 'flex', gap: '4px', alignItems: 'center' }}>
+              <FileText size={14} />
+              <Barcode size={14} />
+              <QrCode size={14} />
+            </div>
+          )} 
+          label="SCAN" 
         />
         <TabBtn 
           active={activeTab === 'search'} 

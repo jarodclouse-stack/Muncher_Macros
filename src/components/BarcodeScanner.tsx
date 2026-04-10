@@ -1,5 +1,5 @@
 import React, { useRef, useState } from 'react';
-import { Camera, Loader2, AlertCircle, Hash, ArrowRight, Plus } from 'lucide-react';
+import { Camera, Loader2, AlertCircle, Hash, ArrowRight, Plus, FileText, Barcode, QrCode, Sparkles } from 'lucide-react';
 import { useDiary } from '../context/DiaryContext';
 import { scanBarcode, extractBarcodeDigits, scanQRCode } from '../lib/vision/scanner-logic';
 import { ImageCropperModal } from './ImageCropperModal';
@@ -15,17 +15,14 @@ export const BarcodeScanner: React.FC<BarcodeScannerProps> = ({
 }) => {
   const { setIsScannerActive } = useDiary();
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const [status, setStatus] = useState<'idle' | 'scanning' | 'ai-reading' | 'failed' | 'cropping'>('idle');
+  const [status, setStatus] = useState<'idle' | 'scanning' | 'ai-reading' | 'failed' | 'cropping' | 'selecting-source'>('idle');
+  const [scanType, setScanType] = useState<'nutrition' | 'barcode' | 'qr' | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [manualCode, setManualCode] = useState('');
   const [pendingImage, setPendingImage] = useState<string | null>(null);
   
-  // Stealth Mode Management: Hide global UI elements during specific phases
   React.useEffect(() => {
-    // Hide header/footer as long as the scanner component is mounted
     setIsScannerActive(true);
-    
-    // Cleanup on unmount
     return () => setIsScannerActive(false);
   }, [setIsScannerActive]);
 
@@ -48,38 +45,36 @@ export const BarcodeScanner: React.FC<BarcodeScannerProps> = ({
     setPendingImage(null);
 
     try {
-      // PHASE 1: Try QR Code Decoding (Standard)
-      console.log("Stage 1: Attempting to read QR code...");
-      const qrResult = await scanQRCode(imageBlob);
-      if (qrResult.success && qrResult.text) {
-        onScanSuccess(qrResult.text);
-        setStatus('idle');
-        return;
+      if (scanType === 'qr') {
+        const qrResult = await scanQRCode(imageBlob);
+        if (qrResult.success && qrResult.text) {
+          onScanSuccess(qrResult.text);
+          setStatus('idle');
+          setScanType(null);
+          return;
+        }
       }
 
-      // PHASE 2: Standard Barcode Line Scan
-      console.log("Stage 2: Attempting to read barcode lines...");
       const scanResult = await scanBarcode(imageBlob);
       if (scanResult.success && scanResult.text) {
         onScanSuccess(scanResult.text);
         setStatus('idle');
+        setScanType(null);
         return;
       }
 
-      // PHASE 3: AI OCR (Numbers)
-      console.log("Stage 1 & 2 failed. Stage 3: Asking AI to read numbers...");
       setStatus('ai-reading');
       const aiResult = await extractBarcodeDigits(imageBlob);
       if (aiResult.success && aiResult.text) {
         onScanSuccess(aiResult.text);
         setStatus('idle');
+        setScanType(null);
       } else {
-        throw new Error(aiResult.error || "Could not read code. Ensure the code is clear and fills the crop area.");
+        throw new Error(aiResult.error || "Could not read code. Ensure it is clear.");
       }
       
     } catch (err: any) {
-      console.error("Scanning pipeline failed:", err);
-      const errorMessage = typeof err === 'string' ? err : (err.message || "Failed to read barcode. Please enter it manually.");
+      const errorMessage = typeof err === 'string' ? err : (err.message || "Failed to read. Please enter manually.");
       setError(errorMessage);
       setStatus('failed');
       if (onScanError) onScanError(errorMessage);
@@ -88,8 +83,18 @@ export const BarcodeScanner: React.FC<BarcodeScannerProps> = ({
 
   const triggerCamera = () => {
     setError(null);
-    setStatus('idle');
-    fileInputRef.current?.click();
+    if (fileInputRef.current) {
+      fileInputRef.current.setAttribute('capture', 'environment');
+      fileInputRef.current.click();
+    }
+  };
+
+  const triggerUpload = () => {
+    setError(null);
+    if (fileInputRef.current) {
+      fileInputRef.current.removeAttribute('capture');
+      fileInputRef.current.click();
+    }
   };
 
   const handleManualSubmit = (e: React.FormEvent) => {
@@ -98,108 +103,120 @@ export const BarcodeScanner: React.FC<BarcodeScannerProps> = ({
       onScanSuccess(manualCode);
       setManualCode('');
       setStatus('idle');
+      setScanType(null);
     }
   };
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '12px', width: '100%' }}>
+    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '12px', width: '100%', minHeight: '260px' }}>
       <input 
-        type="file" accept="image/*" capture="environment" 
+        type="file" accept="image/*" 
         ref={fileInputRef} onChange={handleFileSelect} 
         style={{ display: 'none' }} 
       />
 
-      {/* Dual Controls */}
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', width: '100%' }}>
-        <button 
-          onClick={triggerCamera}
-          disabled={status === 'scanning' || status === 'ai-reading' || status === 'cropping'}
-          className="action-bubble"
-          style={{
-            display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
-            gap: '8px', background: 'var(--theme-panel)', border: '1px solid var(--theme-border)',
-            borderRadius: 'var(--radius-lg)', padding: '24px 16px', cursor: 'pointer', transition: 'all 0.2s', position: 'relative', overflow: 'hidden',
-            opacity: (status === 'scanning' || status === 'ai-reading' || status === 'cropping') ? 0.7 : 1,
-          }}
-        >
-          {(status === 'scanning' || status === 'ai-reading') ? (
-            <Loader2 className="spin" size={24} color="var(--theme-accent)" />
-          ) : (
-            <Camera size={24} color="var(--theme-accent)" />
-          )}
-          <span style={{ fontSize: '10px', fontWeight: '900', color: 'var(--theme-text)', textAlign: 'center', textTransform: 'uppercase' }}>
-            Take Photo
-          </span>
-        </button>
-
-        <button 
-          onClick={() => {
-            if (fileInputRef.current) {
-              fileInputRef.current.removeAttribute('capture');
-              fileInputRef.current.click();
-            }
-          }}
-          disabled={status === 'scanning' || status === 'ai-reading' || status === 'cropping'}
-          className="action-bubble"
-          style={{
-            display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
-            gap: '8px', background: 'rgba(255,255,255,0.03)', border: '1px solid var(--theme-border)',
-            borderRadius: 'var(--radius-lg)', padding: '24px 16px', cursor: 'pointer', transition: 'all 0.2s', position: 'relative', overflow: 'hidden',
-          }}
-        >
-          <Plus size={24} color="var(--theme-accent)" />
-          <span style={{ fontSize: '10px', fontWeight: '900', color: 'var(--theme-text)', textAlign: 'center', textTransform: 'uppercase' }}>
-            Upload Image
-          </span>
-        </button>
-      </div>
-
-      {/* Progress feedback for active state */}
-      {(status === 'scanning' || status === 'ai-reading') && (
-        <div style={{ width: '100%', padding: '0 4px', fontSize: '11px', fontWeight: '800', color: 'var(--theme-accent)', textAlign: 'center', textTransform: 'uppercase', letterSpacing: '1px' }}>
-          {status === 'scanning' ? 'Decoding Code...' : 'AI Analyzing...'}
+      {/* Step 1: Selection Phase */}
+      {!scanType && status === 'idle' && (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', width: '100%', animation: 'slideDown 0.3s ease-out' }}>
+          <ScanCategoryBtn 
+            icon={<FileText size={20} />} 
+            label="Nutrition Label" 
+            sub="Scan facts for AI analysis"
+            onClick={() => { setScanType('nutrition'); setStatus('selecting-source'); }} 
+          />
+          <ScanCategoryBtn 
+            icon={<Barcode size={20} />} 
+            label="Barcode" 
+            sub="Scan product code for lookup"
+            onClick={() => { setScanType('barcode'); setStatus('selecting-source'); }} 
+          />
+          <ScanCategoryBtn 
+            icon={<QrCode size={20} />} 
+            label="QR Code" 
+            sub="Scan digital information"
+            onClick={() => { setScanType('qr'); setStatus('selecting-source'); }} 
+          />
         </div>
       )}
 
-      {/* Manual Fallback UI */}
-      {(status === 'failed' || error) && (
-        <div style={{ width: '100%', animation: 'slideDown 0.3s ease-out' }}>
-          <div style={{ 
-            fontSize: '11px', color: 'var(--theme-text-dim)', background: 'rgba(255,255,255,0.02)', 
-            padding: '16px', borderRadius: '16px', border: '1px solid var(--theme-border)',
-            display: 'flex', flexDirection: 'column', gap: '10px'
-          }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: 'var(--theme-error)' }}>
-              <AlertCircle size={14} />
-              <span style={{ fontWeight: '700' }}>Could not read automatically</span>
+      {/* Step 2: Source Selection Phase */}
+      {scanType && status === 'selecting-source' && (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', width: '100%', animation: 'slideDown 0.3s ease-out' }}>
+            <div style={{ textAlign: 'center', marginBottom: '8px' }}>
+               <div style={{ fontSize: '10px', fontWeight: '900', color: 'var(--theme-accent)', textTransform: 'uppercase', letterSpacing: '1px' }}>SOURCE FOR {scanType}</div>
             </div>
-            
-            <form onSubmit={handleManualSubmit} style={{ display: 'flex', gap: '8px' }}>
-              <div style={{ position: 'relative', flex: 1 }}>
-                <Hash size={14} style={{ position: 'absolute', left: '10px', top: '50%', transform: 'translateY(-50%)', opacity: 0.5 }} />
-                <input 
-                  type="text" pattern="[0-9]*" inputMode="numeric"
-                  placeholder="Enter barcode numbers..."
-                  value={manualCode}
-                  onChange={e => setManualCode(e.target.value.replace(/\D/g, ''))}
-                  style={{ 
-                    width: '100%', padding: '10px 10px 10px 32px', background: 'var(--theme-input-bg)',
-                    border: '1px solid var(--theme-border)', borderRadius: '12px', color: '#fff',
-                    fontSize: '13px', outline: 'none'
-                  }}
-                />
-              </div>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', width: '100%' }}>
               <button 
-                type="submit" disabled={manualCode.length < 5}
-                style={{ 
-                  padding: '10px 16px', background: manualCode.length >= 5 ? 'var(--theme-accent)' : 'rgba(255,255,255,0.05)',
-                  border: 'none', borderRadius: '12px', color: '#000', cursor: 'pointer',
-                  transition: 'all 0.2s', display: 'flex', alignItems: 'center'
+                onClick={triggerCamera}
+                className="action-bubble"
+                style={{
+                  display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
+                  gap: '8px', background: 'var(--theme-panel)', border: '1px solid var(--theme-border)',
+                  borderRadius: '16px', padding: '32px 16px', cursor: 'pointer', transition: 'all 0.2s'
                 }}
               >
-                <ArrowRight size={18} />
+                <Camera size={26} color="var(--theme-accent)" />
+                <span style={{ fontSize: '11px', fontWeight: '900', color: '#fff', textTransform: 'uppercase' }}>Take Photo</span>
               </button>
+
+              <button 
+                onClick={triggerUpload}
+                className="action-bubble"
+                style={{
+                  display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
+                  gap: '8px', background: 'rgba(255,255,255,0.03)', border: '1px solid var(--theme-border)',
+                  borderRadius: '16px', padding: '32px 16px', cursor: 'pointer', transition: 'all 0.2s'
+                }}
+              >
+                <Plus size={26} color="var(--theme-accent)" />
+                <span style={{ fontSize: '11px', fontWeight: '900', color: '#fff', textTransform: 'uppercase' }}>Upload Image</span>
+              </button>
+            </div>
+            
+            <button 
+              onClick={() => { setScanType(null); setStatus('idle'); }}
+              style={{ background: 'none', border: 'none', color: 'rgba(255,255,255,0.4)', fontSize: '11px', fontWeight: '800', cursor: 'pointer', textTransform: 'uppercase', marginTop: '10px' }}
+            >
+              Back to types
+            </button>
+        </div>
+      )}
+
+      {/* Processing Phase */}
+      {(status === 'scanning' || status === 'ai-reading') && (
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '24px', padding: '40px 0', width: '100%' }}>
+           <div style={{ position: 'relative' }}>
+              <div style={{ background: 'rgba(0, 201, 255, 0.1)', padding: '20px', borderRadius: '50%' }}>
+                <Loader2 size={32} className="spin" color="var(--theme-accent)" />
+              </div>
+           </div>
+           <div style={{ textAlign: 'center' }}>
+             <div style={{ fontSize: '14px', fontWeight: '900', color: '#fff' }}>{status === 'scanning' ? 'DECODING...' : 'AI ANALYSIS...'}</div>
+           </div>
+        </div>
+      )}
+
+      {/* Error Phase */}
+      {(status === 'failed' || error) && (
+        <div style={{ width: '100%' }}>
+          <div style={{ 
+            padding: '20px', borderRadius: '24px', border: '1px solid var(--theme-border)',
+            display: 'flex', flexDirection: 'column', gap: '12px'
+          }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#FF6B6B' }}>
+              <AlertCircle size={16} />
+              <span style={{ fontWeight: '800' }}>READ ERROR</span>
+            </div>
+            <form onSubmit={handleManualSubmit} style={{ display: 'flex', gap: '8px' }}>
+              <input 
+                type="text" placeholder="Enter barcode..."
+                value={manualCode}
+                onChange={e => setManualCode(e.target.value.replace(/\D/g, ''))}
+                style={{ flex: 1, padding: '12px', background: 'rgba(0,0,0,0.3)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '14px', color: '#fff' }}
+              />
+              <button type="submit" style={{ padding: '12px', background: 'var(--theme-accent)', borderRadius: '14px', border: 'none' }}><ArrowRight size={20} /></button>
             </form>
+            <button onClick={() => { setScanType(null); setStatus('idle'); setError(null); }} style={{ color: 'var(--theme-accent)', background: 'none', border: 'none', fontWeight: '800' }}>TRY AGAIN</button>
           </div>
         </div>
       )}
@@ -215,10 +232,8 @@ export const BarcodeScanner: React.FC<BarcodeScannerProps> = ({
           }}
         />
       )}
-
+      
       <style>{`
-        .action-bubble:hover:not(:disabled) { transform: translateY(-2px); border-color: var(--theme-accent); }
-        @keyframes scan-progress { 0% { transform: translateX(-100%); } 100% { transform: translateX(100%); } }
         .spin { animation: spin 1s linear infinite; }
         @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
         @keyframes slideDown { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
@@ -226,3 +241,24 @@ export const BarcodeScanner: React.FC<BarcodeScannerProps> = ({
     </div>
   );
 };
+
+const ScanCategoryBtn = ({ icon, label, sub, onClick }: any) => (
+  <button 
+    onClick={onClick}
+    className="action-bubble"
+    style={{
+      width: '100%', display: 'flex', alignItems: 'center', gap: '16px',
+      padding: '20px', background: 'rgba(255,255,255,0.03)', border: '1px solid var(--theme-border)',
+      borderRadius: '24px', cursor: 'pointer', transition: 'all 0.2s', textAlign: 'left'
+    }}
+  >
+    <div style={{ background: 'rgba(0, 201, 255, 0.1)', padding: '12px', borderRadius: '16px', color: 'var(--theme-accent)' }}>
+      {icon}
+    </div>
+    <div style={{ flex: 1 }}>
+      <div style={{ fontSize: '13px', fontWeight: '900', color: '#fff', textTransform: 'uppercase' }}>{label}</div>
+      <div style={{ fontSize: '10px', color: 'rgba(255,255,255,0.4)', fontWeight: '700' }}>{sub}</div>
+    </div>
+    <ArrowRight size={18} color="rgba(255,255,255,0.2)" />
+  </button>
+);
