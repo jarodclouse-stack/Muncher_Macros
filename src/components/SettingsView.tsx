@@ -259,7 +259,7 @@ export const SettingsView: React.FC = () => {
                 )}
                 <div style={{ fontSize: '24px', marginBottom: '8px' }}>{t.emoji}</div>
                 <div style={{ fontSize: '11px', fontWeight: '800', color: isSelected ? 'var(--theme-text)' : 'var(--theme-text-dim)', marginBottom: '2px' }}>{t.name}</div>
-                <div style={{ fontSize: '9px', color: 'var(--theme-accent)', fontWeight: '700', marginBottom: '6px' }}>{t.price} GEMS</div>
+                {!isPurchased && <div style={{ fontSize: '9px', color: 'var(--theme-accent)', fontWeight: '700', marginBottom: '6px' }}>{t.price} GEMS</div>}
                 <div style={{ width: '30px', height: '4px', borderRadius: '2px', background: t.color, margin: '0 auto' }} />
                 
                 {isSelected && (

@@ -141,6 +141,7 @@ export const PantryView: React.FC = () => {
   const [servingQty, setServingQty] = useState('1');
   const [servingUnit, setServingUnit] = useState('serving');
   const [showFullNutrition, setShowFullNutrition] = useState(false);
+  const [expandedAiIdx, setExpandedAiIdx] = useState<number | null>(null);
 
   const clearSearchState = () => {
     setSearchResults([]);
@@ -373,49 +374,85 @@ export const PantryView: React.FC = () => {
                   </div>
                   
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', marginBottom: '16px' }}>
-                    {aiStagedResults.map((f, i) => (
-                      <div key={i} style={{ background: 'rgba(255,255,255,0.03)', padding: '16px', borderRadius: '18px', border: '1px solid rgba(255,255,255,0.08)', backdropFilter: 'blur(5px)' }}>
-                        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
-                          <div style={{ fontWeight: '800', fontSize: '14px', color: '#fff' }}>{f.name}</div>
-                          <button onClick={() => {
-                            const next = aiStagedResults.filter((_, idx) => idx !== i);
-                            setAiStagedResults(next);
-                            if (next.length === 0) setIsAiReviewing(false);
-                          }} style={{ background: 'none', border: 'none', color: '#FF6B6B', cursor: 'pointer' }}><X size={14} /></button>
-                        </div>
-                        
-                        {/* Nutrients Display */}
-                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '8px', marginBottom: '12px', background: 'rgba(255,255,255,0.03)', padding: '8px', borderRadius: '12px' }}>
-                          <div style={{ textAlign: 'center' }}><div style={{ fontSize: '9px', color: 'rgba(255,255,255,0.4)', fontWeight: '700' }}>KCAL</div><div style={{ fontSize: '13px', fontWeight: '900', color: '#fff' }}>{f.cal}</div></div>
-                          <div style={{ textAlign: 'center' }}><div style={{ fontSize: '9px', color: 'rgba(255,255,255,0.4)', fontWeight: '700' }}>P</div><div style={{ fontSize: '13px', fontWeight: '900', color: 'var(--theme-success)' }}>{f.p}g</div></div>
-                          <div style={{ textAlign: 'center' }}><div style={{ fontSize: '9px', color: 'rgba(255,255,255,0.4)', fontWeight: '700' }}>C</div><div style={{ fontSize: '13px', fontWeight: '900', color: 'var(--theme-accent)' }}>{f.c}g</div></div>
-                          <div style={{ textAlign: 'center' }}><div style={{ fontSize: '9px', color: 'rgba(255,255,255,0.4)', fontWeight: '700' }}>F</div><div style={{ fontSize: '13px', fontWeight: '900', color: 'var(--theme-error)' }}>{f.f}g</div></div>
-                        </div>
+                    {aiStagedResults.map((f, i) => {
+                      const multiplier = computeMultiplier(f.serving || '', f.stagedUnit || 'serving', parseFloat(String(f.stagedQty)) || 1);
+                      const displayCal = Math.round((Number(f.cal) || 0) * multiplier);
+                      const displayP = Math.round((Number(f.p) || 0) * multiplier);
+                      const displayC = Math.round((Number(f.c) || 0) * multiplier);
+                      const displayF = Math.round((Number(f.f) || 0) * multiplier);
+                      const isExpanded = expandedAiIdx === i;
 
-                        <div style={{ display: 'flex', gap: '8px' }}>
-                          <input 
-                            type="number" 
-                            value={f.stagedQty} 
-                            onChange={(e) => {
-                              const next = [...aiStagedResults];
-                              next[i] = { ...f, stagedQty: e.target.value };
-                              setAiStagedResults(next);
-                            }}
-                            style={{ width: '60px', background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '8px', color: '#fff', fontSize: '12px', padding: '6px' }} 
-                          />
-                          <select 
-                            value={f.stagedUnit} 
-                            onChange={(e) => {
-                              const next = [...aiStagedResults];
-                              next[i] = { ...f, stagedUnit: e.target.value };
-                              setAiStagedResults(next);
-                            }}
-                            style={{ flex: 1, background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '8px', color: '#fff', fontSize: '12px', padding: '6px' }}>
-                            {SERVING_UNITS.map(u => <option key={u.v} value={u.v} style={{ background: '#222' }}>{u.v}</option>)}
-                          </select>
+                      return (
+                        <div key={i} style={{ background: 'rgba(255,255,255,0.03)', padding: '16px', borderRadius: '18px', border: '1px solid rgba(255,255,255,0.08)', backdropFilter: 'blur(5px)' }}>
+                          <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
+                            <div style={{ fontWeight: '800', fontSize: '14px', color: '#fff' }}>{f.name}</div>
+                            <div style={{ display: 'flex', gap: '8px' }}>
+                              <button 
+                                onClick={() => setExpandedAiIdx(isExpanded ? null : i)}
+                                style={{ background: 'rgba(255,255,255,0.05)', border: 'none', color: isExpanded ? 'var(--theme-accent)' : '#fff', padding: '4px 8px', borderRadius: '8px', fontSize: '10px', fontWeight: '900', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '4px' }}
+                              >
+                                <Info size={12} /> {isExpanded ? 'HIDE' : 'INFO'}
+                              </button>
+                              <button onClick={() => {
+                                const next = aiStagedResults.filter((_, idx) => idx !== i);
+                                setAiStagedResults(next);
+                                if (next.length === 0) setIsAiReviewing(false);
+                                if (isExpanded) setExpandedAiIdx(null);
+                              }} style={{ background: 'none', border: 'none', color: '#FF6B6B', cursor: 'pointer' }}><X size={14} /></button>
+                            </div>
+                          </div>
+                          
+                          {/* Nutrients Display */}
+                          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '8px', marginBottom: '12px', background: 'rgba(255,255,255,0.03)', padding: '8px', borderRadius: '12px' }}>
+                            <div style={{ textAlign: 'center' }}><div style={{ fontSize: '9px', color: 'rgba(255,255,255,0.4)', fontWeight: '700' }}>KCAL</div><div style={{ fontSize: '13px', fontWeight: '900', color: '#fff' }}>{displayCal}</div></div>
+                            <div style={{ textAlign: 'center' }}><div style={{ fontSize: '9px', color: 'rgba(255,255,255,0.4)', fontWeight: '700' }}>P</div><div style={{ fontSize: '13px', fontWeight: '900', color: 'var(--theme-success)' }}>{displayP}g</div></div>
+                            <div style={{ textAlign: 'center' }}><div style={{ fontSize: '9px', color: 'rgba(255,255,255,0.4)', fontWeight: '700' }}>C</div><div style={{ fontSize: '13px', fontWeight: '900', color: 'var(--theme-accent)' }}>{displayC}g</div></div>
+                            <div style={{ textAlign: 'center' }}><div style={{ fontSize: '9px', color: 'rgba(255,255,255,0.4)', fontWeight: '700' }}>F</div><div style={{ fontSize: '13px', fontWeight: '900', color: 'var(--theme-error)' }}>{displayF}g</div></div>
+                          </div>
+
+                          {isExpanded && (
+                            <div style={{ marginBottom: '12px', padding: '12px', background: 'rgba(0,0,0,0.2)', borderRadius: '14px', border: '1px solid rgba(255,255,255,0.05)' }}>
+                              <div style={{ fontSize: '10px', fontWeight: '900', color: 'var(--theme-accent)', marginBottom: '8px', opacity: 0.8 }}>DETAILED INTELLIGENCE</div>
+                              <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                                {[...ALL_MICRO_KEYS, 'fiber', 'sugars'].map(k => {
+                                  const val = (Number((f as any)[k]) || 0) * multiplier;
+                                  if (!val && val !== 0) return null;
+                                  return (
+                                    <div key={k} style={{ display: 'flex', justifyContent: 'space-between', fontSize: '11px', borderBottom: '1px solid rgba(255,255,255,0.02)', paddingBottom: '2px' }}>
+                                      <span style={{ color: 'rgba(255,255,255,0.5)', fontWeight: '700', textTransform: 'uppercase' }}>{k}</span>
+                                      <span style={{ color: '#fff', fontWeight: '800' }}>{val.toFixed(1)}{MICRO_UNITS[k] || 'g'}</span>
+                                    </div>
+                                  );
+                                })}
+                              </div>
+                            </div>
+                          )}
+  
+                          <div style={{ display: 'flex', gap: '8px' }}>
+                            <input 
+                              type="number" 
+                              value={f.stagedQty} 
+                              onChange={(e) => {
+                                const next = [...aiStagedResults];
+                                next[i] = { ...f, stagedQty: e.target.value };
+                                setAiStagedResults(next);
+                              }}
+                              style={{ width: '60px', background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '8px', color: '#fff', fontSize: '12px', padding: '6px' }} 
+                            />
+                            <select 
+                              value={f.stagedUnit} 
+                              onChange={(e) => {
+                                const next = [...aiStagedResults];
+                                next[i] = { ...f, stagedUnit: e.target.value };
+                                setAiStagedResults(next);
+                              }}
+                              style={{ flex: 1, background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '8px', color: '#fff', fontSize: '12px', padding: '6px' }}>
+                              {SERVING_UNITS.map(u => <option key={u.v} value={u.v} style={{ background: '#222' }}>{u.v}</option>)}
+                            </select>
+                          </div>
                         </div>
-                      </div>
-                    ))}
+                      );
+                    })}
                   </div>
 
                   <div style={{ display: 'flex', gap: '8px' }}>
