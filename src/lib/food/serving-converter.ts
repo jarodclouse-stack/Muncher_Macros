@@ -28,6 +28,7 @@ export const COMMON_UNITS = [
 
 export function extractBaseGrams(servingStr: string): number | null {
   if (!servingStr) return null;
+  // Handle "100g", "1oz", "1 slice (30g)", "50 g"
   const match = servingStr.match(/(\d+(?:\.\d+)?)\s*(g|ml|oz)/i);
   if (match) {
     const val = parseFloat(match[1]);
@@ -44,9 +45,16 @@ export function computeMultiplier(baseServingStr: string, targetUnit: string, ta
   const baseGrams = extractBaseGrams(baseServingStr);
   const targetUnitDef = COMMON_UNITS.find(u => u.id === targetUnit);
   
-  // If we can't determine the gram weight of the base food, we can't convert strictly to mass.
-  // Fallback: assume scale factor 1 if no base weight exists
-  if (!baseGrams || !targetUnitDef || !targetUnitDef.weightG) return targetQty;
+  // If we can't determine the gram weight of the base food, but the user chose 'g',
+  // we used to just return targetQty, which assumes 1:1. 
+  // Let's improve: if they choose grams/oz/etc, and we don't have a base weight, 
+  // we assume the base was 100g (standard for AI).
+  if (!baseGrams) {
+    if (!targetUnitDef || !targetUnitDef.weightG) return targetQty;
+    return (targetQty * targetUnitDef.weightG) / 100; // Assume 100g base fallback
+  }
+
+  if (!targetUnitDef || !targetUnitDef.weightG) return targetQty;
 
   const targetTotalGrams = targetQty * targetUnitDef.weightG;
   return targetTotalGrams / baseGrams;

@@ -60,11 +60,18 @@ const normalizeFoodResult = (food: any): Food => {
     'Vitamin D': r(food['Vitamin D']),
     'Vitamin B1': r(food['Vitamin B1'], 2),
     'Vitamin B2': r(food['Vitamin B2'], 2),
+    'Vitamin B3': r(food['Vitamin B3'], 2),
+    'Vitamin B5': r(food['Vitamin B5'], 2),
     'Vitamin B6': r(food['Vitamin B6'], 2),
     'Vitamin B12': r(food['Vitamin B12'], 2),
+    'Vitamin E': r(food['Vitamin E']),
+    'Vitamin K': r(food['Vitamin K']),
     Magnesium: Math.round(Number(food.Magnesium) || 0),
     Zinc: r(food.Zinc),
+    Phosphorus: Math.round(Number(food.Phosphorus) || 0),
     Manganese: r(food.Manganese, 2),
+    Selenium: r(food.Selenium),
+    Copper: r(food.Copper, 3),
   };
 
   return enforceCalorieConsistency(normalized);
@@ -513,7 +520,7 @@ export const AddFoodModal: React.FC<AddFoodModalProps> = ({ meal, onClose }) => 
                         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '6px', marginBottom: '12px', background: 'rgba(255,255,255,0.03)', padding: '8px', borderRadius: '12px' }}>
                           {(() => {
                             const currentQty = parseFloat(f.stagedQty) || 0;
-                            const mult = computeMultiplier(f.serving || '1 serving', f.stagedUnit, currentQty);
+                            const mult = computeMultiplier(f.serving || '100g', f.stagedUnit, currentQty);
                             return (
                               <>
                                 <div style={{ textAlign: 'center' }}><div style={{ fontSize: '9px', color: 'rgba(255,255,255,0.4)', fontWeight: '700' }}>KCAL</div><div style={{ fontSize: '12px', fontWeight: '900', color: '#fff' }}>{Math.round((Number(f.cal) || 0) * mult)}</div></div>
@@ -528,7 +535,7 @@ export const AddFoodModal: React.FC<AddFoodModalProps> = ({ meal, onClose }) => 
                         {/* Expandable Health Intel Section */}
                         {f.showNutrientIntel && (
                           <div style={{ marginBottom: '16px', background: 'rgba(255,255,255,0.02)', padding: '12px', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.05)', animation: 'fadeIn 0.2s ease-out' }}>
-                            <NutritionFactsDisplay food={f} multiplier={computeMultiplier(f.serving || '1 serving', f.stagedUnit, parseFloat(f.stagedQty) || 0)} />
+                            <NutritionFactsDisplay food={f} multiplier={computeMultiplier(f.serving || '100g', f.stagedUnit, parseFloat(f.stagedQty) || 0)} />
                           </div>
                         )}
                         
