@@ -383,9 +383,10 @@ export const AddFoodModal: React.FC<AddFoodModalProps> = ({ meal, onClose }) => 
                           <div style={{ fontSize: '10px', color: 'rgba(255,255,255,0.5)', fontWeight: '600' }}>P:{f.p}g C:{f.c}g F:{f.f}g</div>
                         </div>
                       </div>
-                      <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+                      <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
                          {f.isLocal && (
                             <button 
+                               title="Remove from Kitchen"
                               onClick={(e) => {
                                 e.stopPropagation();
                                 if (confirm(`Remove "${f.name}" from your Kitchen?`)) {
@@ -642,8 +643,8 @@ export const AddFoodModal: React.FC<AddFoodModalProps> = ({ meal, onClose }) => 
 
       {/* Food Configuration Overlay */}
       {configuringFood && (
-          <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.85)', backdropFilter: 'blur(10px)', display: 'flex', alignItems: 'flex-end', zIndex: 6000 }}>
-            <div style={{ width: '100%', background: 'var(--theme-bg, #0B0B14)', borderRadius: '24px 24px 0 0', border: '1px solid rgba(255,255,255,0.1)', padding: '24px', maxHeight: '90vh', overflowY: 'auto' }}>
+          <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.85)', backdropFilter: 'blur(10px)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 6000, padding: '20px' }}>
+            <div style={{ width: '100%', maxWidth: '500px', background: 'var(--theme-bg, #0B0B14)', borderRadius: '32px', border: '1px solid rgba(255,255,255,0.1)', padding: '24px 24px 60px', maxHeight: '90vh', overflowY: 'auto', boxShadow: '0 20px 50px rgba(0,0,0,0.6)' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '20px' }}>
                 <div>
                   <input 
