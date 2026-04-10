@@ -1,11 +1,11 @@
 import React, { useRef, useState } from 'react';
 import { Camera, Loader2, AlertCircle, ArrowRight, Plus, FileText, Barcode, QrCode } from 'lucide-react';
 import { useDiary } from '../context/DiaryContext';
-import { scanBarcode, extractBarcodeDigits, scanQRCode } from '../lib/vision/scanner-logic';
+import { scanBarcode, extractBarcodeDigits, scanQRCode, scanNutritionLabel } from '../lib/vision/scanner-logic';
 import { ImageCropperModal } from './ImageCropperModal';
 
 interface BarcodeScannerProps {
-  onScanSuccess: (decodedText: string) => void;
+  onScanSuccess: (result: string | any) => void;
   onScanError?: (error: string) => void;
 }
 
@@ -40,37 +40,49 @@ export const BarcodeScanner: React.FC<BarcodeScannerProps> = ({
   };
 
   const processImage = async (imageBlob: Blob) => {
-    setStatus('scanning');
-    setError(null);
-    setPendingImage(null);
-
     try {
       if (scanType === 'qr') {
+        setStatus('scanning');
         const qrResult = await scanQRCode(imageBlob);
         if (qrResult.success && qrResult.text) {
           onScanSuccess(qrResult.text);
           setStatus('idle');
           setScanType(null);
-          return;
+        } else {
+          throw new Error(qrResult.error || "No QR code detected.");
         }
-      }
-
-      const scanResult = await scanBarcode(imageBlob);
-      if (scanResult.success && scanResult.text) {
-        onScanSuccess(scanResult.text);
-        setStatus('idle');
-        setScanType(null);
-        return;
-      }
-
-      setStatus('ai-reading');
-      const aiResult = await extractBarcodeDigits(imageBlob);
-      if (aiResult.success && aiResult.text) {
-        onScanSuccess(aiResult.text);
-        setStatus('idle');
-        setScanType(null);
-      } else {
-        throw new Error(aiResult.error || "Could not read code. Ensure it is clear.");
+      } 
+      else if (scanType === 'barcode') {
+        setStatus('scanning');
+        const scanResult = await scanBarcode(imageBlob);
+        if (scanResult.success && scanResult.text) {
+          onScanSuccess(scanResult.text);
+          setStatus('idle');
+          setScanType(null);
+        } else {
+          // Try AI fallback for barcodes specifically
+          setStatus('ai-reading');
+          const aiResult = await extractBarcodeDigits(imageBlob);
+          if (aiResult.success && aiResult.text) {
+            onScanSuccess(aiResult.text);
+            setStatus('idle');
+            setScanType(null);
+          } else {
+            throw new Error(aiResult.error || "Could not read code. Ensure it is clear.");
+          }
+        }
+      } 
+      else if (scanType === 'nutrition') {
+        setStatus('ai-reading');
+        const labelResult = await scanNutritionLabel(imageBlob);
+        if (labelResult.success && labelResult.data) {
+          // We pass the RAW FOOD DATA back, parent must handle both string and object
+          onScanSuccess(labelResult.data);
+          setStatus('idle');
+          setScanType(null);
+        } else {
+          throw new Error(labelResult.error || "Could not extract nutrition. Try a clearer photo.");
+        }
       }
       
     } catch (err: any) {

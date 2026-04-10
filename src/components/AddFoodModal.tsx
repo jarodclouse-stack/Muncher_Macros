@@ -672,10 +672,18 @@ export const AddFoodModal: React.FC<AddFoodModalProps> = ({ meal, onClose }) => 
           ) : activeTab === 'scan' ? (
             <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '20px', padding: '20px 0' }}>
               <BarcodeScanner 
-                onScanSuccess={(code) => {
-                  setQuery(code);
-                  handleStandardSearch({ preventDefault: () => {} } as React.FormEvent);
-                  setActiveTab('search');
+                onScanSuccess={(result) => {
+                  if (typeof result === 'object' && result !== null) {
+                    // It's a nutrition label direct result
+                    setAiStagedResults([{ ...result, stagedQty: '1', stagedUnit: 'serving', showNutrientIntel: false }]);
+                    setIsAiReviewing(true);
+                    setActiveTab('describe');
+                  } else {
+                    // It's a barcode or QR code string
+                    setQuery(String(result));
+                    handleStandardSearch({ preventDefault: () => {} } as React.FormEvent);
+                    setActiveTab('search');
+                  }
                 }}
                 onScanError={(err) => setErrorMsg(err)}
               />
