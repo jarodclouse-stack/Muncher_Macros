@@ -5,8 +5,7 @@ import { ALL_MICRO_KEYS, MICRO_UNITS, SERVING_UNITS } from '../lib/constants';
 import type { Food } from '../types/food';
 import { computeMultiplier, scaleLegacyFoodByAmount } from '../lib/food/serving-converter';
 import { 
-  Search, Sparkles, Plus, Check, 
-  X, Loader2, Info, FileText
+  X, Loader2, Info, FileText, Trash2
 } from 'lucide-react';
 import { BarcodeScanner } from './BarcodeScanner';
 import { SearchCoaster, type SearchTab } from './SearchCoaster';
@@ -77,7 +76,7 @@ interface AddFoodModalProps {
 
 export const AddFoodModal: React.FC<AddFoodModalProps> = ({ meal, onClose }) => {
   const { 
-    localCache, addFoodLog, saveCustomFood, 
+    localCache, addFoodLog, saveCustomFood, deleteCustomFood,
     stagingTray, addToTray, clearTray 
   } = useDiary();
   
@@ -96,6 +95,7 @@ export const AddFoodModal: React.FC<AddFoodModalProps> = ({ meal, onClose }) => 
   
   const [mealDesc, setMealDesc] = useState('');
   const [targetMeal, setTargetMeal] = useState(meal);
+  const [highProteinOnly, setHighProteinOnly] = useState(false);
   const [configuringFood, setConfiguringFood] = useState<Food | null>(null);
   const [editName, setEditName] = useState('');
   const [saveToPantry, setSaveToPantry] = useState(false);
@@ -141,6 +141,9 @@ export const AddFoodModal: React.FC<AddFoodModalProps> = ({ meal, onClose }) => 
       
       addFoodLog(targetMeal, scaledFood);
       setConfiguringFood(null);
+      // Clear search after adding
+      setQuery('');
+      setResults([]);
     }
   };
 
@@ -160,10 +163,14 @@ export const AddFoodModal: React.FC<AddFoodModalProps> = ({ meal, onClose }) => 
 
     // --- PANTRY FIRST LOGIC ---
     const customFoods: Food[] = localCache.customFoods || [];
-    const localMatches = customFoods.filter(f => 
+    let localMatches = customFoods.filter(f => 
       f.name.toLowerCase().includes(query.toLowerCase())
-    ).map(f => ({ ...f, isLocal: true }));
+    ).map((f, idx) => ({ ...f, isLocal: true, localIdx: idx }));
     
+    if (highProteinOnly) {
+      localMatches = localMatches.filter(f => (Number(f.p) || 0) >= 20);
+    }
+
     setResults(localMatches);
 
     try {
@@ -320,6 +327,26 @@ export const AddFoodModal: React.FC<AddFoodModalProps> = ({ meal, onClose }) => 
                 </div>
               </form>
 
+              {activeTab === 'search' && (
+                 <div style={{ display: 'flex', justifyContent: 'flex-start', alignItems: 'center', gap: '8px', padding: '0 4px' }}>
+                    <button 
+                      onClick={() => setHighProteinOnly(!highProteinOnly)}
+                      style={{ 
+                        padding: '6px 12px', 
+                        borderRadius: '10px', 
+                        background: highProteinOnly ? 'rgba(146, 254, 157, 0.1)' : 'rgba(255,255,255,0.05)', 
+                        border: '1px solid',
+                        borderColor: highProteinOnly ? 'var(--theme-success)' : 'rgba(255,255,255,0.1)',
+                        color: highProteinOnly ? 'var(--theme-success)' : 'rgba(255,255,255,0.4)',
+                        fontSize: '11px', fontWeight: '800', cursor: 'pointer', transition: 'all 0.2s', display: 'flex', alignItems: 'center', gap: '6px'
+                      }}>
+                      {highProteinOnly ? <Check size={12} /> : <div style={{width:12, height:12, borderRadius:'50%', border:'1px solid currentColor'}} />}
+                      PROTEIN 20G+
+                    </button>
+                    <span style={{ fontSize: '10px', color: 'rgba(255,255,255,0.3)', fontWeight: '600' }}>Filter Pantry results</span>
+                 </div>
+              )}
+
               {results.length > 0 && (
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', maxHeight: '400px', overflowY: 'auto', paddingRight: '4px' }}>
                   {results.map((f, i) => (
@@ -349,7 +376,26 @@ export const AddFoodModal: React.FC<AddFoodModalProps> = ({ meal, onClose }) => 
                           <div style={{ fontSize: '10px', color: 'rgba(255,255,255,0.5)', fontWeight: '600' }}>P:{f.p}g C:{f.c}g F:{f.f}g</div>
                         </div>
                       </div>
-                      <Plus size={20} color="var(--theme-accent, #00C9FF)" />
+                      <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+                         {f.isLocal && (
+                            <button 
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                if (confirm(`Remove "${f.name}" from your Pantry?`)) {
+                                  const idx = (f as any).localIdx;
+                                  if (typeof idx === 'number') {
+                                    deleteCustomFood(idx);
+                                    // Remove from immediate display
+                                    setResults(prev => prev.filter((_, itemIdx) => itemIdx !== i));
+                                  }
+                                }
+                              }}
+                              style={{ background: 'none', border: 'none', color: 'rgba(255,107,107,0.4)', cursor: 'pointer', padding: '4px' }}>
+                              <Trash2 size={18} />
+                            </button>
+                         )}
+                         <Plus size={20} color="var(--theme-accent, #00C9FF)" />
+                      </div>
                     </div>
                   ))}
                 </div>
