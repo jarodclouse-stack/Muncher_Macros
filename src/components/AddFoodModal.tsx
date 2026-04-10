@@ -39,8 +39,8 @@ const normalizeFoodResult = (food: any): Food => {
     ...food,
     name: food.name || 'Unknown food',
     serving: food.serving || '1 serving',
-    sQty: Number(food.sQty) || 1,
-    sUnit: food.sUnit || 'serving',
+    sQty: Number(food.sQty != null ? food.sQty : food.stagedQty) || 1,
+    sUnit: food.sUnit || food.stagedUnit || 'serving',
     p: r(food.p),
     c: r(food.c),
     f: r(food.f),
@@ -265,12 +265,11 @@ export const AddFoodModal: React.FC<AddFoodModalProps> = ({ meal, onClose }) => 
       } else {
         setAiStagedResults(detected.map((f: Food) => {
           const norm = normalizeFoodResult(f);
-          // PRIORITIZE NATURAL UNITS: If AI says 'piece', use 'piece'. Else use 'piece' as fallback for meal descriptions.
-          const unit = f.sUnit || f.unit || (f.serving?.toLowerCase().includes('serving') ? 'piece' : 'piece');
+          // PRIORITIZE NATURAL DETECTION: Use AI's sQty (e.g. 2) and sUnit (e.g. piece)
           return { 
             ...norm, 
-            stagedQty: f.sQty?.toString() || f.qty?.toString() || '1', 
-            stagedUnit: unit,
+            stagedQty: f.sQty?.toString() || '1', 
+            stagedUnit: f.sUnit || 'piece',
             showNutrientIntel: false
           };
         }));
