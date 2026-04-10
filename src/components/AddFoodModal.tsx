@@ -248,7 +248,8 @@ export const AddFoodModal: React.FC<AddFoodModalProps> = ({ meal, onClose }) => 
           return { 
             ...norm, 
             stagedQty: norm.stagedQty || norm.sQty?.toString() || '1', 
-            stagedUnit: norm.stagedUnit || norm.sUnit || 'serving' 
+            stagedUnit: norm.stagedUnit || norm.sUnit || 'serving',
+            showNutrientIntel: false
           };
         }));
         setIsAiReviewing(true);
@@ -279,15 +280,11 @@ export const AddFoodModal: React.FC<AddFoodModalProps> = ({ meal, onClose }) => 
           onTabChange={(tab) => {
             if (tab !== activeTab) {
               setErrorMsg('');
-              // If switching TO search tab, clear AI results
-              if (tab === 'search') {
-                setIsAiReviewing(false);
-                setAiStagedResults([]);
-              }
-              // If switching TO AI tabs, keep query but clear standard results
-              if (tab === 'ai-search' || tab === 'describe') {
-                setResults([]);
-              }
+              setQuery('');
+              setResults([]);
+              setMealDesc('');
+              setIsAiReviewing(false);
+              setAiStagedResults([]);
               setActiveTab(tab);
             }
           }} 
@@ -433,11 +430,28 @@ export const AddFoodModal: React.FC<AddFoodModalProps> = ({ meal, onClose }) => 
                       <div key={i} style={{ background: 'rgba(0,0,0,0.3)', padding: '16px', borderRadius: '18px', border: '1px solid rgba(255,255,255,0.08)' }}>
                         <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '10px' }}>
                           <div style={{ fontWeight: '800', fontSize: '14px', color: '#fff' }}>{f.name}</div>
-                          <button onClick={() => {
-                            const next = aiStagedResults.filter((_, idx) => idx !== i);
-                            setAiStagedResults(next);
-                            if (next.length === 0) setIsAiReviewing(false);
-                          }} style={{ background: 'none', border: 'none', color: 'rgba(255,107,107,0.6)', cursor: 'pointer' }}><X size={16} /></button>
+                          <div style={{ display: 'flex', gap: '8px' }}>
+                            <button 
+                              onClick={() => {
+                                const next = [...aiStagedResults];
+                                next[i].showNutrientIntel = !next[i].showNutrientIntel;
+                                setAiStagedResults(next);
+                              }}
+                              style={{ 
+                                background: f.showNutrientIntel ? 'rgba(0, 201, 255, 0.15)' : 'rgba(255,255,255,0.05)', 
+                                border: '1px solid',
+                                borderColor: f.showNutrientIntel ? 'var(--theme-accent)' : 'rgba(255,255,255,0.1)',
+                                color: f.showNutrientIntel ? 'var(--theme-accent)' : 'rgba(255,255,255,0.5)', 
+                                borderRadius: '8px', padding: '4px 8px', fontSize: '9px', fontWeight: '900', cursor: 'pointer' 
+                              }}>
+                              DETAILS
+                            </button>
+                            <button onClick={() => {
+                              const next = aiStagedResults.filter((_, idx) => idx !== i);
+                              setAiStagedResults(next);
+                              if (next.length === 0) setIsAiReviewing(false);
+                            }} style={{ background: 'none', border: 'none', color: 'rgba(255,107,107,0.6)', cursor: 'pointer' }}><X size={16} /></button>
+                          </div>
                         </div>
 
                         {/* Nutritional Breakdown Inline */}
@@ -447,6 +461,13 @@ export const AddFoodModal: React.FC<AddFoodModalProps> = ({ meal, onClose }) => 
                           <div style={{ textAlign: 'center' }}><div style={{ fontSize: '9px', color: 'rgba(255,255,255,0.4)', fontWeight: '700' }}>C</div><div style={{ fontSize: '12px', fontWeight: '900', color: 'var(--theme-accent, #00C9FF)' }}>{f.c}g</div></div>
                           <div style={{ textAlign: 'center' }}><div style={{ fontSize: '9px', color: 'rgba(255,255,255,0.4)', fontWeight: '700' }}>F</div><div style={{ fontSize: '12px', fontWeight: '900', color: '#FF6B6B' }}>{f.f}g</div></div>
                         </div>
+
+                        {/* Expandable Health Intel Section */}
+                        {f.showNutrientIntel && (
+                          <div style={{ marginBottom: '16px', animation: 'fadeIn 0.3s ease-out' }}>
+                            <NutritionFactsDisplay food={f} multiplier={computeMultiplier(f.serving || '', f.stagedUnit, parseFloat(f.stagedQty) || 1)} />
+                          </div>
+                        )}
                         
                         <div style={{ display: 'flex', gap: '8px' }}>
                           <input 
