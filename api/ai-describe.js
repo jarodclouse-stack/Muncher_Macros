@@ -175,53 +175,23 @@ export default async function handler(req, res) {
   
   Meal: "${description}"
 
-  DIETARY PERCEPTION RULES (CRITICAL):
-  - Return nutritional data **PER SINGLE UNIT** of the sUnit specified (e.g. per 1 egg, per 1 slice).
-  - sQty MUST be the exact count (e.g. "2 eggs" -> sQty: 2).
-  - DO NOT return total macros for the whole meal in one entry if a count is described.
-  
-  EXAMPLES OF CORRECT BEHAVIOR:
-  - Input: "2 large eggs" 
-    Output: [{"name": "Large Egg", "sQty": 2, "sUnit": "piece", "cal": 72, "p": 6, ...}]
-  - Input: "3 slices of sourdough bread"
-    Output: [{"name": "Sourdough Bread", "sQty": 3, "sUnit": "slice", "cal": 110, "p": 4, ...}]
-  - Input: "1/2 cup of almonds"
-    Output: [{"name": "Almonds", "sQty": 0.5, "sUnit": "cup", "cal": 820, ...}]
+  DIETARY PERCEPTION PROTOCOL:
+  1. ANALYZE COUNTS: For every item, identify the EXACT quantity mentioned by the user (e.g. "2 eggs" -> 2).
+  2. PER UNIT DATA: You MUST return nutritional data **PER SINGLE UNIT** (e.g. for 1 single egg).
+  3. sQty POPULATION: Set sQty to the count you detected in Step 1. NEVER default to 1 if a larger number was mentioned.
 
-  IDENTIFICATION PROCESS:
-  1. Identify components.
-  2. Determine the COUNT (sQty).
-  3. Determine nutrition for ONE (1) unit.
-  4. Return JSON.
+  EXAMPLES:
+  - "2 eggs" -> sQty: 2, cal: 70 (approx for 1 egg)
+  - "3 pieces of bacon" -> sQty: 3, cal: 45 (approx for 1 slice)
+  - "Bowl of cereal with 1 cup of milk" -> sQty: 1, sUnit: "cup", cal: 120 (for 1 cup)
 
   FORMAT RULES:
-  - Composite dishes (Burrito, Sandwich, etc) MUST be split into ingredients.
-  - Use NATURAL units (piece, slice, tbsp) where possible.
-  - Provide weight info in "serving" string (e.g. "1 medium egg (50g)").
-  - Provide complete nutrient profiles for every component.
-
-  For each ingredient, identify:
-  1. Name and quantity
-  2. Full macronutrient profile (P/C/F)
-  3. full micronutrient profile (ALL VITAMINS: B1, B2, B3, B5, B6, B7, B9, B12, Vitamin C, Vitamin A, Vitamin D, Vitamin E, Vitamin K)
-  4. Minerals (Sodium, Calcium, Iron, Magnesium, Zinc, Phosphorus, Manganese, Selenium, Copper)
-
-  Return ONLY a JSON array of objects. Format:
-  [{
-    "name": "specific ingredient name",
-    "serving": "e.g. 1 Medium Egg (50g)",
-    "sQty": number, "sUnit": "piece|slice|whole|serving|oz|cup|tbsp|tsp|g|ml",
-    "cal": number, "p": number, "c": number, "f": number, "fb": number,
-    "sat": number, "trans": number, "mono": number, "poly": number, "chol": number, "sugars": number,
-    "Sodium": number, "Potassium": number, "Calcium": number, "Iron": number,
-    "Vitamin C": number, "Vitamin A": number, "Vitamin D": number, 
-    "Vitamin B1": number, "Vitamin B2": number, "Vitamin B3": number, "Vitamin B5": number, "Vitamin B6": number, "Vitamin B12": number,
-    "Vitamin E": number, "Vitamin K": number,
-    "Magnesium": number, "Zinc": number, "Phosphorus": number, "Manganese": number, "Selenium": number, "Copper": number
-  }]
-
-  Rules:
   - Return ONLY raw JSON. No markdown fences.
+  - If the meal is a composite dish (Burrito, Sandwich, etc), split it into ingredients.
+  - Use NATURAL units (piece, slice, tbsp, cup).
+  - Provide weight info in "serving" string (e.g. "1 medium egg (50g)").
+  
+  Rules:
   - CRITICAL: sQty = count of units. cal = calories for ONE of those units.
   - Calorie Math: P*4 + C*4 + F*9.`;
 
