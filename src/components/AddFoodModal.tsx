@@ -432,9 +432,10 @@ export const AddFoodModal: React.FC<AddFoodModalProps> = ({ meal, onClose }) => 
                           <div style={{ fontWeight: '800', fontSize: '14px', color: '#fff' }}>{f.name}</div>
                           <div style={{ display: 'flex', gap: '8px' }}>
                             <button 
-                              onClick={() => {
+                              onClick={(e) => {
+                                e.stopPropagation();
                                 const next = [...aiStagedResults];
-                                next[i].showNutrientIntel = !next[i].showNutrientIntel;
+                                next[i] = { ...f, showNutrientIntel: !f.showNutrientIntel };
                                 setAiStagedResults(next);
                               }}
                               style={{ 
@@ -442,7 +443,7 @@ export const AddFoodModal: React.FC<AddFoodModalProps> = ({ meal, onClose }) => 
                                 border: '1px solid',
                                 borderColor: f.showNutrientIntel ? 'var(--theme-accent)' : 'rgba(255,255,255,0.1)',
                                 color: f.showNutrientIntel ? 'var(--theme-accent)' : 'rgba(255,255,255,0.5)', 
-                                borderRadius: '8px', padding: '4px 8px', fontSize: '9px', fontWeight: '900', cursor: 'pointer' 
+                                borderRadius: '8px', padding: '4px 8px', fontSize: '9px', fontWeight: '900', cursor: 'pointer', transition: 'all 0.2s'
                               }}>
                               DETAILS
                             </button>
@@ -457,7 +458,8 @@ export const AddFoodModal: React.FC<AddFoodModalProps> = ({ meal, onClose }) => 
                         {/* Nutritional Breakdown Inline - LIVE SCALING */}
                         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '6px', marginBottom: '12px', background: 'rgba(255,255,255,0.03)', padding: '8px', borderRadius: '12px' }}>
                           {(() => {
-                            const mult = computeMultiplier(f.serving || '', f.stagedUnit, parseFloat(f.stagedQty) || 1);
+                            const currentQty = parseFloat(f.stagedQty) || 0;
+                            const mult = computeMultiplier(f.serving || '1 serving', f.stagedUnit, currentQty);
                             return (
                               <>
                                 <div style={{ textAlign: 'center' }}><div style={{ fontSize: '9px', color: 'rgba(255,255,255,0.4)', fontWeight: '700' }}>KCAL</div><div style={{ fontSize: '12px', fontWeight: '900', color: '#fff' }}>{Math.round((Number(f.cal) || 0) * mult)}</div></div>
@@ -471,21 +473,22 @@ export const AddFoodModal: React.FC<AddFoodModalProps> = ({ meal, onClose }) => 
 
                         {/* Expandable Health Intel Section */}
                         {f.showNutrientIntel && (
-                          <div style={{ marginBottom: '16px', animation: 'fadeIn 0.3s ease-out' }}>
-                            <NutritionFactsDisplay food={f} multiplier={computeMultiplier(f.serving || '', f.stagedUnit, parseFloat(f.stagedQty) || 1)} />
+                          <div style={{ marginBottom: '16px', background: 'rgba(255,255,255,0.02)', padding: '12px', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.05)', animation: 'fadeIn 0.2s ease-out' }}>
+                            <NutritionFactsDisplay food={f} multiplier={computeMultiplier(f.serving || '1 serving', f.stagedUnit, parseFloat(f.stagedQty) || 0)} />
                           </div>
                         )}
                         
                         <div style={{ display: 'flex', gap: '8px' }}>
                           <input 
                             type="number" 
+                            step="any"
                             value={f.stagedQty} 
                             onChange={(e) => {
                               const next = [...aiStagedResults];
                               next[i] = { ...f, stagedQty: e.target.value };
                               setAiStagedResults(next);
                             }}
-                            style={{ width: '60px', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '10px', color: '#fff', fontSize: '12px', padding: '8px', outline: 'none' }} 
+                            style={{ width: '70px', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '10px', color: '#fff', fontSize: '12px', padding: '8px', outline: 'none' }} 
                           />
                           <select 
                             value={f.stagedUnit} 
