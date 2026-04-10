@@ -31,33 +31,46 @@ const MODELS = [
   'claude-3-haiku-20240307',
 ];
 
+const https = require('https');
+
 async function anthropicJson(prompt, apiKey, maxTokens = 4000) {
   let lastError = 'Initialization error';
   for (const model of MODELS) {
     try {
-      const resp = await fetch('https://api.anthropic.com/v1/messages', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'x-api-key': apiKey,
-          'anthropic-version': '2023-06-01'
-        },
-        body: JSON.stringify({
+      const data = await new Promise((resolve, reject) => {
+        const req = https.request('https://api.anthropic.com/v1/messages', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'x-api-key': apiKey,
+            'anthropic-version': '2023-06-01'
+          }
+        }, (res) => {
+          let str = '';
+          res.on('data', chunk => str += chunk);
+          res.on('end', () => {
+            try {
+              const body = JSON.parse(str);
+              if (res.statusCode >= 200 && res.statusCode < 300) resolve(body);
+              else reject(new Error(`Anthropic ${res.statusCode}: ${JSON.stringify(body)}`));
+            } catch (e) {
+               reject(new Error('Invalid JSON from AI'));
+            }
+          });
+        });
+        req.on('error', reject);
+        req.write(JSON.stringify({
           model,
           max_tokens: maxTokens,
           messages: [{ role: 'user', content: prompt }]
-        })
+        }));
+        req.end();
       });
-      const raw = await resp.text();
-      if (!resp.ok) {
-        lastError = `Anthropic ${resp.status}: ${raw.slice(0, 100)}`;
-        continue;
-      }
-      const data = JSON.parse(raw);
+
       const content = data?.content?.[0]?.text || '';
       const parsed = extractJSON(content);
       if (parsed) return parsed;
-      lastError = 'Invalid JSON in AI response';
+      lastError = 'Invalid JSON structure in AI response';
     } catch (e) {
       lastError = e.message;
     }
@@ -95,6 +108,16 @@ function normalizeResult(f) {
     Magnesium: Math.round(Number(f.Magnesium) || 0),
     Zinc: Math.round((Number(f.Zinc) || 0) * 10) / 10,
     _src: 'ai',
+    // Legacy support
+    calories: cal,
+    protein: p,
+    carbs: c,
+    fat: fat,
+    fiber: Math.round((Number(f.fb) || 0) * 10) / 10,
+    sugar: Math.round((Number(f.sugars) || 0) * 10) / 10,
+    sodium: Math.round(Number(f.Sodium) || 0),
+    potassium: Math.round(Number(f.Potassium) || 0),
+    cholesterol: Math.round(Number(f.chol) || 0),
     stagedQty: (Number(f.sQty) || 100).toString(),
     stagedUnit: String(f.sUnit || 'g')
   };

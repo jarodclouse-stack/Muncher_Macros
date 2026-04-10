@@ -32,33 +32,47 @@ const MODELS = [
   'claude-3-haiku-20240307',
 ];
 
+const https = require('https');
+
 async function anthropicJson(prompt, apiKey, maxTokens = 4000) {
   let lastError = 'Initialization error';
+  
   for (const model of MODELS) {
     try {
-      const resp = await fetch('https://api.anthropic.com/v1/messages', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'x-api-key': apiKey,
-          'anthropic-version': '2023-06-01'
-        },
-        body: JSON.stringify({
+      const data = await new Promise((resolve, reject) => {
+        const req = https.request('https://api.anthropic.com/v1/messages', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'x-api-key': apiKey,
+            'anthropic-version': '2023-06-01'
+          }
+        }, (res) => {
+          let str = '';
+          res.on('data', chunk => str += chunk);
+          res.on('end', () => {
+            try {
+              const body = JSON.parse(str);
+              if (res.statusCode >= 200 && res.statusCode < 300) resolve(body);
+              else reject(new Error(`Anthropic ${res.statusCode}: ${JSON.stringify(body)}`));
+            } catch (e) {
+              reject(new Error('Invalid JSON from AI'));
+            }
+          });
+        });
+        req.on('error', reject);
+        req.write(JSON.stringify({
           model,
           max_tokens: maxTokens,
           messages: [{ role: 'user', content: prompt }]
-        })
+        }));
+        req.end();
       });
-      const raw = await resp.text();
-      if (!resp.ok) {
-        lastError = `Anthropic ${resp.status}: ${raw.slice(0, 100)}`;
-        continue;
-      }
-      const data = JSON.parse(raw);
+
       const content = data?.content?.[0]?.text || '';
       const parsed = extractJSON(content);
       if (parsed) return parsed;
-      lastError = 'Invalid JSON in AI response';
+      lastError = 'Invalid JSON structure in AI response';
     } catch (e) {
       lastError = e.message;
     }
@@ -112,6 +126,20 @@ function normalizeResult(f) {
     Manganese: Math.round((Number(f.Manganese) || 0) * 100) / 100,
     Selenium: Math.round((Number(f.Selenium) || 0) * 10) / 10,
     _src: f._src || 'ai',
+    // Duplicate keys for legacy compatibility
+    calories: cal,
+    protein: p,
+    carbs: c,
+    fat: fat,
+    fiber: Math.round((Number(f.fb) || 0) * 10) / 10,
+    sugar: Math.round((Number(f.sugars) || 0) * 10) / 10,
+    sodium: Math.round(Number(f.Sodium) || 0),
+    potassium: Math.round(Number(f.Potassium) || 0),
+    cholesterol: Math.round(Number(f.chol) || 0),
+    saturatedFat: Math.round((Number(f.sat) || 0) * 10) / 10,
+    monounsaturatedFat: Math.round((Number(f.mono) || 0) * 10) / 10,
+    polyunsaturatedFat: Math.round((Number(f.poly) || 0) * 10) / 10,
+    transFat: Math.round((Number(f.trans) || 0) * 10) / 10,
     // Staging pre-population
     stagedQty: (Number(f.sQty) || 1).toString(),
     stagedUnit: String(f.sUnit || 'serving')
@@ -131,11 +159,16 @@ export default async function handler(req, res) {
   const apiKey = (process.env.ANTHROPIC_API_KEY || '').trim();
   if (!apiKey) return res.status(500).json({ error: 'Environment variable ANTHROPIC_API_KEY missing' });
 
-  const prompt = `You are a world-class nutrition scientist. Breakdown the following meal description into individual food items with precise nutritional data.
+  const prompt = `You are a world-class nutrition scientist. Breakdown the following meal description into individual INGREDIENTS or components with precise nutritional data.
   
   Meal: "${description}"
 
-  For each food item, identify:
+  DIETARY BREAKDOWN RULES:
+  - If the meal is a composite dish (e.g. burrito, sandwich, burger, bowl, taco, salad), you MUST split it into its component ingredients.
+  - Example "Bean & Cheese Burrito" -> ["1 large flour tortilla", "0.5 cup refried beans", "1 oz shredded cheddar cheese"].
+  - Provide a complete nutrient profile for EVERY component.
+
+  For each ingredient, identify:
   1. Name and quantity
   2. Full macronutrient profile (P/C/F)
   3. full micronutrient profile (Vitamins B, C, D, A, E, K, etc.)
@@ -143,7 +176,7 @@ export default async function handler(req, res) {
 
   Return ONLY a JSON array of objects. Format:
   [{
-    "name": "specific food name",
+    "name": "specific ingredient name",
     "serving": "e.g. 5oz grilled chicken",
     "sQty": number, "sUnit": "g|oz|cup|tbsp|piece|etc",
     "cal": number, "p": number, "c": number, "f": number, "fb": number,
@@ -151,7 +184,6 @@ export default async function handler(req, res) {
     "Sodium": number, "Potassium": number, "Calcium": number, "Iron": number,
     "Vitamin C": number, "Vitamin A": number, "Vitamin D": number, "Vitamin B12": number,
     "Magnesium": number, "Zinc": number, "Phosphorus": number
-    // ... include as many micros as possible
   }]
 
   Rules:
