@@ -9,7 +9,6 @@ import { WeightHistoryChart } from './WeightHistoryChart';
 
 export const ProgressView: React.FC<{ setActiveTab: (tab: any) => void }> = ({ setActiveTab }) => {
   const { localCache, updateGoals, updateDayData, currentDate, goToDate } = useDiary();
-  const [selectedHistoryDate, setSelectedHistoryDate] = useState<string | null>(null);
   const goals = localCache.goals || {};
   const currentDayData = localCache[currentDate] || {};
   
@@ -96,25 +95,6 @@ export const ProgressView: React.FC<{ setActiveTab: (tab: any) => void }> = ({ s
         <Info size={16} style={{ flexShrink: 0, marginTop: '2px' }} />
         <span>Your targets power everything in the app. Updates save automatically when you confirm them.</span>
       </div>
-
-      {/* 2. Monthly History (Calendar) */}
-      <div>
-        <HistoryCalendar onSelectDate={(d: string) => {
-          setSelectedHistoryDate(d);
-        }} />
-      </div>
-
-      {selectedHistoryDate && localCache[selectedHistoryDate] && (
-        <HistoryReviewCard 
-          date={selectedHistoryDate} 
-          data={localCache[selectedHistoryDate]} 
-          onClose={() => setSelectedHistoryDate(null)}
-          onGoToDiary={() => {
-            goToDate(selectedHistoryDate);
-            setActiveTab('diary');
-          }}
-        />
-      )}
 
       {/* 3. Legacy-style Weight History Chart */}
       <WeightHistoryChart localCache={localCache} targetWeight={Number(targetWeight)} />
@@ -462,75 +442,4 @@ export const ProgressView: React.FC<{ setActiveTab: (tab: any) => void }> = ({ s
   );
 };
 
-const HistoryReviewCard = ({ date, data, onClose, onGoToDiary }: any) => {
-  const { localCache } = useDiary();
-  const goals = localCache.goals || {};
-  useMemo(() => computeGoals(goals), [goals]);
-  const totals = useMemo(() => {
-    const foodLog = data.foodLog || [];
-    return sumFoods(foodLog.map((l: any) => l.f));
-  }, [data.foodLog]);
-
-  const displayDate = new Date(date + 'T12:00:00').toLocaleDateString('en-US', { 
-    weekday: 'long', month: 'long', day: 'numeric' 
-  });
-
-  return (
-    <div className="card" style={{ border: '1px solid var(--theme-accent, #00C9FF)', background: 'var(--theme-accent-dim, rgba(0,201,255,0.05))', position: 'relative' }}>
-      <button onClick={onClose} style={{ position: 'absolute', top: '16px', right: '16px', background: 'none', border: 'none', color: 'var(--theme-text-dim, #8b8b9b)', cursor: 'pointer', fontSize: '20px' }}>&times;</button>
-      
-      <div style={{ marginBottom: '20px' }}>
-        <div style={{ fontSize: '11px', color: 'var(--theme-accent, #00C9FF)', fontWeight: '800', textTransform: 'uppercase', marginBottom: '4px' }}>Daily History Review</div>
-        <h3 style={{ margin: 0, fontSize: '20px', color: 'var(--theme-text)' }}>{displayDate}</h3>
-      </div>
-
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '16px', marginBottom: '24px' }}>
-        <div style={{ background: 'var(--theme-panel-dim, rgba(0,0,0,0.2))', padding: '16px', borderRadius: '16px' }}>
-          <div style={{ fontSize: '11px', color: 'var(--theme-text-dim, #8b8b9b)', marginBottom: '4px' }}>Calories</div>
-          <div style={{ fontSize: '22px', fontWeight: '900', color: 'var(--theme-text)' }}>{totals.calories} <span style={{ fontSize: '12px', fontWeight: '400', color: 'var(--theme-text-dim, #555)' }}>kcal</span></div>
-        </div>
-        <div style={{ background: 'var(--theme-panel-dim, rgba(0,0,0,0.2))', padding: '16px', borderRadius: '16px', display: 'flex', flexDirection: 'column', gap: '4px' }}>
-           <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '12px' }}>
-              <span style={{ color: 'var(--theme-error, #FF6B6B)' }}>P: {totals.protein}g</span>
-              <span style={{ color: 'var(--theme-accent, #4DABF7)' }}>C: {totals.carbs}g</span>
-           </div>
-           <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '12px' }}>
-              <span style={{ color: 'var(--theme-warning, #FCC419)' }}>F: {totals.fat}g</span>
-              <span style={{ color: 'var(--theme-success, #92FE9D)' }}>Fb: {totals.fiber}g</span>
-           </div>
-        </div>
-      </div>
-
-      <div style={{ background: 'var(--theme-panel-dim, rgba(255,255,255,0.05))', borderRadius: '12px', padding: '16px', marginBottom: '20px' }}>
-        <div style={{ fontSize: '10px', color: 'var(--theme-text-dim, #8b8b9b)', fontWeight: '800', marginBottom: '12px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Micronutrient Analysis</div>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(100px, 1fr))', gap: '8px' }}>
-          {['Fiber', 'Sodium', 'Potassium', 'Magnesium', 'Zinc', 'Vitamin C'].map(k => {
-            const val = totals[k.toLowerCase()] || 0;
-            return (
-              <div key={k} style={{ padding: '8px', background: 'var(--theme-panel-dim, rgba(0,0,0,0.2))', borderRadius: '8px', textAlign: 'center' }}>
-                <div style={{ fontSize: '9px', color: 'var(--theme-text-dim, #8b8b9b)', marginBottom: '2px' }}>{k}</div>
-                <div style={{ fontSize: '12px', fontWeight: '700', color: val > 0 ? 'var(--theme-accent, #00C9FF)' : 'var(--theme-text-dim, #555)' }}>{Math.round(val)}</div>
-              </div>
-            );
-          })}
-        </div>
-      </div>
-
-      <div style={{ background: 'var(--theme-panel-dim, rgba(255,255,255,0.05))', borderRadius: '12px', padding: '12px', marginBottom: '20px' }}>
-        <div style={{ fontSize: '10px', color: 'var(--theme-text-dim, #8b8b9b)', fontWeight: '800', marginBottom: '8px' }}>FOODS LOGGED ({data.foodLog?.length || 0})</div>
-        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
-          {(data.foodLog || []).map((l: any, i: number) => (
-            <div key={i} style={{ fontSize: '11px', background: 'var(--theme-panel-dim, rgba(255,255,255,0.05))', padding: '6px 10px', borderRadius: '6px', border: '1px solid var(--theme-border, rgba(255,255,255,0.05))', color: 'var(--theme-text)' }}>
-              <div style={{ fontWeight: '600' }}>{l.f.name}</div>
-              <div style={{ fontSize: '9px', color: '#8b8b9b' }}>{l.f.cal} kcal</div>
-            </div>
-          ))}
-        </div>
-      </div>
-
-      <button onClick={onGoToDiary} className="btn" style={{ background: 'var(--theme-accent, #00C9FF)', color: 'var(--theme-panel-base, #000)', width: '100%', padding: '12px' }}>
-        Go to Diary for this Day
-      </button>
-    </div>
-  );
-};
+export default ProgressView;
