@@ -265,11 +265,11 @@ export const AddFoodModal: React.FC<AddFoodModalProps> = ({ meal, onClose }) => 
       } else {
         setAiStagedResults(detected.map((f: Food) => {
           const norm = normalizeFoodResult(f);
-          // PRIORITIZE NATURAL DETECTION: Use AI's sQty (e.g. 2) and sUnit (e.g. piece)
+          // PRIORITIZE NATURAL DETECTION: Use exactly what AI provided for Qty and Unit
           return { 
             ...norm, 
-            stagedQty: f.sQty?.toString() || '1', 
-            stagedUnit: f.sUnit || 'piece',
+            stagedQty: f.stagedQty || f.sQty?.toString() || '1', 
+            stagedUnit: f.stagedUnit || f.sUnit || 'piece',
             showNutrientIntel: false
           };
         }));
@@ -590,39 +590,22 @@ export const AddFoodModal: React.FC<AddFoodModalProps> = ({ meal, onClose }) => 
                           </select>
                         </div>
 
-                        {/* Action Row: Save & Edit */}
                         <div style={{ display: 'flex', gap: '8px', marginTop: '12px', borderTop: '1px solid rgba(255,255,255,0.05)', paddingTop: '10px' }}>
                           <button 
-                            onClick={() => {
-                              const qty = parseFloat(f.stagedQty) || 1;
-                              const foodToSave = { 
-                                ...f, 
-                                serving: `${qty} ${f.stagedUnit}`,
-                                sQty: qty,
-                                sUnit: f.stagedUnit
-                              };
-                              // Using the already scoped saveCustomFood helper
-                              const existing = JSON.parse(localStorage.getItem('mm_custom_foods') || '[]');
-                              localStorage.setItem('mm_custom_foods', JSON.stringify([...existing, foodToSave]));
-                              alert(`'${f.name}' saved to your Kitchen!`);
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setConfiguringFood(f);
                             }}
-                            style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', padding: '8px', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '10px', color: 'var(--theme-accent)', fontSize: '11px', fontWeight: '700', cursor: 'pointer' }}
+                            style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', padding: '10px', background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.15)', borderRadius: '12px', color: '#fff', fontSize: '11px', fontWeight: '900', cursor: 'pointer' }}
                           >
-                            <Sparkles size={12} /> ADD TO KITCHEN
-                          </button>
-                          
-                          <button 
-                            onClick={() => setConfiguringFood(f)}
-                            style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', padding: '8px', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '10px', color: '#fff', fontSize: '11px', fontWeight: '700', cursor: 'pointer' }}
-                          >
-                            <Info size={12} /> TWEAK DATA
+                            <Info size={12} color="var(--theme-accent)" /> TWEAK INGREDIENT
                           </button>
                         </div>
                       </div>
                     ))}
                   </div>
 
-                  <div style={{ display: 'grid', gridTemplateColumns: '1.2fr 1fr', gap: '12px' }}>
+                  <div style={{ display: 'grid', gridTemplateColumns: '1.1fr 1fr', gap: '10px', marginTop: '10px' }}>
                     <button 
                       onClick={() => {
                         aiStagedResults.forEach(f => {
@@ -633,19 +616,19 @@ export const AddFoodModal: React.FC<AddFoodModalProps> = ({ meal, onClose }) => 
                         setIsAiReviewing(false);
                         setAiStagedResults([]);
                       }}
-                      style={{ padding: '16px', background: 'var(--theme-accent)', border: 'none', borderRadius: '16px', color: '#000', fontWeight: '900', fontSize: '13px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', boxShadow: '0 8px 20px rgba(0,201,255,0.2)' }}>
+                      style={{ padding: '18px 10px', background: 'var(--theme-accent)', border: 'none', borderRadius: '18px', color: '#000', fontWeight: '900', fontSize: '12px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', boxShadow: '0 8px 20px rgba(0,201,255,0.2)' }}>
                       <Check size={18} /> CONFIRM ITEMS
                     </button>
 
                     <button 
                       onClick={() => {
-                        const mealName = prompt("What should we name this meal?", "My AI Meal") || "My AI Meal";
+                        const mealName = prompt("Name this meal?", "AI Detected Meal") || "AI Detected Meal";
                         const totalMacros = sumFoods(aiStagedResults.map(f => {
                            const mult = computeMultiplier(f.serving || '', f.stagedUnit || 'piece', parseFloat(f.stagedQty || '1') || 1);
                            return scaleLegacyFoodByAmount(f, mult);
                         }));
                         
-                        const mealFood = {
+                        const mealData = {
                           ...totalMacros,
                           name: mealName,
                           serving: '1 meal',
@@ -657,13 +640,13 @@ export const AddFoodModal: React.FC<AddFoodModalProps> = ({ meal, onClose }) => 
                         };
                         
                         const existing = JSON.parse(localStorage.getItem('mm_custom_foods') || '[]');
-                        localStorage.setItem('mm_custom_foods', JSON.stringify([...existing, mealFood]));
-                        alert("Meal sent to Kitchen!");
+                        localStorage.setItem('mm_custom_foods', JSON.stringify([...existing, mealData]));
+                        alert("Entire meal saved to Kitchen!");
                         setIsAiReviewing(false);
                         setAiStagedResults([]);
                       }}
-                      style={{ padding: '16px', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '16px', color: '#fff', fontWeight: '800', fontSize: '11px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}>
-                      <Sparkles size={16} color="var(--theme-accent)" /> SEND MEAL TO KITCHEN
+                      style={{ padding: '18px 10px', background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.15)', borderRadius: '18px', color: '#fff', fontWeight: '900', fontSize: '10px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '4px' }}>
+                      <Sparkles size={14} color="var(--theme-accent)" /> SAVE AS KITCHEN MEAL
                     </button>
                   </div>
                 </div>

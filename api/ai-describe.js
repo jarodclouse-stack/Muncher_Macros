@@ -141,10 +141,10 @@ function normalizeResult(f) {
     saturatedFat: Math.round((Number(f.sat) || 0) * 10) / 10,
     monounsaturatedFat: Math.round((Number(f.mono) || 0) * 10) / 10,
     polyunsaturatedFat: Math.round((Number(f.poly) || 0) * 10) / 10,
-    transFat: Math.round((Number(f.trans) || 0) * 10) / 10,
     // Staging pre-population - CRITICAL: Preserve natural units from AI
-    stagedQty: String(f.sQty || 1),
-    stagedUnit: String(f.sUnit || 'piece')
+    // Check multiple possible keys from AI: sQty, qty, quantity
+    stagedQty: String(f.sQty || f.qty || f.quantity || 1),
+    stagedUnit: String(f.sUnit || f.unit || 'piece')
   };
 }
 
