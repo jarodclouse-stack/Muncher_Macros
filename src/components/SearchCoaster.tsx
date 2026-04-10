@@ -21,9 +21,52 @@ export const SearchCoaster: React.FC<SearchCoasterProps> = ({ activeTab, onTabCh
       border: '1px solid rgba(255,255,255,0.08)',
       backdropFilter: 'blur(18px)',
       boxShadow: '0 15px 45px rgba(0,0,0,0.3)',
-      margin: '0 0 16px 0'
+      margin: '0 0 16px 0',
+      overflow: 'hidden' // Contain the heartbeat
     }}>
+      {/* Secret Heartbeat Glow */}
+      <div style={{
+        position: 'absolute',
+        top: '50%',
+        left: '50%',
+        width: '120px',
+        height: '80px',
+        transform: 'translate(-50%, -50%)',
+        background: 'radial-gradient(ellipse at center, var(--heartbeat-color, rgba(138, 43, 226, 0.15)) 0%, transparent 70%)',
+        filter: 'blur(25px)',
+        zIndex: 0,
+        animation: 'heartbeat-flow 8s infinite alternate ease-in-out',
+        pointerEvents: 'none',
+        opacity: 0.6
+      }} />
+
+      <style>{`
+        @keyframes heartbeat-flow {
+          0% { 
+            transform: translate(-55%, -45%) scale(1); 
+            background: radial-gradient(ellipse at center, rgba(138, 43, 226, 0.2) 0%, transparent 70%);
+          }
+          33% { 
+            transform: translate(-45%, -55%) scale(1.1); 
+            background: radial-gradient(ellipse at center, rgba(102, 51, 153, 0.18) 0%, transparent 70%);
+          }
+          66% { 
+            transform: translate(-50%, -50%) scale(0.95); 
+            background: radial-gradient(ellipse at center, rgba(199, 21, 133, 0.15) 0%, transparent 70%);
+          }
+          100% { 
+            transform: translate(-52%, -48%) scale(1.05); 
+            background: radial-gradient(ellipse at center, rgba(75, 0, 130, 0.2) 0%, transparent 70%);
+          }
+        }
+        :root {
+          --heartbeat-color: var(--theme-accent, #00C9FF);
+        }
+      `}</style>
+
       <div className="actions-grid" style={{ 
+        position: 'relative',
+        zIndex: 1,
         display: 'grid',
         gridTemplateColumns: '1fr 1fr',
         gap: '12px',

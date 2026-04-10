@@ -692,8 +692,8 @@ const HydrationCard = ({ current, goal, onAdd }: { current: number, goal: number
 
         {/* Quick Action Buttons */}
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '10px' }}>
-           <WaterBtn icon="🥛" label={mode === 'add' ? "+8 oz" : "-8 oz"} onClick={() => handleQuickAdd(8)} color={mode === 'remove' ? 'var(--theme-error-dim, rgba(255,107,107,0.05))' : undefined} />
-           <WaterBtn icon="🧴" label={mode === 'add' ? "+16.9 oz" : "-16.9 oz"} onClick={() => handleQuickAdd(16.9)} color={mode === 'remove' ? 'var(--theme-error-dim, rgba(255,107,107,0.1))' : 'var(--theme-accent-dim, rgba(0,201,255,0.1))'} />
+           <WaterBtn icon="🥤" label={mode === 'add' ? "+8 oz" : "-8 oz"} onClick={() => handleQuickAdd(8)} color={mode === 'remove' ? 'var(--theme-error-dim, rgba(255,107,107,0.05))' : undefined} />
+           <WaterBtn icon="🍾" label={mode === 'add' ? "+16.9 oz" : "-16.9 oz"} onClick={() => handleQuickAdd(16.9)} color={mode === 'remove' ? 'var(--theme-error-dim, rgba(255,107,107,0.1))' : 'var(--theme-accent-dim, rgba(0,201,255,0.1))'} />
            {isCustom ? (
              <div style={{ gridColumn: 'span 2', display: 'flex', background: 'var(--theme-panel-dim, rgba(0,0,0,0.3))', borderRadius: '14px', padding: '4px', border: mode === 'add' ? '1px solid var(--theme-accent, #00C9FF)' : '1px solid var(--theme-error, #FF6B6B)' }}>
                  <input 
