@@ -137,18 +137,18 @@ export default async function handler(req, res) {
 
   const prompt = `Search for nutritional data for: "${query}".
   Return a JSON array of the 5 most likely food matches.
-  For each match, provide a complete nutrient breakdown scaled to a standard serving (e.g. 1 egg, 28g chicken, 1 cup milk).
+  For each match, provide a complete nutrient breakdown scaled to its standard "BASE" serving.
 
   DIETARY PERCEPTION PROTOCOL:
-  1. ITEM COUNT: How many units are described? (e.g. "2 eggs" -> detectedCount: 2).
-  2. PER UNIT NUTRITION: Nutrition for exactly ONE (1) unit. 
-
+  1. ITEM COUNT/WEIGHT: Identify the base serving weight or count (e.g. 174 for a 174g breast).
+  2. NUTRITION: Extract nutrition for exactly that quantity.
+  
   JSON keys: name, serving, detectedCount, sUnit, cal, p, c, f, fb, sat, trans, mono, poly, chol, sugars, Sodium, Potassium, Calcium, Iron, "Vitamin C", "Vitamin A", "Vitamin D", "Magnesium", "Zinc".
 
   Rules:
   - Return ONLY raw JSON. No markdown fences.
   - Accuracy is paramount. Use P*4 + C*4 + F*9 for calories.
-  - CRITICAL: detectedCount = count of units. cal = calories for ONE of those units.`;
+  - CRITICAL: Use GRAMS (g) as sUnit if a weight is known, and put the weight in detectedCount. (e.g. "Chicken Breast" -> detectedCount: 174, sUnit: "g")`;
 
   try {
     const aiResults = await anthropicJson(prompt, apiKey);
