@@ -1,4 +1,5 @@
-import { Search, Sparkles, Check, FileText, Barcode, QrCode } from 'lucide-react';
+import React from 'react';
+import { Search, Sparkles, FileText, Barcode, QrCode } from 'lucide-react';
 
 export type SearchTab = 'search' | 'ai-search' | 'describe' | 'scan';
 

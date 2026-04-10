@@ -265,11 +265,12 @@ export const AddFoodModal: React.FC<AddFoodModalProps> = ({ meal, onClose }) => 
       } else {
         setAiStagedResults(detected.map((f: Food) => {
           const norm = normalizeFoodResult(f);
+          // PRIORITIZE NATURAL UNITS: If AI says 'piece', use 'piece'. Else use 'piece' as fallback for meal descriptions.
+          const unit = f.sUnit || f.unit || (f.serving?.toLowerCase().includes('serving') ? 'piece' : 'piece');
           return { 
             ...norm, 
-            // FINAL FIX: Ensure AI's natural units are the default state
-            stagedQty: norm.stagedQty || f.sQty?.toString() || '1', 
-            stagedUnit: norm.stagedUnit || f.sUnit || 'piece',
+            stagedQty: f.sQty?.toString() || f.qty?.toString() || '1', 
+            stagedUnit: unit,
             showNutrientIntel: false
           };
         }));
@@ -539,6 +540,32 @@ export const AddFoodModal: React.FC<AddFoodModalProps> = ({ meal, onClose }) => 
                             <NutritionFactsDisplay food={f} multiplier={computeMultiplier(f.serving || '100g', f.stagedUnit || 'piece', parseFloat(f.stagedQty || '0') || 0)} />
                           </div>
                         )}
+
+                        {/* Scaling Help Row */}
+                        {!f.showNutrientIntel && (
+                          <div style={{ display: 'flex', gap: '6px', marginBottom: '12px' }}>
+                            <button 
+                              onClick={() => {
+                                const multP = 20 / (Number(f.p) || 1);
+                                const next = [...aiStagedResults];
+                                next[i] = { ...f, stagedQty: Math.round(multP * 10) / 10 + '', stagedUnit: 'serving' };
+                                setAiStagedResults(next);
+                              }}
+                              style={{ flex: 1, padding: '6px', background: 'rgba(146, 254, 157, 0.1)', border: '1px solid rgba(146, 254, 157, 0.2)', borderRadius: '8px', color: '#92FE9D', fontSize: '9px', fontWeight: '900', cursor: 'pointer' }}>
+                              SCALE TO 20g PROTEIN
+                            </button>
+                            <button 
+                              onClick={() => {
+                                const multC = 500 / (Number(f.cal) || 1);
+                                const next = [...aiStagedResults];
+                                next[i] = { ...f, stagedQty: Math.round(multC * 10) / 10 + '', stagedUnit: 'serving' };
+                                setAiStagedResults(next);
+                              }}
+                              style={{ flex: 1, padding: '6px', background: 'rgba(255,107,107,0.1)', border: '1px solid rgba(255,107,107,0.2)', borderRadius: '8px', color: '#FF6B6B', fontSize: '9px', fontWeight: '900', cursor: 'pointer' }}>
+                              SCALE TO 500 KCAL
+                            </button>
+                          </div>
+                        )}
                         
                         <div style={{ display: 'flex', gap: '8px' }}>
                           <input 
@@ -596,19 +623,50 @@ export const AddFoodModal: React.FC<AddFoodModalProps> = ({ meal, onClose }) => 
                     ))}
                   </div>
 
-                  <button 
-                    onClick={() => {
-                      aiStagedResults.forEach(f => {
-                        const mult = computeMultiplier(f.serving || '', f.stagedUnit, parseFloat(f.stagedQty) || 1);
-                        const scaled = scaleLegacyFoodByAmount(f, mult);
-                        addToTray(scaled);
-                      });
-                      setIsAiReviewing(false);
-                      setAiStagedResults([]);
-                    }}
-                    style={{ width: '100%', padding: '16px', background: 'var(--theme-accent)', border: 'none', borderRadius: '16px', color: '#000', fontWeight: '900', fontSize: '14px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', boxShadow: '0 8px 20px rgba(0,201,255,0.2)' }}>
-                    <Check size={20} /> CONFIRM ALL ITEMS
-                  </button>
+                  <div style={{ display: 'grid', gridTemplateColumns: '1.2fr 1fr', gap: '12px' }}>
+                    <button 
+                      onClick={() => {
+                        aiStagedResults.forEach(f => {
+                          const mult = computeMultiplier(f.serving || '', f.stagedUnit || 'piece', parseFloat(f.stagedQty || '1') || 1);
+                          const scaled = scaleLegacyFoodByAmount(f, mult);
+                          addToTray(scaled);
+                        });
+                        setIsAiReviewing(false);
+                        setAiStagedResults([]);
+                      }}
+                      style={{ padding: '16px', background: 'var(--theme-accent)', border: 'none', borderRadius: '16px', color: '#000', fontWeight: '900', fontSize: '13px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', boxShadow: '0 8px 20px rgba(0,201,255,0.2)' }}>
+                      <Check size={18} /> CONFIRM ITEMS
+                    </button>
+
+                    <button 
+                      onClick={() => {
+                        const mealName = prompt("What should we name this meal?", "My AI Meal") || "My AI Meal";
+                        const totalMacros = sumFoods(aiStagedResults.map(f => {
+                           const mult = computeMultiplier(f.serving || '', f.stagedUnit || 'piece', parseFloat(f.stagedQty || '1') || 1);
+                           return scaleLegacyFoodByAmount(f, mult);
+                        }));
+                        
+                        const mealFood = {
+                          ...totalMacros,
+                          name: mealName,
+                          serving: '1 meal',
+                          sQty: 1,
+                          sUnit: 'meal',
+                          isLocal: true,
+                          type: 'recipe',
+                          id: `meal-${Date.now()}`
+                        };
+                        
+                        const existing = JSON.parse(localStorage.getItem('mm_custom_foods') || '[]');
+                        localStorage.setItem('mm_custom_foods', JSON.stringify([...existing, mealFood]));
+                        alert("Meal sent to Kitchen!");
+                        setIsAiReviewing(false);
+                        setAiStagedResults([]);
+                      }}
+                      style={{ padding: '16px', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '16px', color: '#fff', fontWeight: '800', fontSize: '11px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}>
+                      <Sparkles size={16} color="var(--theme-accent)" /> SEND MEAL TO KITCHEN
+                    </button>
+                  </div>
                 </div>
               )}
             </div>

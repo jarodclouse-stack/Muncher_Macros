@@ -28,36 +28,45 @@ export const COMMON_UNITS = [
 
 export function extractBaseGrams(servingStr: string): number | null {
   if (!servingStr) return null;
-  // Handle "100g", "1oz", "1 slice (30g)", "50 g"
-  const match = servingStr.match(/(\d+(?:\.\d+)?)\s*(g|ml|oz)/i);
+  // Handle formats like "100g", "1oz", "1 slice (30g)", "1 serving (150 ml)"
+  const clean = servingStr.toLowerCase();
+  
+  // Try to find a numeric weight/volume within parentheses or at the end
+  const match = clean.match(/(\d+(?:\.\d+)?)\s*(g|ml|oz|lb|kg|l)/i);
   if (match) {
     const val = parseFloat(match[1]);
     const unit = match[2].toLowerCase();
-    if (unit === 'g' || unit === 'ml') return val;
-    if (unit === 'oz') return val * 28.3495;
+    switch(unit) {
+      case 'g': case 'ml': return val;
+      case 'oz': return val * 28.3495;
+      case 'lb': return val * 453.592;
+      case 'kg': return val * 1000;
+      case 'l': return val * 1000;
+      default: return val;
+    }
   }
   return null;
 }
 
 export function computeMultiplier(baseServingStr: string, targetUnit: string, targetQty: number): number {
-  if (targetUnit === 'serving') return targetQty;
+  const qty = sanitizeServingAmount(targetQty, 1);
+  if (targetUnit === 'serving') return qty;
   
   const baseGrams = extractBaseGrams(baseServingStr);
-  const targetUnitDef = COMMON_UNITS.find(u => u.id === targetUnit);
+  const targetUnitDef = COMMON_UNITS.find(u => u.id === targetUnit.toLowerCase());
   
-  // If we can't determine the gram weight of the base food, but the user chose 'g',
-  // we used to just return targetQty, which assumes 1:1. 
-  // Let's improve: if they choose grams/oz/etc, and we don't have a base weight, 
-  // we assume the base was 100g (standard for AI).
-  if (!baseGrams) {
-    if (!targetUnitDef || !targetUnitDef.weightG) return targetQty;
-    return (targetQty * targetUnitDef.weightG) / 100; // Assume 100g base fallback
+  if (!targetUnitDef || !targetUnitDef.weightG) return qty;
+
+  // Case A: The base food has a known weight (e.g. "1 egg (50g)")
+  if (baseGrams && baseGrams > 0) {
+    const targetTotalGrams = qty * targetUnitDef.weightG;
+    return targetTotalGrams / baseGrams;
   }
 
-  if (!targetUnitDef || !targetUnitDef.weightG) return targetQty;
-
-  const targetTotalGrams = targetQty * targetUnitDef.weightG;
-  return targetTotalGrams / baseGrams;
+  // Case B: No base weight (e.g. "2 eggs"). 
+  // If user picks grams, assume they mean "X grams of this food's density".
+  // Fallback to 100g standard density for AI results.
+  return (qty * targetUnitDef.weightG) / 100;
 }
 
 export function scaleFoodByAmount(food: any, amount: number | string): any {
