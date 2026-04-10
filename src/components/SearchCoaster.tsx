@@ -35,7 +35,7 @@ export const SearchCoaster: React.FC<SearchCoasterProps> = ({ activeTab, onTabCh
           active={activeTab === 'scan'} 
           onClick={() => onTabChange('scan')} 
           icon={<Check size={18} />} 
-          label="Scan/Label/UI" 
+          label="Scan Label/Barcode/QR" 
         />
         <TabBtn 
           active={activeTab === 'search'} 

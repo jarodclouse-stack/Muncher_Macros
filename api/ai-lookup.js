@@ -1,91 +1,41 @@
 // api/ai-lookup.js
-function buildPrompt(query) {
-  return 'Search for foods matching: "' + query + '".\n\n' +
-    'If this is a restaurant name, return its most popular menu items.\n' +
-    'If this is a food or ingredient, return common variations and preparations.\n\n' +
-    'Return a JSON array of up to 5 items. Each item must have ONLY these keys:\n' +
-    'name, serving, sUnit, sQty, cal, p, c, f, fb, sat, trans, chol, mono, poly,\n' +
-    '"Vitamin C", "Vitamin B1", "Vitamin B2", "Vitamin B3", "Vitamin B5", "Vitamin B6",\n' +
-    '"Vitamin B7", "Vitamin B9", "Vitamin B12",\n' +
-    '"Vitamin A", "Vitamin D", "Vitamin E", "Vitamin K",\n' +
-    'Calcium, Phosphorus, Magnesium, Sodium, Potassium, Chloride,\n' +
-    'Iron, Zinc, Copper, Manganese, Selenium, Iodine, Chromium, Molybdenum, Fluoride.\n\n' +
-    'Rules:\n' +
-    '- sUnit must be one of: g oz cup tbsp tsp piece slice whole medium large small scoop serving\n' +
-    '- sQty must be a positive number\n' +
-    '- All nutrient values must be numbers (use 0 if unknown)\n' +
-    '- Units: vitamins B7/B9/B12/A/D/K in mcg, all others in mg, macros in g, cal in kcal\n' +
-    '- sat = saturated fat (g), trans = trans fat (g), chol = cholesterol (mg), mono = monounsaturated fat (g), poly = polyunsaturated fat (g)\n' +
-    '- Return ONLY the raw JSON array. No markdown. No code blocks. No explanation. Start with [ and end with ].';
-}
+// Modern AI-Native Food Search Logic
 
 async function readBody(req) {
   if (req.body && typeof req.body === 'object') return req.body;
   return new Promise((resolve) => {
     let raw = '';
-    req.on('data', function(c) { raw += c; });
-    req.on('end', function() { try { resolve(JSON.parse(raw)); } catch(e) { resolve({}); } });
-    req.on('error', function() { resolve({}); });
+    req.on('data', c => { raw += c; });
+    req.on('end', () => { try { resolve(JSON.parse(raw)); } catch { resolve({}); } });
+    req.on('error', () => resolve({}));
   });
 }
 
 function extractJSON(text) {
   if (!text) return null;
-
-  // Strip markdown code fences (handles ```json ... ``` and ``` ... ```)
-  var clean = text
-    .replace(/^```[a-z]*\s*/i, '')
-    .replace(/```\s*$/i, '')
-    .trim();
-
-  // Try direct parse first
-  try { return JSON.parse(clean); } catch(e) {}
-
-  // Find outermost array
-  var start = clean.indexOf('[');
-  var end   = clean.lastIndexOf(']');
-  if (start !== -1 && end > start) {
-    try { return JSON.parse(clean.slice(start, end + 1)); } catch(e) {}
+  let clean = text.replace(/```json\s*/gi, '').replace(/```\s*/g, '').trim();
+  try { return JSON.parse(clean); } catch {}
+  const aStart = clean.indexOf('['), aEnd = clean.lastIndexOf(']');
+  if (aStart !== -1 && aEnd > aStart) {
+    try { return JSON.parse(clean.slice(aStart, aEnd + 1)); } catch {}
   }
-
-  // Find outermost object and wrap in array
-  var oStart = clean.indexOf('{');
-  var oEnd   = clean.lastIndexOf('}');
+  const oStart = clean.indexOf('{'), oEnd = clean.lastIndexOf('}');
   if (oStart !== -1 && oEnd > oStart) {
-    try { return [JSON.parse(clean.slice(oStart, oEnd + 1))]; } catch(e) {}
+    try { return [JSON.parse(clean.slice(oStart, oEnd + 1))]; } catch {}
   }
-
   return null;
 }
 
-// Models available on this account (verified via /api/check)
-var MODELS = [
-  'claude-3-haiku-20240307',
+const MODELS = [
   'claude-3-5-sonnet-20240620',
+  'claude-3-haiku-20240307',
 ];
 
-export default async function handler(req, res) {
-  res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
-  if (req.method === 'OPTIONS') return res.status(200).end();
-  if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
-
-  var body = await readBody(req);
-  var query = typeof body.query === 'string' ? body.query.trim() : '';
-  if (!query) return res.status(400).json({ error: 'Missing query' });
-
-  var apiKey = (process.env.ANTHROPIC_API_KEY || '').trim();
-  if (!apiKey) return res.status(500).json({ error: 'ANTHROPIC_API_KEY not set on Vercel' });
-
-  var modelErrors = {};
-
-  for (var i = 0; i < MODELS.length; i++) {
-    var model = MODELS[i];
-    var anthropicRes, rawBody;
-
+async function anthropicJson(prompt, apiKey, maxTokens = 4000) {
+  let lastError = 'Initialization error';
+  for (const model of MODELS) {
     try {
-      anthropicRes = await fetch('https://api.anthropic.com/v1/messages', {
+      const resp = await fetch('https://api.anthropic.com/v1/messages', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -93,65 +43,89 @@ export default async function handler(req, res) {
           'anthropic-version': '2023-06-01'
         },
         body: JSON.stringify({
-          model: model,
-          max_tokens: 4000,
-          messages: [{ role: 'user', content: buildPrompt(query) }]
+          model,
+          max_tokens: maxTokens,
+          messages: [{ role: 'user', content: prompt }]
         })
       });
-      rawBody = await anthropicRes.text();
-    } catch (err) {
-      modelErrors[model] = 'Network error: ' + err.message;
-      console.error('[ai-lookup] Network error for', model, ':', err.message);
-      continue;
+      const raw = await resp.text();
+      if (!resp.ok) {
+        lastError = `Anthropic ${resp.status}: ${raw.slice(0, 100)}`;
+        continue;
+      }
+      const data = JSON.parse(raw);
+      const content = data?.content?.[0]?.text || '';
+      const parsed = extractJSON(content);
+      if (parsed) return parsed;
+      lastError = 'Invalid JSON in AI response';
+    } catch (e) {
+      lastError = e.message;
     }
-
-    if (anthropicRes.status === 404) {
-      modelErrors[model] = 'Model not available (404)';
-      console.error('[ai-lookup] 404 for model:', model);
-      continue;
-    }
-
-    if (anthropicRes.status === 401) {
-      return res.status(401).json({ error: 'Invalid API key.' });
-    }
-
-    if (anthropicRes.status === 429) {
-      modelErrors[model] = 'Rate limited (429)';
-      console.error('[ai-lookup] Rate limited for model:', model);
-      continue;
-    }
-
-    if (!anthropicRes.ok) {
-      var snippet = rawBody.slice(0, 300);
-      modelErrors[model] = 'HTTP ' + anthropicRes.status + ': ' + snippet;
-      console.error('[ai-lookup] HTTP', anthropicRes.status, 'for', model, snippet);
-      continue;
-    }
-
-    var data;
-    try { data = JSON.parse(rawBody); } catch(e) {
-      modelErrors[model] = 'Non-JSON Anthropic response';
-      continue;
-    }
-
-    var rawText = (data && data.content && data.content[0] && data.content[0].text) || '';
-    console.log('[ai-lookup] rawText for', model, ':', rawText.slice(0, 300));
-
-    var foods = extractJSON(rawText);
-
-    if (!foods || !foods.length) {
-      modelErrors[model] = 'Could not parse AI response: ' + rawText.slice(0, 300);
-      console.error('[ai-lookup] Parse failed for', model, '- raw:', rawText.slice(0, 300));
-      continue;
-    }
-
-    return res.status(200).json({ foods: Array.isArray(foods) ? foods : [foods], model: model });
   }
+  throw new Error(lastError);
+}
 
-  console.error('[ai-lookup] All models failed. Errors:', JSON.stringify(modelErrors));
-  return res.status(503).json({
-    error: 'All models failed',
-    details: modelErrors,
-    tried: MODELS
-  });
-};
+function normalizeResult(f) {
+  const p = Math.round((Number(f.p) || 0) * 10) / 10;
+  const c = Math.round((Number(f.c) || 0) * 10) / 10;
+  const fat = Math.round((Number(f.f) || 0) * 10) / 10;
+  const cal = Math.round(p * 4 + c * 4 + fat * 9);
+
+  return {
+    name: String(f.name || 'Unknown Item'),
+    serving: String(f.serving || '100g'),
+    sQty: Number(f.sQty) || 100,
+    sUnit: String(f.sUnit || 'g'),
+    cal, p, c, f: fat,
+    fb: Math.round((Number(f.fb) || 0) * 10) / 10,
+    sat: Math.round((Number(f.sat) || 0) * 10) / 10,
+    trans: Math.round((Number(f.trans) || 0) * 10) / 10,
+    mono: Math.round((Number(f.mono) || 0) * 10) / 10,
+    poly: Math.round((Number(f.poly) || 0) * 10) / 10,
+    chol: Math.round(Number(f.chol) || 0),
+    sugars: Math.round((Number(f.sugars) || 0) * 10) / 10,
+    Sodium: Math.round(Number(f.Sodium) || 0),
+    Potassium: Math.round(Number(f.Potassium) || 0),
+    Calcium: Math.round(Number(f.Calcium) || 0),
+    Iron: Math.round((Number(f.Iron) || 0) * 10) / 10,
+    'Vitamin C': Math.round((Number(f['Vitamin C']) || 0) * 10) / 10,
+    'Vitamin A': Math.round(Number(f['Vitamin A']) || 0),
+    'Vitamin D': Math.round((Number(f['Vitamin D']) || 0) * 10) / 10,
+    'Vitamin B12': Math.round((Number(f['Vitamin B12']) || 0) * 100) / 100,
+    Magnesium: Math.round(Number(f.Magnesium) || 0),
+    Zinc: Math.round((Number(f.Zinc) || 0) * 10) / 10,
+    _src: 'ai'
+  };
+}
+
+export default async function handler(req, res) {
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+  if (req.method === 'OPTIONS') return res.status(200).end();
+  if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
+
+  const body = await readBody(req);
+  const query = body.query || '';
+
+  const apiKey = (process.env.ANTHROPIC_API_KEY || '').trim();
+  if (!apiKey) return res.status(500).json({ error: 'Environment variable ANTHROPIC_API_KEY missing' });
+
+  const prompt = `Search for nutritional data for: "${query}".
+  Return a JSON array of the 5 most likely food matches.
+  For each match, provide a complete nutrient breakdown scaled to a standard 100g or 1 serving size.
+
+  JSON keys: name, serving, sQty, sUnit, cal, p, c, f, fb, sat, trans, mono, poly, chol, sugars, Sodium, Potassium, Calcium, Iron, "Vitamin C", "Vitamin A", "Vitamin D".
+
+  Rules:
+  - Return ONLY raw JSON. No markdown fences.
+  - Accuracy is paramount. Use P*4 + C*4 + F*9 for calories.`;
+
+  try {
+    const aiResults = await anthropicJson(prompt, apiKey);
+    const finalFoods = aiResults.map(f => normalizeResult(f));
+    return res.status(200).json({ foods: finalFoods });
+  } catch (e) {
+    console.error('AI Lookup Error:', e);
+    return res.status(500).json({ error: 'Search failed: ' + e.message });
+  }
+}
