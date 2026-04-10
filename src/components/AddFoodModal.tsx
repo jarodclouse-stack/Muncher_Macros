@@ -267,8 +267,9 @@ export const AddFoodModal: React.FC<AddFoodModalProps> = ({ meal, onClose }) => 
           const norm = normalizeFoodResult(f);
           return { 
             ...norm, 
-            stagedQty: norm.stagedQty || norm.sQty?.toString() || '1', 
-            stagedUnit: norm.stagedUnit || norm.sUnit || 'serving',
+            // PREVENT 1G OVERRIDE: Prioritize AI-provided values
+            stagedQty: norm.stagedQty || f.sQty?.toString() || '1', 
+            stagedUnit: norm.stagedUnit || f.sUnit || 'serving',
             showNutrientIntel: false
           };
         }));

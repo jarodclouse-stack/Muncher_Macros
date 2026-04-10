@@ -86,9 +86,9 @@ function normalizeResult(f) {
 
   return {
     name: String(f.name || 'Unknown Item'),
-    serving: String(f.serving || '100g'),
-    sQty: Number(f.sQty) || 100,
-    sUnit: String(f.sUnit || 'g'),
+    serving: String(f.serving || (f.sQty ? `${f.sQty}${f.sUnit}` : '1 serving')),
+    sQty: f.sQty || 1,
+    sUnit: String(f.sUnit || 'serving'),
     cal, p, c, f: fat,
     fb: Math.round((Number(f.fb) || 0) * 10) / 10,
     sat: Math.round((Number(f.sat) || 0) * 10) / 10,
@@ -118,8 +118,8 @@ function normalizeResult(f) {
     sodium: Math.round(Number(f.Sodium) || 0),
     potassium: Math.round(Number(f.Potassium) || 0),
     cholesterol: Math.round(Number(f.chol) || 0),
-    stagedQty: (Number(f.sQty) || 100).toString(),
-    stagedUnit: String(f.sUnit || 'g')
+    stagedQty: (f.sQty || 1).toString(),
+    stagedUnit: String(f.sUnit || 'serving')
   };
 }
 

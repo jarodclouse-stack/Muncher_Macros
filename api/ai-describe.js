@@ -142,8 +142,8 @@ function normalizeResult(f) {
     monounsaturatedFat: Math.round((Number(f.mono) || 0) * 10) / 10,
     polyunsaturatedFat: Math.round((Number(f.poly) || 0) * 10) / 10,
     transFat: Math.round((Number(f.trans) || 0) * 10) / 10,
-    // Staging pre-population
-    stagedQty: (Number(f.sQty) || 1).toString(),
+    // Staging pre-population - CRITICAL: Preserve natural units from AI
+    stagedQty: (f.sQty || 1).toString(),
     stagedUnit: String(f.sUnit || 'serving')
   };
 }
