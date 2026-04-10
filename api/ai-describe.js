@@ -29,7 +29,6 @@ function extractJSON(text) {
 
 const MODELS = [
   'claude-3-5-sonnet-20240620',
-  'claude-3-sonnet-20240229',
 ];
 
 import https from 'https';
@@ -157,6 +156,11 @@ export default async function handler(req, res) {
   const meal = body.meal || 'Snacks';
 
   const apiKey = (process.env.ANTHROPIC_API_KEY || '').trim();
+  
+  // Diagnostic Log: Verify key format without leaking the whole thing
+  const keyDiagnostics = apiKey ? `[Valid Format, starts with ${apiKey.slice(0, 7)}... ends with ...${apiKey.slice(-4)}]` : '[MISSING]';
+  console.log(`AI Describe Trace: Key=${keyDiagnostics} Model=${MODELS[0]}`);
+
   if (!apiKey) {
     return res.status(200).json({ 
       error: 'Anthropic API Key is missing in Vercel settings. Please add ANTHROPIC_API_KEY to your environment variables.',
