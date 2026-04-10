@@ -91,8 +91,8 @@ function normalizeResult(f) {
   return {
     name: String(f.name || 'Unknown Item'),
     serving: String(f.serving || '1 serving'),
-    sQty: Number(f.sQty) || 1,
-    sUnit: String(f.sUnit || 'serving'),
+    sQty: Number(f.sQty || f.qty || f.quantity || 1),
+    sUnit: String(f.sUnit || f.unit || 'piece'),
     cal,
     p,
     c,
@@ -171,14 +171,26 @@ export default async function handler(req, res) {
     });
   }
 
-  const prompt = `You are a world-class nutrition scientist. Breakdown the following meal description into individual INGREDIENTS or components with precise nutritional data.
+  const prompt = `You are a world-class nutrition scientist.
   
   Meal: "${description}"
 
-  DIETARY BREAKDOWN RULES:
-  - If the meal is a composite dish (e.g. burrito, sandwich, burger, bowl, taco, salad), you MUST split it into its component ingredients.
-  - Return components in NATURAL units (e.g. "1 medium egg", "2 slices of bread", "1 tablespoon of oil") rather than defaulting to generic mass like "1 gram".
-  - For every item, if valid weight/volume info exists, provide it in the "serving" string (e.g. "1 medium egg (50g)").
+  DIETARY PERCEPTION RULES (CRITICAL):
+  - You MUST return nutritional data **PER SINGLE UNIT** of the sUnit specified (e.g. per 1 egg, per 1 slice, per 1 tbsp).
+  - sQty MUST match the exact count described (e.g. "2 eggs" -> sQty: 2).
+  - DO NOT return the total macros for the whole meal in a single entry. 
+  - If a user says "2 eggs", return: name="Egg", sQty=2, cal=70 (not 140).
+  
+  IDENTIFICATION PROCESS:
+  1. Identify every unique component.
+  2. Determine the COUNT (sQty) for each.
+  3. Determine the nutrition for ONE (1) of that component.
+  4. Return the data in the specified JSON format.
+
+  FORMAT RULES:
+  - If the meal is a composite dish (Burrito, Sandwich, etc), split it into component ingredients.
+  - Return components in NATURAL units (e.g. "1 medium egg", "1 slice of bread") rather than defaulting to "1 gram".
+  - For every item, provide weight/volume info in the "serving" string (e.g. "1 medium egg (50g)").
   - Provide a complete nutrient profile for EVERY component.
 
   For each ingredient, identify:
@@ -203,7 +215,7 @@ export default async function handler(req, res) {
 
   Rules:
   - Return ONLY raw JSON. No markdown fences.
-  - Scale all values to the exact amount described.
+  - CRITICAL: sQty = count of units. cal = calories for ONE of those units.
   - Calorie Math: P*4 + C*4 + F*9.`;
 
   try {

@@ -87,8 +87,8 @@ function normalizeResult(f) {
   return {
     name: String(f.name || 'Unknown Item'),
     serving: String(f.serving || (f.sQty ? `${f.sQty}${f.sUnit}` : '1 serving')),
-    sQty: f.sQty || 1,
-    sUnit: String(f.sUnit || 'serving'),
+    sQty: Number(f.sQty || f.qty || f.quantity || 1),
+    sUnit: String(f.sUnit || f.unit || 'piece'),
     cal, p, c, f: fat,
     fb: Math.round((Number(f.fb) || 0) * 10) / 10,
     sat: Math.round((Number(f.sat) || 0) * 10) / 10,
