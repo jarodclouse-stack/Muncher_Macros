@@ -176,22 +176,29 @@ export default async function handler(req, res) {
   Meal: "${description}"
 
   DIETARY PERCEPTION RULES (CRITICAL):
-  - You MUST return nutritional data **PER SINGLE UNIT** of the sUnit specified (e.g. per 1 egg, per 1 slice, per 1 tbsp).
-  - sQty MUST match the exact count described (e.g. "2 eggs" -> sQty: 2).
-  - DO NOT return the total macros for the whole meal in a single entry. 
-  - If a user says "2 eggs", return: name="Egg", sQty=2, cal=70 (not 140).
+  - Return nutritional data **PER SINGLE UNIT** of the sUnit specified (e.g. per 1 egg, per 1 slice).
+  - sQty MUST be the exact count (e.g. "2 eggs" -> sQty: 2).
+  - DO NOT return total macros for the whole meal in one entry if a count is described.
   
+  EXAMPLES OF CORRECT BEHAVIOR:
+  - Input: "2 large eggs" 
+    Output: [{"name": "Large Egg", "sQty": 2, "sUnit": "piece", "cal": 72, "p": 6, ...}]
+  - Input: "3 slices of sourdough bread"
+    Output: [{"name": "Sourdough Bread", "sQty": 3, "sUnit": "slice", "cal": 110, "p": 4, ...}]
+  - Input: "1/2 cup of almonds"
+    Output: [{"name": "Almonds", "sQty": 0.5, "sUnit": "cup", "cal": 820, ...}]
+
   IDENTIFICATION PROCESS:
-  1. Identify every unique component.
-  2. Determine the COUNT (sQty) for each.
-  3. Determine the nutrition for ONE (1) of that component.
-  4. Return the data in the specified JSON format.
+  1. Identify components.
+  2. Determine the COUNT (sQty).
+  3. Determine nutrition for ONE (1) unit.
+  4. Return JSON.
 
   FORMAT RULES:
-  - If the meal is a composite dish (Burrito, Sandwich, etc), split it into component ingredients.
-  - Return components in NATURAL units (e.g. "1 medium egg", "1 slice of bread") rather than defaulting to "1 gram".
-  - For every item, provide weight/volume info in the "serving" string (e.g. "1 medium egg (50g)").
-  - Provide a complete nutrient profile for EVERY component.
+  - Composite dishes (Burrito, Sandwich, etc) MUST be split into ingredients.
+  - Use NATURAL units (piece, slice, tbsp) where possible.
+  - Provide weight info in "serving" string (e.g. "1 medium egg (50g)").
+  - Provide complete nutrient profiles for every component.
 
   For each ingredient, identify:
   1. Name and quantity

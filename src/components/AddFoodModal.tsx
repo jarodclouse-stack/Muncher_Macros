@@ -605,19 +605,25 @@ export const AddFoodModal: React.FC<AddFoodModalProps> = ({ meal, onClose }) => 
                     ))}
                   </div>
 
-                  <div style={{ display: 'grid', gridTemplateColumns: '1.1fr 1fr', gap: '10px', marginTop: '10px' }}>
                     <button 
                       onClick={() => {
                         aiStagedResults.forEach(f => {
-                          const mult = computeMultiplier(f.serving || '', f.stagedUnit || 'piece', parseFloat(f.stagedQty || '1') || 1);
-                          const scaled = scaleLegacyFoodByAmount(f, mult);
-                          addToTray(scaled);
+                           const mult = computeMultiplier(f.serving || '', f.stagedUnit || 'piece', parseFloat(f.stagedQty || '1') || 1);
+                           const scaled = scaleLegacyFoodByAmount(f, mult);
+                           saveCustomFood({
+                             ...scaled,
+                             id: crypto.randomUUID(),
+                             isLocal: true,
+                             sQty: parseFloat(f.stagedQty || '1'),
+                             sUnit: f.stagedUnit || 'piece'
+                           });
                         });
+                        alert(`${aiStagedResults.length} items added to your Kitchen individually!`);
                         setIsAiReviewing(false);
                         setAiStagedResults([]);
                       }}
-                      style={{ padding: '18px 10px', background: 'var(--theme-accent)', border: 'none', borderRadius: '18px', color: '#000', fontWeight: '900', fontSize: '12px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', boxShadow: '0 8px 20px rgba(0,201,255,0.2)' }}>
-                      <Check size={18} /> CONFIRM ITEMS
+                      style={{ padding: '18px 5px', background: 'rgba(146, 254, 157, 0.1)', border: '1px solid var(--theme-success)', borderRadius: '18px', color: 'var(--theme-success)', fontWeight: '900', fontSize: '9px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '4px' }}>
+                      <Plus size={14} /> BRING TO KITCHEN
                     </button>
 
                     <button 
@@ -639,14 +645,27 @@ export const AddFoodModal: React.FC<AddFoodModalProps> = ({ meal, onClose }) => 
                           id: `meal-${Date.now()}`
                         };
                         
-                        const existing = JSON.parse(localStorage.getItem('mm_custom_foods') || '[]');
-                        localStorage.setItem('mm_custom_foods', JSON.stringify([...existing, mealData]));
+                        saveCustomFood(mealData);
                         alert("Entire meal saved to Kitchen!");
                         setIsAiReviewing(false);
                         setAiStagedResults([]);
                       }}
-                      style={{ padding: '18px 10px', background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.15)', borderRadius: '18px', color: '#fff', fontWeight: '900', fontSize: '10px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '4px' }}>
-                      <Sparkles size={14} color="var(--theme-accent)" /> SAVE AS KITCHEN MEAL
+                      style={{ padding: '18px 5px', background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.15)', borderRadius: '18px', color: '#fff', fontWeight: '900', fontSize: '9px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '4px' }}>
+                      <Sparkles size={14} color="var(--theme-accent)" /> SAVE AS MEAL
+                    </button>
+                    
+                    <button 
+                      onClick={() => {
+                        aiStagedResults.forEach(f => {
+                          const mult = computeMultiplier(f.serving || '', f.stagedUnit || 'piece', parseFloat(f.stagedQty || '1') || 1);
+                          const scaled = scaleLegacyFoodByAmount(f, mult);
+                          addToTray(scaled);
+                        });
+                        setIsAiReviewing(false);
+                        setAiStagedResults([]);
+                      }}
+                      style={{ gridColumn: 'span 2', padding: '18px 10px', background: 'var(--theme-accent)', border: 'none', borderRadius: '18px', color: '#000', fontWeight: '900', fontSize: '12px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', boxShadow: '0 8px 20px rgba(0,201,255,0.2)' }}>
+                      <Check size={18} /> CONFIRM ITEMS TO DIARY
                     </button>
                   </div>
                 </div>
