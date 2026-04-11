@@ -691,14 +691,17 @@ export const AddFoodModal: React.FC<AddFoodModalProps> = ({ meal, onClose }) => 
               <BarcodeScanner 
                 onScanSuccess={(result) => {
                   if (typeof result === 'object' && result !== null) {
-                    // It's a nutrition label direct result
+                    // It's a nutrition label OR a successful barcode lookup result
                     setAiStagedResults([{ ...result, stagedQty: '1', stagedUnit: 'serving', showNutrientIntel: false }]);
                     setIsAiReviewing(true);
                     setActiveTab('describe');
                   } else {
-                    // It's a barcode or QR code string
-                    setQuery(String(result));
-                    handleStandardSearch({ preventDefault: () => {} } as React.FormEvent);
+                    // It's a raw barcode or QR code string
+                    const displayQuery = typeof result === 'string' ? result : (result?.name || '');
+                    setQuery(String(displayQuery));
+                    if (displayQuery) {
+                      handleStandardSearch({ preventDefault: () => {} } as React.FormEvent);
+                    }
                     setActiveTab('search');
                   }
                 }}
