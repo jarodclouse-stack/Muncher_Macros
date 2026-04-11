@@ -14,6 +14,15 @@ export const BadgesView: React.FC = () => {
   const currentStreak = rewards.streak;
   const currentGems = rewards.totalGems;
 
+  const purchasedThemes = localCache.settings?.purchasedThemes || [
+    'obsidian', 'cybermancer', 'gold-reserve', 'glacier-peak', 
+    'forest-phantom', 'midnight-crimson', 'sunset-horizon', 
+    'quantum-violet', 'matcha-zen', 'sandstone',
+    'olympian-gold', 'aegean-mist', 'hades-ember', 'athenas-wisdom',
+    'dionysus-vineyard', 'poseidons-depths', 'artemis-moonlight',
+    'hermes-swiftness', 'spartan-grit', 'oracles-vision',
+    'solar-flare', 'deep-sea', 'sakura-spring', 'neon-wasteland',
+    'emerald-city', 'carbon-fiber', 'sahara-gold', 'midnight-galaxy',
     'nordic-frost', 'ember-forge'
   ];
 
