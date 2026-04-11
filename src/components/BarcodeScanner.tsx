@@ -221,46 +221,52 @@ export const BarcodeScanner: React.FC<BarcodeScannerProps> = ({
             </div>
             
             <p style={{ fontSize: '12px', color: 'rgba(255,255,255,0.6)', margin: 0, lineHeight: '1.4' }}>
-              {error?.includes('404') 
-                ? "The AI lookup service is currently unavailable in this environment. You can still try searching for the food manually."
-                : error || "We couldn't read the code. Please ensure it's well-lit and not blurry."}
+              {scanType === 'nutrition' 
+                ? (error?.includes('404') 
+                   ? "The AI Scan Service is currently unavailable in this environment. Please try again after the next deployment." 
+                   : "AI analysis failed. Please ensure the label is flat, well-lit, and occupies the whole frame.")
+                : (error?.includes('404') 
+                   ? "The AI lookup service is currently offline. You can still try searching for the food manually below."
+                   : error || "We couldn't read the code. Please ensure it's well-lit and not blurry.")}
             </p>
 
-            <form onSubmit={handleManualSubmit} style={{ display: 'flex', gap: '8px', marginTop: '4px' }}>
-              <div style={{ flex: 1, position: 'relative' }}>
-                <input 
-                  type="text" placeholder="Enter barcode manually..."
-                  value={manualCode}
-                  onChange={e => setManualCode(e.target.value.replace(/\D/g, ''))}
-                  style={{ width: '100%', padding: '14px', background: 'rgba(0,0,0,0.4)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '16px', color: '#fff', fontSize: '14px', outline: 'none' }}
-                />
-                <Barcode size={16} style={{ position: 'absolute', right: '14px', top: '50%', transform: 'translateY(-50%)', opacity: 0.3 }} />
-              </div>
-              <button 
-                type="submit" 
-                disabled={manualCode.length < 5}
-                style={{ 
-                  padding: '12px 20px', background: manualCode.length >= 5 ? 'var(--theme-accent)' : 'rgba(255,255,255,0.05)', 
-                  borderRadius: '16px', border: 'none', color: manualCode.length >= 5 ? '#000' : 'rgba(255,255,255,0.2)',
-                  transition: 'all 0.2s', cursor: manualCode.length >= 5 ? 'pointer' : 'not-allowed'
-                }}
-              >
-                <ArrowRight size={22} strokeWidth={3} />
-              </button>
-            </form>
+            {scanType !== 'nutrition' && (
+              <form onSubmit={handleManualSubmit} style={{ display: 'flex', gap: '8px', marginTop: '4px' }}>
+                <div style={{ flex: 1, position: 'relative' }}>
+                  <input 
+                    type="text" placeholder="Enter barcode manually..."
+                    value={manualCode}
+                    onChange={e => setManualCode(e.target.value.replace(/\D/g, ''))}
+                    style={{ width: '100%', padding: '14px', background: 'rgba(0,0,0,0.4)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '16px', color: '#fff', fontSize: '14px', outline: 'none' }}
+                  />
+                  <Barcode size={16} style={{ position: 'absolute', right: '14px', top: '50%', transform: 'translateY(-50%)', opacity: 0.3 }} />
+                </div>
+                <button 
+                  type="submit" 
+                  disabled={manualCode.length < 5}
+                  style={{ 
+                    padding: '12px 20px', background: manualCode.length >= 5 ? 'var(--theme-accent)' : 'rgba(255,255,255,0.05)', 
+                    borderRadius: '16px', border: 'none', color: manualCode.length >= 5 ? '#000' : 'rgba(255,255,255,0.2)',
+                    transition: 'all 0.2s', cursor: manualCode.length >= 5 ? 'pointer' : 'not-allowed'
+                  }}
+                >
+                  <ArrowRight size={22} strokeWidth={3} />
+                </button>
+              </form>
+            )}
 
             <div style={{ display: 'flex', gap: '12px', marginTop: '8px' }}>
               <button 
                 onClick={() => { setScanType(null); setStatus('idle'); setError(null); }} 
-                style={{ flex: 1, padding: '12px', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '14px', color: '#fff', fontWeight: '800', fontSize: '11px', cursor: 'pointer' }}
+                style={{ flex: 1, padding: '12px', background: 'var(--theme-accent)', border: 'none', borderRadius: '14px', color: '#000', fontWeight: '900', fontSize: '11px', cursor: 'pointer' }}
               >
-                PHOTO AGAIN
+                {scanType === 'nutrition' ? 'TRY AGAIN' : 'PHOTO AGAIN'}
               </button>
               <button 
                 onClick={() => { setScanType(null); setStatus('idle'); setError(null); setIsScannerActive(false); }} 
-                style={{ flex: 1, padding: '12px', background: 'none', border: '1px solid transparent', borderRadius: '14px', color: 'var(--theme-accent)', fontWeight: '800', fontSize: '11px', cursor: 'pointer' }}
+                style={{ flex: 1, padding: '12px', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '14px', color: '#fff', fontWeight: '800', fontSize: '11px', cursor: 'pointer' }}
               >
-                EXIT SCANNER
+                {scanType === 'nutrition' ? 'BACK TO HOME' : 'EXIT SCANNER'}
               </button>
             </div>
           </div>

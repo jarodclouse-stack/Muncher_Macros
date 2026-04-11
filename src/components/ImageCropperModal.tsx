@@ -131,17 +131,6 @@ export const ImageCropperModal: React.FC<ImageCropperModalProps> = ({ image, onC
             SQUARE (LABEL/QR)
           </button>
           <button 
-            onClick={() => setAspect(3)}
-            style={{ 
-              flex: 1, padding: '10px', borderRadius: '12px', fontSize: '11px', fontWeight: '800', cursor: 'pointer',
-              background: aspect === 3 ? 'var(--theme-accent)' : 'rgba(255,255,255,0.05)',
-              border: aspect === 3 ? 'none' : '1px solid rgba(255,255,255,0.1)',
-              color: aspect === 3 ? '#000' : '#fff',
-              transition: 'all 0.2s'
-            }}>
-            WIDE (BARCODE)
-          </button>
-          <button 
             onClick={() => setAspect(undefined)}
             style={{ 
               flex: 1, padding: '10px', borderRadius: '12px', fontSize: '11px', fontWeight: '800', cursor: 'pointer',
