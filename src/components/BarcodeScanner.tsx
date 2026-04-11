@@ -313,13 +313,13 @@ export const BarcodeScanner: React.FC<BarcodeScannerProps> = ({
       {/* Version Verification Label */}
       <div style={{
         position: 'absolute', bottom: '0', left: '0', right: '0',
-        background: '#FF8800', color: '#000', fontWeight: '900',
+        background: '#00FF44', color: '#000', fontWeight: '900',
         fontSize: '12px', textAlign: 'center', padding: '12px',
         letterSpacing: '1px', textTransform: 'uppercase',
-        boxShadow: '0 -4px 20px rgba(255,136,0,0.3)',
+        boxShadow: '0 -4px 20px rgba(0,255,68,0.4)',
         zIndex: 1000
       }}>
-        🔥 v5.0-FINAL-INTEL 🔥
+        ✅ v6.0-ULTIMATE-ACTIVE ✅
       </div>
     </div>
   );
