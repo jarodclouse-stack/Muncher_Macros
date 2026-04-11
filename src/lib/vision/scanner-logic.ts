@@ -88,7 +88,7 @@ export const scanNutritionLabel = async (imageBlob: Blob): Promise<ScanResult> =
     reader.onload = async () => {
       try {
         const base64Str = (reader.result as string).split(',')[1];
-        const res = await fetch('/api/ai-label', {
+        const res = await fetch('/api/vision?type=label', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ base64: base64Str, mediaType: 'image/jpeg' })
@@ -124,7 +124,7 @@ export const extractBarcodeDigits = async (imageBlob: Blob): Promise<ScanResult>
     reader.onload = async () => {
       try {
         const base64Str = (reader.result as string).split(',')[1];
-        const res = await fetch('/api/ai-barcode', {
+        const res = await fetch('/api/vision?type=barcode', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ base64: base64Str, mediaType: 'image/jpeg' })
