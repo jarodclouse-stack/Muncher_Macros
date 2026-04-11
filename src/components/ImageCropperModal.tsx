@@ -4,12 +4,11 @@ import { X, Check, ZoomIn, Crop } from 'lucide-react';
 
 interface ImageCropperModalProps {
   image: string;
-  originalBlob: Blob;
   onCropComplete: (croppedImage: Blob) => void;
   onCancel: () => void;
 }
 
-export const ImageCropperModal: React.FC<ImageCropperModalProps> = ({ image, originalBlob, onCropComplete, onCancel }) => {
+export const ImageCropperModal: React.FC<ImageCropperModalProps> = ({ image, onCropComplete, onCancel }) => {
   const [crop, setCrop] = useState({ x: 0, y: 0 });
   const [zoom, setZoom] = useState(1);
   const [croppedAreaPixels, setCroppedAreaPixels] = useState<Area | null>(null);
@@ -155,17 +154,6 @@ export const ImageCropperModal: React.FC<ImageCropperModalProps> = ({ image, ori
             FREEFORM (ANY)
           </button>
           
-          <button 
-            onClick={() => onCropComplete(originalBlob)}
-            style={{ 
-              flex: 1.2, padding: '10px', borderRadius: '12px', fontSize: '10px', fontWeight: '900', cursor: 'pointer',
-              background: 'rgba(255,255,255,0.1)', border: '1px solid var(--theme-accent)', color: 'var(--theme-accent)',
-              display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '4px',
-              transition: 'all 0.2s'
-            }}>
-            DIRECT SCAN
-          </button>
-
           <button 
             onClick={onConfirm}
             style={{ 
