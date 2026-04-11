@@ -1,5 +1,34 @@
-// api/ai-barcode.js
-// RESTORED: Dedicated Barcode OCR Logic (v7.1 Hardened)
+import https from 'https';
+
+async function anthropicRequest(prompt, apiKey, model = 'claude-3-5-sonnet-20240620') {
+  return new Promise((resolve, reject) => {
+    const apiReq = https.request('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-key': apiKey,
+        'anthropic-version': '2023-06-01'
+      }
+    }, (res) => {
+      let str = '';
+      res.on('data', chunk => str += chunk);
+      res.on('end', () => {
+        try {
+          const body = JSON.parse(str);
+          if (res.statusCode >= 200 && res.statusCode < 300) resolve(body);
+          else reject(new Error(`Anthropic ${res.statusCode}: ${JSON.stringify(body)}`));
+        } catch (e) { reject(new Error('Invalid JSON from AI')); }
+      });
+    });
+    apiReq.on('error', reject);
+    apiReq.write(JSON.stringify({
+      model,
+      max_tokens: 1024,
+      messages: [{ role: 'user', content: prompt }]
+    }));
+    apiReq.end();
+  });
+}
 
 const BARCODE_PROMPT = `Analyze this image and find the product barcode (typically a series of black and white lines with numbers below).
 Return ONLY the raw digit sequence (UPC/EAN). No spaces or dashes.
@@ -34,42 +63,17 @@ export default async function handler(req, res) {
   if (!base64) return res.status(400).json({ error: 'Missing base64 image' });
 
   const apiKey = (process.env.ANTHROPIC_API_KEY || '').trim();
-  if (!apiKey) {
-    return res.status(500).json({ error: 'ANTHROPIC_API_KEY not configured in Vercel' });
-  }
+  if (!apiKey) return res.status(500).json({ error: 'ANTHROPIC_API_KEY not configured' });
 
   const mtype = mediaType || 'image/jpeg';
 
   try {
-    const anthropicRes = await fetch('https://api.anthropic.com/v1/messages', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'x-api-key': apiKey,
-        'anthropic-version': '2023-06-01'
-      },
-      body: JSON.stringify({
-        model: 'claude-3-5-sonnet-20240620',
-        max_tokens: 1024,
-        messages: [{
-          role: 'user',
-          content: [
-            { type: 'image', source: { type: 'base64', media_type: mtype, data: base64 } },
-            { type: 'text', text: BARCODE_PROMPT }
-          ]
-        }]
-      })
-    });
+    const promptWithImage = [
+      { type: 'image', source: { type: 'base64', media_type: mtype, data: base64 } },
+      { type: 'text', text: BARCODE_PROMPT }
+    ];
 
-    if (!anthropicRes.ok) {
-      const detail = await anthropicRes.text();
-      return res.status(anthropicRes.status).json({ 
-        error: `AI Service Error (${anthropicRes.status})`, 
-        detail: detail.slice(0, 200) 
-      });
-    }
-
-    const data = await anthropicRes.json();
+    const data = await anthropicRequest(promptWithImage, apiKey);
     let rawText = (data?.content?.[0]?.text || '').trim();
     
     const digits = rawText.replace(/[^\d]/g, '');
@@ -80,6 +84,6 @@ export default async function handler(req, res) {
     return res.status(200).json({ code: digits });
 
   } catch (err) {
-    return res.status(500).json({ error: 'Internal Server Error: ' + err.message });
+    return res.status(500).json({ error: err.message });
   }
 }

@@ -1,7 +1,36 @@
-// api/ai-label.js
-// RESTORED: Multi-Endpoint Logic (v7.0 Hardened)
-// Uses GPT-recommended extraction prompt + Antigravity Stability Layer.
+import https from 'https';
 
+async function anthropicRequest(prompt, apiKey, model = 'claude-3-5-sonnet-20240620') {
+  return new Promise((resolve, reject) => {
+    const apiReq = https.request('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-key': apiKey,
+        'anthropic-version': '2023-06-01'
+      }
+    }, (res) => {
+      let str = '';
+      res.on('data', chunk => str += chunk);
+      res.on('end', () => {
+        try {
+          const body = JSON.parse(str);
+          if (res.statusCode >= 200 && res.statusCode < 300) resolve(body);
+          else reject(new Error(`Anthropic ${res.statusCode}: ${JSON.stringify(body)}`));
+        } catch (e) { reject(new Error('Invalid JSON from AI')); }
+      });
+    });
+    apiReq.on('error', reject);
+    apiReq.write(JSON.stringify({
+      model,
+      max_tokens: 2048,
+      messages: [{ role: 'user', content: prompt }]
+    }));
+    apiReq.end();
+  });
+}
+
+// Prompt kept as per user's GPT-provided setup
 const LABEL_PROMPT = `Extract ALL nutrition data from this nutrition facts label image. 
 Return ONLY a valid JSON object. 
 Requirements:
@@ -40,62 +69,31 @@ export default async function handler(req, res) {
   if (!base64) return res.status(400).json({ error: 'Missing base64 image' });
 
   const apiKey = (process.env.ANTHROPIC_API_KEY || '').trim();
-  if (!apiKey) {
-    return res.status(500).json({ error: 'ANTHROPIC_API_KEY not configured in Vercel' });
-  }
+  if (!apiKey) return res.status(500).json({ error: 'ANTHROPIC_API_KEY not configured' });
 
   const mtype = mediaType || 'image/jpeg';
 
   try {
-    const anthropicRes = await fetch('https://api.anthropic.com/v1/messages', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'x-api-key': apiKey,
-        'anthropic-version': '2023-06-01'
-      },
-      body: JSON.stringify({
-        model: 'claude-3-5-sonnet-20240620',
-        max_tokens: 2048,
-        messages: [{
-          role: 'user',
-          content: [
-            { type: 'image', source: { type: 'base64', media_type: mtype, data: base64 } },
-            { type: 'text', text: LABEL_PROMPT }
-          ]
-        }]
-      })
-    });
+    // Correctly wrapping the image data for Anthropic's multi-modal message format
+    const promptWithImage = [
+      { type: 'image', source: { type: 'base64', media_type: mtype, data: base64 } },
+      { type: 'text', text: LABEL_PROMPT }
+    ];
 
-    if (!anthropicRes.ok) {
-      const detail = await anthropicRes.text();
-      return res.status(anthropicRes.status).json({ 
-        error: `AI Service Error (${anthropicRes.status})`, 
-        detail: detail.slice(0, 200) 
-      });
-    }
-
-    const data = await anthropicRes.json();
+    const data = await anthropicRequest(promptWithImage, apiKey);
     let rawText = (data?.content?.[0]?.text || '').trim();
 
-    // Cleaning logic
     if (rawText.includes('```')) {
       rawText = rawText.replace(/```json/g, '').replace(/```/g, '').trim();
     }
 
     let food;
-    try {
-      food = JSON.parse(rawText);
-    } catch (e) {
-      return res.status(502).json({ 
-        error: 'Invalid JSON from AI', 
-        raw: rawText.slice(0, 100) 
-      });
-    }
+    try { food = JSON.parse(rawText); } 
+    catch (e) { return res.status(502).json({ error: 'Invalid JSON from AI', raw: rawText.slice(0, 100) }); }
 
     return res.status(200).json({ food });
 
   } catch (err) {
-    return res.status(500).json({ error: 'Internal Server Error: ' + err.message });
+    return res.status(500).json({ error: err.message });
   }
 }
