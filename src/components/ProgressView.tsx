@@ -24,25 +24,46 @@ export const ProgressView: React.FC = () => {
   const [goalType, setGoalType] = useState(goals.goalType || 'maintain');
   const [goalRate, setGoalRate] = useState(goals.rate?.toString() || '0.5');
   
-  // Auto-convert rate when units change
+  // Auto-convert all body stats when units change
   React.useEffect(() => {
     const unitWeight = localCache.settings?.units?.weight || 'lb';
-    const currentVal = parseFloat(goalRate);
-    if (isNaN(currentVal)) return;
-    
-    // We detect if the current value is 'stale' compared to the unit
-    // If we just toggled to kg and it's still .5, we convert it to .23
-    // This is a one-time convenience conversion for the user
-    const lastUnit = (window as any).__lastUnit;
-    if (lastUnit && lastUnit !== unitWeight) {
-        if (unitWeight === 'kg') {
-           setGoalRate((currentVal * 0.453592).toFixed(2));
-        } else {
-           setGoalRate((currentVal / 0.453592).toFixed(1));
-        }
+    const unitHeight = localCache.settings?.units?.height || 'in';
+    const lastUnitWeight = (window as any).__lastUnitWeight;
+    const lastUnitHeight = (window as any).__lastUnitHeight;
+
+    if (lastUnitWeight && lastUnitWeight !== unitWeight) {
+        // Convert weight-based fields
+        const conv = unitWeight === 'kg' ? 0.453592 : (1 / 0.453592);
+        setWeightLb(prev => {
+            const v = parseFloat(prev);
+            return isNaN(v) ? prev : (v * conv).toFixed(1);
+        });
+        setTargetWeight(prev => {
+            const v = parseFloat(prev);
+            return isNaN(v) ? prev : (v * conv).toFixed(1);
+        });
+        setGoalRate(prev => {
+            const v = parseFloat(prev);
+            return isNaN(v) ? prev : (v * conv).toFixed(2);
+        });
+        setDailyWeight(prev => {
+            const v = parseFloat(prev);
+            return isNaN(v) ? prev : (v * conv).toFixed(1);
+        });
     }
-    (window as any).__lastUnit = unitWeight;
-  }, [localCache.settings?.units?.weight]);
+    
+    if (lastUnitHeight && lastUnitHeight !== unitHeight) {
+        // Convert height
+        const conv = unitHeight === 'cm' ? 2.54 : (1 / 2.54);
+        setHeightIn(prev => {
+            const v = parseFloat(prev);
+            return isNaN(v) ? prev : (v * conv).toFixed(1);
+        });
+    }
+
+    (window as any).__lastUnitWeight = unitWeight;
+    (window as any).__lastUnitHeight = unitHeight;
+  }, [localCache.settings?.units?.weight, localCache.settings?.units?.height]);
 
   const [targetWeight, setTargetWeight] = useState(goals.targetWeight?.toString() || '165');
 
@@ -216,10 +237,11 @@ export const ProgressView: React.FC = () => {
               {goalType !== 'maintain' && (
                 <div>
                   <label className="lbl">Rate ({unitWeight} per week)</label>
-                  <div style={{ display: 'flex', gap: 'var(--space-xs)' }}>
-                    <input type="number" step="0.25" min="0" max="1.25" className="inp" value={goalRate} onChange={e => {
+                  <div style={{ display: 'flex', gap: 'var(--space-xs)', alignItems: 'center' }}>
+                    <input type="number" step={isMetric ? 0.05 : 0.25} min="0" max={isMetric ? 1 : 2} className="inp" value={goalRate} onChange={e => {
                       setGoalRate(cleanNumInput(e.target.value));
                     }} />
+                    <span style={{ fontSize: '11px', color: 'var(--theme-text-dim)', fontWeight: '700' }}>{unitWeight}/wk</span>
                   </div>
                 </div>
               )}

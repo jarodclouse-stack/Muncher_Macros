@@ -658,7 +658,7 @@ body.theme-ember-forge {
   .nav-icon{font-size:20px;line-height:1}
 
   /* PAGES */
-  .page{display:none;padding:78px 14px 100px;flex-direction:column;gap:14px;flex:1;background:var(--bg,#001114)}
+  .page{display:none;padding:78px 14px 100px;flex-direction:column;gap:14px;flex:1;background:transparent}
   .page:not(.active) .wave-bg{display:none}
   .page.active{display:flex}
 
@@ -1037,7 +1037,7 @@ body.theme-ember-forge {
   /* Water bar */
   #water-bar-fill { background: linear-gradient(90deg,#278389,#89dce3) !important; }
   /* Spm (serving panel macro) labels */
-  .spm { background: var(--bg, #001114) !important; border: 1px solid rgba(36,78,85,0.5) !important; }
+  .spm { background: rgba(255,255,255,0.04) !important; border: 1px solid rgba(255,255,255,0.1) !important; backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); }
   .spm-lbl { color: #537c83 !important; }
   /* Food row delete button */
   .del-btn { color: #537c83; }
@@ -1073,8 +1073,8 @@ body.theme-ember-forge {
 
   /* --- Hybrid Stitch restoration overrides --- */
   @keyframes mmFadeIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
-  body{background:var(--bg)!important;overflow-x:hidden}
-  .app{max-width:448px!important;position:relative;background:var(--bg)!important;border-left:1px solid rgba(255,255,255,0.05);border-right:1px solid rgba(255,255,255,0.05);box-shadow:none!important}
+  body{background:var(--theme-bg)!important;overflow-x:hidden}
+  .app{max-width:448px!important;position:relative;background:transparent!important;border-left:1px solid rgba(255,255,255,0.05);border-right:1px solid rgba(255,255,255,0.05);box-shadow:none!important}
   .topbar{height:64px!important;padding:0 18px!important;background:rgba(10,30,33,0.88)!important;border-bottom:1px solid rgba(255,255,255,0.06)!important;backdrop-filter:blur(20px)!important;-webkit-backdrop-filter:blur(20px)!important}
   .topbar-brand{display:flex;align-items:center;gap:12px}
   .topbar-logo{width:34px;height:34px;border-radius:12px;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#1d3172,#1b336e);box-shadow:0 8px 24px rgba(29,49,114,0.35);color:#fff;flex-shrink:0}
@@ -1090,8 +1090,8 @@ body.theme-ember-forge {
   .nav button.active{color:#89dce3!important;transform:translateY(-4px)!important}
   .nav button.active::after{bottom:0px!important;width:5px!important;height:5px!important;box-shadow:0 0 12px #89dce3!important}
   .nav-icon{font-size:22px!important}
-  .page{padding:78px 14px 98px!important;animation:mmFadeIn .28s ease-out}
-  .card,.glass-card{background:rgba(10,30,33,0.85)!important;border:1px solid rgba(62,73,73,0.18)!important;border-radius:24px!important;box-shadow:0 8px 32px rgba(0,0,0,0.28)!important;backdrop-filter:blur(18px)!important;-webkit-backdrop-filter:blur(18px)!important}
+  .page{padding:78px 14px 98px!important;animation:mmFadeIn .28s ease-out;background:transparent!important}
+  .card,.glass-card{background:rgba(10,30,33,0.72)!important;border:1px solid rgba(255,255,255,0.12)!important;border-radius:24px!important;box-shadow:0 8px 32px rgba(0,0,0,0.35)!important;backdrop-filter:blur(22px)!important;-webkit-backdrop-filter:blur(22px)!important}
   .meal-hdr,.result-wrap,.sp,.wp-card,.trend-card{border-radius:18px!important}
   .date-nav,.qbtn,.btn-s,.btn-p,.add-btn,.meal-add-btn{border-radius:14px!important}
   .search-input,.qinp,.unit-sel,.meal-sel{border-radius:14px!important;background:#0b2125!important}
@@ -1125,9 +1125,9 @@ body::before{
     radial-gradient(circle at 80% 10%, var(--theme-panel-dim, rgba(237,209,85,0.1)), transparent 35%),
     radial-gradient(circle at 40% 90%, var(--theme-accent, rgba(29,49,114,0.12)), transparent 45%),
     radial-gradient(circle at 90% 80%, var(--theme-panel, rgba(137,220,227,0.08)), transparent 40%);
-  z-index:0;
+  z-index: -1;
   animation: meshDrift 20s infinite alternate ease-in-out;
-  opacity: 0.6;
+  opacity: 0.8;
   filter: blur(60px);
 }
 main, header, nav, .page, .app-page{position:relative; z-index:1;}
@@ -1147,9 +1147,23 @@ main, header, nav, .page, .app-page{position:relative; z-index:1;}
 .theme-card{
   background: var(--glass-1) !important;
   border: 1px solid var(--glass-border) !important;
-  box-shadow: var(--glass-shadow) !important;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.3), 0 0 15px var(--theme-accent-dim, rgba(0,0,0,0)) !important;
   backdrop-filter: var(--glass-blur);
   -webkit-backdrop-filter: var(--glass-blur);
+}
+
+/* Legacy-Style Theme Glows for New 10 Themes */
+body.theme-olympian-gold h1, body.theme-olympian-gold h2, body.theme-olympian-gold .ctitle,
+body.theme-aegean-mist h1, body.theme-aegean-mist h2, body.theme-aegean-mist .ctitle,
+body.theme-hades-ember h1, body.theme-hades-ember h2, body.theme-hades-ember .ctitle,
+body.theme-athenas-wisdom h1, body.theme-athenas-wisdom h2, body.theme-athenas-wisdom .ctitle,
+body.theme-dionysus-vineyard h1, body.theme-dionysus-vineyard h2, body.theme-dionysus-vineyard .ctitle,
+body.theme-poseidons-depths h1, body.theme-poseidons-depths h2, body.theme-poseidons-depths .ctitle,
+body.theme-artemis-moonlight h1, body.theme-artemis-moonlight h2, body.theme-artemis-moonlight .ctitle,
+body.theme-hermes-swiftness h1, body.theme-hermes-swiftness h2, body.theme-hermes-swiftness .ctitle,
+body.theme-spartan-grit h1, body.theme-spartan-grit h2, body.theme-spartan-grit .ctitle,
+body.theme-oracles-vision h1, body.theme-oracles-vision h2, body.theme-oracles-vision .ctitle {
+  text-shadow: 0 0 8px var(--theme-accent), 0 0 16px var(--theme-accent-dim);
 }
 .card:hover,
 .theme-card:hover,

@@ -43,36 +43,34 @@ export const SettingsView: React.FC = () => {
 
   const themes: { id: ThemeName; name: string; emoji: string; price: number; colors: string[] }[] = [
     { id: 'obsidian', name: 'Obsidian', emoji: '🌑', price: 0, colors: ['#080A0F', '#00F5D4'] },
-    { id: 'cybermancer', name: 'Cybermancer', emoji: '🔮', price: 0, colors: ['#0D0221', '#FF00E5'] },
-    { id: 'gold-reserve', name: 'Gold Reserve', emoji: '🔱', price: 0, colors: ['#111111', '#D4AF37'] },
-    { id: 'glacier-peak', name: 'Glacier Peak', emoji: '🏔️', price: 0, colors: ['#F0F4F8', '#0077B6'] },
-    { id: 'forest-phantom', name: 'Forest Phantom', emoji: '🌿', price: 0, colors: ['#0A1410', '#92FE9D'] },
-    { id: 'midnight-crimson', name: 'Midnight Crimson', emoji: '🩸', price: 0, colors: ['#050000', '#E63946'] },
-    { id: 'sunset-horizon', name: 'Sunset Horizon', emoji: '🌅', price: 0, colors: ['#1A0F0F', '#FF9F1C'] },
-    { id: 'quantum-violet', name: 'Quantum Violet', emoji: '🌌', price: 0, colors: ['#0F0014', '#9A48D0'] },
-    { id: 'matcha-zen', name: 'Matcha Zen', emoji: '🍵', price: 0, colors: ['#E6E9E1', '#7A9B76'] },
-    { id: 'sandstone', name: 'Sandstone', emoji: '🏜️', price: 0, colors: ['#F4E8D1', '#A67C52'] },
-    // Greek Themes
     { id: 'olympian-gold', name: 'Olympian Gold', emoji: '⚡', price: 0, colors: ['#0F0D08', '#D4AF37'] },
-    { id: 'aegean-mist', name: 'Aegean Mist', emoji: '🌊', price: 0, colors: ['#F0FBFF', '#0088CC'] },
-    { id: 'hades-ember', name: 'Hades\' Ember', emoji: '🔥', price: 0, colors: ['#0A0202', '#FF4500'] },
-    { id: 'athenas-wisdom', name: 'Athena\'s Wisdom', emoji: '🦉', price: 0, colors: ['#F5F5DC', '#6B8E23'] },
-    { id: 'dionysus-vineyard', name: 'Dionysus\' Vineyard', emoji: '🍇', price: 0, colors: ['#1A0A1F', '#9D4EDD'] },
-    { id: 'poseidons-depths', name: 'Poseidon\'s Depths', emoji: '🔱', price: 0, colors: ['#051923', '#00A6FB'] },
-    { id: 'artemis-moonlight', name: 'Artemis\' Moonlight', emoji: '🌙', price: 0, colors: ['#0B0E14', '#A5B4FC'] },
-    { id: 'hermes-swiftness', name: 'Hermes\' Swiftness', emoji: '👟', price: 0, colors: ['#1F1D1A', '#F97316'] },
-    { id: 'spartan-grit', name: 'Spartan Grit', emoji: '🛡️', price: 0, colors: ['#0F0A0A', '#991B1B'] },
-    { id: 'oracles-vision', name: 'Oracle\'s Vision', emoji: '🔮', price: 0, colors: ['#0D0B12', '#C084FC'] },
-    // New Themes
-    { id: 'solar-flare', name: 'Solar Flare', emoji: '☀️', price: 0, colors: ['#1A0700', '#FF9F1C'] },
-    { id: 'deep-sea', name: 'Deep Sea', emoji: '🌊', price: 0, colors: ['#001219', '#0077B6'] },
-    { id: 'sakura-spring', name: 'Sakura Spring', emoji: '🌸', price: 0, colors: ['#FFF0F3', '#FF4D6D'] },
     { id: 'neon-wasteland', name: 'Neon Wasteland', emoji: '⚡', price: 0, colors: ['#0D0221', '#39FF14'] },
+    { id: 'cybermancer', name: 'Cybermancer', emoji: '🔮', price: 0, colors: ['#0D0221', '#FF00E5'] },
+    { id: 'aegean-mist', name: 'Aegean Mist', emoji: '🌊', price: 0, colors: ['#F0FBFF', '#0088CC'] },
+    { id: 'solar-flare', name: 'Solar Flare', emoji: '☀️', price: 0, colors: ['#1A0700', '#FF9F1C'] },
+    { id: 'midnight-crimson', name: 'Midnight Crimson', emoji: '🩸', price: 0, colors: ['#050000', '#E63946'] },
+    { id: 'hades-ember', name: 'Hades\' Ember', emoji: '🔥', price: 0, colors: ['#0A0202', '#FF4500'] },
+    { id: 'deep-sea', name: 'Deep Sea', emoji: '🌊', price: 0, colors: ['#001219', '#0077B6'] },
+    { id: 'glacier-peak', name: 'Glacier Peak', emoji: '🏔️', price: 0, colors: ['#F0F4F8', '#0077B6'] },
+    { id: 'athenas-wisdom', name: 'Athena\'s Wisdom', emoji: '🦉', price: 0, colors: ['#F5F5DC', '#6B8E23'] },
+    { id: 'sakura-spring', name: 'Sakura Spring', emoji: '🌸', price: 0, colors: ['#FFF0F3', '#FF4D6D'] },
+    { id: 'forest-phantom', name: 'Forest Phantom', emoji: '🌿', price: 0, colors: ['#0A1410', '#92FE9D'] },
+    { id: 'dionysus-vineyard', name: 'Dionysus\' Vineyard', emoji: '🍇', price: 0, colors: ['#1A0A1F', '#9D4EDD'] },
     { id: 'emerald-city', name: 'Emerald City', emoji: '🏰', price: 0, colors: ['#012E1B', '#50C878'] },
+    { id: 'sunset-horizon', name: 'Sunset Horizon', emoji: '🌅', price: 0, colors: ['#1A0F0F', '#FF9F1C'] },
+    { id: 'poseidons-depths', name: 'Poseidon\'s Depths', emoji: '🔱', price: 0, colors: ['#051923', '#00A6FB'] },
     { id: 'carbon-fiber', name: 'Carbon Fiber', emoji: '🏎️', price: 0, colors: ['#111111', '#E63946'] },
+    { id: 'quantum-violet', name: 'Quantum Violet', emoji: '🌌', price: 0, colors: ['#0F0014', '#9A48D0'] },
+    { id: 'artemis-moonlight', name: 'Artemis\' Moonlight', emoji: '🌙', price: 0, colors: ['#0B0E14', '#A5B4FC'] },
     { id: 'sahara-gold', name: 'Sahara Gold', emoji: '🏜️', price: 0, colors: ['#F5E6BE', '#D4AF37'] },
+    { id: 'gold-reserve', name: 'Gold Reserve', emoji: '🔱', price: 0, colors: ['#111111', '#D4AF37'] },
+    { id: 'hermes-swiftness', name: 'Hermes\' Swiftness', emoji: '👟', price: 0, colors: ['#1F1D1A', '#F97316'] },
     { id: 'midnight-galaxy', name: 'Midnight Galaxy', emoji: '🌌', price: 0, colors: ['#10002B', '#E0AAFF'] },
+    { id: 'matcha-zen', name: 'Matcha Zen', emoji: '🍵', price: 0, colors: ['#E6E9E1', '#7A9B76'] },
+    { id: 'spartan-grit', name: 'Spartan Grit', emoji: '🛡️', price: 0, colors: ['#0F0A0A', '#991B1B'] },
     { id: 'nordic-frost', name: 'Nordic Frost', emoji: '🧊', price: 0, colors: ['#F0F8FF', '#4682B4'] },
+    { id: 'sandstone', name: 'Sandstone', emoji: '🏜️', price: 0, colors: ['#F4E8D1', '#A67C52'] },
+    { id: 'oracles-vision', name: 'Oracle\'s Vision', emoji: '🔮', price: 0, colors: ['#0D0B12', '#C084FC'] },
     { id: 'ember-forge', name: 'Ember Forge', emoji: '⚒️', price: 0, colors: ['#1B0B04', '#FF4500'] },
     // Tropical Escape Collection 🏝️
     { id: 'island-palm', name: 'Island Palm', emoji: '🌴', price: 0, colors: ['#F0FDF4', '#10B981'] },
@@ -275,14 +273,16 @@ export const SettingsView: React.FC = () => {
                 <div style={{ fontSize: '24px', marginBottom: '8px' }}>{t.emoji}</div>
                 <div style={{ 
                   fontSize: '11px', 
-                  fontWeight: '800', 
+                  fontWeight: '900', 
                   color: isSelected ? 'var(--theme-text)' : 'var(--theme-text-dim)', 
-                  marginBottom: '2px',
-                  textShadow: isSelected ? '0 1px 4px rgba(0,0,0,0.2)' : '0 1px 2px rgba(0,0,0,0.1)'
+                  marginBottom: '6px',
+                  textShadow: isSelected ? '0 0 10px var(--theme-accent, #00C9FF), 0 0 20px var(--theme-accent, #00C9FF)' : 'none',
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.05em'
                 }}>{t.name}</div>
                 {!isPurchased && <div style={{ fontSize: '9px', color: 'var(--theme-accent)', fontWeight: '700', marginBottom: '8px' }}>{t.price} GEMS</div>}
                 
-                <div style={{ display: 'flex', gap: '3px', width: '40px', height: '6px', margin: '0 auto', borderRadius: '3px', overflow: 'hidden', border: '1px solid rgba(255,255,255,0.1)' }}>
+                <div style={{ display: 'flex', gap: '4px', width: '50px', height: '10px', margin: '0 auto', borderRadius: '5px', overflow: 'hidden', border: '1px solid rgba(255,255,255,0.15)', boxShadow: isSelected ? '0 0 12px var(--theme-accent)' : 'none' }}>
                   <div style={{ flex: 1, background: t.colors[0] }} />
                   <div style={{ flex: 1, background: t.colors[1] }} />
                 </div>

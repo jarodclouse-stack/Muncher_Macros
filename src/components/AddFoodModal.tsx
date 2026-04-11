@@ -292,11 +292,8 @@ export const AddFoodModal: React.FC<AddFoodModalProps> = ({ meal, onClose }) => 
   };
 
   return ReactDOM.createPortal(
-    <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.85)', backdropFilter: 'blur(15px)', zIndex: 5000, display: 'flex', flexDirection: 'column', alignItems: 'center', transition: 'all 0.3s' }}>
-      <div style={{ width: '100%', background: '#FF3B30', color: 'white', padding: '10px 0', textAlign: 'center', fontSize: '12px', fontWeight: '900', zIndex: 10000, boxShadow: '0 4px 15px rgba(0,0,0,0.5)' }}>
-        ⚠️ SYNC TEST v2.4 - LATEST CODE ACTIVE - PLEASE DO A HARD REFRESH
-      </div>
-      <div style={{ position: 'fixed', bottom: '10px', right: '10px', fontSize: '9px', color: 'rgba(255,255,255,0.2)', pointerEvents: 'none', zIndex: 9999 }}>v2.4-GLOBAL-SYNC</div>
+    <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.45)', backdropFilter: 'blur(20px)', zIndex: 5000, display: 'flex', flexDirection: 'column', alignItems: 'center', transition: 'all 0.3s' }}>
+      <div style={{ position: 'fixed', bottom: '10px', right: '10px', fontSize: '9px', color: 'rgba(255,255,255,0.2)', pointerEvents: 'none', zIndex: 9999 }}>v2.5-BG-HARDEN</div>
       
       {/* Header */}
       <div style={{ width: '100%', maxWidth: '600px', padding: '24px 20px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
@@ -716,7 +713,7 @@ export const AddFoodModal: React.FC<AddFoodModalProps> = ({ meal, onClose }) => 
 
         {/* Persistent Staging Tray (Floating at Bottom) */}
         {stagingTray.length > 0 && (
-          <div style={{ position: 'sticky', bottom: '-20px', background: 'var(--theme-bg, #0B0B14)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '24px 24px 0 0', padding: '24px', boxShadow: '0 -10px 30px rgba(0,0,0,0.5)', margin: '0 -20px' }}>
+          <div style={{ position: 'sticky', bottom: '-20px', background: 'rgba(10,30,33,0.7)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '24px 24px 0 0', padding: '24px', boxShadow: '0 -10px 30px rgba(0,0,0,0.5)', margin: '0 -20px', backdropFilter: 'blur(20px)' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
                <div style={{ fontSize: '14px', fontWeight: '800', color: '#fff' }}>Logging {stagingTray.length} items</div>
                <button onClick={clearTray} style={{ background: 'none', border: 'none', color: '#FF6B6B', fontSize: '12px', fontWeight: '700', cursor: 'pointer' }}>Clear All</button>
@@ -736,8 +733,8 @@ export const AddFoodModal: React.FC<AddFoodModalProps> = ({ meal, onClose }) => 
 
       {/* Food Configuration Overlay */}
       {configuringFood && (
-          <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.85)', backdropFilter: 'blur(10px)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 6000, padding: '20px' }}>
-            <div style={{ width: '100%', maxWidth: '500px', background: 'var(--theme-bg, #0B0B14)', borderRadius: '32px', border: '1px solid rgba(255,255,255,0.1)', padding: '24px 24px 60px', maxHeight: '90vh', overflowY: 'auto', boxShadow: '0 20px 50px rgba(0,0,0,0.6)' }}>
+          <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.5)', backdropFilter: 'blur(15px)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 6000, padding: '20px' }}>
+            <div style={{ width: '100%', maxWidth: '500px', background: 'rgba(10,30,33,0.85)', borderRadius: '32px', border: '1px solid rgba(255,255,255,0.15)', padding: '24px 24px 60px', maxHeight: '90vh', overflowY: 'auto', boxShadow: '0 20px 50px rgba(0,0,0,0.6)', backdropFilter: 'blur(25px)' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '20px' }}>
                 <div>
                   <input 

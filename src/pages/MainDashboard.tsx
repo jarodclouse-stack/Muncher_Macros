@@ -22,7 +22,7 @@ export const MainDashboard: React.FC = () => {
   const gems = rewards.totalGems;
 
   return (
-    <div style={{ backgroundColor: 'var(--theme-bg, #080A0F)', backgroundAttachment: 'fixed', minHeight: '100vh', width: '100%', display: 'flex', flexDirection: 'column', color: 'var(--theme-text, #f1f1f1)', fontFamily: 'Inter, sans-serif' }}>
+    <div style={{ background: 'transparent', minHeight: '100vh', width: '100%', display: 'flex', flexDirection: 'column', color: 'var(--theme-text, #f1f1f1)', fontFamily: 'Inter, sans-serif' }}>
       {/* Topbar */}
       {!isScannerActive && (
         <header style={{ 
@@ -30,9 +30,10 @@ export const MainDashboard: React.FC = () => {
           justifyContent: 'space-between', 
           alignItems: 'center', 
           padding: 'calc(16px + env(safe-area-inset-top)) 20px 16px', 
-          background: 'var(--theme-panel, rgba(255,255,255,0.02))', 
+          background: 'var(--theme-panel, rgba(10, 30, 33, 0.72))', 
           borderBottom: '1px solid var(--theme-border, rgba(255,255,255,0.05))', 
-          backdropFilter: 'blur(10px)', 
+          backdropFilter: 'blur(22px)', 
+          WebkitBackdropFilter: 'blur(22px)',
           position: 'sticky', 
           top: 0, 
           zIndex: 10 
@@ -44,8 +45,8 @@ export const MainDashboard: React.FC = () => {
                 height: '40px',
                 borderRadius: '12px',
                 overflow: 'hidden',
-                boxShadow: '0 4px 12px rgba(0,0,0,0.2)',
-                border: '1px solid rgba(255,255,255,0.1)',
+                boxShadow: '0 8px 16px rgba(0,0,0,0.3)',
+                border: '1px solid rgba(255,255,255,0.15)',
                 transition: 'transform 0.2s'
               }}
               onMouseEnter={(e: React.MouseEvent<HTMLDivElement>) => e.currentTarget.style.transform = 'scale(1.1)'}
@@ -54,25 +55,25 @@ export const MainDashboard: React.FC = () => {
               <img src={legacyLogo} alt="MM" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
             </div>
             <div>
-              <h1 style={{ fontSize: '16px', fontWeight: '800', margin: 0, display: 'flex', alignItems: 'center', gap: '4px' }}>
+              <h1 style={{ fontSize: '16px', fontWeight: '800', margin: 0, display: 'flex', alignItems: 'center', gap: '4px', textShadow: '0 0 10px rgba(0,201,255,0.3)' }}>
                 Macro Munchers {activeTab === 'settings' && <ChevronRight size={14} color="var(--theme-accent, #00C9FF)" />}
               </h1>
-              <p style={{ fontSize: '12px', color: '#8b8b9b', margin: 0 }}>Welcome, {user?.email?.split('@')[0] || 'Guest'}!</p>
+              <p style={{ fontSize: '12px', color: 'var(--theme-text-dim, #8b8b9b)', margin: 0 }}>Welcome, {user?.email?.split('@')[0] || 'Guest'}!</p>
             </div>
           </div>
           
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginLeft: 'auto' }}>
             {/* Rewards Section */}
-            <div style={{ display: 'flex', borderRight: '1px solid var(--theme-border, rgba(255,255,255,0.05))', paddingRight: '10px', gap: '6px' }}>
+            <div style={{ display: 'flex', borderRight: '1px solid var(--theme-border, rgba(255,255,255,0.1))', paddingRight: '10px', gap: '6px' }}>
               <RewardChip icon={<Flame size={14} color="#FF6B6B" />} value={streak} label="Strk" onClick={() => setShowRewardModal(true)} />
               <RewardChip icon={<Gem size={14} color="#FFD700" />} value={gems} label="Gems" onClick={() => setShowRewardModal(true)} />
             </div>
 
             <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', minWidth: '32px' }}>
-              <button onClick={() => setActiveTab('settings')} style={{ background: activeTab === 'settings' ? 'var(--theme-accent-dim, rgba(0,201,255,0.1))' : 'rgba(255,255,255,0.02)', border: '1px solid var(--theme-border, rgba(255,255,255,0.1))', color: activeTab === 'settings' ? 'var(--theme-accent, #00C9FF)' : 'var(--theme-text-dim, #c0c0d0)', padding: '6px', borderRadius: '8px', cursor: 'pointer', transition: 'all 0.2s', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <button onClick={() => setActiveTab('settings')} style={{ background: activeTab === 'settings' ? 'var(--theme-accent-dim, rgba(0,201,255,0.1))' : 'rgba(255,255,255,0.05)', border: '1px solid var(--theme-border, rgba(255,255,255,0.1))', color: activeTab === 'settings' ? 'var(--theme-accent, #00C9FF)' : 'var(--theme-text-dim, #c0c0d0)', padding: '6px', borderRadius: '8px', cursor: 'pointer', transition: 'all 0.2s', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                 <Settings size={14} />
               </button>
-              <button onClick={logout} style={{ background: 'rgba(255,107,107,0.05)', border: '1px solid var(--theme-error-dim, rgba(255,107,107,0.1))', color: '#FF6B6B', padding: '6px', borderRadius: '8px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'all 0.2s' }}>
+              <button onClick={logout} style={{ background: 'rgba(255,107,107,0.1)', border: '1px solid rgba(255,107,107,0.2)', color: '#FF6B6B', padding: '6px', borderRadius: '8px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'all 0.2s' }}>
                 <LogOut size={14} />
               </button>
             </div>
@@ -83,7 +84,8 @@ export const MainDashboard: React.FC = () => {
       {/* Main Content Area */}
       <main className="app-container" style={{ 
         paddingTop: isScannerActive ? '0' : (activeTab === 'pantry' ? '0' : 'var(--space-xl)'), 
-        paddingBottom: isScannerActive ? '0' : 'calc(90px + env(safe-area-inset-bottom))' 
+        paddingBottom: isScannerActive ? '0' : 'calc(90px + env(safe-area-inset-bottom))',
+        background: 'transparent'
       }}>
         {activeTab === 'diary' && <DiaryView />}
         {activeTab === 'nutrition' && <NutritionView />}
@@ -94,36 +96,36 @@ export const MainDashboard: React.FC = () => {
       </main>
 
       {showRewardModal && (
-        <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.8)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000, padding: '20px' }}>
-            <div style={{ background: '#1a1d23', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '24px', width: '100%', maxWidth: '400px', padding: '24px', position: 'relative', boxShadow: '0 20px 40px rgba(0,0,0,0.4)' }}>
-                <button onClick={() => setShowRewardModal(false)} style={{ position: 'absolute', top: '16px', right: '16px', background: 'none', border: 'none', color: '#8b8b9b', cursor: 'pointer' }}>
-                    <X size={20} />
+        <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.6)', backdropFilter: 'blur(10px)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000, padding: '20px' }}>
+            <div style={{ background: 'rgba(26, 29, 35, 0.8)', border: '1px solid rgba(255,255,255,0.15)', borderRadius: '24px', width: '100%', maxWidth: '400px', padding: '24px', position: 'relative', boxShadow: '0 20px 48px rgba(0,0,0,0.5)', backdropFilter: 'blur(20px)', WebkitBackdropFilter: 'blur(20px)' }}>
+                <button onClick={() => setShowRewardModal(false)} style={{ position: 'absolute', top: '16px', right: '16px', background: 'rgba(0,0,0,0.2)', border: 'none', color: '#fff', borderRadius: '50%', width: '30px', height: '30px', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}>
+                    <X size={18} />
                 </button>
                 
                 <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '24px' }}>
-                    <div style={{ background: 'rgba(255,215,0,0.1)', padding: '12px', borderRadius: '16px' }}>
+                    <div style={{ background: 'rgba(255,215,0,0.15)', padding: '12px', borderRadius: '16px' }}>
                         <Award color="#FFD700" size={24} />
                     </div>
-                    <h2 style={{ fontSize: '20px', fontWeight: '800', margin: 0 }}>🎉 Reward Earnings</h2>
+                    <h2 style={{ fontSize: '20px', fontWeight: '800', margin: 0, color: '#fff' }}>🎉 Reward Earnings</h2>
                 </div>
 
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginBottom: '24px' }}>
-                    <div style={{ background: 'rgba(255,255,255,0.03)', padding: '16px', borderRadius: '16px', border: '1px solid rgba(255,255,255,0.05)' }}>
-                        <div style={{ fontSize: '11px', color: '#8b8b9b', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Current Streak</div>
+                    <div style={{ background: 'rgba(255,255,255,0.05)', padding: '16px', borderRadius: '16px', border: '1px solid rgba(255,255,255,0.1)' }}>
+                        <div style={{ fontSize: '11px', color: 'var(--theme-text-dim)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Current Streak</div>
                         <div style={{ fontSize: '24px', fontWeight: '900', color: '#FF6B6B', marginTop: '4px' }}>{rewards.streak} <span style={{ fontSize: '12px', fontWeight: '500' }}>days</span></div>
                     </div>
-                    <div style={{ background: 'rgba(255,255,255,0.03)', padding: '16px', borderRadius: '16px', border: '1px solid rgba(255,255,255,0.05)' }}>
-                        <div style={{ fontSize: '11px', color: '#8b8b9b', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Total Gems</div>
+                    <div style={{ background: 'rgba(255,255,255,0.05)', padding: '16px', borderRadius: '16px', border: '1px solid rgba(255,255,255,0.1)' }}>
+                        <div style={{ fontSize: '11px', color: 'var(--theme-text-dim)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Total Gems</div>
                         <div style={{ fontSize: '24px', fontWeight: '900', color: '#FFD700', marginTop: '4px' }}>{rewards.totalGems}</div>
                     </div>
                 </div>
 
-                <div style={{ background: 'rgba(0,201,255,0.05)', border: '1px solid rgba(0,201,255,0.1)', borderRadius: '16px', padding: '16px', marginBottom: '20px' }}>
+                <div style={{ background: 'var(--theme-accent-dim)', border: '1px solid var(--theme-border)', borderRadius: '16px', padding: '16px', marginBottom: '20px' }}>
                     <div style={{ display: 'flex', gap: '8px', marginBottom: '8px' }}>
-                        <Info size={16} color="#00C9FF" style={{ flexShrink: 0 }} />
-                        <div style={{ fontSize: '13px', fontWeight: '700', color: '#00C9FF' }}>Weekly Multiplier</div>
+                        <Info size={16} color="var(--theme-accent)" style={{ flexShrink: 0 }} />
+                        <div style={{ fontSize: '13px', fontWeight: '700', color: 'var(--theme-accent)' }}>Weekly Multiplier</div>
                     </div>
-                    <p style={{ fontSize: '12px', color: '#c0c0d0', margin: 0, lineHeight: '1.5' }}>
+                    <p style={{ fontSize: '12px', color: 'var(--theme-text)', opacity: 0.8, margin: 0, lineHeight: '1.5' }}>
                         Every 7 days, your consistency earns a massive bonus:
                         <br/><br/>
                         <code style={{ background: 'rgba(0,0,0,0.3)', padding: '4px 8px', borderRadius: '4px', fontSize: '11px' }}>
@@ -132,16 +134,16 @@ export const MainDashboard: React.FC = () => {
                     </p>
                 </div>
 
-                <div style={{ borderTop: '1px solid rgba(255,255,255,0.05)', paddingTop: '16px' }}>
+                <div style={{ borderTop: '1px solid rgba(255,255,255,0.1)', paddingTop: '16px' }}>
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
-                        <span style={{ fontSize: '13px', color: '#8b8b9b' }}>Next Milestone:</span>
+                        <span style={{ fontSize: '13px', color: 'var(--theme-text-dim)' }}>Next Milestone:</span>
                         <span style={{ fontSize: '13px', fontWeight: '700', color: '#fff' }}>Day {rewards.nextMilestoneStreak}</span>
                     </div>
-                    <div style={{ height: '8px', background: 'rgba(255,255,255,0.05)', borderRadius: '10px', overflow: 'hidden', marginBottom: '12px' }}>
-                        <div style={{ width: `${(rewards.streak % 7) / 7 * 100}%`, height: '100%', background: 'linear-gradient(90deg, #00C9FF, #92FE9D)', borderRadius: '10px' }} />
+                    <div style={{ height: '10px', background: 'rgba(255,255,255,0.08)', borderRadius: '10px', overflow: 'hidden', marginBottom: '12px', border: '1px solid rgba(255,255,255,0.1)' }}>
+                        <div style={{ width: `${(rewards.streak % 7) / 7 * 100}%`, height: '100%', background: 'linear-gradient(90deg, var(--theme-accent), #92FE9D)', borderRadius: '10px' }} />
                     </div>
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                        <span style={{ fontSize: '11px', color: '#8b8b9b' }}>Estimated Bonus:</span>
+                        <span style={{ fontSize: '11px', color: 'var(--theme-text-dim)' }}>Estimated Bonus:</span>
                         <span style={{ fontSize: '14px', fontWeight: '900', color: '#92FE9D' }}>+{rewards.potentialBonus} Gems</span>
                     </div>
                 </div>

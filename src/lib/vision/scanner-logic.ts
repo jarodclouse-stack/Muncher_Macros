@@ -94,8 +94,8 @@ export const scanNutritionLabel = async (imageBlob: Blob): Promise<ScanResult> =
           body: JSON.stringify({ base64: base64Str, mediaType: 'image/jpeg' })
         });
 
-        if (res.status === 529) {
-          return resolve({ success: false, error: "Server Busy (Overloaded). The AI is currently at capacity. Please try again in 5-10 seconds." });
+        if (res.status === 404) {
+          return resolve({ success: false, error: "AI Service Unavailable (404). This feature requires a backend server or Vercel deployment." });
         }
 
         const body = await res.json();
@@ -107,7 +107,7 @@ export const scanNutritionLabel = async (imageBlob: Blob): Promise<ScanResult> =
         }
       } catch (err) {
         console.error("AI Label scan failed", err);
-        resolve({ success: false, error: "Network error during AI analysis. Check your connection and try again." });
+        resolve({ success: false, error: "Network error during AI analysis. Ensure your local server is running." });
       }
     };
     reader.onerror = () => resolve({ success: false, error: "Failed to read image file." });
@@ -129,6 +129,10 @@ export const extractBarcodeDigits = async (imageBlob: Blob): Promise<ScanResult>
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ base64: base64Str, mediaType: 'image/jpeg' })
         });
+
+        if (res.status === 404) {
+          return resolve({ success: false, error: "AI OCR Service Unavailable (404). Backend deployment required for fallback reading." });
+        }
 
         const body = await res.json();
         
@@ -153,6 +157,15 @@ export const extractBarcodeDigits = async (imageBlob: Blob): Promise<ScanResult>
 export const lookupBarcode = async (code: string): Promise<ScanResult> => {
   try {
     const res = await fetch(`/api/food-search?q=${encodeURIComponent(code)}`);
+    
+    if (res.status === 404) {
+      return { success: false, error: "Search Service Unavailable (404). This requires a backend configuration or Vercel deployment." };
+    }
+
+    if (!res.ok) {
+        return { success: false, error: `Search failed with status ${res.status}.` };
+    }
+
     const body = await res.json();
     const results = body.foods || body.results || [];
 
@@ -163,6 +176,6 @@ export const lookupBarcode = async (code: string): Promise<ScanResult> => {
     }
   } catch (err) {
     console.error("Lookup failed", err);
-    return { success: false, error: "Failed to communicate with the food database." };
+    return { success: false, error: "Network error: Failed to communicate with the search service." };
   }
 };
