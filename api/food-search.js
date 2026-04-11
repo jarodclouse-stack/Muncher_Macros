@@ -432,7 +432,7 @@ export default async function handler(req, res) {
   }
 
   if (!allFoods.length) {
-    return res.status(404).json({ error: 'No results found for: ' + query });
+    return res.status(200).json({ error: 'No results found for: ' + query + '. Try a different search term.' });
   }
 
   return res.status(200).json({

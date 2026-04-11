@@ -96,8 +96,8 @@ export const scanNutritionLabel = async (imageBlob: Blob): Promise<ScanResult> =
           cache: 'no-store'
         });
 
-        if (res.status === 404) {
-          return resolve({ success: false, error: "AI Service Unavailable (404). This usually means the Vercel deployment is still in progress or the API route is missing. Please wait 30 seconds and try again." });
+        if (res.status === 404 && !res.headers.get('content-type')?.includes('json')) {
+          return resolve({ success: false, error: "AI Vision Route Missing (404). Please try again in 30 seconds." });
         }
 
         const body = await res.json();
