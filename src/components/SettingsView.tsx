@@ -28,7 +28,10 @@ export const SettingsView: React.FC = () => {
     purchasedThemes: [
       'obsidian', 'cybermancer', 'gold-reserve', 'glacier-peak', 
       'forest-phantom', 'midnight-crimson', 'sunset-horizon', 
-      'quantum-violet', 'matcha-zen', 'sandstone'
+      'quantum-violet', 'matcha-zen', 'sandstone',
+      'lemon-meringue', 'sky-breeze', 'rose-petal', 'pistachio-cream',
+      'orange-creamsicle', 'iced-chai', 'lilac-cloud', 'mint-frost',
+      'banana-pudding', 'grey-mist'
     ]
   };
 
@@ -74,6 +77,17 @@ export const SettingsView: React.FC = () => {
     { id: 'midnight-galaxy', name: 'Midnight Galaxy', emoji: '🌌', price: 0, color: '#7B2CBF' },
     { id: 'nordic-frost', name: 'Nordic Frost', emoji: '🧊', price: 0, color: '#A5D8FF' },
     { id: 'ember-forge', name: 'Ember Forge', emoji: '⚒️', price: 0, color: '#B22222' },
+    // Gourmet Light Series v2
+    { id: 'lemon-meringue', name: 'Lemon Meringue', emoji: '🍋', price: 0, color: '#FFF2A8' },
+    { id: 'sky-breeze', name: 'Sky Breeze', emoji: '🌬️', price: 0, color: '#BAE6FD' },
+    { id: 'rose-petal', name: 'Rose Petal', emoji: '🌹', price: 0, color: '#FECDD3' },
+    { id: 'pistachio-cream', name: 'Pistachio Cream', emoji: '🍦', price: 0, color: '#BBF7D0' },
+    { id: 'orange-creamsicle', name: 'Orange Creamsicle', emoji: '🍊', price: 0, color: '#FFEDD5' },
+    { id: 'iced-chai', name: 'Iced Chai', emoji: '☕', price: 0, color: '#E9DCC9' },
+    { id: 'lilac-cloud', name: 'Lilac Cloud', emoji: '☁️', price: 0, color: '#DDD6FE' },
+    { id: 'mint-frost', name: 'Mint Frost', emoji: '❄️', price: 0, color: '#CCFBF1' },
+    { id: 'banana-pudding', name: 'Banana Pudding', emoji: '🍮', price: 0, color: '#FEF08A' },
+    { id: 'grey-mist', name: 'Grey Mist', emoji: '🌫️', price: 0, color: '#E5E7EB' },
   ];
 
   const handleSelectTheme = (t: any) => {

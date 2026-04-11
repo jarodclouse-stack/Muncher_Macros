@@ -1574,3 +1574,197 @@ body.theme-light-surface .inp::placeholder {
   color: var(--theme-placeholder) !important;
 }
 
+/* GOURMET LIGHT COLLECTION V2 */
+
+/* 31. Lemon Meringue 🍋 */
+body.theme-lemon-meringue {
+  --theme-bg: #FFFDF0;
+  --theme-panel: rgba(255, 242, 168, 0.9);
+  --theme-panel-base: #FFFFFF;
+  --theme-panel-dim: rgba(255, 242, 168, 0.1);
+  --theme-accent: #FFF2A8;
+  --theme-accent-dim: rgba(255, 242, 168, 0.15);
+  --theme-text: #4D4017;
+  --theme-text-dim: #85722E;
+  --theme-border: rgba(133, 114, 46, 0.3);
+  --theme-placeholder: rgba(77, 64, 23, 0.5);
+  --theme-input-bg: rgba(255, 255, 255, 0.8);
+}
+
+/* 32. Sky Breeze 🌬️ */
+body.theme-sky-breeze {
+  --theme-bg: #F0F9FF;
+  --theme-panel: rgba(186, 230, 253, 0.9);
+  --theme-panel-base: #FFFFFF;
+  --theme-panel-dim: rgba(186, 230, 253, 0.1);
+  --theme-accent: #BAE6FD;
+  --theme-accent-dim: rgba(186, 230, 253, 0.15);
+  --theme-text: #0C4A6E;
+  --theme-text-dim: #075985;
+  --theme-border: rgba(7, 89, 133, 0.3);
+  --theme-placeholder: rgba(12, 74, 110, 0.5);
+  --theme-input-bg: rgba(255, 255, 255, 0.8);
+}
+
+/* 33. Rose Petal 🌹 */
+body.theme-rose-petal {
+  --theme-bg: #FFF1F2;
+  --theme-panel: rgba(254, 205, 211, 0.9);
+  --theme-panel-base: #FFFFFF;
+  --theme-panel-dim: rgba(254, 205, 211, 0.1);
+  --theme-accent: #FECDD3;
+  --theme-accent-dim: rgba(254, 205, 211, 0.15);
+  --theme-text: #881337;
+  --theme-text-dim: #BE123C;
+  --theme-border: rgba(190, 18, 60, 0.3);
+  --theme-placeholder: rgba(136, 19, 55, 0.5);
+  --theme-input-bg: rgba(255, 255, 255, 0.8);
+}
+
+/* 34. Pistachio Cream 🍦 */
+body.theme-pistachio-cream {
+  --theme-bg: #F0FDF4;
+  --theme-panel: rgba(187, 247, 208, 0.9);
+  --theme-panel-base: #FFFFFF;
+  --theme-panel-dim: rgba(187, 247, 208, 0.1);
+  --theme-accent: #BBF7D0;
+  --theme-accent-dim: rgba(187, 247, 208, 0.15);
+  --theme-text: #14532D;
+  --theme-text-dim: #15803D;
+  --theme-border: rgba(21, 128, 61, 0.3);
+  --theme-placeholder: rgba(20, 83, 45, 0.5);
+  --theme-input-bg: rgba(255, 255, 255, 0.8);
+}
+
+/* 35. Orange Creamsicle 🍊 */
+body.theme-orange-creamsicle {
+  --theme-bg: #FFF7ED;
+  --theme-panel: rgba(255, 237, 213, 0.9);
+  --theme-panel-base: #FFFFFF;
+  --theme-panel-dim: rgba(255, 237, 213, 0.1);
+  --theme-accent: #FFEDD5;
+  --theme-accent-dim: rgba(255, 237, 213, 0.15);
+  --theme-text: #7C2D12;
+  --theme-text-dim: #9A3412;
+  --theme-border: rgba(154, 52, 18, 0.3);
+  --theme-placeholder: rgba(124, 45, 18, 0.5);
+  --theme-input-bg: rgba(255, 255, 255, 0.8);
+}
+
+/* 36. Iced Chai ☕ */
+body.theme-iced-chai {
+  --theme-bg: #FAF7F2;
+  --theme-panel: rgba(233, 220, 201, 0.9);
+  --theme-panel-base: #FFFFFF;
+  --theme-panel-dim: rgba(233, 220, 201, 0.1);
+  --theme-accent: #E9DCC9;
+  --theme-accent-dim: rgba(233, 220, 201, 0.15);
+  --theme-text: #3E2723;
+  --theme-text-dim: #5D4037;
+  --theme-border: rgba(93, 64, 55, 0.3);
+  --theme-placeholder: rgba(62, 39, 35, 0.5);
+  --theme-input-bg: rgba(255, 255, 255, 0.8);
+}
+
+/* 37. Lilac Cloud ☁️ */
+body.theme-lilac-cloud {
+  --theme-bg: #F5F3FF;
+  --theme-panel: rgba(221, 214, 254, 0.9);
+  --theme-panel-base: #FFFFFF;
+  --theme-panel-dim: rgba(221, 214, 254, 0.1);
+  --theme-accent: #DDD6FE;
+  --theme-accent-dim: rgba(221, 214, 254, 0.15);
+  --theme-text: #4C1D95;
+  --theme-text-dim: #5B21B6;
+  --theme-border: rgba(91, 33, 182, 0.3);
+  --theme-placeholder: rgba(76, 29, 149, 0.5);
+  --theme-input-bg: rgba(255, 255, 255, 0.8);
+}
+
+/* 38. Mint Frost ❄️ */
+body.theme-mint-frost {
+  --theme-bg: #F0FDFA;
+  --theme-panel: rgba(204, 251, 241, 0.9);
+  --theme-panel-base: #FFFFFF;
+  --theme-panel-dim: rgba(204, 251, 241, 0.1);
+  --theme-accent: #CCFBF1;
+  --theme-accent-dim: rgba(204, 251, 241, 0.15);
+  --theme-text: #134E4A;
+  --theme-text-dim: #115E59;
+  --theme-border: rgba(17, 94, 89, 0.3);
+  --theme-placeholder: rgba(19, 78, 74, 0.5);
+  --theme-input-bg: rgba(255, 255, 255, 0.8);
+}
+
+/* 39. Banana Pudding 🍮 */
+body.theme-banana-pudding {
+  --theme-bg: #FEFCE8;
+  --theme-panel: rgba(254, 240, 138, 0.9);
+  --theme-panel-base: #FFFFFF;
+  --theme-panel-dim: rgba(254, 240, 138, 0.1);
+  --theme-accent: #FEF08A;
+  --theme-accent-dim: rgba(254, 240, 138, 0.15);
+  --theme-text: #713F12;
+  --theme-text-dim: #854D0E;
+  --theme-border: rgba(133, 77, 14, 0.3);
+  --theme-placeholder: rgba(113, 63, 18, 0.5);
+  --theme-input-bg: rgba(255, 255, 255, 0.8);
+}
+
+/* 40. Grey Mist 🌫️ */
+body.theme-grey-mist {
+  --theme-bg: #F9FAFB;
+  --theme-panel: rgba(229, 231, 235, 0.9);
+  --theme-panel-base: #FFFFFF;
+  --theme-panel-dim: rgba(229, 231, 235, 0.1);
+  --theme-accent: #E5E7EB;
+  --theme-accent-dim: rgba(229, 231, 235, 0.15);
+  --theme-text: #111827;
+  --theme-text-dim: #374151;
+  --theme-border: rgba(55, 65, 81, 0.3);
+  --theme-placeholder: rgba(17, 24, 39, 0.5);
+  --theme-input-bg: rgba(255, 255, 255, 0.8);
+}
+
+/* READABILITY OVERRIDES FOR LIGHT THEMES */
+
+/* Nuclear CSS - Overrides inline white text with theme dark color on light surfaces */
+body.theme-light-surface [style*="color: #fff"],
+body.theme-light-surface [style*="color: white"],
+body.theme-light-surface [style*="color: rgb(255, 255, 255)"],
+body.theme-light-surface [style*="color: rgba(255, 255, 255, 1)"],
+body.theme-light-surface [style*="color: #FFFFFF"] {
+  color: var(--theme-text) !important;
+}
+
+/* Specific override for dim text in light themes */
+body.theme-light-surface [style*="color: rgba(255, 255, 255, 0.7)"],
+body.theme-light-surface [style*="color: rgba(255, 255, 255, 0.6)"] {
+  color: var(--theme-text-dim) !important;
+}
+
+/* INPUT BUBBLE CONTRAST HARDENING - MAX CONTRAST */
+body.theme-light-surface input::placeholder,
+body.theme-light-surface textarea::placeholder {
+  color: var(--theme-text) !important;
+  opacity: 0.9 !important; /* Force hint text to be as dark as possible */
+}
+
+body.theme-light-surface input,
+body.theme-light-surface select,
+body.theme-light-surface textarea {
+  color: var(--theme-text) !important;
+}
+
+/* Force dark arrows on select menus in light themes */
+body.theme-light-surface select {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%23333' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E") !important;
+}
+
+/* Selected tab darkening for light themes */
+body.theme-light-surface .pantry-filter.active,
+body.theme-light-surface .search-tab-active {
+  color: var(--theme-text) !important;
+  filter: brightness(0.8);
+}
+
