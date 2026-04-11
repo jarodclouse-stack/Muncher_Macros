@@ -1,7 +1,7 @@
 import React, { useState, useRef } from 'react';
 import ReactDOM from 'react-dom';
 import { useDiary } from '../context/DiaryContext';
-import { ALL_MICRO_KEYS, MICRO_UNITS, SERVING_UNITS } from '../lib/constants';
+import { SERVING_UNITS } from '../lib/constants';
 import type { Food } from '../types/food';
 import { computeMultiplier, scaleLegacyFoodByAmount, sumFoods } from '../lib/food/serving-converter';
 import { 
@@ -10,7 +10,6 @@ import {
 } from 'lucide-react';
 import { BarcodeScanner } from './BarcodeScanner';
 import { SearchCoaster, type SearchTab } from './SearchCoaster';
-import { getNutrientDescriptions } from '../lib/nutrient-info';
 import { NutritionFactsDisplay } from './NutritionFactsDisplay';
 
 // Helper: Ensure Calories = (P*4) + (C*4) + (F*9)

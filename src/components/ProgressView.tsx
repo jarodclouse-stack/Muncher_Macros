@@ -16,6 +16,7 @@ export const ProgressView: React.FC = () => {
   };
   
   const [dailyWeight, setDailyWeight] = useState<string>(currentDayData.weight?.toString() || '');
+  const [logDate, setLogDate] = useState<string>(currentDate);
   const [sex, setSex] = useState(goals.sex || 'male');
   const [age, setAge] = useState(goals.age?.toString() || '30');
   const [heightIn, setHeightIn] = useState(goals.height?.toString() || '70');
@@ -123,9 +124,13 @@ export const ProgressView: React.FC = () => {
     e.preventDefault();
     const w = parseFloat(dailyWeight);
     if (!isNaN(w) && w > 0) {
-      updateDayData(currentDate, { weight: w });
-      updateGoals({ weight: w });
-      setWeightLb(w.toString()); // sync form visually
+      updateDayData(logDate, { weight: w });
+      // If logging for today, sync to global goals immediately
+      if (logDate === currentDate) {
+        updateGoals({ weight: w });
+        setWeightLb(w.toString()); // sync form visually
+      }
+      alert(`Weight record saved for ${logDate}!`);
     }
   };
 
@@ -174,15 +179,20 @@ export const ProgressView: React.FC = () => {
       </div>
 
       {/* 5. Weight Tools (Manual Entry) */}
-      <div className="section" style={{ background: 'var(--theme-panel)', border: '1px solid var(--theme-border)', borderRadius: 'var(--radius-lg)', padding: 'var(--space-xl)' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '16px', fontWeight: '700', marginBottom: 'var(--space-lg)', color: 'var(--theme-text)' }}><Scale size={18} color="var(--theme-accent, #4DABF7)" /> Log Today's Weight</div>
-        <form onSubmit={handleSaveDailyWeight} style={{ display: 'flex', gap: 'var(--space-md)', flexWrap: 'wrap' }}>
+      <div className="section" id="weight-logging" style={{ background: 'var(--theme-panel)', border: '1px solid var(--theme-border)', borderRadius: 'var(--radius-lg)', padding: 'var(--space-xl)' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '16px', fontWeight: '700', marginBottom: 'var(--space-lg)', color: 'var(--theme-text)' }}><Scale size={18} color="var(--theme-accent, #4DABF7)" /> Weight Record & History</div>
+        <form onSubmit={handleSaveDailyWeight} style={{ display: 'flex', gap: 'var(--space-md)', flexWrap: 'wrap', alignItems: 'flex-end' }}>
           <div style={{ flex: 1, minWidth: '120px' }}>
-            <input type="number" step="0.1" className="inp" placeholder="Log weight for day..." value={dailyWeight} onChange={e => setDailyWeight(cleanNumInput(e.target.value))} />
-            <div style={{ fontSize: '11px', color: 'var(--theme-accent)', marginTop: '6px', fontWeight: '500' }}>💡 Note: Logging weight here updates your body stats & TDEE app-wide.</div>
+            <label className="lbl">Record Date</label>
+            <input type="date" className="inp" value={logDate} onChange={e => setLogDate(e.target.value)} />
           </div>
-          <button type="submit" className="btn" style={{ marginTop: 0, padding: '0 24px' }}><Check size={16} /> Save Weight</button>
+          <div style={{ flex: 1, minWidth: '120px' }}>
+            <label className="lbl">Body Weight ({unitWeight})</label>
+            <input type="number" step="0.1" className="inp" placeholder="Enter weight..." value={dailyWeight} onChange={e => setDailyWeight(cleanNumInput(e.target.value))} />
+          </div>
+          <button type="submit" className="btn" style={{ height: '42px', marginTop: 0, padding: '0 24px', background: 'var(--theme-accent)', color: '#000' }}><Check size={16} /> Save Weight Record</button>
         </form>
+        <div style={{ fontSize: '11px', color: 'var(--theme-text-dim)', marginTop: '12px', fontWeight: '500' }}>💡 Tip: Logging weight for today updates your body stats & TDEE app-wide. Historical logs update your chart only.</div>
       </div>
 
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '20px' }}>
