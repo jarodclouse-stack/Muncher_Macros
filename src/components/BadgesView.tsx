@@ -182,7 +182,13 @@ export const BadgesView: React.FC = () => {
                           </div>
 
                           <div style={{ textAlign: 'center' }}>
-                            <div style={{ fontSize: '13px', fontWeight: '800', color: isEarned ? 'var(--theme-text)' : 'var(--theme-text-dim)', marginBottom: '2px' }}>{badge.title}</div>
+                            <div style={{ 
+                              fontSize: '13px', 
+                              fontWeight: '800', 
+                              color: isEarned ? 'var(--theme-text)' : 'var(--theme-text-dim)', 
+                              marginBottom: '2px',
+                              textShadow: '0 1px 3px rgba(0,0,0,0.2)'
+                            }}>{badge.title}</div>
                             <div style={{ fontSize: '10px', color: isEarned ? badge.color : 'var(--theme-text-dim)', fontWeight: '700', textTransform: 'uppercase' }}>
                               {isEarned ? 'UNLOCKED' : `Day ${badge.day}`}
                             </div>
@@ -232,10 +238,10 @@ export const BadgesView: React.FC = () => {
                       alignItems: 'center',
                       gap: 'var(--space-md)',
                       boxShadow: isSelected 
-                        ? `0 12px 40px ${t.colors[1]}66` 
-                        : '0 4px 12px rgba(0, 0, 0, 0.08)',
+                        ? `0 12px 35px var(--theme-accent-dim), 0 0 15px var(--theme-accent-dim)` 
+                        : '0 6px 16px rgba(0, 0, 0, 0.12)',
                       opacity: isPurchased ? 1 : 0.8,
-                      transform: isSelected ? 'scale(1.02)' : 'scale(1)'
+                      transform: isSelected ? 'translateY(-4px) scale(1.02)' : 'translateY(0) scale(1)'
                     }}
                 >
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', width: '40px' }}>

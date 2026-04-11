@@ -255,12 +255,16 @@ export const SettingsView: React.FC = () => {
                   padding: 'var(--space-lg) var(--space-md)', 
                   borderRadius: 'var(--radius-lg)', 
                   background: isSelected ? 'var(--theme-accent-dim)' : 'var(--theme-panel-dim)',
-                  border: isSelected ? '2px solid var(--theme-accent)' : '2px solid transparent',
+                  border: isSelected ? '2px solid var(--theme-accent)' : '2px solid rgba(255,255,255,0.05)',
                   cursor: 'pointer',
                   textAlign: 'center',
-                  transition: 'all 0.2s cubic-bezier(0.4, 0, 0.2, 1)',
+                  transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
                   position: 'relative',
-                  opacity: isPurchased ? 1 : 0.6
+                  opacity: isPurchased ? 1 : 0.6,
+                  boxShadow: isSelected 
+                    ? `0 12px 30px var(--theme-accent-dim), 0 0 15px var(--theme-accent-dim)` 
+                    : '0 4px 12px rgba(0, 0, 0, 0.12)',
+                  transform: isSelected ? 'translateY(-3px) scale(1.02)' : 'translateY(0) scale(1)',
                 }}
               >
                 {!isPurchased && (
@@ -269,7 +273,13 @@ export const SettingsView: React.FC = () => {
                   </div>
                 )}
                 <div style={{ fontSize: '24px', marginBottom: '8px' }}>{t.emoji}</div>
-                <div style={{ fontSize: '11px', fontWeight: '800', color: isSelected ? 'var(--theme-text)' : 'var(--theme-text-dim)', marginBottom: '2px' }}>{t.name}</div>
+                <div style={{ 
+                  fontSize: '11px', 
+                  fontWeight: '800', 
+                  color: isSelected ? 'var(--theme-text)' : 'var(--theme-text-dim)', 
+                  marginBottom: '2px',
+                  textShadow: isSelected ? '0 1px 4px rgba(0,0,0,0.2)' : '0 1px 2px rgba(0,0,0,0.1)'
+                }}>{t.name}</div>
                 {!isPurchased && <div style={{ fontSize: '9px', color: 'var(--theme-accent)', fontWeight: '700', marginBottom: '6px' }}>{t.price} GEMS</div>}
                 <div style={{ width: '30px', height: '4px', borderRadius: '2px', background: t.color, margin: '0 auto' }} />
                 
