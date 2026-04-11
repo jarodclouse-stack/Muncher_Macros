@@ -319,7 +319,7 @@ export const BarcodeScanner: React.FC<BarcodeScannerProps> = ({
         boxShadow: '0 -4px 20px rgba(255,136,0,0.3)',
         zIndex: 1000
       }}>
-        🔥 V4.0 DYNAMIC - STABILIZED 🔥
+        🔥 v5.0-FINAL-INTEL 🔥
       </div>
     </div>
   );

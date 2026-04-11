@@ -104,7 +104,11 @@ export const scanNutritionLabel = async (imageBlob: Blob): Promise<ScanResult> =
         if (res.ok && body.food) {
           resolve({ success: true, data: body.food });
         } else {
-          resolve({ success: false, error: body.error || 'Failed to extract nutritional data.' });
+          resolve({ 
+            success: false, 
+            error: body.error || 'Failed to extract nutritional data.',
+            detail: body.detail 
+          });
         }
       } catch (err) {
         console.error("AI Label scan failed", err);
@@ -139,9 +143,13 @@ export const extractBarcodeDigits = async (imageBlob: Blob): Promise<ScanResult>
         const body = await res.json();
         
         if (res.ok && body.code) {
-          resolve({ success: true, text: body.code });
+          resolve({ success: true, data: body.code });
         } else {
-          resolve({ success: false, error: body.error || 'AI could not read the numbers either.' });
+          resolve({ 
+            success: false, 
+            error: body.error || 'Failed to decode barcode numbers.',
+            detail: body.detail 
+          });
         }
       } catch (err) {
         console.error("AI Barcode read failed", err);

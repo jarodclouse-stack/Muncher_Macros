@@ -221,7 +221,7 @@ export default async function handler(req, res) {
 
   // ── DIAGNOSTIC PING ────────────────────────────────────────────────────────
   if (action === 'ping' || req.query.action === 'ping') {
-    return res.status(200).json({ status: 'alive', version: 'v4.0-DYNAMIC' });
+    return res.status(200).json({ status: 'alive', version: 'v5.0-FINAL-INTEL' });
   }
 
   // ── AI VISION (TROJAN HORSE) ────────────────────────────────────────────────
@@ -242,7 +242,7 @@ export default async function handler(req, res) {
           'anthropic-version': '2023-06-01'
         },
         body: JSON.stringify({
-          model: 'claude-3-7-sonnet-20250219',
+          model: 'claude-3-5-sonnet-20240620',
           max_tokens: type === 'barcode' ? 1024 : 2048,
           messages: [{
             role: 'user',
@@ -255,8 +255,17 @@ export default async function handler(req, res) {
       });
 
       if (!anthropicRes.ok) {
-        const detail = await anthropicRes.text();
-        return res.status(anthropicRes.status).json({ error: 'Vision Error (' + anthropicRes.status + ')', detail });
+        let detail = 'Unknown AI Error';
+        try { 
+          const errData = await anthropicRes.json();
+          detail = errData.error?.message || JSON.stringify(errData);
+        } catch (e) {
+          detail = await anthropicRes.text();
+        }
+        return res.status(anthropicRes.status).json({ 
+          error: 'AI Service Error (' + anthropicRes.status + ')', 
+          detail: detail 
+        });
       }
 
       const data = await anthropicRes.json();
@@ -267,10 +276,24 @@ export default async function handler(req, res) {
         if (!digits || digits.length < 5) return res.status(404).json({ error: 'No barcode found' });
         return res.status(200).json({ code: digits });
       } else {
-        if (rawText.includes('```')) rawText = rawText.replace(/```json/g, '').replace(/```/g, '').trim();
+        // Advanced JSON cleaning
+        let cleanText = rawText;
+        if (cleanText.includes('```')) {
+          const match = cleanText.match(/```(?:json)?\s*([\s\S]*?)```/);
+          if (match) cleanText = match[1];
+          else cleanText = cleanText.replace(/```json/g, '').replace(/```/g, '');
+        }
+        cleanText = cleanText.trim();
+
         let food;
-        try { food = JSON.parse(rawText); }
-        catch (e) { return res.status(502).json({ error: 'Invalid JSON', raw: rawText }); }
+        try { food = JSON.parse(cleanText); }
+        catch (e) { 
+          return res.status(502).json({ 
+            error: 'AI Response Format Error', 
+            detail: 'The AI provided an invalid response. Please try a clearer photo.',
+            raw: rawText.slice(0, 100) 
+          }); 
+        }
         return res.status(200).json({ food });
       }
     } catch (err) {
