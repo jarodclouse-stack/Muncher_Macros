@@ -59,6 +59,17 @@ export const BadgesView: React.FC = () => {
     { id: 'midnight-galaxy', name: 'Midnight Galaxy', emoji: '🌌', price: 0, colors: ['#10002B', '#E0AAFF'] },
     { id: 'nordic-frost', name: 'Nordic Frost', emoji: '🧊', price: 0, colors: ['#F0F8FF', '#4682B4'] },
     { id: 'ember-forge', name: 'Ember Forge', emoji: '⚒️', price: 0, colors: ['#1B0B04', '#FF4500'] },
+    // Tropical Escape Collection 🏝️
+    { id: 'island-palm', name: 'Island Palm', emoji: '🌴', price: 0, colors: ['#F0FDF4', '#10B981'] },
+    { id: 'azure-tide', name: 'Azure Tide', emoji: '🌊', price: 0, colors: ['#F0F9FF', '#06B6D4'] },
+    { id: 'mango-salsa', name: 'Mango Salsa', emoji: '🥭', price: 0, colors: ['#FFF7ED', '#F97316'] },
+    { id: 'hibiscus-bloom', name: 'Hibiscus Bloom', emoji: '🌺', price: 0, colors: ['#FFF1F2', '#E11D48'] },
+    { id: 'blue-hawaiian', name: 'Blue Hawaiian', emoji: '🍹', price: 0, colors: ['#EFF6FF', '#3B82F6'] },
+    { id: 'solar-breeze', name: 'Solar Breeze', emoji: '☀️', price: 0, colors: ['#FEFCE8', '#F59E0B'] },
+    { id: 'coconut-milk', name: 'Coconut Milk', emoji: '🥥', price: 0, colors: ['#FAFAFA', '#71717A'] },
+    { id: 'golden-pine', name: 'Golden Pine', emoji: '🍍', price: 0, colors: ['#FEFCE8', '#84CC16'] },
+    { id: 'lava-orchid', name: 'Lava Orchid', emoji: '🌋', price: 0, colors: ['#FDF2F8', '#DB2777'] },
+    { id: 'surf-neon', name: 'Surf Neon', emoji: '🏄', price: 0, colors: ['#ECFEFF', '#D946EF'] },
   ];
 
   const handleSelectTheme = (t: any) => {

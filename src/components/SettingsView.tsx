@@ -74,17 +74,17 @@ export const SettingsView: React.FC = () => {
     { id: 'midnight-galaxy', name: 'Midnight Galaxy', emoji: '🌌', price: 0, color: '#7B2CBF' },
     { id: 'nordic-frost', name: 'Nordic Frost', emoji: '🧊', price: 0, color: '#A5D8FF' },
     { id: 'ember-forge', name: 'Ember Forge', emoji: '⚒️', price: 0, color: '#B22222' },
-    // Gourmet Light Series v2
-    { id: 'lemon-meringue', name: 'Lemon Meringue', emoji: '🍋', price: 0, color: '#FFF2A8' },
-    { id: 'sky-breeze', name: 'Sky Breeze', emoji: '🌬️', price: 0, color: '#BAE6FD' },
-    { id: 'rose-petal', name: 'Rose Petal', emoji: '🌹', price: 0, color: '#FECDD3' },
-    { id: 'pistachio-cream', name: 'Pistachio Cream', emoji: '🍦', price: 0, color: '#BBF7D0' },
-    { id: 'orange-creamsicle', name: 'Orange Creamsicle', emoji: '🍊', price: 0, color: '#FFEDD5' },
-    { id: 'iced-chai', name: 'Iced Chai', emoji: '☕', price: 0, color: '#E9DCC9' },
-    { id: 'lilac-cloud', name: 'Lilac Cloud', emoji: '☁️', price: 0, color: '#DDD6FE' },
-    { id: 'mint-frost', name: 'Mint Frost', emoji: '❄️', price: 0, color: '#CCFBF1' },
-    { id: 'banana-pudding', name: 'Banana Pudding', emoji: '🍮', price: 0, color: '#FEF08A' },
-    { id: 'grey-mist', name: 'Grey Mist', emoji: '🌫️', price: 0, color: '#E5E7EB' },
+    // Tropical Escape Collection 🏝️
+    { id: 'island-palm', name: 'Island Palm', emoji: '🌴', price: 0, color: '#10B981' },
+    { id: 'azure-tide', name: 'Azure Tide', emoji: '🌊', price: 0, color: '#06B6D4' },
+    { id: 'mango-salsa', name: 'Mango Salsa', emoji: '🥭', price: 0, color: '#F97316' },
+    { id: 'hibiscus-bloom', name: 'Hibiscus Bloom', emoji: '🌺', price: 0, color: '#E11D48' },
+    { id: 'blue-hawaiian', name: 'Blue Hawaiian', emoji: '🍹', price: 0, color: '#3B82F6' },
+    { id: 'solar-breeze', name: 'Solar Breeze', emoji: '☀️', price: 0, color: '#F59E0B' },
+    { id: 'coconut-milk', name: 'Coconut Milk', emoji: '🥥', price: 0, color: '#71717A' },
+    { id: 'golden-pine', name: 'Golden Pine', emoji: '🍍', price: 0, color: '#84CC16' },
+    { id: 'lava-orchid', name: 'Lava Orchid', emoji: '🌋', price: 0, color: '#DB2777' },
+    { id: 'surf-neon', name: 'Surf Neon', emoji: '🏄', price: 0, color: '#D946EF' },
   ];
 
   const handleSelectTheme = (t: any) => {
