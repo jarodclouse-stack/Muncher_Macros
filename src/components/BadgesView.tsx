@@ -244,9 +244,9 @@ export const BadgesView: React.FC = () => {
                       transform: isSelected ? 'translateY(-4px) scale(1.02)' : 'translateY(0) scale(1)'
                     }}
                 >
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', width: '40px' }}>
-                    <div style={{ width: '100%', height: '16px', background: t.colors[0], borderRadius: '4px', border: '1px solid var(--theme-border)' }} />
-                    <div style={{ width: '100%', height: '8px', background: t.colors[1], borderRadius: '3px' }} />
+                  <div style={{ display: 'flex', gap: '3px', width: '40px', height: '14px', borderRadius: '4px', overflow: 'hidden', border: '1px solid rgba(255,255,255,0.1)' }}>
+                    <div style={{ flex: 1, background: t.colors[0] }} />
+                    <div style={{ flex: 1, background: t.colors[1] }} />
                   </div>
                   
                   <div style={{ flex: 1 }}>
