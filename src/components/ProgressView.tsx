@@ -34,19 +34,19 @@ export const ProgressView: React.FC = () => {
     if (lastUnitWeight && lastUnitWeight !== unitWeight) {
         // Convert weight-based fields
         const conv = unitWeight === 'kg' ? 0.453592 : (1 / 0.453592);
-        setWeightLb(prev => {
+        setWeightLb((prev: string) => {
             const v = parseFloat(prev);
             return isNaN(v) ? prev : (v * conv).toFixed(1);
         });
-        setTargetWeight(prev => {
+        setTargetWeight((prev: string) => {
             const v = parseFloat(prev);
             return isNaN(v) ? prev : (v * conv).toFixed(1);
         });
-        setGoalRate(prev => {
+        setGoalRate((prev: string) => {
             const v = parseFloat(prev);
             return isNaN(v) ? prev : (v * conv).toFixed(2);
         });
-        setDailyWeight(prev => {
+        setDailyWeight((prev: string) => {
             const v = parseFloat(prev);
             return isNaN(v) ? prev : (v * conv).toFixed(1);
         });
@@ -55,7 +55,7 @@ export const ProgressView: React.FC = () => {
     if (lastUnitHeight && lastUnitHeight !== unitHeight) {
         // Convert height
         const conv = unitHeight === 'cm' ? 2.54 : (1 / 2.54);
-        setHeightIn(prev => {
+        setHeightIn((prev: string) => {
             const v = parseFloat(prev);
             return isNaN(v) ? prev : (v * conv).toFixed(1);
         });
