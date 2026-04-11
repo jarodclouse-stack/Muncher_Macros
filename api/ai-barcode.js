@@ -1,6 +1,13 @@
 import https from 'https';
 
-async function anthropicRequest(prompt, apiKey, model = 'claude-3-5-sonnet-20240620') {
+// THE SYNC: Using the specific aliases verified in ai-describe.js
+const MODELS = [
+  'claude-sonnet-4-6',           // Primary (3.5 Sonnet alias)
+  'claude-haiku-4-5-20241001',   // Fallback
+];
+
+async function anthropicRequest(prompt, apiKey, modelIndex = 0) {
+  const model = MODELS[modelIndex];
   return new Promise((resolve, reject) => {
     const apiReq = https.request('https://api.anthropic.com/v1/messages', {
       method: 'POST',
@@ -16,7 +23,15 @@ async function anthropicRequest(prompt, apiKey, model = 'claude-3-5-sonnet-20240
         try {
           const body = JSON.parse(str);
           if (res.statusCode >= 200 && res.statusCode < 300) resolve(body);
-          else reject(new Error(`Anthropic ${res.statusCode}: ${JSON.stringify(body)}`));
+          else {
+            // Automatic Failover Logic
+            if (modelIndex < MODELS.length - 1) {
+              console.log(`Model ${model} failed, trying fallback...`);
+              resolve(anthropicRequest(prompt, apiKey, modelIndex + 1));
+            } else {
+              reject(new Error(`Anthropic ${res.statusCode}: ${JSON.stringify(body)}`));
+            }
+          }
         } catch (e) { reject(new Error('Invalid JSON from AI')); }
       });
     });
