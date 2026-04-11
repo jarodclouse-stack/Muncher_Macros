@@ -452,7 +452,7 @@ export const PantryView: React.FC = () => {
                           <div style={{ marginBottom: '12px', background: 'rgba(255,255,255,0.03)', padding: '12px', borderRadius: '14px', border: '1px solid rgba(255,255,255,0.08)' }}>
                             <NutritionFactsDisplay 
                               food={f} 
-                              multiplier={computeMultiplier(f.serving || '', f.stagedUnit || 'serving', parseFloat(String(f.stagedQty)) || 1)} 
+                              multiplier={multiplier} 
                               onEdit={(key, val) => {
                                 const next = [...aiStagedResults];
                                 next[i] = { ...f, [key]: val };
