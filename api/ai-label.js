@@ -44,15 +44,22 @@ async function anthropicRequest(prompt, apiKey, modelIndex = 0) {
   });
 }
 
-const LABEL_PROMPT = `Extract ALL nutrition data from this nutrition facts label image. 
+const LABEL_PROMPT = `DEEP SCAN: Extract EVERY piece of nutrition data from this label.
 Return ONLY a valid JSON object. 
+
 Requirements:
-1. Keys: name, brand, serving, sUnit (g, oz, cup, tbsp, tsp, piece, slice, whole, medium, scoop, serving), sQty (number), cal, p (protein g), c (carbs g), f (fat g), fb (fiber g), sugars (g), chol (dietary cholesterol mg), sat (saturated fat g), trans (trans fat g), mono (g), poly (g), Sodium (mg), Potassium (mg), Magnesium (mg), Calcium (mg), Iron (mg), Zinc (mg), and any other vitamins/minerals found.
-2. For numeric fields, return only the number. If not found, use 0.
-3. For 'name', provide a descriptive name for the food.
-4. For 'ingredients', extract the ingredients list if visible.
-5. Ensure the JSON is flat and minified. 
-No conversational text, only the raw JSON string starting with { and ending with }.`;
+1. MANDATORY KEYS: name, brand, serving, sUnit, sQty, cal, p (protein), c (carbs), f (fat).
+2. VITAMIN/MINERAL FOOTER: You must explicitly look at the bottom row of the label. Extract: 
+   - "Vitamin D" (mcg)
+   - "Calcium" (mg)
+   - "Iron" (mg)
+   - "Potassium" (mg)
+   - "Sodium" (mg)
+   - "Magnesium" (mg)
+   - Any other vitamins (Vitamin A, Vitamin C, Zinc, etc.) found.
+3. DATA FORMAT: Use these EXACT keys (e.g. "Vitamin D", "Iron"). Return ONLY the number (integer or float). Use 0 if not found.
+4. INGREDIENTS: Extract the full ingredients list string.
+5. NO CONVERSATION: Return only the raw minified JSON. No markdown backticks.`;
 
 async function readBody(req) {
   if (req.body && typeof req.body === 'object') return req.body;
