@@ -1,5 +1,5 @@
 import React, { useRef, useState } from 'react';
-import { Camera, Loader2, AlertCircle, ArrowRight, Plus, FileText, Barcode, QrCode } from 'lucide-react';
+import { Camera, Loader2, AlertCircle, ArrowRight, Plus, FileText, Barcode, QrCode, Search } from 'lucide-react';
 import { useDiary } from '../context/DiaryContext';
 import { scanBarcode, extractBarcodeDigits, scanQRCode, scanNutritionLabel } from '../lib/vision/scanner-logic';
 import { ImageCropperModal } from './ImageCropperModal';

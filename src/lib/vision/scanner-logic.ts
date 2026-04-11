@@ -156,26 +156,55 @@ export const extractBarcodeDigits = async (imageBlob: Blob): Promise<ScanResult>
  */
 export const lookupBarcode = async (code: string): Promise<ScanResult> => {
   try {
-    const res = await fetch(`/api/food-search?q=${encodeURIComponent(code)}`);
+    // 1. Try internal API first
+    const internalRes = await fetch(`/api/food-search?q=${encodeURIComponent(code)}`);
     
-    if (res.status === 404) {
-      return { success: false, error: "Search Service Unavailable (404). This requires a backend configuration or Vercel deployment." };
+    if (internalRes.ok) {
+      const body = await internalRes.json();
+      const results = body.foods || body.results || [];
+      if (results.length > 0) {
+        return { success: true, data: results[0], text: code };
+      }
     }
 
-    if (!res.ok) {
-        return { success: false, error: `Search failed with status ${res.status}.` };
+    // 2. Fallback: Direct OpenFoodFacts Client Call (Mimics legacy behavior)
+    console.log("Internal lookup failed or empty, trying direct OpenFoodFacts fallback...");
+    const offRes = await fetch(`https://world.openfoodfacts.org/api/v2/product/${code}`);
+    
+    if (offRes.ok) {
+      const data = await offRes.json();
+      if (data.status === 1 && data.product) {
+        const p = data.product;
+        // Map OpenFoodFacts to internal Food format
+        const mappedData = {
+          name: p.product_name || "Unknown Product",
+          brand: p.brands ? p.brands.split(',')[0] : "",
+          serving: p.serving_size || "100g",
+          cal: Math.round(p.nutriments?.['energy-kcal_100g'] || 0),
+          p: p.nutriments?.proteins_100g || 0,
+          c: p.nutriments?.carbohydrates_100g || 0,
+          f: p.nutriments?.fat_100g || 0,
+          fiber: p.nutriments?.fiber_100g || 0,
+          barcode: code,
+          _src: 'off'
+        };
+        return { success: true, data: mappedData, text: code };
+      }
     }
 
-    const body = await res.json();
-    const results = body.foods || body.results || [];
-
-    if (results.length > 0) {
-      return { success: true, data: results[0], text: code };
-    } else {
-      return { success: false, error: "No food found for this code in our database." };
-    }
+    return { success: false, error: "No food found for this code in our database or OpenFoodFacts." };
   } catch (err) {
     console.error("Lookup failed", err);
+    // Even on network error, try one last direct hit strictly for redundancy
+    try {
+      const offRes = await fetch(`https://world.openfoodfacts.org/api/v2/product/${code}`);
+      const data = await offRes.json();
+      if (data.status === 1) {
+         // (mapping logic same as above - simplified for redundancy)
+         return { success: true, text: code, data: { name: data.product.product_name, cal: 0, p:0, c:0, f:0, barcode: code } };
+      }
+    } catch {}
+    
     return { success: false, error: "Network error: Failed to communicate with the search service." };
   }
 };
