@@ -331,10 +331,19 @@ export const PantryView: React.FC = () => {
               {innerGlobalSearchTab === 'scan' ? (
                 <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 'var(--space-md)', padding: 'var(--space-md) 0' }}>
                   <BarcodeScanner 
-                    onScanSuccess={(code) => {
-                      setSearchQuery(code);
-                      handleGlobalSearch();
-                      setInnerGlobalSearchTab('search');
+                    onScanSuccess={(result) => {
+                      if (typeof result === 'object' && result !== null) {
+                        // It's a nutrition label OR a successful barcode lookup result
+                        setAiStagedResults([{ ...result, stagedQty: '1', stagedUnit: 'serving' }]);
+                        setIsAiReviewing(true);
+                        setInnerGlobalSearchTab('search'); // Switch to results view
+                      } else {
+                        // It's a raw barcode or QR code string
+                        const displayQuery = typeof result === 'string' ? result : (result?.name || '');
+                        setSearchQuery(String(displayQuery));
+                        handleGlobalSearch();
+                        setInnerGlobalSearchTab('search');
+                      }
                     }}
                     onScanError={(err) => setErrorMsg(err)}
                   />
