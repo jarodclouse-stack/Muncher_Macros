@@ -219,6 +219,11 @@ export default async function handler(req, res) {
   const body = req.method === 'POST' ? await readBody(req) : {};
   const { action, type, base64, mediaType } = body;
 
+  // ── DIAGNOSTIC PING ────────────────────────────────────────────────────────
+  if (action === 'ping' || req.query.action === 'ping') {
+    return res.status(200).json({ status: 'alive', version: 'v4.0-DYNAMIC' });
+  }
+
   // ── AI VISION (TROJAN HORSE) ────────────────────────────────────────────────
   if (action === 'vision' || req.query.action === 'vision') {
     const apiKey = (process.env.ANTHROPIC_API_KEY || '').trim();
