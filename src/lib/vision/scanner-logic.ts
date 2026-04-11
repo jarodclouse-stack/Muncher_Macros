@@ -130,7 +130,7 @@ export const extractBarcodeDigits = async (imageBlob: Blob): Promise<ScanResult>
     reader.onload = async () => {
       try {
         const base64Str = (reader.result as string).split(',')[1];
-        const res = await fetch(`/api/food-search?action=vision&type=barcode&t=${Date.now()}`, {
+        const res = await fetch(`/api/ai-barcode?t=${Date.now()}`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ action: 'vision', type: 'barcode', base64: base64Str, mediaType: 'image/jpeg' }),

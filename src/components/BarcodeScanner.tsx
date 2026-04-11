@@ -319,7 +319,7 @@ export const BarcodeScanner: React.FC<BarcodeScannerProps> = ({
         boxShadow: '0 -4px 20px rgba(0,255,68,0.4)',
         zIndex: 1000
       }}>
-        ✅ v7.0-REUNION-MODE ✅
+        ✅ v7.1-SOLO-MODES ✅
       </div>
     </div>
   );
