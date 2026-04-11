@@ -23,6 +23,27 @@ export const ProgressView: React.FC = () => {
   
   const [goalType, setGoalType] = useState(goals.goalType || 'maintain');
   const [goalRate, setGoalRate] = useState(goals.rate?.toString() || '0.5');
+  
+  // Auto-convert rate when units change
+  React.useEffect(() => {
+    const unitWeight = localCache.settings?.units?.weight || 'lb';
+    const currentVal = parseFloat(goalRate);
+    if (isNaN(currentVal)) return;
+    
+    // We detect if the current value is 'stale' compared to the unit
+    // If we just toggled to kg and it's still .5, we convert it to .23
+    // This is a one-time convenience conversion for the user
+    const lastUnit = (window as any).__lastUnit;
+    if (lastUnit && lastUnit !== unitWeight) {
+        if (unitWeight === 'kg') {
+           setGoalRate((currentVal * 0.453592).toFixed(2));
+        } else {
+           setGoalRate((currentVal / 0.453592).toFixed(1));
+        }
+    }
+    (window as any).__lastUnit = unitWeight;
+  }, [localCache.settings?.units?.weight]);
+
   const [targetWeight, setTargetWeight] = useState(goals.targetWeight?.toString() || '165');
 
   const [activityId, setActivityId] = useState(goals.activityId || 'moderate');
@@ -30,11 +51,16 @@ export const ProgressView: React.FC = () => {
   
   const [customRatioLb, setCustomRatioLb] = useState(goals.customRatioLb || (ACTIVITY_LEVELS.find((a: any) => a.id === 'moderate')?.ratioKg || 1.5) * 0.453592);
 
+  const unitWeight = localCache.settings?.units?.weight || 'lb';
+  const unitHeight = localCache.settings?.units?.height || 'in';
+  const isMetric = unitWeight === 'kg';
+
   const computed = computeGoals({
     sex, age, height: heightIn, weight: weightLb, 
     goalType, rate: goalRate, activityId, proteinLevelId, customRatioLb,
     macroP: goals.macroP, macroC: goals.macroC, macroF: goals.macroF,
-    customMicros: goals.customMicros
+    customMicros: goals.customMicros,
+    units: { weight: unitWeight, height: unitHeight }
   });
 
   const [waterGoal, setWaterGoal] = useState(goals.waterGoal || 120);
@@ -105,7 +131,7 @@ export const ProgressView: React.FC = () => {
             {Math.abs(parseFloat(weightLb.toString()) - parseFloat(targetWeight.toString())).toFixed(1)}
           </div>
           <div style={{ fontSize: '13px', color: 'var(--theme-text-dim)', textTransform: 'uppercase', letterSpacing: '1px', marginTop: 'var(--space-xs)', maxWidth: '400px', margin: 'var(--space-xs) auto 0' }}>
-            lbs remaining to Reach Your {targetWeight} lbs goal
+            {unitWeight} remaining to Reach Your {targetWeight} {unitWeight} goal
           </div>
         </div>
 
@@ -120,8 +146,8 @@ export const ProgressView: React.FC = () => {
             }} />
           </div>
           <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '11px', color: 'var(--theme-text-dim)', marginTop: 'var(--space-md)' }}>
-            <span>Current: {weightLb} lbs</span>
-            <span>Target: {targetWeight} lbs</span>
+            <span>Current: {weightLb} {unitWeight}</span>
+            <span>Target: {targetWeight} {unitWeight}</span>
           </div>
         </div>
       </div>
@@ -162,11 +188,11 @@ export const ProgressView: React.FC = () => {
               </div>
                <div style={{ display: 'flex', gap: 'var(--space-sm)' }}>
                 <div style={{ flex: 1 }}>
-                  <label className="lbl">Height (in)</label>
+                  <label className="lbl">Height ({unitHeight})</label>
                   <input type="number" className="inp" value={heightIn} onChange={e => setHeightIn(cleanNumInput(e.target.value))} />
                 </div>
                 <div style={{ flex: 1 }}>
-                  <label className="lbl">Weight (lb)</label>
+                  <label className="lbl">Weight ({unitWeight})</label>
                   <input type="number" className="inp" value={weightLb} onChange={e => setWeightLb(cleanNumInput(e.target.value))} />
                 </div>
               </div>
@@ -189,7 +215,7 @@ export const ProgressView: React.FC = () => {
               </div>
               {goalType !== 'maintain' && (
                 <div>
-                  <label className="lbl">Rate (lbs per week)</label>
+                  <label className="lbl">Rate ({unitWeight} per week)</label>
                   <div style={{ display: 'flex', gap: 'var(--space-xs)' }}>
                     <input type="number" step="0.25" min="0" max="1.25" className="inp" value={goalRate} onChange={e => {
                       setGoalRate(cleanNumInput(e.target.value));
@@ -225,14 +251,14 @@ export const ProgressView: React.FC = () => {
               <label className="lbl">Protein Target Level</label>
               <select className="inp" value={proteinLevelId} onChange={e => setProteinLevelId(e.target.value)}>
                 {ACTIVITY_LEVELS.map((a: any) => (
-                  <option key={`p-${a.id}`} value={a.id}>{a.label} ({Math.round(a.ratioKg * 0.453592 * 100)/100}g / lb)</option>
+                  <option key={`p-${a.id}`} value={a.id}>{a.label} ({isMetric ? Math.round(a.ratioKg * 100)/100 : Math.round(a.ratioKg * 0.453592 * 100)/100}g / {unitWeight})</option>
                 ))}
                 <option value="custom">Custom target</option>
               </select>
             </div>
             {proteinLevelId === 'custom' && (
               <div>
-                <label className="lbl">Custom Protein (g per lb of bodyweight)</label>
+                <label className="lbl">Custom Protein (g per {unitWeight} of bodyweight)</label>
                 <input type="number" step="0.05" className="inp" value={customRatioLb} onChange={e => setCustomRatioLb(parseFloat(e.target.value) || 0)} />
               </div>
             )}
@@ -352,7 +378,7 @@ export const ProgressView: React.FC = () => {
                   </button>
                 </div>
               </div>
-              <div style={{ fontSize: '11px', color: 'var(--theme-text-dim)', marginTop: '4px' }}>Standard recommendation is half your bodyweight in oz (e.g. {Math.round(weightLb / 2)} oz).</div>
+              <div style={{ fontSize: '11px', color: 'var(--theme-text-dim)', marginTop: '4px' }}>Standard recommendation is half your bodyweight in oz (e.g. {Math.round((isMetric ? weightLb * 2.20462 : Number(weightLb)) / 2)} oz).</div>
             </div>
 
           </div>

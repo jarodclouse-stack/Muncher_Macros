@@ -27,25 +27,31 @@ export function computeNutrientGoals(sex: string, activityId: string) {
 }
 
 export function computeGoals(g: any) {
+  const units = g.units || { weight: 'lb', height: 'in' };
   const act = ACTIVITY_LEVELS.find((a) => a.id === g.activityId) || ACTIVITY_LEVELS[2];
   const proteinAct = ACTIVITY_LEVELS.find((a) => a.id === (g.proteinLevelId || g.activityId)) || act;
+  
+  // Normalize weight to LBS for protein ratio logic if stored in KG
+  const wtLb = units.weight === 'kg' ? g.weight / KG_PER_LB : (g.weight || 175);
   const ratioLb = g.customRatioLb || (proteinAct.ratioKg * KG_PER_LB);
-  const wt = g.weight || 175;
-  const proteinG = Math.round(wt * ratioLb);
+  const proteinG = Math.round(wtLb * ratioLb);
+  
   const sex = g.sex === 'f' ? 'female' : 'male';
   const activityId = g.activityId || 'moderate';
 
   let bmr = 0, tdee = 0, targetCal = 2000, calAdj = 0;
   if (g.weight && g.height && g.age) {
-    const kg = g.weight * KG_PER_LB;
-    const cm = g.height * 2.54;
+    // Normalize to Metric for original math
+    const kg = units.weight === 'kg' ? g.weight : g.weight * KG_PER_LB;
+    const cm = units.height === 'cm' ? g.height : g.height * 2.54;
+    
     bmr = calculateBMR({ sex, weightKg: kg, heightCm: cm, age: g.age });
     tdee = calculateTDEE(bmr, activityId);
     
     if (g.goalType === 'lose') {
-      calAdj = -Math.abs(calculateWeightGoalCalories(0, g.rate || 0).calorieAdjustment || 0);
+      calAdj = -Math.abs(calculateWeightGoalCalories(0, g.rate || 0, units.weight).calorieAdjustment || 0);
     } else if (g.goalType === 'gain') {
-      calAdj = Math.abs(calculateWeightGoalCalories(0, g.rate || 0).calorieAdjustment || 0);
+      calAdj = Math.abs(calculateWeightGoalCalories(0, g.rate || 0, units.weight).calorieAdjustment || 0);
     }
     targetCal = tdee + calAdj;
   }

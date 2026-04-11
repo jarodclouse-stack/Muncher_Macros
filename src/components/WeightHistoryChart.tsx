@@ -29,6 +29,7 @@ interface WeightHistoryChartProps {
 
 export const WeightHistoryChart: React.FC<WeightHistoryChartProps> = ({ localCache, targetWeight }) => {
   const [window, setWindow] = useState<'7d' | '30d' | 'all'>('30d');
+  const unitWeight = localCache.settings?.units?.weight || 'lb';
 
   const { chartData, trend } = useMemo(() => {
     // 1. Gather all date-keyed weights
@@ -222,10 +223,10 @@ export const WeightHistoryChart: React.FC<WeightHistoryChartProps> = ({ localCac
             <span style={{ color: trend.dirColor, fontWeight: '800', fontSize: '13px' }}>{trend.direction}</span>
           </div>
           <div style={{ fontSize: '12px', color: 'var(--theme-text, #c0c5d0)' }}>
-            <span style={{ color: 'var(--theme-text, #fff)', fontWeight: '700' }}>{trend.totalChange >= 0 ? '+' : ''}{trend.totalChange.toFixed(1)}</span> lbs in {trend.daySpan} days
+            <span style={{ color: 'var(--theme-text, #fff)', fontWeight: '700' }}>{trend.totalChange >= 0 ? '+' : ''}{trend.totalChange.toFixed(1)}</span> {unitWeight} in {trend.daySpan} days
           </div>
           <div style={{ fontSize: '12px', color: 'var(--theme-text-dim, #8b8b9b)' }}>
-            ({trend.lbsPerWeek >= 0 ? '+' : ''}{trend.lbsPerWeek.toFixed(1)} lbs/week avg)
+            ({trend.lbsPerWeek >= 0 ? '+' : ''}{trend.lbsPerWeek.toFixed(1)} {unitWeight}/week avg)
           </div>
         </div>
       )}

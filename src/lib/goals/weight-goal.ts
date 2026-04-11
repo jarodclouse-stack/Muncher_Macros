@@ -10,11 +10,15 @@ export interface WeightGoalResult {
   targetCalories: number;
 }
 
-export function calculateWeightGoalCalories(tdee?: number | string, rateLbsPerWeek?: number | string): WeightGoalResult {
-  const numericRate = Number(rateLbsPerWeek || 0);
-  const rawAdjustment = numericRate * 500;
+export function calculateWeightGoalCalories(tdee?: number | string, ratePerWeek?: number | string, unit: 'kg' | 'lb' = 'lb'): WeightGoalResult {
+  const numericRate = Number(ratePerWeek || 0);
   
-  // They scale the deficit by 0.8 to be conservative
+  // 1 lb of fat ~= 3500 kcal -> 500 cal/day adjustment for 1lb/week
+  // 1 kg of fat ~= 7716 kcal -> 1102 cal/day adjustment for 1kg/week
+  const multiplier = unit === 'kg' ? 1102 : 500;
+  const rawAdjustment = numericRate * multiplier;
+  
+  // Deficit is slightly scaled to be conservative
   const adjustedCalorieChange = rawAdjustment * 0.8;
   
   return {
