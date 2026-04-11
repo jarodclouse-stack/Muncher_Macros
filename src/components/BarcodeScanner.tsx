@@ -310,6 +310,13 @@ export const BarcodeScanner: React.FC<BarcodeScannerProps> = ({
         @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
         @keyframes slideDown { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
       `}</style>
+      {/* Version Verification Label */}
+      <div style={{
+        position: 'absolute', bottom: '10px', right: '10px', opacity: 0.3,
+        fontSize: '10px', color: '#fff', pointerEvents: 'none'
+      }}>
+        v2.0-STABLE
+      </div>
     </div>
   );
 };

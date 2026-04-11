@@ -88,10 +88,11 @@ export const scanNutritionLabel = async (imageBlob: Blob): Promise<ScanResult> =
     reader.onload = async () => {
       try {
         const base64Str = (reader.result as string).split(',')[1];
-        const res = await fetch('/api/vision?type=label', {
+        const res = await fetch(`/api/vision?type=label&t=${Date.now()}`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ base64: base64Str, mediaType: 'image/jpeg' })
+          body: JSON.stringify({ base64: base64Str, mediaType: 'image/jpeg' }),
+          cache: 'no-store'
         });
 
         if (res.status === 404) {
@@ -124,10 +125,11 @@ export const extractBarcodeDigits = async (imageBlob: Blob): Promise<ScanResult>
     reader.onload = async () => {
       try {
         const base64Str = (reader.result as string).split(',')[1];
-        const res = await fetch('/api/vision?type=barcode', {
+        const res = await fetch(`/api/vision?type=barcode&t=${Date.now()}`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ base64: base64Str, mediaType: 'image/jpeg' })
+          body: JSON.stringify({ base64: base64Str, mediaType: 'image/jpeg' }),
+          cache: 'no-store'
         });
 
         if (res.status === 404) {

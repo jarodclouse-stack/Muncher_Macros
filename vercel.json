@@ -1,4 +1,10 @@
 {
+  "functions": {
+    "api/vision.js": {
+      "memory": 1024,
+      "maxDuration": 15
+    }
+  },
   "rewrites": [
     { "source": "/((?!api/).*)", "destination": "/index.html" }
   ]

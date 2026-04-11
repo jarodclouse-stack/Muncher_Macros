@@ -133,14 +133,14 @@ export const ImageCropperModal: React.FC<ImageCropperModalProps> = ({ image, onC
           <button 
             onClick={() => setAspect(undefined)}
             style={{ 
-              flex: 1, padding: '10px', borderRadius: '12px', fontSize: '11px', fontWeight: '800', cursor: 'pointer',
+              flex: 1.2, padding: '10px', borderRadius: '12px', fontSize: '11px', fontWeight: '800', cursor: 'pointer',
               background: aspect === undefined ? 'var(--theme-accent)' : 'rgba(255,255,255,0.05)',
               border: aspect === undefined ? 'none' : '1px solid rgba(255,255,255,0.1)',
               color: aspect === undefined ? '#000' : '#fff',
               transition: 'all 0.2s',
               textAlign: 'center'
             }}>
-            FREEFORM (ANY)
+            FREEFORM (ANY SHAPE)
           </button>
           
           <button 
