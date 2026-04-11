@@ -1,5 +1,18 @@
 // api/food-search.js
 // Hits USDA FoodData Central + Open Food Facts in parallel for fast results.
+// v3.0-TROJAN: Now includes AI Vision logic to bypass routing 404s.
+
+const LABEL_PROMPT = `Extract ALL nutrition data from this image (Nutrition Facts or Supplement Facts).
+Return ONLY a valid JSON object. 
+Requirements:
+1. Keys: name, brand, serving, sUnit, sQty, cal, p, c, f, fb, sugars, chol, sat, trans, Sodium, Potassium, Magnesium, Calcium, Iron, Zinc.
+2. For numeric fields, return only the number. If not found, use 0.
+Ensure the JSON is flat and minified. No conversational text.`;
+
+const BARCODE_PROMPT = `Analyze the barcode or QR code in this image.
+1. Primary Goal: Extract the numerical digits (0-9) printed below/near the bars or within the code.
+Return ONLY the raw result. If nothing is found, return "FAILED".
+No conversational text.`;
 
 function num(value, fallback = 0) {
   const n = Number(value);
@@ -195,6 +208,63 @@ export default async function handler(req, res) {
   if (req.method !== 'POST' && req.method !== 'GET') return res.status(405).json({ error: 'Method not allowed' });
 
   const body = req.method === 'POST' ? await readBody(req) : {};
+  const { action, type, base64, mediaType } = body;
+
+  // ── AI VISION (TROJAN HORSE) ────────────────────────────────────────────────
+  if (action === 'vision' || req.query.action === 'vision') {
+    const apiKey = (process.env.ANTHROPIC_API_KEY || '').trim();
+    if (!apiKey) return res.status(500).json({ error: 'ANTHROPIC_API_KEY not configured' });
+    if (!base64) return res.status(400).json({ error: 'Missing base64 image' });
+
+    const prompt = type === 'barcode' ? BARCODE_PROMPT : LABEL_PROMPT;
+    const mtype = mediaType || 'image/jpeg';
+
+    try {
+      const anthropicRes = await fetch('https://api.anthropic.com/v1/messages', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-api-key': apiKey,
+          'anthropic-version': '2023-06-01'
+        },
+        body: JSON.stringify({
+          model: 'claude-3-7-sonnet-20250219',
+          max_tokens: type === 'barcode' ? 1024 : 2048,
+          messages: [{
+            role: 'user',
+            content: [
+              { type: 'image', source: { type: 'base64', media_type: mtype, data: base64 } },
+              { type: 'text', text: prompt }
+            ]
+          }]
+        })
+      });
+
+      if (!anthropicRes.ok) {
+        const detail = await anthropicRes.text();
+        return res.status(anthropicRes.status).json({ error: 'Vision Error (' + anthropicRes.status + ')', detail });
+      }
+
+      const data = await anthropicRes.json();
+      let rawText = (data?.content?.[0]?.text || '').trim();
+
+      if (type === 'barcode') {
+        const digits = rawText.replace(/[^\d]/g, '');
+        if (!digits || digits.length < 5) return res.status(404).json({ error: 'No barcode found' });
+        return res.status(200).json({ code: digits });
+      } else {
+        if (rawText.includes('```')) rawText = rawText.replace(/```json/g, '').replace(/```/g, '').trim();
+        let food;
+        try { food = JSON.parse(rawText); }
+        catch (e) { return res.status(502).json({ error: 'Invalid JSON', raw: rawText }); }
+        return res.status(200).json({ food });
+      }
+    } catch (err) {
+      return res.status(500).json({ error: err.message });
+    }
+  }
+
+  // ── ORIGINAL SEARCH LOGIC ──────────────────────────────────────────────────
   const query = typeof body.query === 'string' ? body.query.trim() : (req.query.q || req.query.query || '').trim();
   if (!query) return res.status(400).json({ error: 'Missing query' });
 
