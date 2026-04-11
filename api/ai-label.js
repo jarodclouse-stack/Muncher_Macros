@@ -3,7 +3,7 @@ import https from 'https';
 // THE SYNC: Using the specific aliases verified in ai-describe.js
 const MODELS = [
   'claude-sonnet-4-6',           // Primary (3.5 Sonnet alias)
-  'claude-haiku-4-5-20241001',   // Fallback
+  'claude-haiku-4-5-20251001',   // ✅ FIXED: was 20241001
 ];
 
 async function anthropicRequest(prompt, apiKey, modelIndex = 0) {
@@ -24,7 +24,6 @@ async function anthropicRequest(prompt, apiKey, modelIndex = 0) {
           const body = JSON.parse(str);
           if (res.statusCode >= 200 && res.statusCode < 300) resolve(body);
           else {
-            // Automatic Failover Logic
             if (modelIndex < MODELS.length - 1) {
               console.log(`Model ${model} failed, trying fallback...`);
               resolve(anthropicRequest(prompt, apiKey, modelIndex + 1));
@@ -45,7 +44,6 @@ async function anthropicRequest(prompt, apiKey, modelIndex = 0) {
   });
 }
 
-// Prompt kept as per user's GPT-provided setup
 const LABEL_PROMPT = `Extract ALL nutrition data from this nutrition facts label image. 
 Return ONLY a valid JSON object. 
 Requirements:
@@ -108,7 +106,6 @@ export default async function handler(req, res) {
     return res.status(200).json({ food });
 
   } catch (err) {
-    // Return detailed error for diagnostics in the UI
     return res.status(500).json({ error: err.message });
-  }
+  } 
 }
