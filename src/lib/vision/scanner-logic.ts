@@ -95,7 +95,7 @@ export const scanNutritionLabel = async (imageBlob: Blob): Promise<ScanResult> =
         });
 
         if (res.status === 404) {
-          return resolve({ success: false, error: "AI Service Unavailable (404). This feature requires a backend server or Vercel deployment." });
+          return resolve({ success: false, error: "AI Service Unavailable (404). This usually means the Vercel deployment is still in progress or the API route is missing. Please wait 30 seconds and try again." });
         }
 
         const body = await res.json();
@@ -131,7 +131,7 @@ export const extractBarcodeDigits = async (imageBlob: Blob): Promise<ScanResult>
         });
 
         if (res.status === 404) {
-          return resolve({ success: false, error: "AI OCR Service Unavailable (404). Backend deployment required for fallback reading." });
+          return resolve({ success: false, error: "AI OCR Service Unavailable (404). This usually means the Vercel deployment is still in progress. Please wait 30 seconds." });
         }
 
         const body = await res.json();

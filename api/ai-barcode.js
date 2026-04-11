@@ -14,7 +14,8 @@ export default async function handler(req, res) {
   if (req.method === 'OPTIONS') return res.status(200).end();
   if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
 
-  const { base64, mediaType } = req.body || {};
+  const body = await readBody(req);
+  const { base64, mediaType } = body || {};
   if (!base64) return res.status(400).json({ error: 'Missing base64 image' });
 
   const apiKey = process.env.ANTHROPIC_API_KEY;
@@ -64,3 +65,13 @@ export default async function handler(req, res) {
     return res.status(500).json({ error: err.message });
   }
 };
+
+async function readBody(req) {
+  if (req.body && typeof req.body === 'object') return req.body;
+  return new Promise((resolve) => {
+    let raw = '';
+    req.on('data', c => { raw += c; });
+    req.on('end', () => { try { resolve(JSON.parse(raw)); } catch { resolve({}); } });
+    req.on('error', () => resolve({}));
+  });
+}

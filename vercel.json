@@ -1,5 +1,13 @@
 {
-  "rewrites": [
-    { "source": "/((?!api/).*)", "destination": "/index.html" }
+  "routes": [
+    { "src": "/api/ai-label", "dest": "/api/ai-label.js" },
+    { "src": "/api/ai-barcode", "dest": "/api/ai-barcode.js" },
+    { "src": "/api/food-search", "dest": "/api/food-search.js" },
+    { "src": "/api/ai-describe", "dest": "/api/ai-describe.js" },
+    { "src": "/api/ai-lookup", "dest": "/api/ai-lookup.js" },
+    { "src": "/api/check", "dest": "/api/check.js" },
+    { "src": "/api/off-search", "dest": "/api/off-search.js" },
+    { "src": "/api/carbClassifier", "dest": "/api/carbClassifier.js" },
+    { "src": "/((?!api/).*)", "dest": "/index.html" }
   ]
 }
