@@ -326,7 +326,7 @@ export const AddFoodModal: React.FC<AddFoodModalProps> = ({ meal, onClose }) => 
         />
 
         {/* SYNC TEST v2.5 */}
-        <div style={{ padding: '20px' }}>
+        <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
           <div style={{ color: 'var(--theme-error)', fontSize: '12px', marginBottom: '8px', textAlign: 'center' }}>{errorMsg}</div>
           
           {activeTab === 'search' || activeTab === 'ai-search' ? (

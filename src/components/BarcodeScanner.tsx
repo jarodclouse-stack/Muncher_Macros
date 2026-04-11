@@ -20,6 +20,7 @@ export const BarcodeScanner: React.FC<BarcodeScannerProps> = ({
   const [error, setError] = useState<string | null>(null);
   const [manualCode, setManualCode] = useState('');
   const [pendingImage, setPendingImage] = useState<string | null>(null);
+  const [pendingBlob, setPendingBlob] = useState<Blob | null>(null);
   
   React.useEffect(() => {
     setIsScannerActive(true);
@@ -30,12 +31,12 @@ export const BarcodeScanner: React.FC<BarcodeScannerProps> = ({
     const file = event.target.files?.[0];
     if (!file) return;
 
-    const reader = new FileReader();
-    reader.onload = () => {
-      setPendingImage(reader.result as string);
-      setStatus('cropping');
-    };
-    reader.readAsDataURL(file);
+    // AI OPTIMIZATION: Use ObjectURL instead of DataURL for better memory efficiency
+    const objectUrl = URL.createObjectURL(file);
+    setPendingImage(objectUrl);
+    setPendingBlob(file);
+    setStatus('cropping');
+    
     if (fileInputRef.current) fileInputRef.current.value = "";
   };
 
@@ -234,13 +235,15 @@ export const BarcodeScanner: React.FC<BarcodeScannerProps> = ({
       )}
 
       {/* Cropper Modal */}
-      {status === 'cropping' && pendingImage && (
+      {status === 'cropping' && pendingImage && pendingBlob && (
         <ImageCropperModal 
           image={pendingImage}
+          originalBlob={pendingBlob}
           onCropComplete={processImage}
           onCancel={() => {
             setStatus('idle');
             setPendingImage(null);
+            setPendingBlob(null);
           }}
         />
       )}
