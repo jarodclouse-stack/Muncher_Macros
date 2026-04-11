@@ -9,6 +9,7 @@ export interface ScanResult {
   text?: string;
   data?: any;
   error?: string;
+  detail?: string;
 }
 
 
