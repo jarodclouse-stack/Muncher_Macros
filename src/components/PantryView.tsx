@@ -424,13 +424,9 @@ export const PantryView: React.FC = () => {
                   </div>
                   
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', marginBottom: '16px' }}>
-                    {aiStagedResults.map((f, i) => {
-                      const multiplier = computeMultiplier(f.serving || '', f.stagedUnit || 'serving', parseFloat(String(f.stagedQty)) || 1);
-                      const displayCal = Math.round((Number(f.cal) || 0) * multiplier);
-                      const displayP = Math.round((Number(f.p) || 0) * multiplier);
-                      const displayC = Math.round((Number(f.c) || 0) * multiplier);
-                      const displayF = Math.round((Number(f.f) || 0) * multiplier);
-                      const isExpanded = expandedAiIdx === i;
+                      {aiStagedResults.map((f, i) => {
+                        const multiplier = computeMultiplier(f.serving || '', f.stagedUnit || 'serving', parseFloat(String(f.stagedQty)) || 1);
+                        const isExpanded = expandedAiIdx === i;
 
                       return (
                         <div key={i} style={{ background: 'rgba(255,255,255,0.03)', padding: '16px', borderRadius: '18px', border: '1px solid rgba(255,255,255,0.08)', backdropFilter: 'blur(5px)' }}>
