@@ -377,6 +377,29 @@ export const PantryView: React.FC = () => {
                   ))}
                 </div>
               )}
+
+              {!isSearching && searchQuery && searchResults.length === 0 && (
+                <div style={{ textAlign: 'center', padding: '40px 20px', background: 'rgba(0,0,0,0.2)', borderRadius: '24px', marginTop: '20px', border: '1px dashed rgba(255,255,255,0.1)' }}>
+                  <div style={{ color: 'rgba(255,255,255,0.4)', fontSize: '13px', fontWeight: '800', marginBottom: '16px' }}>NO FOODS FOUND IN DATABASE</div>
+                  {/^\d+$/.test(searchQuery) && searchQuery.length >= 8 ? (
+                    <button 
+                      onClick={() => {
+                        setForm({...form, name: "New Product", barcode: searchQuery});
+                        setActiveTab('manual');
+                      }}
+                      style={{ 
+                        width: '100%', padding: '14px', background: 'var(--theme-accent)', border: 'none', 
+                        borderRadius: '16px', color: '#000', fontWeight: '900', fontSize: '12px',
+                        display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px'
+                      }}
+                    >
+                      <Plus size={18} /> CREATE FOOD WITH THIS BARCODE
+                    </button>
+                  ) : (
+                    <div style={{ fontSize: '11px', color: 'rgba(255,255,255,0.3)' }}>Try a broader search or add it manually in the Kitchen Lab</div>
+                  )}
+                </div>
+              )}
               
               {errorMsg && <div style={{ color: 'var(--theme-error)', fontSize: '13px', marginTop: '12px', textAlign: 'center' }}>{errorMsg}</div>}
 

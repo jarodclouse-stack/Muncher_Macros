@@ -20,6 +20,7 @@ export const BarcodeScanner: React.FC<BarcodeScannerProps> = ({
   const [error, setError] = useState<string | null>(null);
   const [manualCode, setManualCode] = useState('');
   const [pendingImage, setPendingImage] = useState<string | null>(null);
+  const [detectedText, setDetectedText] = useState<string | null>(null);
   
   React.useEffect(() => {
     setIsScannerActive(true);
@@ -30,7 +31,8 @@ export const BarcodeScanner: React.FC<BarcodeScannerProps> = ({
     const file = event.target.files?.[0];
     if (!file) return;
 
-    // AI OPTIMIZATION: Use ObjectURL instead of DataURL for better memory efficiency
+    setError(null);
+    setDetectedText(null);
     const objectUrl = URL.createObjectURL(file);
     setPendingImage(objectUrl);
     setStatus('cropping');
@@ -63,9 +65,11 @@ export const BarcodeScanner: React.FC<BarcodeScannerProps> = ({
           setStatus('ai-reading');
           const aiResult = await extractBarcodeDigits(imageBlob);
           if (aiResult.success && aiResult.text) {
-            onScanSuccess(aiResult.text);
-            setStatus('idle');
-            setScanType(null);
+            setDetectedText(aiResult.text);
+            setManualCode(aiResult.text); 
+            // We DON'T auto-submit here, let user see the code and choose to search
+            setStatus('failed');
+            setError("We found a code but couldn't verify it automatically. Try searching for these numbers manually.");
           } else {
             throw new Error(aiResult.error || "Could not read code. Ensure it is clear.");
           }
@@ -75,7 +79,6 @@ export const BarcodeScanner: React.FC<BarcodeScannerProps> = ({
         setStatus('ai-reading');
         const labelResult = await scanNutritionLabel(imageBlob);
         if (labelResult.success && labelResult.data) {
-          // We pass the RAW FOOD DATA back, parent must handle both string and object
           onScanSuccess(labelResult.data);
           setStatus('idle');
           setScanType(null);
@@ -88,6 +91,7 @@ export const BarcodeScanner: React.FC<BarcodeScannerProps> = ({
       const errorMessage = typeof err === 'string' ? err : (err.message || "Failed to read. Please enter manually.");
       setError(errorMessage);
       setStatus('failed');
+      // DO NOT clear scanType here, Error Phase needs it!
       if (onScanError) onScanError(errorMessage);
     }
   };
@@ -222,49 +226,65 @@ export const BarcodeScanner: React.FC<BarcodeScannerProps> = ({
             
             <p style={{ fontSize: '12px', color: 'rgba(255,255,255,0.6)', margin: 0, lineHeight: '1.4' }}>
               {scanType === 'nutrition' 
-                ? (error?.includes('404') 
-                   ? "The AI Scan Service is currently unavailable in this environment. Please try again after the next deployment." 
-                   : "AI analysis failed. Please ensure the label is flat, well-lit, and occupies the whole frame.")
-                : (error?.includes('404') 
-                   ? "The AI lookup service is currently offline. You can still try searching for the food manually below."
+                ? (error?.includes('404') || error?.includes('Network')
+                   ? "The AI Scan Service is currently unreachable. Please try a different scan type or check back later." 
+                   : "AI analysis failed. Please ensure the label is well-lit and occupies the whole frame.")
+                : (error?.includes('404') || error?.includes('Network')
+                   ? "The database service is currently offline. You can still try a manual search below."
                    : error || "We couldn't read the code. Please ensure it's well-lit and not blurry.")}
             </p>
 
             {scanType !== 'nutrition' && (
-              <form onSubmit={handleManualSubmit} style={{ display: 'flex', gap: '8px', marginTop: '4px' }}>
-                <div style={{ flex: 1, position: 'relative' }}>
-                  <input 
-                    type="text" placeholder="Enter barcode manually..."
-                    value={manualCode}
-                    onChange={e => setManualCode(e.target.value.replace(/\D/g, ''))}
-                    style={{ width: '100%', padding: '14px', background: 'rgba(0,0,0,0.4)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '16px', color: '#fff', fontSize: '14px', outline: 'none' }}
-                  />
-                  <Barcode size={16} style={{ position: 'absolute', right: '14px', top: '50%', transform: 'translateY(-50%)', opacity: 0.3 }} />
-                </div>
-                <button 
-                  type="submit" 
-                  disabled={manualCode.length < 5}
-                  style={{ 
-                    padding: '12px 20px', background: manualCode.length >= 5 ? 'var(--theme-accent)' : 'rgba(255,255,255,0.05)', 
-                    borderRadius: '16px', border: 'none', color: manualCode.length >= 5 ? '#000' : 'rgba(255,255,255,0.2)',
-                    transition: 'all 0.2s', cursor: manualCode.length >= 5 ? 'pointer' : 'not-allowed'
-                  }}
-                >
-                  <ArrowRight size={22} strokeWidth={3} />
-                </button>
-              </form>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                <form onSubmit={handleManualSubmit} style={{ display: 'flex', gap: '8px', marginTop: '4px' }}>
+                  <div style={{ flex: 1, position: 'relative' }}>
+                    <input 
+                      type="text" placeholder="Enter barcode manually..."
+                      value={manualCode}
+                      onChange={e => setManualCode(e.target.value.replace(/\D/g, ''))}
+                      style={{ width: '100%', padding: '14px', background: 'rgba(0,0,0,0.4)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '16px', color: '#fff', fontSize: '14px', outline: 'none' }}
+                    />
+                    <Barcode size={16} style={{ position: 'absolute', right: '14px', top: '50%', transform: 'translateY(-50%)', opacity: 0.3 }} />
+                  </div>
+                  <button 
+                    type="submit" 
+                    disabled={manualCode.length < 5}
+                    style={{ 
+                      padding: '12px 20px', background: manualCode.length >= 5 ? 'var(--theme-accent)' : 'rgba(255,255,255,0.05)', 
+                      borderRadius: '16px', border: 'none', color: manualCode.length >= 5 ? '#000' : 'rgba(255,255,255,0.2)',
+                      transition: 'all 0.2s', cursor: manualCode.length >= 5 ? 'pointer' : 'not-allowed'
+                    }}
+                  >
+                    <ArrowRight size={22} strokeWidth={3} />
+                  </button>
+                </form>
+
+                {detectedText && (
+                  <button 
+                    onClick={() => { onScanSuccess(detectedText); setStatus('idle'); setScanType(null); }}
+                    style={{ 
+                      width: '100%', padding: '14px', background: 'var(--theme-accent)', border: 'none', 
+                      borderRadius: '16px', color: '#000', fontWeight: '900', fontSize: '12px',
+                      display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px',
+                      boxShadow: '0 4px 15px rgba(0,201,255,0.2)'
+                    }}
+                  >
+                    <Search size={18} /> SEARCH FOR {detectedText}
+                  </button>
+                )}
+              </div>
             )}
 
             <div style={{ display: 'flex', gap: '12px', marginTop: '8px' }}>
               <button 
                 onClick={() => { setScanType(null); setStatus('idle'); setError(null); }} 
-                style={{ flex: 1, padding: '12px', background: 'var(--theme-accent)', border: 'none', borderRadius: '14px', color: '#000', fontWeight: '900', fontSize: '11px', cursor: 'pointer' }}
+                style={{ flex: 1, padding: '12px', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '14px', color: '#fff', fontWeight: '800', fontSize: '11px', cursor: 'pointer' }}
               >
                 {scanType === 'nutrition' ? 'TRY AGAIN' : 'PHOTO AGAIN'}
               </button>
               <button 
                 onClick={() => { setScanType(null); setStatus('idle'); setError(null); setIsScannerActive(false); }} 
-                style={{ flex: 1, padding: '12px', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '14px', color: '#fff', fontWeight: '800', fontSize: '11px', cursor: 'pointer' }}
+                style={{ flex: 1, padding: '12px', background: 'none', border: '1px solid transparent', borderRadius: '14px', color: 'var(--theme-accent)', fontWeight: '800', fontSize: '11px', cursor: 'pointer' }}
               >
                 {scanType === 'nutrition' ? 'BACK TO HOME' : 'EXIT SCANNER'}
               </button>
