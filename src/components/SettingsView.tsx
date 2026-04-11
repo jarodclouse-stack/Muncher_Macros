@@ -28,10 +28,7 @@ export const SettingsView: React.FC = () => {
     purchasedThemes: [
       'obsidian', 'cybermancer', 'gold-reserve', 'glacier-peak', 
       'forest-phantom', 'midnight-crimson', 'sunset-horizon', 
-      'quantum-violet', 'matcha-zen', 'sandstone',
-      'lemon-meringue', 'sky-breeze', 'rose-petal', 'pistachio-cream',
-      'orange-creamsicle', 'iced-chai', 'lilac-cloud', 'mint-frost',
-      'banana-pudding', 'grey-mist'
+      'quantum-violet', 'matcha-zen', 'sandstone'
     ]
   };
 
