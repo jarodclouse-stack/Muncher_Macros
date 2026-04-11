@@ -59,17 +59,6 @@ export const BadgesView: React.FC = () => {
     { id: 'midnight-galaxy', name: 'Midnight Galaxy', emoji: '🌌', price: 0, colors: ['#10002B', '#E0AAFF'] },
     { id: 'nordic-frost', name: 'Nordic Frost', emoji: '🧊', price: 0, colors: ['#F0F8FF', '#4682B4'] },
     { id: 'ember-forge', name: 'Ember Forge', emoji: '⚒️', price: 0, colors: ['#1B0B04', '#FF4500'] },
-    // Gourmet Light Series v2
-    { id: 'lemon-meringue', name: 'Lemon Meringue', emoji: '🍋', price: 0, colors: ['#FFFDF0', '#FACC15'] },
-    { id: 'sky-breeze', name: 'Sky Breeze', emoji: '🌬️', price: 0, colors: ['#F0F9FF', '#0EA5E9'] },
-    { id: 'rose-petal', name: 'Rose Petal', emoji: '🌹', price: 0, colors: ['#FFF1F2', '#FB7185'] },
-    { id: 'pistachio-cream', name: 'Pistachio Cream', emoji: '🍦', price: 0, colors: ['#F0FDF4', '#4ADE80'] },
-    { id: 'orange-creamsicle', name: 'Orange Creamsicle', emoji: '🍊', price: 0, colors: ['#FFF7ED', '#FB923C'] },
-    { id: 'iced-chai', name: 'Iced Chai', emoji: '☕', price: 0, colors: ['#FAF7F2', '#854D0E'] },
-    { id: 'lilac-cloud', name: 'Lilac Cloud', emoji: '☁️', price: 0, colors: ['#F5F3FF', '#A78BFA'] },
-    { id: 'mint-frost', name: 'Mint Frost', emoji: '❄️', price: 0, colors: ['#F0FDFA', '#2DD4BF'] },
-    { id: 'banana-pudding', name: 'Banana Pudding', emoji: '🍮', price: 0, colors: ['#FEFCE8', '#F59E0B'] },
-    { id: 'grey-mist', name: 'Grey Mist', emoji: '🌫️', price: 0, colors: ['#F9FAFB', '#6366F1'] },
   ];
 
   const handleSelectTheme = (t: any) => {
