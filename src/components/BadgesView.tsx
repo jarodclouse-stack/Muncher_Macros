@@ -221,19 +221,22 @@ export const BadgesView: React.FC = () => {
                   key={t.id}
                   onClick={() => handleSelectTheme(t)}
                   className="section"
-                  style={{ 
-                    background: 'var(--theme-panel)',
-                    border: isSelected ? '2px solid var(--theme-accent)' : '1px solid var(--theme-border)',
-                    borderRadius: 'var(--radius-lg)',
-                    padding: 'var(--space-lg)',
-                    cursor: 'pointer',
-                    transition: 'all 0.2s cubic-bezier(0.4, 0, 0.2, 1)',
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: 'var(--space-md)',
-                    boxShadow: isSelected ? '0 8px 32px var(--theme-accent-dim)' : 'none',
-                    opacity: isPurchased ? 1 : 0.8
-                  }}
+                    style={{ 
+                      background: 'var(--theme-panel)',
+                      border: isSelected ? '2px solid var(--theme-accent)' : '1px solid var(--theme-border)',
+                      borderRadius: 'var(--radius-lg)',
+                      padding: 'var(--space-lg)',
+                      cursor: 'pointer',
+                      transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: 'var(--space-md)',
+                      boxShadow: isSelected 
+                        ? `0 12px 40px ${t.colors[1]}66` 
+                        : '0 4px 12px rgba(0, 0, 0, 0.08)',
+                      opacity: isPurchased ? 1 : 0.8,
+                      transform: isSelected ? 'scale(1.02)' : 'scale(1)'
+                    }}
                 >
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', width: '40px' }}>
                     <div style={{ width: '100%', height: '16px', background: t.colors[0], borderRadius: '4px', border: '1px solid var(--theme-border)' }} />

@@ -1366,7 +1366,7 @@ nav.glass-nav{
     border-color: rgba(88,169,159,0.22) !important;
     box-shadow:
       inset 0 1px 0 rgba(255,255,255,0.55),
-      0 8px 20px rgba(0,0,0,0.08) !important;
+      0 8px 20px rgba(0,0,0,0.12); /* Hardened & removed !important */
   }
 
   body.theme-light-surface .stat-box .stat-lbl,
@@ -1395,7 +1395,7 @@ nav.glass-nav{
   body.theme-light-surface .activity-card {
     box-shadow:
       inset 0 1px 0 rgba(255,255,255,0.62),
-      0 12px 28px rgba(0,0,0,0.08) !important;
+      0 12px 28px rgba(0,0,0,0.15); /* Hardened & removed !important */
   }
 
   body.theme-light-surface .app {
