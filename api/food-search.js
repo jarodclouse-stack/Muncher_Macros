@@ -75,11 +75,20 @@ function toLegacyFood(normalized = {}) {
 
 async function readBody(req) {
   if (req.body && typeof req.body === 'object') return req.body;
-  return new Promise((resolve) => {
-    let raw = '';
-    req.on('data', c => { raw += c; });
-    req.on('end', () => { try { resolve(JSON.parse(raw)); } catch { resolve({}); } });
-    req.on('error', () => resolve({}));
+  return new Promise((resolve, reject) => {
+    const chunks = [];
+    req.on('data', chunk => chunks.push(chunk));
+    req.on('end', () => {
+      const buffer = Buffer.concat(chunks);
+      try {
+        const decoded = buffer.toString('utf8');
+        resolve(JSON.parse(decoded));
+      } catch (e) {
+        // If it's not JSON, return the raw buffer or empty object
+        resolve({});
+      }
+    });
+    req.on('error', err => reject(err));
   });
 }
 

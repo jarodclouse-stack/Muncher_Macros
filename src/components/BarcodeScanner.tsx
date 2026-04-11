@@ -315,7 +315,7 @@ export const BarcodeScanner: React.FC<BarcodeScannerProps> = ({
         position: 'absolute', bottom: '10px', right: '10px', opacity: 0.3,
         fontSize: '10px', color: '#fff', pointerEvents: 'none'
       }}>
-        v3.0-TROJAN
+        v4.0-DYNAMIC
       </div>
     </div>
   );

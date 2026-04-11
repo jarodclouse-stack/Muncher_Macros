@@ -12,6 +12,7 @@ export const ImageCropperModal: React.FC<ImageCropperModalProps> = ({ image, onC
   const [crop, setCrop] = useState({ x: 0, y: 0 });
   const [zoom, setZoom] = useState(1);
   const [croppedAreaPixels, setCroppedAreaPixels] = useState<Area | null>(null);
+  const [cropSize, setCropSize] = useState({ width: 250, height: 250 });
 
   const [aspect, setAspect] = useState<number | undefined>(1);
 
@@ -108,6 +109,7 @@ export const ImageCropperModal: React.FC<ImageCropperModalProps> = ({ image, onC
           crop={crop}
           zoom={zoom}
           aspect={aspect}
+          cropSize={aspect === undefined ? cropSize : undefined}
           onCropChange={onCropChange}
           onCropComplete={handleCropComplete}
           onZoomChange={onZoomChange}
@@ -155,6 +157,35 @@ export const ImageCropperModal: React.FC<ImageCropperModalProps> = ({ image, onC
           </button>
         </div>
 
+        {aspect === undefined && (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
+              <div style={{ color: 'rgba(255,255,255,0.6)', fontSize: '10px', width: '45px', fontWeight: '800' }}>WIDTH</div>
+              <input
+                type="range"
+                value={cropSize.width}
+                min={50}
+                max={500}
+                onChange={(e) => setCropSize(prev => ({ ...prev, width: Number(e.target.value) }))}
+                style={{ flex: 1, accentColor: 'var(--theme-accent)' }}
+              />
+              <div style={{ color: 'rgba(255,255,255,0.6)', fontSize: '10px', width: '30px' }}>{cropSize.width}</div>
+            </div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
+              <div style={{ color: 'rgba(255,255,255,0.6)', fontSize: '10px', width: '45px', fontWeight: '800' }}>HEIGHT</div>
+              <input
+                type="range"
+                value={cropSize.height}
+                min={50}
+                max={500}
+                onChange={(e) => setCropSize(prev => ({ ...prev, height: Number(e.target.value) }))}
+                style={{ flex: 1, accentColor: 'var(--theme-accent)' }}
+              />
+              <div style={{ color: 'rgba(255,255,255,0.6)', fontSize: '10px', width: '30px' }}>{cropSize.height}</div>
+            </div>
+          </div>
+        )}
+
         <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
           <ZoomIn size={18} color="rgba(255,255,255,0.5)" />
           <input
@@ -170,7 +201,7 @@ export const ImageCropperModal: React.FC<ImageCropperModalProps> = ({ image, onC
         </div>
         
         <div style={{ display: 'flex', justifyContent: 'center', gap: '10px', color: 'rgba(255,255,255,0.4)', fontSize: '11px', fontWeight: '700' }}>
-          <Crop size={14} /> PINCH OR DRAG TO ISOLATE BARCODE/LABEL
+          <Crop size={14} /> ADJUST DIMENSIONS OR DRAG TO ISOLATE
         </div>
       </div>
     </div>
