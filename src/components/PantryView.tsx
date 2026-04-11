@@ -12,6 +12,7 @@ import { getPairingSuggestions } from '../lib/food/smart-pairing';
 
 import { BarcodeScanner } from './BarcodeScanner';
 import { SearchCoaster, type SearchTab } from './SearchCoaster';
+import { NutritionFactsDisplay } from './NutritionFactsDisplay';
 import type { Food, RecipeItem } from '../types/food';
 
 const CollapsibleEntrySection = ({ title, isOpen, onToggle, children }: { title: string, isOpen: boolean, onToggle: () => void, children: React.ReactNode }) => (
@@ -451,31 +452,18 @@ export const PantryView: React.FC = () => {
                             </div>
                           </div>
                           
-                          {/* Nutrients Display */}
-                          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '8px', marginBottom: '12px', background: 'rgba(255,255,255,0.03)', padding: '8px', borderRadius: '12px' }}>
-                            <div style={{ textAlign: 'center' }}><div style={{ fontSize: '9px', color: 'rgba(255,255,255,0.4)', fontWeight: '700' }}>KCAL</div><div style={{ fontSize: '13px', fontWeight: '900', color: '#fff' }}>{displayCal}</div></div>
-                            <div style={{ textAlign: 'center' }}><div style={{ fontSize: '9px', color: 'rgba(255,255,255,0.4)', fontWeight: '700' }}>P</div><div style={{ fontSize: '13px', fontWeight: '900', color: 'var(--theme-success)' }}>{displayP}g</div></div>
-                            <div style={{ textAlign: 'center' }}><div style={{ fontSize: '9px', color: 'rgba(255,255,255,0.4)', fontWeight: '700' }}>C</div><div style={{ fontSize: '13px', fontWeight: '900', color: 'var(--theme-accent)' }}>{displayC}g</div></div>
-                            <div style={{ textAlign: 'center' }}><div style={{ fontSize: '9px', color: 'rgba(255,255,255,0.4)', fontWeight: '700' }}>F</div><div style={{ fontSize: '13px', fontWeight: '900', color: 'var(--theme-error)' }}>{displayF}g</div></div>
+                          {/* Nutrients Display (Live Edit Mode) */}
+                          <div style={{ marginBottom: '12px', background: 'rgba(255,255,255,0.03)', padding: '12px', borderRadius: '14px', border: '1px solid rgba(255,255,255,0.08)' }}>
+                            <NutritionFactsDisplay 
+                              food={f} 
+                              multiplier={computeMultiplier(f.serving || '', f.stagedUnit || 'serving', parseFloat(String(f.stagedQty)) || 1)} 
+                              onEdit={(key, val) => {
+                                const next = [...aiStagedResults];
+                                next[i] = { ...f, [key]: val };
+                                setAiStagedResults(next);
+                              }}
+                            />
                           </div>
-
-                          {isExpanded && (
-                            <div style={{ marginBottom: '12px', padding: '12px', background: 'rgba(0,0,0,0.2)', borderRadius: '14px', border: '1px solid rgba(255,255,255,0.05)' }}>
-                              <div style={{ fontSize: '10px', fontWeight: '900', color: 'var(--theme-accent)', marginBottom: '8px', opacity: 0.8 }}>DETAILED INTELLIGENCE</div>
-                              <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-                                {[...ALL_MICRO_KEYS, 'fiber', 'sugars'].map(k => {
-                                  const val = (Number((f as any)[k]) || 0) * multiplier;
-                                  if (!val && val !== 0) return null;
-                                  return (
-                                    <div key={k} style={{ display: 'flex', justifyContent: 'space-between', fontSize: '11px', borderBottom: '1px solid rgba(255,255,255,0.02)', paddingBottom: '2px' }}>
-                                      <span style={{ color: 'rgba(255,255,255,0.5)', fontWeight: '700', textTransform: 'uppercase' }}>{k}</span>
-                                      <span style={{ color: '#fff', fontWeight: '800' }}>{val.toFixed(1)}{MICRO_UNITS[k] || 'g'}</span>
-                                    </div>
-                                  );
-                                })}
-                              </div>
-                            </div>
-                          )}
   
                           <div style={{ display: 'flex', gap: '8px' }}>
                             <input 

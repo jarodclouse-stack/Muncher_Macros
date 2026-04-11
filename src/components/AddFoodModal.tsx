@@ -11,6 +11,7 @@ import {
 import { BarcodeScanner } from './BarcodeScanner';
 import { SearchCoaster, type SearchTab } from './SearchCoaster';
 import { getNutrientDescriptions } from '../lib/nutrient-info';
+import { NutritionFactsDisplay } from './NutritionFactsDisplay';
 
 // Helper: Ensure Calories = (P*4) + (C*4) + (F*9)
 const enforceCalorieConsistency = (food: Food): Food => {
@@ -547,10 +548,18 @@ export const AddFoodModal: React.FC<AddFoodModalProps> = ({ meal, onClose }) => 
                           })()}
                         </div>
 
-                        {/* Expandable Health Intel Section */}
+                        {/* Expandable Health Intel Section (Live Edit Mode) */}
                         {f.showNutrientIntel && (
                           <div style={{ marginBottom: '16px', background: 'rgba(255,255,255,0.02)', padding: '12px', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.05)', animation: 'fadeIn 0.2s ease-out' }}>
-                            <NutritionFactsDisplay food={f} multiplier={computeMultiplier(f.serving || '100g', f.stagedUnit || 'piece', parseFloat(f.stagedQty || '0') || 0)} />
+                            <NutritionFactsDisplay 
+                              food={f} 
+                              multiplier={computeMultiplier(f.serving || '100g', f.stagedUnit || 'piece', parseFloat(f.stagedQty || '0') || 0)} 
+                              onEdit={(key, val) => {
+                                const next = [...aiStagedResults];
+                                next[i] = { ...f, [key]: val };
+                                setAiStagedResults(next);
+                              }}
+                            />
                           </div>
                         )}
 
@@ -842,8 +851,13 @@ export const AddFoodModal: React.FC<AddFoodModalProps> = ({ meal, onClose }) => 
                 </div>
 
                 {showFullNutrition && (
-                  <div style={{ padding: '16px', background: 'rgba(255,255,255,0.03)', borderRadius: '16px', border: '1px solid rgba(255,255,255,0.05)' }}>
-                    <NutritionFactsDisplay food={configuringFood} multiplier={computeMultiplier(configuringFood.serving||'', servingUnit, parseFloat(servingQty)||1)} />
+                  <div style={{ marginBottom: '20px', padding: '16px', background: 'rgba(0,0,0,0.2)', borderRadius: '16px', border: '1px solid var(--theme-border)' }}>
+                    {configuringFood && (
+                      <NutritionFactsDisplay 
+                        food={configuringFood} 
+                        multiplier={computeMultiplier(configuringFood.serving||'', servingUnit, parseFloat(servingQty)||1)} 
+                      />
+                    )}
                   </div>
                 )}
               </div>
@@ -888,45 +902,3 @@ const QuickMacro = ({ label, val, unit, color }: any) => (
     <div style={{ fontSize: '15px', color: color, fontWeight: '900' }}>{val}<span style={{ fontSize: '10px', fontWeight: '600', marginLeft: '1px' }}>{unit}</span></div>
   </div>
 );
-
-const NutritionFactsDisplay = ({ food, multiplier }: { food: any, multiplier: number }) => {
-  const descriptions = getNutrientDescriptions();
-  const micros = ALL_MICRO_KEYS.filter(k => (Number(food[k]) || 0) > 0);
-  
-  return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-      <div style={{ fontSize: '11px', fontWeight: '800', color: 'var(--theme-accent)', letterSpacing: '1px', textTransform: 'uppercase' }}>Vitamins & Minerals</div>
-      {micros.map(k => {
-        const val = (Number(food[k]) || 0) * multiplier;
-        const benefit = descriptions[k] || descriptions[k.toLowerCase()];
-        return (
-          <NutrientRow key={k} label={k} value={val} unit={MICRO_UNITS[k] || 'mg'} benefit={benefit} />
-        );
-      })}
-    </div>
-  );
-};
-
-const NutrientRow = ({ label, value, unit, benefit }: any) => {
-  const [showBenefit, setShowBenefit] = useState(false);
-  return (
-    <div style={{ padding: '12px', background: 'rgba(255,255,255,0.02)', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.05)' }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-          <span style={{ fontWeight: '700', fontSize: '12px', color: '#fff' }}>{label}</span>
-          {benefit && (
-            <button onClick={() => setShowBenefit(!showBenefit)} style={{ background: 'none', border: 'none', color: '#5b5b6b', cursor: 'pointer' }}>
-              <Info size={14} />
-            </button>
-          )}
-        </div>
-        <span style={{ fontWeight: '800', fontSize: '12px', color: 'var(--theme-accent)' }}>{value.toFixed(value < 1 ? 2 : 1)}{unit}</span>
-      </div>
-      {showBenefit && benefit && (
-        <div style={{ marginTop: '8px', fontSize: '11px', color: '#8b8b9b', fontStyle: 'italic', borderTop: '1px solid rgba(255,255,255,0.05)', paddingTop: '8px' }}>
-          {benefit.summary}
-        </div>
-      )}
-    </div>
-  );
-};
