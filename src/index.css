@@ -1373,11 +1373,39 @@ nav.glass-nav{
   body.theme-light-surface .macro-split-glass,
   body.theme-light-surface .macro-slider-bar,
   body.theme-light-surface .shop-card {
-    background: linear-gradient(180deg, rgba(30,40,60,0.10), rgba(30,40,60,0.04)) !important;
-    border-color: rgba(88,169,159,0.22) !important;
+    background: linear-gradient(180deg, rgba(30,40,60,0.12), rgba(30,40,60,0.06)) !important;
+    border-color: rgba(88,169,159,0.25) !important;
     box-shadow:
-      inset 0 1px 0 rgba(255,255,255,0.55),
-      0 8px 20px rgba(0,0,0,0.12); /* Hardened & removed !important */
+      inset 0 1px 0 rgba(255,255,255,0.65),
+      0 10px 24px rgba(0,0,0,0.18); /* Hardened tactile shadow */
+  }
+
+  /* Premium Filter Bubbles (The Text Bubbles from user request) */
+  .pantry-filter-chip {
+    background: rgba(255,255,255,0.03);
+    border: 1px solid var(--theme-border, rgba(255,255,255,0.08));
+    box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  }
+
+  .pantry-filter-chip:active { transform: scale(0.96); }
+
+  .pantry-filter-chip.active {
+    background: var(--theme-accent-dim, rgba(255,255,255,0.1)) !important;
+    border-color: var(--theme-accent, rgba(255,255,255,0.3)) !important;
+    color: #FFF !important;
+    box-shadow: 
+      0 8px 25px var(--theme-accent-dim, rgba(0,201,255,0.25)),
+      0 0 15px var(--theme-accent-dim, rgba(0,201,255,0.15)) !important;
+    transform: translateY(-2px);
+  }
+
+  body.theme-light-surface .pantry-filter-chip.active {
+    color: var(--theme-text, #001114) !important;
+    font-weight: 900 !important;
+    box-shadow: 
+      0 10px 28px var(--theme-accent-dim, rgba(0,0,0,0.2)),
+      0 0 20px var(--theme-accent-dim, rgba(0,0,0,0.1)) !important;
   }
 
   body.theme-light-surface .stat-box .stat-lbl,

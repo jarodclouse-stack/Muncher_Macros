@@ -35,17 +35,16 @@ const CollapsibleEntrySection = ({ title, isOpen, onToggle, children }: { title:
 const PantryFilter = ({ label, active, onClick }: { label: string, active: boolean, onClick: () => void }) => (
   <button 
     onClick={onClick}
+    className={`pantry-filter-chip ${active ? 'active' : ''}`}
     style={{ 
       padding: '12px 14px', 
-      background: active ? 'rgba(255,255,255,0.08)' : 'rgba(255,255,255,0.03)', 
-      border: active ? '1px solid rgba(255,255,255,0.2)' : '1px solid rgba(255,255,255,0.05)', 
       borderRadius: '14px', 
-      color: active ? '#fff' : 'var(--theme-text-dim)', 
       fontSize: '11px', 
       fontWeight: '800', 
       textTransform: 'uppercase',
       cursor: 'pointer',
-      transition: 'all 0.2s'
+      border: 'none', /* Handled by class */
+      color: active ? '#fff' : 'var(--theme-text-dim)'
     }}>
     {label}
   </button>
@@ -302,13 +301,19 @@ export const PantryView: React.FC = () => {
           padding: '24px 20px 16px 20px', 
           borderBottom: '1px solid var(--theme-border, rgba(255,255,255,0.05))'
         }}>
-        <button onClick={() => { setActiveTab('search'); clearSearchState(); }} style={{ padding: '12px 4px', borderRadius: '14px', border: '1px solid var(--theme-border)', background: activeTab === 'search' ? 'var(--theme-accent-dim)' : 'rgba(255,255,255,0.03)', color: activeTab === 'search' ? 'var(--theme-accent)' : 'var(--theme-text-dim)', fontWeight: '800', fontSize: '11px', textTransform: 'uppercase', cursor: 'pointer', transition: 'all 0.2s', textAlign: 'center' }}>
+        <button onClick={() => { setActiveTab('search'); clearSearchState(); }} 
+          className={`pantry-filter-chip ${activeTab === 'search' ? 'active' : ''}`}
+          style={{ padding: '12px 4px', borderRadius: '14px', border: 'none', color: activeTab === 'search' ? 'var(--theme-accent)' : 'var(--theme-text-dim)', fontWeight: '800', fontSize: '11px', textTransform: 'uppercase', cursor: 'pointer', textAlign: 'center' }}>
           Discover
         </button>
-        <button onClick={() => setActiveTab('manual')} style={{ padding: '12px 4px', borderRadius: '14px', border: '1px solid var(--theme-border)', background: activeTab === 'manual' ? 'var(--theme-accent-dim)' : 'rgba(255,255,255,0.03)', color: activeTab === 'manual' ? 'var(--theme-accent)' : 'var(--theme-text-dim)', fontWeight: '800', fontSize: '11px', textTransform: 'uppercase', cursor: 'pointer', transition: 'all 0.2s', textAlign: 'center' }}>
+        <button onClick={() => setActiveTab('manual')} 
+          className={`pantry-filter-chip ${activeTab === 'manual' ? 'active' : ''}`}
+          style={{ padding: '12px 4px', borderRadius: '14px', border: 'none', color: activeTab === 'manual' ? 'var(--theme-accent)' : 'var(--theme-text-dim)', fontWeight: '800', fontSize: '11px', textTransform: 'uppercase', cursor: 'pointer', textAlign: 'center' }}>
           Kitchen
         </button>
-        <button onClick={() => setActiveTab('saved')} style={{ padding: '12px 4px', borderRadius: '14px', border: '1px solid var(--theme-border)', background: activeTab === 'saved' ? 'var(--theme-accent-dim)' : 'rgba(255,255,255,0.03)', color: activeTab === 'saved' ? 'var(--theme-accent)' : 'var(--theme-text-dim)', fontWeight: '800', fontSize: '11px', textTransform: 'uppercase', cursor: 'pointer', transition: 'all 0.2s', textAlign: 'center' }}>
+        <button onClick={() => setActiveTab('saved')} 
+          className={`pantry-filter-chip ${activeTab === 'saved' ? 'active' : ''}`}
+          style={{ padding: '12px 4px', borderRadius: '14px', border: 'none', color: activeTab === 'saved' ? 'var(--theme-accent)' : 'var(--theme-text-dim)', fontWeight: '800', fontSize: '11px', textTransform: 'uppercase', cursor: 'pointer', textAlign: 'center' }}>
           Pantry
         </button>
       </div>

@@ -134,8 +134,9 @@ const TabBtn: React.FC<TabBtnProps> = ({ active, onClick, icon, label }) => {
         cursor: 'pointer',
         transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
         boxShadow: active 
-          ? '0 0 20px var(--theme-accent-dim, rgba(0, 201, 255, 0.2))' 
-          : 'none',
+          ? '0 6px 20px var(--theme-accent-dim, rgba(0, 201, 255, 0.25)), 0 0 15px var(--theme-accent-dim, rgba(0, 201, 255, 0.15))' 
+          : '0 4px 12px rgba(0,0,0,0.12)',
+        transform: active ? 'translateY(-2px) scale(1.02)' : 'translateY(0) scale(1)',
         opacity: 1
       }}
     >
