@@ -296,8 +296,11 @@ export const PantryView: React.FC = () => {
           position: 'sticky', 
           top: '0', 
           zIndex: 100, 
-          background: '#000', 
-          padding: '20px 20px 12px 20px', 
+          background: 'var(--theme-panel, rgba(0,0,0,0.1))', 
+          backdropFilter: 'blur(20px)',
+          WebkitBackdropFilter: 'blur(20px)',
+          padding: '24px 20px 16px 20px', 
+          borderBottom: '1px solid var(--theme-border, rgba(255,255,255,0.05))'
         }}>
         <button onClick={() => { setActiveTab('search'); clearSearchState(); }} style={{ padding: '12px 4px', borderRadius: '14px', border: '1px solid var(--theme-border)', background: activeTab === 'search' ? 'var(--theme-accent-dim)' : 'rgba(255,255,255,0.03)', color: activeTab === 'search' ? 'var(--theme-accent)' : 'var(--theme-text-dim)', fontWeight: '800', fontSize: '11px', textTransform: 'uppercase', cursor: 'pointer', transition: 'all 0.2s', textAlign: 'center' }}>
           Discover

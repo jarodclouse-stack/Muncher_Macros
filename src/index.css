@@ -1108,16 +1108,27 @@ body.theme-ember-forge {
   --glass-shadow: inset 0 1px 0 rgba(255,255,255,0.08), 0 10px 30px rgba(0,0,0,0.18);
   --glass-blur: blur(14px);
 }
+@keyframes meshDrift {
+  0% { transform: translate(0, 0) scale(1); }
+  33% { transform: translate(10%, 15%) scale(1.1); }
+  66% { transform: translate(-5%, 10%) scale(0.95); }
+  100% { transform: translate(0, 0) scale(1); }
+}
+
 body::before{
   content:"";
   position:fixed;
-  inset:0;
+  inset:-50%; /* Oversize to allow for movement */
   pointer-events:none;
   background:
-    radial-gradient(circle at 20% 0%, rgba(137,220,227,0.08), transparent 28%),
-    radial-gradient(circle at 85% 10%, rgba(237,209,85,0.06), transparent 22%),
-    radial-gradient(circle at 50% 100%, rgba(29,49,114,0.18), transparent 35%);
+    radial-gradient(circle at 20% 20%, var(--theme-accent-dim, rgba(137,220,227,0.15)), transparent 40%),
+    radial-gradient(circle at 80% 10%, var(--theme-panel-dim, rgba(237,209,85,0.1)), transparent 35%),
+    radial-gradient(circle at 40% 90%, var(--theme-accent, rgba(29,49,114,0.12)), transparent 45%),
+    radial-gradient(circle at 90% 80%, var(--theme-panel, rgba(137,220,227,0.08)), transparent 40%);
   z-index:0;
+  animation: meshDrift 20s infinite alternate ease-in-out;
+  opacity: 0.6;
+  filter: blur(60px);
 }
 main, header, nav, .page, .app-page{position:relative; z-index:1;}
 .card,
