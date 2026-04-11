@@ -144,7 +144,7 @@ export const extractBarcodeDigits = async (imageBlob: Blob): Promise<ScanResult>
         const body = await res.json();
         
         if (res.ok && body.code) {
-          resolve({ success: true, data: body.code });
+          resolve({ success: true, text: body.code });
         } else {
           resolve({ 
             success: false, 
