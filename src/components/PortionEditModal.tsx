@@ -20,16 +20,19 @@ export const PortionEditModal: React.FC<PortionEditModalProps> = ({ meal, idx, o
   const [qty, setQty] = useState('1'); 
   const [unit, setUnit] = useState('serving');
 
-  const currentMultiplier = computeMultiplier(originalFood.serving || '', unit, parseFloat(qty) || 0);
-  const previewCals = Math.round((originalFood.calories || originalFood.cal || 0) * currentMultiplier);
+  const base = originalFood._base || originalFood;
+  const currentMultiplier = computeMultiplier(base.serving || '', unit, parseFloat(qty) || 0);
+  const previewCals = Math.round((base.calories || base.cal || 0) * currentMultiplier);
 
   const handleConfirm = (e: React.FormEvent) => {
     e.preventDefault();
     const q = parseFloat(qty) || 1;
     
-    // Compute multiplier relative to the *current* state of the logged food.
-    const mult = computeMultiplier(originalFood.serving || '', unit, q);
-    const updated = scaleLegacyFoodByAmount(originalFood, mult);
+    const base = originalFood._base || originalFood;
+    // Compute multiplier relative to the *original* base state
+    const mult = computeMultiplier(base.serving || '', unit, q);
+    const updated = scaleLegacyFoodByAmount(base, mult);
+    updated._base = base; // Retain base reference
     
     const unitLabel = COMMON_UNITS.find((u: any) => u.id === unit)?.label || unit;
     updated.serving = `${q} ${unitLabel} (Adjusted)`;
@@ -61,7 +64,7 @@ export const PortionEditModal: React.FC<PortionEditModalProps> = ({ meal, idx, o
               <input 
                 type="number"
                 step="0.1"
-                className="inp"
+                className="mm-input"
                 value={qty}
                 onChange={e => setQty(e.target.value)}
                 autoFocus
@@ -70,11 +73,11 @@ export const PortionEditModal: React.FC<PortionEditModalProps> = ({ meal, idx, o
             <div style={{ flex: 2 }}>
               <label style={{ fontSize: '12px', color: 'var(--theme-text-dim, #8b8b9b)', display: 'block', marginBottom: '6px' }}>Unit</label>
               <select 
-                className="inp"
+                className="mm-select"
                 value={unit}
                 onChange={e => setUnit(e.target.value)}
               >
-                {COMMON_UNITS.map(u => <option key={u.id} value={u.id}>{u.label}</option>)}
+                {COMMON_UNITS.map(u => <option key={u.id} value={u.id} style={{ background: 'var(--theme-panel-base)', color: 'var(--theme-text)' }}>{u.label}</option>)}
               </select>
             </div>
           </div>
@@ -84,17 +87,11 @@ export const PortionEditModal: React.FC<PortionEditModalProps> = ({ meal, idx, o
             <div style={{ fontSize: '24px', fontWeight: '800', color: 'var(--theme-success, #92FE9D)' }}>{previewCals} <span style={{ fontSize: '14px', fontWeight: 'normal' }}>kcal</span></div>
           </div>
 
-          <button type="submit" className="btn" style={{ background: 'var(--theme-accent, #00C9FF)', color: 'var(--theme-panel-base, #000)', marginTop: 0 }}>
+          <button type="submit" style={{ width: '100%', padding: '16px', background: 'var(--theme-accent, #00C9FF)', color: 'var(--theme-bg, #000)', borderRadius: '16px', border: 'none', fontWeight: '900', fontSize: '16px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', boxShadow: '0 8px 24px rgba(0,201,255,0.2)' }}>
             <Check size={18} /> Update Log
           </button>
         </form>
       </div>
-      <style>{`
-        .inp { width: 100%; box-sizing: border-box; background: var(--theme-panel-dim, rgba(0,0,0,0.4)); border: 1px solid var(--theme-border, rgba(255,255,255,0.1)); padding: 10px 14px; border-radius: 10px; color: var(--theme-text, white); outline: none; transition: border-color 0.2s; font-family: inherit; }
-        .inp:focus { border-color: var(--theme-accent, #00C9FF); }
-        .btn { display: flex; align-items: center; justify-content: center; gap: 8px; background: var(--theme-panel-dim, rgba(255,255,255,0.1)); color: var(--theme-text, white); border: none; padding: 12px; border-radius: 10px; font-weight: 600; cursor: pointer; transition: background 0.2s; margin-top: 8px; font-family: inherit; }
-        .btn:hover:not(:disabled) { background: var(--theme-panel, rgba(255,255,255,0.2)); }
-      `}</style>
     </div>,
     document.body
   );

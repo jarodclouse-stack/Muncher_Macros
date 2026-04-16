@@ -104,15 +104,15 @@ export const DiaryView: React.FC = () => {
         </div>
 
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', marginBottom: '16px' }}>
-          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', background: 'var(--theme-panel-dim, rgba(0,0,0,0.3))', padding: '16px', borderRadius: '16px' }}>
-            <span style={{ color: 'var(--theme-text-dim, #8b8b9b)', fontSize: '12px', marginBottom: '4px' }}>Consumed</span>
-            <span style={{ fontSize: '24px', fontWeight: '800', color: 'var(--theme-text)' }}>{totals.calories}</span>
-            <span style={{ color: 'var(--theme-accent, #00C9FF)', fontSize: '11px', marginTop: '4px' }}>kcal</span>
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', background: 'var(--theme-panel-dim)', padding: '16px', borderRadius: '16px', border: '1px solid var(--theme-border)' }}>
+            <span style={{ color: 'var(--theme-text-dim)', fontSize: '12px', marginBottom: '4px', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Consumed</span>
+            <span style={{ fontSize: '24px', fontWeight: '900', color: 'var(--theme-text)' }}>{totals.calories}</span>
+            <span style={{ color: 'var(--theme-accent)', fontSize: '11px', mt: '4px', fontWeight: '700' }}>kcal</span>
           </div>
-          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', background: 'var(--theme-panel-dim, rgba(0,0,0,0.3))', padding: '16px', borderRadius: '16px' }}>
-            <span style={{ color: 'var(--theme-text-dim, #8b8b9b)', fontSize: '12px', marginBottom: '4px' }}>Remaining</span>
-            <span style={{ fontSize: '24px', fontWeight: '800', color: remainingCals >= 0 ? 'var(--theme-success, #92FE9D)' : 'var(--theme-error, #FF6B6B)' }}>{Math.abs(remainingCals)}</span>
-            <span style={{ color: remainingCals >= 0 ? 'var(--theme-success, #92FE9D)' : 'var(--theme-error, #FF6B6B)', fontSize: '11px', marginTop: '4px' }}>{remainingCals < 0 ? 'kcal over' : 'kcal'}</span>
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', background: 'var(--theme-panel-dim)', padding: '16px', borderRadius: '16px', border: '1px solid var(--theme-border)' }}>
+            <span style={{ color: 'var(--theme-text-dim)', fontSize: '12px', marginBottom: '4px', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Remaining</span>
+            <span style={{ fontSize: '24px', fontWeight: '900', color: remainingCals >= 0 ? 'var(--theme-success)' : 'var(--theme-error)' }}>{Math.abs(remainingCals)}</span>
+            <span style={{ color: remainingCals >= 0 ? 'var(--theme-success)' : 'var(--theme-error)', fontSize: '11px', mt: '4px', fontWeight: '700' }}>{remainingCals < 0 ? 'kcal over' : 'kcal target'}</span>
           </div>
         </div>
 
@@ -137,10 +137,10 @@ export const DiaryView: React.FC = () => {
 
         {/* Macros */}
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '12px', marginBottom: '12px' }}>
-          <MacroCard label="Protein" value={totals.protein} total={computed.proteinG || 150} color="var(--theme-error, #FF6B6B)" icon={<Utensils size={14} />} />
-          <MacroCard label="Carbs" value={totals.carbs} total={computed.carbG || 200} color="var(--theme-accent, #4DABF7)" icon={<Utensils size={14} />} />
-          <MacroCard label="Fat" value={totals.fat} total={computed.fatG || 60} color="var(--theme-warning, #FCC419)" icon={<Utensils size={14} />} />
-          <MacroCard label="Fiber" value={totals.fiber} total={38} color="var(--theme-success, #92FE9D)" icon={<Scale size={14} />} />
+          <MacroCard label="Protein" value={totals.protein} total={computed.proteinG || 150} color="var(--theme-error)" icon={<Utensils size={14} />} />
+          <MacroCard label="Carbs" value={totals.carbs} total={computed.carbG || 200} color="var(--theme-accent)" icon={<Utensils size={14} />} />
+          <MacroCard label="Fat" value={totals.fat} total={computed.fatG || 60} color="var(--theme-warning)" icon={<Utensils size={14} />} />
+          <MacroCard label="Fiber" value={totals.fiber} total={38} color="var(--theme-success)" icon={<Scale size={14} />} />
         </div>
 
         <HydrationCard 
@@ -210,20 +210,38 @@ const NutrientDetailRow = ({ label, value, unit, benefit }: any) => {
   const [showBenefit, setShowBenefit] = useState(false);
   
   return (
-    <div style={{ padding: '12px', background: 'var(--theme-panel-dim, rgba(0,0,0,0.3))', borderRadius: '12px', border: '1px solid var(--theme-border, rgba(255,255,255,0.03))' }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-          <span style={{ fontWeight: '700', fontSize: '13px', color: 'var(--theme-text)' }}>{label}</span>
-          {benefit && (
-            <button 
-              onClick={() => setShowBenefit(!showBenefit)} 
-              style={{ background: 'none', border: 'none', color: showBenefit ? 'var(--theme-accent, #00C9FF)' : 'var(--theme-text-dim, #5b5b6b)', cursor: 'pointer', display: 'flex', alignItems: 'center', padding: '4px' }}>
-              <Info size={14} />
-            </button>
-          )}
-        </div>
-        <span style={{ fontWeight: '800', fontSize: '12px', color: 'var(--theme-accent, #00C9FF)' }}>{value}{unit}</span>
+    <div style={{ 
+      padding: '12px 16px', 
+      background: 'var(--theme-panel-dim)', 
+      borderRadius: '20px', 
+      border: '1px solid var(--theme-border)',
+      display: 'flex',
+      justifyContent: 'space-between',
+      alignItems: 'center'
+    }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+        <span style={{ 
+          fontWeight: '900', 
+          fontSize: '11px', 
+          color: 'var(--theme-text)', 
+          textTransform: 'uppercase', 
+          letterSpacing: '0.5px',
+          background: 'var(--theme-panel)',
+          padding: '4px 10px',
+          borderRadius: '12px',
+          border: '1px solid var(--theme-border)'
+        }}>
+          {label}
+        </span>
+        {benefit && (
+          <button 
+            onClick={() => setShowBenefit(!showBenefit)} 
+            style={{ background: 'none', border: 'none', color: showBenefit ? 'var(--theme-accent)' : 'var(--theme-text-dim)', cursor: 'pointer', display: 'flex', alignItems: 'center', padding: '4px' }}>
+            <Info size={14} />
+          </button>
+        )}
       </div>
+      <span style={{ fontWeight: '900', fontSize: '13px', color: 'var(--theme-accent)' }}>{value}<span style={{fontSize: '10px', opacity: 0.8, marginLeft: '2px'}}>{unit}</span></span>
       
       {showBenefit && benefit && (
         <div style={{ marginTop: '10px', paddingTop: '10px', borderTop: '1px solid var(--theme-border, rgba(255,255,255,0.05))' }}>
@@ -274,11 +292,11 @@ const DiaryEntryItem = ({ log, onRemove, onEditPortion, onMove }: any) => {
           </button>
           <div>
             <div style={{ fontWeight: '600', fontSize: '14px', color: 'var(--theme-text)' }}>
-              {f.name} <span style={{ fontSize: '10px', color: 'var(--theme-text-dim, #8b8b9b)', marginLeft: '6px', fontWeight: '400' }}>(P:{f.p}g C:{f.c}g F:{f.f}g)</span>
+              {f.name} <span style={{ fontSize: '10px', color: 'var(--theme-text-dim)', marginLeft: '6px', fontWeight: '800', opacity: 0.6 }}> (P:{f.p}g C:{f.c}g F:{f.f}g)</span>
             </div>
-            <div style={{ color: 'var(--theme-text-dim, #8b8b9b)', fontSize: '11px', display: 'flex', alignItems: 'center', gap: '4px' }}>
+            <div style={{ color: 'var(--theme-text-dim)', fontSize: '11px', display: 'flex', alignItems: 'center', gap: '4px', fontWeight: '600' }}>
               {f.serving}
-              <button onClick={onEditPortion} style={{ background: 'none', border: 'none', color: 'var(--theme-accent, #00C9FF)', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '2px', padding: '2px 4px', borderRadius: '4px' }}>
+              <button onClick={onEditPortion} style={{ background: 'none', border: 'none', color: 'var(--theme-accent)', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '2px', padding: '2px 4px', borderRadius: '4px', fontWeight: '900' }}>
                 <Scale size={10} /> Choose Portion
               </button>
             </div>
@@ -296,9 +314,9 @@ const DiaryEntryItem = ({ log, onRemove, onEditPortion, onMove }: any) => {
           
           {/* Main Macros */}
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '12px', marginBottom: '20px' }}>
-            <NutrientMiniCard label="Protein" value={f.p} unit="g" color="var(--theme-error, #FF6B6B)" />
-            <NutrientMiniCard label="Carbs" value={f.c} unit="g" color="var(--theme-accent, #4DABF7)" />
-            <NutrientMiniCard label="Fat" value={f.f} unit="g" color="var(--theme-warning, #FCC419)" />
+            <NutrientMiniCard label="Protein" value={f.p} unit="g" color="var(--theme-error)" />
+            <NutrientMiniCard label="Carbs" value={f.c} unit="g" color="var(--theme-accent)" />
+            <NutrientMiniCard label="Fat" value={f.f} unit="g" color="var(--theme-warning)" />
           </div>
 
           {/* Micro Intelligence List */}
@@ -335,7 +353,7 @@ const DiaryEntryItem = ({ log, onRemove, onEditPortion, onMove }: any) => {
                     borderRadius: '8px',
                     border: '1px solid rgba(255,255,255,0.1)',
                     background: 'rgba(255,255,255,0.05)',
-                    color: '#fff',
+                    color: 'var(--theme-text)',
                     fontSize: '11px',
                     fontWeight: '700',
                     cursor: 'pointer'
@@ -373,22 +391,22 @@ const DiaryEntryItem = ({ log, onRemove, onEditPortion, onMove }: any) => {
 };
 
 const NutrientMiniCard = ({ label, value, unit, color }: any) => (
-  <div style={{ textAlign: 'center', background: 'var(--theme-panel-dim, rgba(0,0,0,0.2))', padding: '10px', borderRadius: '12px', border: '1px solid var(--theme-border, rgba(255,255,255,0.02))' }}>
-    <div style={{ fontSize: '9px', color: 'var(--theme-text-dim, #8b8b9b)', textTransform: 'uppercase', marginBottom: '2px' }}>{label}</div>
-    <div style={{ fontWeight: '800', color: color, fontSize: '16px' }}>{value || 0}<span style={{ fontSize: '10px', marginLeft: '1px' }}>{unit}</span></div>
+  <div style={{ textAlign: 'center', background: 'var(--theme-panel-dim)', padding: '10px', borderRadius: '16px', border: '1px solid var(--theme-border)' }}>
+    <div style={{ fontSize: '9px', color: 'var(--theme-text-dim)', textTransform: 'uppercase', marginBottom: '4px', fontWeight: '900', letterSpacing: '0.5px' }}>{label}</div>
+    <div style={{ fontWeight: '900', color: color, fontSize: '16px' }}>{value || 0}<span style={{ fontSize: '10px', marginLeft: '1px', opacity: 0.8 }}>{unit}</span></div>
   </div>
 );
 
 const MacroCard = ({ label, value, total, color, icon }: any) => {
   const pct = Math.min(100, (value / (total || 1)) * 100);
   return (
-    <div style={{ background: 'var(--theme-panel-dim, rgba(0,0,0,0.2))', padding: '12px', borderRadius: '12px', display: 'flex', flexDirection: 'column' }}>
-      <span style={{ display: 'flex', alignItems: 'center', gap: '4px', fontSize: '11px', color: 'var(--theme-text-dim, #8b8b9b)', marginBottom: '8px' }}>
+    <div style={{ background: 'var(--theme-panel-dim)', padding: '16px', borderRadius: '20px', display: 'flex', flexDirection: 'column', border: '1px solid var(--theme-border)' }}>
+      <span style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '11px', color: 'var(--theme-text-dim)', marginBottom: '8px', fontWeight: '900', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
         {icon} {label}
       </span>
-      <div style={{ fontSize: '14px', fontWeight: '700', marginBottom: '4px', color: 'var(--theme-text)' }}>{Math.round(value)}g <span style={{ fontSize: '10px', color: 'var(--theme-text-dim, #8b8b9b)', fontWeight: '400' }}>/ {Math.round(total)}g</span></div>
-      <div style={{ height: '4px', background: 'var(--theme-border, rgba(255,255,255,0.1))', borderRadius: '2px', overflow: 'hidden' }}>
-        <div style={{ width: `${pct}%`, height: '100%', background: color, borderRadius: '2px' }} />
+      <div style={{ fontSize: '14px', fontWeight: '900', marginBottom: '8px', color: 'var(--theme-text)' }}>{Math.round(value)}g <span style={{ fontSize: '11px', color: 'var(--theme-text-dim)', fontWeight: '600', opacity: 0.6 }}>/ {Math.round(total)}g</span></div>
+      <div style={{ height: '6px', background: 'var(--theme-panel)', borderRadius: '3px', overflow: 'hidden', border: '1px solid var(--theme-border)' }}>
+        <div style={{ width: `${pct}%`, height: '100%', background: color, borderRadius: '3px', boxShadow: `0 0 10px ${color}40` }} />
       </div>
     </div>
   );
@@ -674,7 +692,7 @@ const HydrationCard = ({ current, goal, onAdd }: { current: number, goal: number
             <div style={{ display: 'flex', background: 'var(--theme-panel-dim, rgba(0,0,0,0.2))', padding: '2px', borderRadius: '8px', width: 'fit-content' }}>
                <button 
                   onClick={() => setMode('add')} 
-                  style={{ background: mode === 'add' ? 'var(--theme-accent, #00C9FF)' : 'transparent', color: mode === 'add' ? '#000' : 'var(--theme-text-dim, #8b8b9b)', border: 'none', padding: '4px 12px', borderRadius: '6px', fontSize: '10px', fontWeight: '800', cursor: 'pointer', transition: 'all 0.2s' }}>
+                  style={{ background: mode === 'add' ? 'var(--theme-accent, #00C9FF)' : 'transparent', color: mode === 'add' ? 'var(--theme-bg, #000)' : 'var(--theme-text-dim, #8b8b9b)', border: 'none', padding: '4px 12px', borderRadius: '6px', fontSize: '10px', fontWeight: '800', cursor: 'pointer', transition: 'all 0.2s' }}>
                   ADD
                </button>
                <button 
@@ -706,7 +724,7 @@ const HydrationCard = ({ current, goal, onAdd }: { current: number, goal: number
                    onKeyDown={e => e.key === 'Enter' && handleCustomAdd()}
                    style={{ flex: 1, background: 'none', border: 'none', color: 'var(--theme-text)', padding: '0 8px', width: '100%', outline: 'none', fontSize: '14px' }} 
                  />
-               <button onClick={handleCustomAdd} style={{ background: mode === 'add' ? 'var(--theme-accent, #00C9FF)' : 'var(--theme-error, #FF6B6B)', border: 'none', borderRadius: '10px', color: mode === 'add' ? '#000' : '#fff', padding: '0 12px', fontWeight: 'bold', cursor: 'pointer' }}>{mode === 'add' ? 'Add' : 'Remove'}</button>
+               <button onClick={handleCustomAdd} style={{ background: mode === 'add' ? 'var(--theme-accent, #00C9FF)' : 'var(--theme-error, #FF6B6B)', border: 'none', borderRadius: '10px', color: mode === 'add' ? 'var(--theme-bg, #000)' : 'var(--theme-text)', padding: '0 12px', fontWeight: 'bold', cursor: 'pointer' }}>{mode === 'add' ? 'Add' : 'Remove'}</button>
              </div>
            ) : (
              <>

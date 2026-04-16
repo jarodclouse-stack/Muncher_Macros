@@ -171,7 +171,7 @@ export const BarcodeScanner: React.FC<BarcodeScannerProps> = ({
                 }}
               >
                 <Camera size={26} color="var(--theme-accent)" />
-                <span style={{ fontSize: '11px', fontWeight: '900', color: '#fff', textTransform: 'uppercase' }}>Take Photo</span>
+                <span style={{ fontSize: '11px', fontWeight: '900', color: 'var(--theme-text)', textTransform: 'uppercase' }}>Take Photo</span>
               </button>
 
               <button 
@@ -184,13 +184,13 @@ export const BarcodeScanner: React.FC<BarcodeScannerProps> = ({
                 }}
               >
                 <Plus size={26} color="var(--theme-accent)" />
-                <span style={{ fontSize: '11px', fontWeight: '900', color: '#fff', textTransform: 'uppercase' }}>Upload Image</span>
+                <span style={{ fontSize: '11px', fontWeight: '900', color: 'var(--theme-text)', textTransform: 'uppercase' }}>Upload Image</span>
               </button>
             </div>
             
             <button 
               onClick={() => { setScanType(null); setStatus('idle'); }}
-              style={{ background: 'none', border: 'none', color: 'rgba(255,255,255,0.4)', fontSize: '11px', fontWeight: '800', cursor: 'pointer', textTransform: 'uppercase', marginTop: '10px' }}
+              style={{ background: 'none', border: 'none', color: 'var(--theme-text-dim)', fontSize: '11px', fontWeight: '800', cursor: 'pointer', textTransform: 'uppercase', marginTop: '10px' }}
             >
               Back to types
             </button>
@@ -206,7 +206,7 @@ export const BarcodeScanner: React.FC<BarcodeScannerProps> = ({
               </div>
            </div>
            <div style={{ textAlign: 'center' }}>
-             <div style={{ fontSize: '14px', fontWeight: '900', color: '#fff' }}>{status === 'scanning' ? 'DECODING...' : 'AI ANALYSIS...'}</div>
+             <div style={{ fontSize: '14px', fontWeight: '900', color: 'var(--theme-text)' }}>{status === 'scanning' ? 'DECODING...' : 'AI ANALYSIS...'}</div>
            </div>
         </div>
       )}
@@ -224,7 +224,7 @@ export const BarcodeScanner: React.FC<BarcodeScannerProps> = ({
               <span style={{ fontWeight: '900', fontSize: '13px', textTransform: 'uppercase' }}>Scanning Interrupted</span>
             </div>
             
-            <p style={{ fontSize: '12px', color: 'rgba(255,255,255,0.6)', margin: 0, lineHeight: '1.4' }}>
+            <p style={{ fontSize: '12px', color: 'var(--theme-text-dim)', margin: 0, lineHeight: '1.4' }}>
               {scanType === 'nutrition' 
                 ? (error?.includes('404') || error?.includes('Network')
                    ? "The AI Scan Service is currently unreachable. Please try a different scan type or check back later." 
@@ -242,7 +242,7 @@ export const BarcodeScanner: React.FC<BarcodeScannerProps> = ({
                       type="text" placeholder="Enter barcode manually..."
                       value={manualCode}
                       onChange={e => setManualCode(e.target.value.replace(/\D/g, ''))}
-                      style={{ width: '100%', padding: '14px', background: 'rgba(0,0,0,0.4)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '16px', color: '#fff', fontSize: '14px', outline: 'none' }}
+                      style={{ width: '100%', padding: '14px', background: 'var(--theme-input-bg)', border: '1px solid var(--theme-border)', borderRadius: '16px', color: 'var(--theme-text)', fontSize: '14px', outline: 'none' }}
                     />
                     <Barcode size={16} style={{ position: 'absolute', right: '14px', top: '50%', transform: 'translateY(-50%)', opacity: 0.3 }} />
                   </div>
@@ -250,8 +250,8 @@ export const BarcodeScanner: React.FC<BarcodeScannerProps> = ({
                     type="submit" 
                     disabled={manualCode.length < 5}
                     style={{ 
-                      padding: '12px 20px', background: manualCode.length >= 5 ? 'var(--theme-accent)' : 'rgba(255,255,255,0.05)', 
-                      borderRadius: '16px', border: 'none', color: manualCode.length >= 5 ? '#000' : 'rgba(255,255,255,0.2)',
+                      padding: '12px 20px', background: manualCode.length >= 5 ? 'var(--theme-accent)' : 'var(--theme-panel-dim)', 
+                      borderRadius: '16px', border: 'none', color: manualCode.length >= 5 ? 'var(--theme-panel-base)' : 'var(--theme-text-dim)',
                       transition: 'all 0.2s', cursor: manualCode.length >= 5 ? 'pointer' : 'not-allowed'
                     }}
                   >
@@ -278,7 +278,7 @@ export const BarcodeScanner: React.FC<BarcodeScannerProps> = ({
             <div style={{ display: 'flex', gap: '12px', marginTop: '8px' }}>
               <button 
                 onClick={() => { setScanType(null); setStatus('idle'); setError(null); }} 
-                style={{ flex: 1, padding: '12px', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '14px', color: '#fff', fontWeight: '800', fontSize: '11px', cursor: 'pointer' }}
+                style={{ flex: 1, padding: '12px', background: 'var(--theme-panel-dim)', border: '1px solid var(--theme-border)', borderRadius: '14px', color: 'var(--theme-text)', fontWeight: '800', fontSize: '11px', cursor: 'pointer' }}
               >
                 {scanType === 'nutrition' ? 'TRY AGAIN' : 'PHOTO AGAIN'}
               </button>
@@ -339,9 +339,9 @@ const ScanCategoryBtn = ({ icon, label, sub, onClick }: any) => (
       {icon}
     </div>
     <div style={{ flex: 1 }}>
-      <div style={{ fontSize: '13px', fontWeight: '900', color: '#fff', textTransform: 'uppercase' }}>{label}</div>
-      <div style={{ fontSize: '10px', color: 'rgba(255,255,255,0.4)', fontWeight: '700' }}>{sub}</div>
+      <div style={{ fontSize: '13px', fontWeight: '900', color: 'var(--theme-text)', textTransform: 'uppercase' }}>{label}</div>
+      <div style={{ fontSize: '10px', color: 'var(--theme-text-dim)', fontWeight: '700' }}>{sub}</div>
     </div>
-    <ArrowRight size={18} color="rgba(255,255,255,0.2)" />
+    <ArrowRight size={18} color="var(--theme-text-dim)" />
   </button>
 );

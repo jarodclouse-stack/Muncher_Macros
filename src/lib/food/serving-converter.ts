@@ -28,11 +28,12 @@ export const COMMON_UNITS = [
 
 export function extractBaseGrams(servingStr: string): number | null {
   if (!servingStr) return null;
-  // Handle formats like "100g", "1oz", "1 slice (30g)", "1 serving (150 ml)"
-  const clean = servingStr.toLowerCase();
   
-  // Try to find a numeric weight/volume within parentheses or at the end
-  const match = clean.match(/(\d+(?:\.\d+)?)\s*(g|ml|oz|lb|kg|l)/i);
+  // Strip common metadata that might confuse the parser (e.g., "(Adjusted)")
+  const cleanStr = servingStr.split('(')[0].trim().toLowerCase();
+  
+  // Try to find a numeric weight/volume within the cleaned string
+  const match = cleanStr.match(/(\d+(?:\.\d+)?)\s*(g|ml|oz|lb|kg|l)/i);
   if (match) {
     const val = parseFloat(match[1]);
     const unit = match[2].toLowerCase();

@@ -25,45 +25,50 @@ export const NutritionFactsDisplay: React.FC<NutritionFactsDisplayProps> = ({ fo
           display: 'flex', 
           justifyContent: 'space-between', 
           alignItems: 'center', 
-          padding: '8px 0', 
-          borderBottom: '1px solid rgba(255,255,255,0.05)' 
+          padding: '10px 0', 
+          borderBottom: '1px solid var(--theme-border-dim, rgba(255,255,255,0.05))' 
         }}
       >
         <span style={{ 
           fontSize: '11px', 
-          fontWeight: isMacro ? '800' : '600', 
-          color: isMacro ? '#fff' : 'rgba(255,255,255,0.6)',
+          fontWeight: '900', 
+          color: 'var(--theme-text)',
+          background: 'var(--theme-panel)',
+          padding: '4px 12px',
+          borderRadius: '20px',
           textTransform: 'uppercase',
-          letterSpacing: '0.5px'
+          letterSpacing: '1px',
+          border: '1px solid var(--theme-border)',
+          boxShadow: '0 2px 8px rgba(0,0,0,0.05)'
         }}>
           {label}
         </span>
         
         {onEdit ? (
-          <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
             <input 
               type="number"
               step="any"
               value={rawVal}
               onChange={(e) => onEdit(key, parseFloat(e.target.value) || 0)}
               style={{ 
-                width: '60px', 
-                background: 'rgba(255,255,255,0.08)', 
-                border: '1px solid rgba(255,255,255,0.2)', 
-                borderRadius: '6px', 
+                width: '70px', 
+                background: 'var(--theme-input-bg)', 
+                border: '1px solid var(--theme-border)', 
+                borderRadius: '8px', 
                 color: 'var(--theme-accent)', 
-                fontSize: '12px', 
-                fontWeight: '800', 
-                padding: '4px 6px', 
+                fontSize: '13px', 
+                fontWeight: '900', 
+                padding: '6px 8px', 
                 textAlign: 'right',
                 outline: 'none'
               }}
             />
-            <span style={{ fontSize: '10px', color: 'rgba(255,255,255,0.4)', fontWeight: '700' }}>{unit}</span>
+            <span style={{ fontSize: '11px', color: 'var(--theme-text-dim)', fontWeight: '800' }}>{unit}</span>
           </div>
         ) : (
-          <span style={{ fontSize: '12px', fontWeight: '800', color: isMacro ? 'var(--theme-accent)' : '#fff' }}>
-            {displayVal}{unit}
+          <span style={{ fontSize: '13px', fontWeight: '900', color: isMacro ? 'var(--theme-accent)' : 'var(--theme-text)' }}>
+            {displayVal}<span style={{ fontSize: '10px', opacity: 0.8, marginLeft: '2px', fontWeight: '600' }}>{unit}</span>
           </span>
         )}
       </div>
@@ -71,9 +76,9 @@ export const NutritionFactsDisplay: React.FC<NutritionFactsDisplayProps> = ({ fo
   };
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column' }}>
-      <div style={{ fontSize: '10px', fontWeight: '900', color: 'var(--theme-accent)', marginBottom: '8px', letterSpacing: '1px' }}>
-        {onEdit ? 'EDIT SCAN DATA (TOTAL CONTROL)' : 'NUTRITION INTELLIGENCE'}
+    <div style={{ display: 'flex', flexDirection: 'column', background: 'var(--theme-panel-dim)', padding: '20px', borderRadius: '24px', border: '1px solid var(--theme-border)' }}>
+      <div style={{ fontSize: '10px', fontWeight: '900', color: 'var(--theme-accent)', marginBottom: '16px', letterSpacing: '2px', textTransform: 'uppercase', textAlign: 'center' }}>
+        {onEdit ? 'EDIT SCAN DATA (TOTAL CONTROL)' : 'Nutrition Intelligence Profile'}
       </div>
       
       {/* Macros */}

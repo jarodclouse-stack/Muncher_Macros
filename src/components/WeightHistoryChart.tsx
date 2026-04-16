@@ -63,25 +63,41 @@ export const WeightHistoryChart: React.FC<WeightHistoryChartProps> = ({ localCac
       {
         label: 'Weight',
         data: entries.map(e => e.weight),
-        borderColor: 'var(--theme-accent, #00C9FF)',
+        borderColor: 'var(--theme-text, #00C9FF)', // Use theme text for high contrast weight line
         backgroundColor: (context: any) => {
           const chart = context.chart;
           const {ctx, chartArea} = chart;
           if (!chartArea) return null;
           const gradient = ctx.createLinearGradient(0, chartArea.top, 0, chartArea.bottom);
-          gradient.addColorStop(0, 'rgba(0, 201, 255, 0.4)');
-          gradient.addColorStop(1, 'rgba(0, 201, 255, 0)');
+          
+          // Robust color parsing for Chart.js gradients
+          let accentColor = getComputedStyle(document.body).getPropertyValue('--theme-accent').trim() || '#00C9FF';
+          
+          // Helper to add alpha safely
+          const addAlpha = (color: string, alpha: number) => {
+              if (color.startsWith('#')) {
+                  const hexAlpha = Math.round(alpha * 255).toString(16).padStart(2, '0');
+                  return `${color}${hexAlpha}`;
+              }
+              if (color.startsWith('rgb')) {
+                  return color.replace('rgb', 'rgba').replace(')', `, ${alpha})`);
+              }
+              return color;
+          };
+
+          gradient.addColorStop(0, addAlpha(accentColor, 0.4));
+          gradient.addColorStop(1, addAlpha(accentColor, 0));
           return gradient;
         },
         fill: true,
         borderWidth: 4,
         pointRadius: window === '7d' ? 6 : 4,
-        pointBackgroundColor: '#FFFFFF',
-        pointBorderColor: 'var(--theme-accent, #00C9FF)',
+        pointBackgroundColor: 'var(--theme-text, #FFFFFF)', // Dark marker in light theme, bright in dark
+        pointBorderColor: 'var(--theme-bg, #00C9FF)',
         pointBorderWidth: 2,
         pointHoverRadius: 8,
         pointHoverBackgroundColor: 'var(--theme-accent, #00C9FF)',
-        pointHoverBorderColor: '#FFFFFF',
+        pointHoverBorderColor: 'var(--theme-text, #FFFFFF)',
         pointHoverBorderWidth: 2,
         tension: 0.4,
       }
@@ -91,10 +107,10 @@ export const WeightHistoryChart: React.FC<WeightHistoryChartProps> = ({ localCac
         datasets.push({
             label: 'Goal',
             data: entries.map(() => targetWeight),
-            borderColor: 'rgba(255, 255, 255, 0.2)',
+            borderColor: 'var(--theme-neon-goal, rgba(237, 209, 85, 0.8))', // Use neon goal variable
             backgroundColor: 'transparent',
-            borderWidth: 1.5,
-            borderDash: [8, 8] as any,
+            borderWidth: 3,
+            borderDash: [5, 5] as any,
             pointRadius: 0,
             tension: 0,
         } as any);
@@ -108,17 +124,17 @@ export const WeightHistoryChart: React.FC<WeightHistoryChartProps> = ({ localCac
     const lbsPerWeek = (totalChange / daySpan) * 7;
     
     let direction = "Maintaining";
-    let dirColor = "#edd155";
-    let icon = <Minus size={14} color="#edd155" />;
+    let dirColor = "var(--theme-text)";
+    let icon = <Minus size={14} color="var(--theme-text)" />;
 
     if (totalChange < -0.1) {
         direction = "Losing";
-        dirColor = "var(--theme-success, #92FE9D)"; // Switched to positive green for losing
-        icon = <TrendingDown size={14} color="var(--theme-success, #92FE9D)" />;
+        dirColor = "var(--theme-success)"; 
+        icon = <TrendingDown size={14} color="var(--theme-success)" />;
     } else if (totalChange > 0.1) {
         direction = "Gaining";
-        dirColor = "var(--theme-error, #ff716c)";
-        icon = <TrendingUp size={14} color="var(--theme-error, #ff716c)" />;
+        dirColor = "var(--theme-error)";
+        icon = <TrendingUp size={14} color="var(--theme-error)" />;
     }
 
     return {
@@ -142,49 +158,56 @@ export const WeightHistoryChart: React.FC<WeightHistoryChartProps> = ({ localCac
         display: true,
         position: 'top',
         labels: {
-          color: 'var(--theme-text-dim, #8b8b9b)',
-          font: { size: 10 },
-          boxWidth: 12,
+          color: 'var(--theme-text)',
+          font: { size: 11, weight: '700' },
+          boxWidth: 14,
         }
       },
       tooltip: {
-        mode: 'index',
-        intersect: false,
-        backgroundColor: '#1a1d23',
-        titleColor: '#fff',
-        bodyColor: '#c0c5d0',
-        borderColor: 'rgba(255,255,255,0.1)',
+        backgroundColor: 'var(--theme-panel-base)',
+        titleColor: 'var(--theme-text)',
+        bodyColor: 'var(--theme-text-dim)',
+        borderColor: 'var(--theme-accent)',
         borderWidth: 1,
-      },
+        padding: 12,
+        cornerRadius: 12,
+        displayColors: false,
+      }
     },
     scales: {
-      x: {
-        ticks: { color: 'rgba(255,255,255,0.4)', font: { size: 10, weight: '700' }, maxTicksLimit: 8 },
-        grid: { display: false },
-      },
       y: {
-        suggestedMin: (targetWeight || 150) - 10,
-        suggestedMax: (targetWeight || 150) + 10,
-        ticks: { color: 'rgba(255,255,255,0.4)', font: { size: 10, weight: '700' } },
-        grid: { color: 'rgba(255,255,255,0.03)' },
+        grid: { color: 'var(--theme-border-dim, rgba(255,255,255,0.05))', drawBorder: false },
+        ticks: { 
+            color: 'var(--theme-text)', 
+            font: { size: 10, weight: '600' },
+            padding: 8
+        },
+      },
+      x: {
+        grid: { display: false },
+        ticks: { 
+            color: 'var(--theme-text-dim)', 
+            font: { size: 10 },
+            padding: 8
+        },
       },
     },
   };
 
   return (
     <div className="card" style={{ 
-      background: 'linear-gradient(135deg, rgba(255,255,255,0.03) 0%, rgba(255,255,255,0.01) 50%, rgba(0,201,255,0.05) 100%)', 
-      border: '1px solid rgba(255,255,255,0.08)', 
+      background: 'var(--theme-panel)', 
+      border: '1px solid var(--theme-border)', 
       borderRadius: '24px', 
       padding: '24px',
-      backdropFilter: 'blur(15px)',
-      boxShadow: '0 12px 40px rgba(0,0,0,0.3)'
+      backdropFilter: 'blur(20px)',
+      boxShadow: '0 12px 40px rgba(0,0,0,0.1)'
     }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
-        <h3 style={{ fontSize: '16px', fontWeight: '700', margin: 0, display: 'flex', alignItems: 'center', gap: '8px', color: 'var(--theme-text, #fff)' }}>
-          <Scale size={18} color="var(--theme-accent, #00C9FF)" /> Weight History Chart
+        <h3 style={{ fontSize: '13px', fontWeight: '900', margin: 0, display: 'flex', alignItems: 'center', gap: '8px', color: 'var(--theme-text)', textTransform: 'uppercase', letterSpacing: '1px' }}>
+          <Scale size={18} color="var(--theme-accent)" /> Weight History Record
         </h3>
-        <div style={{ display: 'flex', background: 'rgba(0,0,0,0.3)', borderRadius: '10px', padding: '4px', gap: '4px' }}>
+        <div style={{ display: 'flex', background: 'var(--theme-panel-dim)', borderRadius: '10px', padding: '4px', gap: '4px', border: '1px solid var(--theme-border)' }}>
           {(['7d', '30d', 'all'] as const).map(w => (
             <button
               key={w}
@@ -210,23 +233,42 @@ export const WeightHistoryChart: React.FC<WeightHistoryChartProps> = ({ localCac
 
       <div style={{ height: '220px', width: '100%' }}>
         {chartData ? <Line data={chartData} options={options} /> : (
-            <div style={{ height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--theme-text-dim, #537c83)', fontSize: '13px' }}>
+            <div style={{ height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--theme-text-dim)', fontSize: '13px', fontWeight: '600' }}>
                 No weight data logged for this period.
             </div>
         )}
       </div>
 
       {trend && (
-        <div style={{ marginTop: '20px', paddingTop: '16px', borderTop: '1px solid var(--theme-border, rgba(255,255,255,0.05))', display: 'flex', flexWrap: 'wrap', gap: '16px', alignItems: 'center' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+        <div style={{ marginTop: '20px', paddingTop: '16px', borderTop: '1px solid var(--theme-border)', display: 'flex', flexWrap: 'wrap', gap: '10px', alignItems: 'center', justifyContent: 'center' }}>
+          <div style={{ 
+            display: 'flex', 
+            alignItems: 'center', 
+            gap: '8px', 
+            background: 'var(--theme-panel-dim)', 
+            padding: '8px 16px', 
+            borderRadius: '24px',
+            border: `2px solid ${trend.dirColor}`,
+            boxShadow: `0 4px 12px ${trend.dirColor}20`
+          }}>
             {trend.icon}
-            <span style={{ color: trend.dirColor, fontWeight: '800', fontSize: '13px' }}>{trend.direction}</span>
+            <span style={{ color: trend.dirColor, fontWeight: '900', fontSize: '12px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>{trend.direction}</span>
           </div>
-          <div style={{ fontSize: '12px', color: 'var(--theme-text, #c0c5d0)' }}>
-            <span style={{ color: 'var(--theme-text, #fff)', fontWeight: '700' }}>{trend.totalChange >= 0 ? '+' : ''}{trend.totalChange.toFixed(1)}</span> {unitWeight} in {trend.daySpan} days
-          </div>
-          <div style={{ fontSize: '12px', color: 'var(--theme-text-dim, #8b8b9b)' }}>
-            ({trend.lbsPerWeek >= 0 ? '+' : ''}{trend.lbsPerWeek.toFixed(1)} {unitWeight}/week avg)
+          
+          <div style={{ 
+            background: 'var(--theme-panel-dim)', 
+            padding: '8px 16px', 
+            borderRadius: '24px',
+            fontSize: '11px',
+            color: 'var(--theme-text)',
+            fontWeight: '800',
+            border: '1px solid var(--theme-border)',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '6px'
+          }}>
+            <span style={{ color: 'var(--theme-text-dim)', fontSize: '10px', textTransform: 'uppercase' }}>Variation</span>
+            <span style={{ color: 'var(--theme-accent)', fontSize: '13px' }}>{trend.totalChange >= 0 ? '+' : ''}{trend.totalChange.toFixed(1)} <span style={{fontSize: '10px'}}>{unitWeight}</span></span>
           </div>
         </div>
       )}

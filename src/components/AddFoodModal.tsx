@@ -138,9 +138,8 @@ export const AddFoodModal: React.FC<AddFoodModalProps> = ({ meal, onClose }) => 
       const scaledFood = scaleLegacyFoodByAmount(configuringFood, mult);
       
       scaledFood.name = editName || configuringFood.name;
-      scaledFood.serving = `${qty} ${servingUnit}`;
-      scaledFood.sQty = qty;
-      scaledFood.sUnit = servingUnit;
+      scaledFood.isLocal = configuringFood.isLocal;
+      scaledFood._base = configuringFood; // Store for lossless re-editing
       
       if (saveToPantry) {
         saveCustomFood({
@@ -292,16 +291,16 @@ export const AddFoodModal: React.FC<AddFoodModalProps> = ({ meal, onClose }) => 
   };
 
   return ReactDOM.createPortal(
-    <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.45)', backdropFilter: 'blur(20px)', zIndex: 5000, display: 'flex', flexDirection: 'column', alignItems: 'center', transition: 'all 0.3s' }}>
-      <div style={{ position: 'fixed', bottom: '10px', right: '10px', fontSize: '9px', color: 'rgba(255,255,255,0.2)', pointerEvents: 'none', zIndex: 9999 }}>v2.5-BG-HARDEN</div>
+    <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.6)', backdropFilter: 'blur(8px)', zIndex: 5000, display: 'flex', flexDirection: 'column', alignItems: 'center', transition: 'all 0.3s' }}>
+      <div style={{ position: 'fixed', bottom: '10px', right: '10px', fontSize: '9px', color: 'var(--theme-text-dim)', opacity: 0.2, pointerEvents: 'none', zIndex: 9999 }}>v2.6-HARDENED</div>
       
       {/* Header */}
       <div style={{ width: '100%', maxWidth: '600px', padding: '24px 20px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <div>
-          <h2 style={{ color: 'white', fontSize: '22px', fontWeight: '900', margin: 0, letterSpacing: '-0.5px' }}>ADD FOOD</h2>
+          <h2 style={{ color: 'var(--theme-text)', fontSize: '22px', fontWeight: '900', margin: 0, letterSpacing: '-0.5px' }}>ADD FOOD</h2>
           <div style={{ color: 'var(--theme-accent, #00C9FF)', fontSize: '12px', fontWeight: '800', textTransform: 'uppercase', marginTop: '2px' }}>{meal}</div>
         </div>
-        <button onClick={onClose} style={{ background: 'rgba(255,255,255,0.05)', border: 'none', borderRadius: '50%', width: '40px', height: '40px', color: 'white', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><X size={24} /></button>
+        <button onClick={onClose} style={{ background: 'var(--theme-panel-dim, rgba(255,255,255,0.05))', border: 'none', borderRadius: '50%', width: '40px', height: '40px', color: 'var(--theme-text)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><X size={24} /></button>
       </div>
 
       {/* Scrollable Content Container */}
@@ -344,9 +343,9 @@ export const AddFoodModal: React.FC<AddFoodModalProps> = ({ meal, onClose }) => 
                       setQuery(e.target.value);
                       if (errorMsg) setErrorMsg('');
                     }}
-                    style={{ width: '100%', padding: '16px 16px 16px 44px', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '18px', color: 'white', outline: 'none', fontSize: '15px' }}
+                    style={{ width: '100%', padding: '16px 16px 16px 44px', background: 'var(--theme-input-bg)', border: '1px solid var(--theme-border)', borderRadius: '18px', color: 'var(--theme-text)', outline: 'none', fontSize: '15px', minHeight: '52px' }}
                   />
-                  <div style={{ position: 'absolute', left: '16px', top: '50%', transform: 'translateY(-50%)', color: '#8b8b9b' }}>
+                  <div style={{ position: 'absolute', left: '16px', top: '50%', transform: 'translateY(-50%)', color: 'var(--theme-text-dim)' }}>
                     {searching ? <Loader2 className="spin" size={20} /> : <Search size={20} />}
                   </div>
                 </div>
@@ -362,67 +361,29 @@ export const AddFoodModal: React.FC<AddFoodModalProps> = ({ meal, onClose }) => 
                         background: highProteinOnly ? 'rgba(146, 254, 157, 0.1)' : 'rgba(255,255,255,0.05)', 
                         border: '1px solid',
                         borderColor: highProteinOnly ? 'var(--theme-success)' : 'rgba(255,255,255,0.1)',
-                        color: highProteinOnly ? 'var(--theme-success)' : 'rgba(255,255,255,0.4)',
+                        color: highProteinOnly ? 'var(--theme-success)' : 'var(--theme-text-dim)',
                         fontSize: '11px', fontWeight: '800', cursor: 'pointer', transition: 'all 0.2s', display: 'flex', alignItems: 'center', gap: '6px'
                       }}>
                       {highProteinOnly ? <Check size={12} /> : <div style={{width:12, height:12, borderRadius:'50%', border:'1px solid currentColor'}} />}
                       PROTEIN 20G+
                     </button>
-                    <span style={{ fontSize: '10px', color: 'rgba(255,255,255,0.3)', fontWeight: '600' }}>Filter Kitchen & Global results</span>
+                    <span style={{ fontSize: '10px', color: 'var(--theme-text-dim)', opacity: 0.5, fontWeight: '600' }}>Filter Kitchen & Global results</span>
                  </div>
               )}
 
               {results.length > 0 && (
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', maxHeight: '400px', overflowY: 'auto', paddingRight: '4px' }}>
                   {results.map((f, i) => (
-                    <div 
+                    <SearchResultItem 
                       key={i} 
-                      onClick={() => handleAddFoodClick(f)} 
-                      style={{ 
-                        padding: '16px', 
-                        background: 'rgba(0,0,0,0.4)', 
-                        borderRadius: '20px', 
-                        border: '1px solid rgba(255,255,255,0.08)', 
-                        cursor: 'pointer', 
-                        transition: 'all 0.2s cubic-bezier(0.4, 0, 0.2, 1)',
-                        display: 'flex', 
-                        justifyContent: 'space-between', 
-                        alignItems: 'center',
-                        backdropFilter: 'blur(5px)'
-                      }}>
-                      <div style={{ flex: 1 }}>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                          <div style={{ fontWeight: '800', color: '#fff', fontSize: '15px' }}>{f.name}</div>
-                          {f.brand && <div style={{ fontSize: '10px', color: 'rgba(255,255,255,0.5)', opacity: 0.6 }}>• {f.brand}</div>}
-                        </div>
-                        <div style={{ display: 'flex', gap: '8px', alignItems: 'center', marginTop: '4px' }}>
-                          <div style={{ fontSize: '11px', color: 'var(--theme-accent)', fontWeight: '700' }}>{f.cal} kcal</div>
-                          <div style={{ width: '1px', height: '10px', background: 'rgba(255,255,255,0.1)' }} />
-                          <div style={{ fontSize: '10px', color: 'rgba(255,255,255,0.5)', fontWeight: '600' }}>P:{f.p}g C:{f.c}g F:{f.f}g</div>
-                        </div>
-                      </div>
-                      <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
-                         {f.isLocal && (
-                            <button 
-                               title="Remove from Kitchen"
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                if (confirm(`Remove "${f.name}" from your Kitchen?`)) {
-                                  const idx = (f as any).localIdx;
-                                  if (typeof idx === 'number') {
-                                    deleteCustomFood(idx);
-                                    // Remove from immediate display
-                                    setResults(prev => prev.filter((_, itemIdx) => itemIdx !== i));
-                                  }
-                                }
-                              }}
-                              style={{ background: 'none', border: 'none', color: 'rgba(255,107,107,0.4)', cursor: 'pointer', padding: '4px' }}>
-                              <Trash2 size={18} />
-                            </button>
-                         )}
-                         <Plus size={20} color="var(--theme-accent, #00C9FF)" />
-                      </div>
-                    </div>
+                      food={f} 
+                      onClick={() => handleAddFoodClick(f)}
+                      localIdx={(f as any).localIdx}
+                      onDelete={(idx) => {
+                        deleteCustomFood(idx);
+                        setResults(prev => prev.filter((_, itemIdx) => itemIdx !== i));
+                      }}
+                    />
                   ))}
                 </div>
               )}
@@ -431,9 +392,9 @@ export const AddFoodModal: React.FC<AddFoodModalProps> = ({ meal, onClose }) => 
             <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
               <div style={{ background: 'rgba(255,255,255,0.03)', borderRadius: '24px', padding: '24px', border: '1px solid rgba(255,255,255,0.1)', boxShadow: '0 10px 30px rgba(0,0,0,0.2)' }}>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '10px', color: 'var(--theme-accent, #00C9FF)' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '10px', color: 'var(--theme-accent)' }}>
                     <Sparkles size={24} style={{ filter: 'drop-shadow(0 0 8px var(--theme-accent))' }} />
-                    <h3 style={{ margin: 0, fontSize: '16px', fontWeight: '900', color: '#fff', textTransform: 'uppercase', letterSpacing: '1px' }}>
+                    <h3 style={{ margin: 0, fontSize: '16px', fontWeight: '900', color: 'var(--theme-text)', textTransform: 'uppercase', letterSpacing: '1px' }}>
                       Analyze Meal Intelligence
                     </h3>
                   </div>
@@ -476,7 +437,7 @@ export const AddFoodModal: React.FC<AddFoodModalProps> = ({ meal, onClose }) => 
                       border: '1px solid rgba(255,255,255,0.1)', 
                       borderRadius: '18px', 
                       padding: '18px', 
-                      color: '#fff', 
+                      color: 'var(--theme-text)', 
                       fontSize: '15px', 
                       lineHeight: '1.6', 
                       outline: 'none', 
@@ -491,21 +452,21 @@ export const AddFoodModal: React.FC<AddFoodModalProps> = ({ meal, onClose }) => 
               {activeTab === 'describe' && isAiReviewing && aiStagedResults.length > 0 && (
                 <div style={{ padding: '20px', background: 'rgba(0,180,255,0.03)', borderRadius: '24px', border: '1px solid rgba(0,180,255,0.15)', backdropFilter: 'blur(10px)' }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
-                    <div style={{ fontSize: '13px', fontWeight: '900', color: '#fff', display: 'flex', alignItems: 'center', gap: '8px', letterSpacing: '0.5px' }}>
+                    <div style={{ fontSize: '13px', fontWeight: '900', color: 'var(--theme-text)', display: 'flex', alignItems: 'center', gap: '8px', letterSpacing: '0.5px' }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                       <Sparkles size={18} color="var(--theme-accent)" />
                       <span style={{ fontSize: '15px', fontWeight: '800' }}>REVIEW DETECTED MEAL</span>
-                      <span style={{ fontSize: '9px', color: 'rgba(255,255,255,0.3)', background: 'rgba(255,255,255,0.05)', padding: '2px 6px', borderRadius: '6px' }}>v2.2-QTY-FORCE</span>
+                      <span style={{ fontSize: '9px', color: 'var(--theme-text-dim)', opacity: 0.5, background: 'var(--theme-panel-dim)', padding: '2px 6px', borderRadius: '6px' }}>v2.2-QTY-FORCE</span>
                     </div>
                     </div>
-                    <button onClick={() => { setIsAiReviewing(false); setAiStagedResults([]); }} style={{ background: 'rgba(255,255,255,0.05)', border: 'none', color: 'rgba(255,255,255,0.4)', borderRadius: '50%', padding: '4px', cursor: 'pointer' }}><X size={18} /></button>
+                    <button onClick={() => { setIsAiReviewing(false); setAiStagedResults([]); }} style={{ background: 'var(--theme-panel-dim)', border: 'none', color: 'var(--theme-text-dim)', borderRadius: '50%', padding: '4px', cursor: 'pointer' }}><X size={18} /></button>
                   </div>
                   
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', marginBottom: '20px' }}>
                     {aiStagedResults.map((f, i) => (
                       <div key={i} style={{ background: 'rgba(0,0,0,0.3)', padding: '16px', borderRadius: '18px', border: '1px solid rgba(255,255,255,0.08)' }}>
                         <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '10px' }}>
-                          <div style={{ fontWeight: '800', fontSize: '14px', color: '#fff' }}>{f.name}</div>
+                          <div style={{ fontWeight: '800', fontSize: '14px', color: 'var(--theme-text)' }}>{f.name}</div>
                           <div style={{ display: 'flex', gap: '8px' }}>
                             <button 
                               onClick={(e) => {
@@ -538,7 +499,7 @@ export const AddFoodModal: React.FC<AddFoodModalProps> = ({ meal, onClose }) => 
                             const mult = computeMultiplier(f.serving || '100g', f.stagedUnit, currentQty);
                             return (
                               <>
-                                <div style={{ textAlign: 'center' }}><div style={{ fontSize: '9px', color: 'rgba(255,255,255,0.4)', fontWeight: '700' }}>KCAL</div><div style={{ fontSize: '12px', fontWeight: '900', color: '#fff' }}>{Math.round((Number(f.cal) || 0) * mult)}</div></div>
+                                <div style={{ textAlign: 'center' }}><div style={{ fontSize: '9px', color: 'var(--theme-text-dim, rgba(255,255,255,0.4))', fontWeight: '700' }}>KCAL</div><div style={{ fontSize: '12px', fontWeight: '900', color: 'var(--theme-text)' }}>{Math.round((Number(f.cal) || 0) * mult)}</div></div>
                                 <div style={{ textAlign: 'center' }}><div style={{ fontSize: '9px', color: 'rgba(255,255,255,0.4)', fontWeight: '700' }}>P</div><div style={{ fontSize: '12px', fontWeight: '900', color: 'var(--theme-success, #92FE9D)' }}>{((Number(f.p) || 0) * mult).toFixed(1)}g</div></div>
                                 <div style={{ textAlign: 'center' }}><div style={{ fontSize: '9px', color: 'rgba(255,255,255,0.4)', fontWeight: '700' }}>C</div><div style={{ fontSize: '12px', fontWeight: '900', color: 'var(--theme-accent, #00C9FF)' }}>{((Number(f.c) || 0) * mult).toFixed(1)}g</div></div>
                                 <div style={{ textAlign: 'center' }}><div style={{ fontSize: '9px', color: 'rgba(255,255,255,0.4)', fontWeight: '700' }}>F</div><div style={{ fontSize: '12px', fontWeight: '900', color: '#FF6B6B' }}>{((Number(f.f) || 0) * mult).toFixed(1)}g</div></div>
@@ -598,7 +559,7 @@ export const AddFoodModal: React.FC<AddFoodModalProps> = ({ meal, onClose }) => 
                               next[i] = { ...f, stagedQty: e.target.value };
                               setAiStagedResults(next);
                             }}
-                            style={{ width: '70px', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '10px', color: '#fff', fontSize: '12px', padding: '8px', outline: 'none' }} 
+                            style={{ width: '70px', background: 'var(--theme-input-bg)', border: '1px solid var(--theme-border)', borderRadius: '10px', color: 'var(--theme-text)', fontSize: '12px', padding: '8px', outline: 'none' }} 
                           />
                           <select 
                             value={f.stagedUnit} 
@@ -607,8 +568,8 @@ export const AddFoodModal: React.FC<AddFoodModalProps> = ({ meal, onClose }) => 
                               next[i] = { ...f, stagedUnit: e.target.value };
                               setAiStagedResults(next);
                             }}
-                            style={{ flex: 1, background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '10px', color: '#fff', fontSize: '12px', padding: '8px', outline: 'none' }}>
-                            {SERVING_UNITS.map(u => <option key={u.v} value={u.v} style={{ background: '#111' }}>{u.v}</option>)}
+                            style={{ flex: 1, background: 'var(--theme-input-bg)', border: '1px solid var(--theme-border)', borderRadius: '10px', color: 'var(--theme-text)', fontSize: '12px', padding: '8px', outline: 'none' }}>
+                            {SERVING_UNITS.map(u => <option key={u.v} value={u.v} style={{ background: 'var(--theme-bg)' }}>{u.v}</option>)}
                           </select>
                         </div>
 
@@ -618,7 +579,7 @@ export const AddFoodModal: React.FC<AddFoodModalProps> = ({ meal, onClose }) => 
                               e.stopPropagation();
                               setConfiguringFood(f);
                             }}
-                            style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', padding: '10px', background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.15)', borderRadius: '12px', color: '#fff', fontSize: '11px', fontWeight: '900', cursor: 'pointer' }}
+                            style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', padding: '10px', background: 'var(--theme-panel-dim)', border: '1px solid var(--theme-border)', borderRadius: '12px', color: 'var(--theme-text)', fontSize: '11px', fontWeight: '900', cursor: 'pointer' }}
                           >
                             <Info size={12} color="var(--theme-accent)" /> TWEAK INGREDIENT
                           </button>
@@ -673,7 +634,7 @@ export const AddFoodModal: React.FC<AddFoodModalProps> = ({ meal, onClose }) => 
                         setIsAiReviewing(false);
                         setAiStagedResults([]);
                       }}
-                      style={{ padding: '18px 5px', background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.15)', borderRadius: '18px', color: '#fff', fontWeight: '900', fontSize: '9px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '4px' }}>
+                      style={{ padding: '18px 5px', background: 'var(--theme-panel-dim)', border: '1px solid var(--theme-border)', borderRadius: '18px', color: 'var(--theme-text)', fontWeight: '900', fontSize: '9px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '4px' }}>
                       <Sparkles size={14} color="var(--theme-accent)" /> SAVE AS MEAL
                     </button>
                     
@@ -682,6 +643,8 @@ export const AddFoodModal: React.FC<AddFoodModalProps> = ({ meal, onClose }) => 
                         aiStagedResults.forEach(f => {
                           const mult = computeMultiplier(f.serving || '', f.stagedUnit || 'piece', parseFloat(f.stagedQty || '1') || 1);
                           const scaled = scaleLegacyFoodByAmount(f, mult);
+                          scaled.serving = `${f.stagedQty} ${f.stagedUnit}`;
+                          scaled._base = f; // Lossless reference
                           addToTray(scaled);
                         });
                         setIsAiReviewing(false);
@@ -715,7 +678,7 @@ export const AddFoodModal: React.FC<AddFoodModalProps> = ({ meal, onClose }) => 
                 }}
                 onScanError={(err) => setErrorMsg(err)}
               />
-              <p style={{ fontSize: '13px', color: '#8b8b9b', textAlign: 'center', maxWidth: '280px', lineHeight: '1.4' }}>
+              <p style={{ fontSize: '13px', color: 'var(--theme-text-dim)', textAlign: 'center', maxWidth: '280px', lineHeight: '1.4' }}>
                 Scans **Nutrition Labels**, **Barcodes**, and **QR Codes**. Take a clear photo for best results.
               </p>
             </div>
@@ -726,8 +689,8 @@ export const AddFoodModal: React.FC<AddFoodModalProps> = ({ meal, onClose }) => 
         {stagingTray.length > 0 && (
           <div style={{ position: 'sticky', bottom: '-20px', background: 'rgba(10,30,33,0.7)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '24px 24px 0 0', padding: '24px', boxShadow: '0 -10px 30px rgba(0,0,0,0.5)', margin: '0 -20px', backdropFilter: 'blur(20px)' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
-               <div style={{ fontSize: '14px', fontWeight: '800', color: '#fff' }}>Logging {stagingTray.length} items</div>
-               <button onClick={clearTray} style={{ background: 'none', border: 'none', color: '#FF6B6B', fontSize: '12px', fontWeight: '700', cursor: 'pointer' }}>Clear All</button>
+               <div style={{ fontSize: '14px', fontWeight: '800', color: 'var(--theme-text)' }}>Logging {stagingTray.length} items</div>
+               <button onClick={clearTray} style={{ background: 'none', border: 'none', color: 'var(--theme-error)', fontSize: '12px', fontWeight: '700', cursor: 'pointer' }}>Clear All</button>
             </div>
             
             <button onClick={() => {
@@ -751,19 +714,19 @@ export const AddFoodModal: React.FC<AddFoodModalProps> = ({ meal, onClose }) => 
                   <input 
                     value={editName}
                     onChange={(e) => setEditName(e.target.value)}
-                    style={{ background: 'none', border: 'none', color: '#fff', fontSize: '20px', fontWeight: '800', padding: 0, width: '100%', outline: 'none', marginBottom: '4px' }}
+                    style={{ background: 'none', border: 'none', color: 'var(--theme-text)', fontSize: '20px', fontWeight: '800', padding: 0, width: '100%', outline: 'none', marginBottom: '4px' }}
                   />
-                  <div style={{ fontSize: '13px', color: '#8b8b9b' }}>Serving: {configuringFood.serving}</div>
+                  <div style={{ fontSize: '13px', color: 'var(--theme-text-dim)' }}>Serving: {configuringFood.serving}</div>
                 </div>
-                <button onClick={() => setConfiguringFood(null)} style={{ background: 'rgba(255,255,255,0.05)', border: 'none', borderRadius: '50%', width: '32px', height: '32px', color: '#fff', cursor: 'pointer' }}><X size={18} /></button>
+                <button onClick={() => setConfiguringFood(null)} style={{ background: 'var(--theme-panel-dim)', border: 'none', borderRadius: '50%', width: '32px', height: '32px', color: 'var(--theme-text)', cursor: 'pointer' }}><X size={18} /></button>
               </div>
 
               {/* Quick Macros */}
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '8px', marginBottom: '16px' }}>
-                <QuickMacro label="Calories" val={Math.round((Number(configuringFood.cal)||0) * computeMultiplier(configuringFood.serving||'', servingUnit, parseFloat(servingQty)||1))} unit="kcal" color="#fff" />
-                <QuickMacro label="Protein" val={Math.round((Number(configuringFood.p)||0) * computeMultiplier(configuringFood.serving||'', servingUnit, parseFloat(servingQty)||1))} unit="g" color="#00C9FF" />
-                <QuickMacro label="Carbs" val={Math.round((Number(configuringFood.c)||0) * computeMultiplier(configuringFood.serving||'', servingUnit, parseFloat(servingQty)||1))} unit="g" color="#FCC419" />
-                <QuickMacro label="Fat" val={Math.round((Number(configuringFood.f)||0) * computeMultiplier(configuringFood.serving||'', servingUnit, parseFloat(servingQty)||1))} unit="g" color="#FF6B6B" />
+                <QuickMacro label="Calories" val={Math.round((Number(configuringFood.cal)||0) * computeMultiplier(configuringFood.serving||'', servingUnit, parseFloat(servingQty)||1))} unit="kcal" color="var(--theme-text)" />
+                <QuickMacro label="Protein" val={Math.round((Number(configuringFood.p)||0) * computeMultiplier(configuringFood.serving||'', servingUnit, parseFloat(servingQty)||1))} unit="g" color="var(--theme-error)" />
+                <QuickMacro label="Carbs" val={Math.round((Number(configuringFood.c)||0) * computeMultiplier(configuringFood.serving||'', servingUnit, parseFloat(servingQty)||1))} unit="g" color="var(--theme-accent)" />
+                <QuickMacro label="Fat" val={Math.round((Number(configuringFood.f)||0) * computeMultiplier(configuringFood.serving||'', servingUnit, parseFloat(servingQty)||1))} unit="g" color="var(--theme-warning)" />
               </div>
 
               {/* Goal Impact Feedback */}
@@ -788,7 +751,7 @@ export const AddFoodModal: React.FC<AddFoodModalProps> = ({ meal, onClose }) => 
               })()}
 
               <div style={{ marginBottom: '24px' }}>
-                <label style={{ fontSize: '11px', fontWeight: '800', color: '#8b8b9b', display: 'block', marginBottom: '8px', textTransform: 'uppercase' }}>Assign to Meal</label>
+                <label style={{ fontSize: '11px', fontWeight: '800', color: 'var(--theme-text-dim)', display: 'block', marginBottom: '8px', textTransform: 'uppercase' }}>Assign to Meal</label>
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '8px' }}>
                   {['Breakfast', 'Lunch', 'Dinner', 'Snacks'].map(m => (
                     <button
@@ -798,9 +761,9 @@ export const AddFoodModal: React.FC<AddFoodModalProps> = ({ meal, onClose }) => 
                         padding: '10px 4px',
                         borderRadius: '12px',
                         border: '1px solid',
-                        borderColor: targetMeal === m ? 'var(--theme-accent, #00C9FF)' : 'rgba(255,255,255,0.1)',
-                        background: targetMeal === m ? 'rgba(0, 201, 255, 0.1)' : 'rgba(255,255,255,0.05)',
-                        color: targetMeal === m ? 'var(--theme-accent, #00C9FF)' : '#fff',
+                        borderColor: targetMeal === m ? 'var(--theme-accent, #00C9FF)' : 'var(--theme-border, rgba(255,255,255,0.1))',
+                        background: targetMeal === m ? 'var(--theme-accent-dim, rgba(0, 201, 255, 0.1))' : 'var(--theme-panel-dim, rgba(255,255,255,0.05))',
+                        color: targetMeal === m ? 'var(--theme-accent, #00C9FF)' : 'var(--theme-text)',
                         fontSize: '11px',
                         fontWeight: '700',
                         cursor: 'pointer',
@@ -816,7 +779,7 @@ export const AddFoodModal: React.FC<AddFoodModalProps> = ({ meal, onClose }) => 
               <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', marginBottom: '24px' }}>
                 <div style={{ display: 'flex', gap: '12px' }}>
                   <div style={{ flex: 1 }}>
-                    <label style={{ fontSize: '11px', fontWeight: '800', color: '#8b8b9b', display: 'block', marginBottom: '6px' }}>AMOUNT</label>
+                    <label style={{ fontSize: '11px', fontWeight: '800', color: 'var(--theme-text-dim)', display: 'block', marginBottom: '6px' }}>AMOUNT</label>
                     <input 
                       type="number" 
                       value={servingQty}
@@ -825,16 +788,16 @@ export const AddFoodModal: React.FC<AddFoodModalProps> = ({ meal, onClose }) => 
                         const cleaned = (v.length > 1 && v.startsWith('0') && !v.startsWith('0.')) ? v.substring(1) : v;
                         setServingQty(cleaned);
                       }}
-                      style={{ width: '100%', background: 'rgba(0,0,0,0.2)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '12px', padding: '12px', color: '#fff', outline: 'none' }}
+                      className="mm-input"
                     />
                   </div>
                   <div style={{ flex: 2 }}>
-                    <label style={{ fontSize: '11px', fontWeight: '800', color: '#8b8b9b', display: 'block', marginBottom: '6px' }}>UNIT</label>
+                    <label style={{ fontSize: '11px', fontWeight: '800', color: 'var(--theme-text-dim)', display: 'block', marginBottom: '6px' }}>UNIT</label>
                     <select 
                       value={servingUnit}
                       onChange={(e) => setServingUnit(e.target.value)}
-                      style={{ width: '100%', background: 'rgba(0,0,0,0.2)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '12px', padding: '12px', color: '#fff', outline: 'none' }}>
-                      {SERVING_UNITS.map(u => <option key={u.v} value={u.v}>{u.v}</option>)}
+                      className="mm-select">
+                      {SERVING_UNITS.map(u => <option key={u.v} value={u.v} style={{ background: 'var(--theme-panel-base)', color: 'var(--theme-text)' }}>{u.v}</option>)}
                     </select>
                   </div>
                 </div>
@@ -842,7 +805,7 @@ export const AddFoodModal: React.FC<AddFoodModalProps> = ({ meal, onClose }) => 
                 {/* Save to Pantry Checkbox */}
                 <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
                   <input type="checkbox" checked={saveToPantry} onChange={() => setSaveToPantry(!saveToPantry)} />
-                  <label style={{ color: 'white', fontSize: '12px', fontWeight: '700' }}>ADD TO KITCHEN</label>
+                  <label style={{ color: 'var(--theme-text)', fontSize: '12px', fontWeight: '700' }}>ADD TO KITCHEN</label>
                 </div>
 
                 <div onClick={() => setShowFullNutrition(!showFullNutrition)} style={{ textAlign: 'center', fontSize: '13px', color: 'var(--theme-accent)', cursor: 'pointer', fontWeight: '700' }}>
@@ -864,7 +827,7 @@ export const AddFoodModal: React.FC<AddFoodModalProps> = ({ meal, onClose }) => 
               <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
                 <button 
                   onClick={handleConfirmAdd}
-                  style={{ width: '100%', padding: '16px', background: 'var(--theme-success, #92FE9D)', color: '#000', borderRadius: '16px', border: 'none', fontWeight: '900', fontSize: '16px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px', boxShadow: '0 8px 24px rgba(146,254,157,0.2)' }}>
+                  style={{ width: '100%', padding: '16px', background: 'var(--theme-success, #92FE9D)', color: 'var(--theme-bg)', borderRadius: '16px', border: 'none', fontWeight: '900', fontSize: '16px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px', boxShadow: '0 8px 24px rgba(146,254,157,0.2)' }}>
                   <Check size={22} /> ADD TO MEAL
                 </button>
 
@@ -881,7 +844,7 @@ export const AddFoodModal: React.FC<AddFoodModalProps> = ({ meal, onClose }) => 
                     onClose();
                     alert("Food saved to Pantry! You can now add it as an ingredient in the Macro Kitchen tab.");
                   }}
-                  style={{ width: '100%', padding: '16px', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '16px', color: '#fff', fontWeight: '800', fontSize: '14px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
+                  style={{ width: '100%', padding: '16px', background: 'var(--theme-panel-dim, rgba(255,255,255,0.05))', border: '1px solid var(--theme-border, rgba(255,255,255,0.1))', borderRadius: '16px', color: 'var(--theme-text)', fontWeight: '800', fontSize: '14px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
                   <Sparkles size={18} color="var(--theme-accent)" /> USE AS INGREDIENT
                 </button>
               </div>
@@ -895,9 +858,58 @@ export const AddFoodModal: React.FC<AddFoodModalProps> = ({ meal, onClose }) => 
   );
 };
 
+);
+
+const SearchResultItem = React.memo(({ food, onClick, localIdx, onDelete }: { food: any, onClick: () => void, localIdx?: number, onDelete: (idx: number) => void }) => (
+  <div 
+    onClick={onClick} 
+    style={{ 
+      padding: '16px', 
+      background: 'rgba(0,0,0,0.4)', 
+      borderRadius: '20px', 
+      border: '1px solid rgba(255,255,255,0.08)', 
+      cursor: 'pointer', 
+      transition: 'all 0.2s cubic-bezier(0.4, 0, 0.2, 1)',
+      display: 'flex', 
+      justifyContent: 'space-between', 
+      alignItems: 'center',
+      backdropFilter: 'blur(5px)'
+    }}>
+    <div style={{ flex: 1 }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+        <div style={{ fontWeight: '800', color: 'var(--theme-text)', fontSize: '15px' }}>{food.name}</div>
+        {food.brand && <div style={{ fontSize: '10px', color: 'var(--theme-text-dim)', opacity: 0.6 }}>• {food.brand}</div>}
+      </div>
+      <div style={{ display: 'flex', gap: '8px', alignItems: 'center', marginTop: '4px' }}>
+        <div style={{ fontSize: '11px', color: 'var(--theme-accent)', fontWeight: '700' }}>{food.cal} kcal</div>
+        <div style={{ width: '1px', height: '10px', background: 'var(--theme-border)' }} />
+        <div style={{ fontSize: '10px', color: 'var(--theme-text-dim)', fontWeight: '600' }}>P:{food.p}g C:{food.c}g F:{food.f}g</div>
+      </div>
+    </div>
+    <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
+      {food.isLocal && (
+        <button 
+          title="Remove from Kitchen"
+          onClick={(e) => {
+            e.stopPropagation();
+            if (confirm(`Remove "${food.name}" from your Kitchen?`)) {
+              if (typeof localIdx === 'number') {
+                onDelete(localIdx);
+              }
+            }
+          }}
+          style={{ background: 'none', border: 'none', color: 'rgba(255,107,107,0.4)', cursor: 'pointer', padding: '4px' }}>
+          <Trash2 size={18} />
+        </button>
+      )}
+      <Plus size={20} color="var(--theme-accent, #00C9FF)" />
+    </div>
+  </div>
+));
+
 const QuickMacro = ({ label, val, unit, color }: any) => (
-  <div style={{ background: 'rgba(255,255,255,0.03)', padding: '10px 4px', borderRadius: '14px', border: '1px solid rgba(255,255,255,0.05)', textAlign: 'center' }}>
-    <div style={{ fontSize: '9px', color: '#8b8b9b', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '4px' }}>{label}</div>
+  <div style={{ background: 'var(--theme-panel-dim)', padding: '10px 4px', borderRadius: '14px', border: '1px solid var(--theme-border)', textAlign: 'center' }}>
+    <div style={{ fontSize: '9px', color: 'var(--theme-text-dim)', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '4px' }}>{label}</div>
     <div style={{ fontSize: '15px', color: color, fontWeight: '900' }}>{val}<span style={{ fontSize: '10px', fontWeight: '600', marginLeft: '1px' }}>{unit}</span></div>
   </div>
 );

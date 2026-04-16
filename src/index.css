@@ -14,6 +14,7 @@
   --theme-panel-dim: rgba(18, 21, 32, 0.4);
   --theme-input-bg: rgba(0, 0, 0, 0.3);
   --theme-placeholder: rgba(237, 242, 244, 0.4);
+  --theme-neon-goal: #FF00FF; /* Neon Magenta */
   
   /* Shared Core Defaults */
   --radius-md: 12px;
@@ -90,6 +91,7 @@ body.theme-cybermancer {
   --theme-text: #FFFFFF;
   --theme-text-dim: #B392AC;
   --theme-border: rgba(255, 0, 229, 0.25);
+  --theme-neon-goal: #39FF14; /* Neon Green */
 }
 
 /* 2. Gold Reserve */
@@ -102,6 +104,7 @@ body.theme-gold-reserve {
   --theme-text: #F5F5DC;
   --theme-text-dim: #A09D80;
   --theme-border: rgba(212, 175, 55, 0.25);
+  --theme-neon-goal: #00FFFF; /* Neon Cyan */
 }
 
 /* 3. Glacier Peak (Light Theme) */
@@ -117,6 +120,7 @@ body.theme-glacier-peak {
   --theme-border: rgba(0, 119, 182, 0.15);
   --theme-placeholder: rgba(26, 42, 58, 0.5);
   --theme-input-bg: rgba(255, 255, 255, 0.8);
+  --theme-neon-goal: #FF00E5; /* Neon Magenta */
 }
 
 /* 4. Forest Phantom */
@@ -129,6 +133,7 @@ body.theme-forest-phantom {
   --theme-text: #E8F5E9;
   --theme-text-dim: #81C784;
   --theme-border: rgba(146, 254, 157, 0.2);
+  --theme-neon-goal: #FF007F; /* Neon Rose */
 }
 
 /* 5. Midnight Crimson */
@@ -141,6 +146,7 @@ body.theme-midnight-crimson {
   --theme-text: #F1FAEE;
   --theme-text-dim: #A8DADC;
   --theme-border: rgba(230, 57, 70, 0.25);
+  --theme-neon-goal: #CCFF00; /* Neon Lime */
 }
 
 /* 6. Sunset Horizon */
@@ -153,6 +159,7 @@ body.theme-sunset-horizon {
   --theme-text: #FDFFFC;
   --theme-text-dim: #E71D36;
   --theme-border: rgba(255, 159, 28, 0.3);
+  --theme-neon-goal: #39FF14; /* Neon Green */
 }
 
 /* 7. Quantum Violet */
@@ -165,6 +172,7 @@ body.theme-quantum-violet {
   --theme-text: #F8F0FA;
   --theme-text-dim: #C5A1D6;
   --theme-border: rgba(154, 72, 208, 0.3);
+  --theme-neon-goal: #00F5D4; /* Neon Teal */
 }
 
 /* 8. Matcha Zen */
@@ -180,6 +188,7 @@ body.theme-matcha-zen {
   --theme-border: rgba(122, 155, 118, 0.25);
   --theme-placeholder: rgba(61, 74, 58, 0.5);
   --theme-input-bg: rgba(255, 255, 255, 0.8);
+  --theme-neon-goal: #FF10F0; /* Neon Pink */
 }
 
 /* 9. Sandstone */
@@ -195,6 +204,7 @@ body.theme-sandstone {
   --theme-border: rgba(166, 124, 82, 0.3);
   --placeholder: rgba(74, 58, 42, 0.5);
   --theme-input-bg: rgba(255, 255, 255, 0.8);
+  --theme-neon-goal: #00F5D4; /* Neon Teal */
 }
 
 /* 10. Olympian Gold (⚡) */
@@ -207,6 +217,7 @@ body.theme-olympian-gold {
   --theme-text: #F5F5DC;
   --theme-text-dim: #A09D80;
   --theme-border: rgba(212, 175, 55, 0.25);
+  --theme-neon-goal: #FFFFFF; /* Bright White */
 }
 
 /* 11. Aegean Mist (🌊) - Light Theme */
@@ -222,6 +233,7 @@ body.theme-aegean-mist {
   --theme-border: rgba(0, 136, 204, 0.15);
   --theme-placeholder: rgba(0, 51, 102, 0.5);
   --theme-input-bg: rgba(255, 255, 255, 0.8);
+  --theme-neon-goal: #FF00FF; /* Neon Magenta */
 }
 
 /* 12. Hades' Ember (🔥) */
@@ -234,6 +246,7 @@ body.theme-hades-ember {
   --theme-text: #FFE4E1;
   --theme-text-dim: #CD5C5C;
   --theme-border: rgba(255, 69, 0, 0.3);
+  --theme-neon-goal: #00FFFF; /* Neon Cyan */
 }
 
 /* 13. Athena's Wisdom (🦉) - Light Theme */
@@ -249,6 +262,7 @@ body.theme-athenas-wisdom {
   --theme-border: rgba(107, 142, 35, 0.2);
   --theme-placeholder: rgba(47, 79, 79, 0.5);
   --theme-input-bg: rgba(255, 255, 255, 0.8);
+  --theme-neon-goal: #39FF14; /* Neon Green */
 }
 
 /* 14. Dionysus' Vineyard (🍇) */
@@ -261,6 +275,7 @@ body.theme-dionysus-vineyard {
   --theme-text: #F3E8FF;
   --theme-text-dim: #C084FC;
   --theme-border: rgba(157, 78, 221, 0.3);
+  --theme-neon-goal: #39FF14; /* Neon Green */
 }
 
 /* 15. Poseidon's Depths (🔱) */
@@ -273,6 +288,7 @@ body.theme-poseidons-depths {
   --theme-text: #E0F2FE;
   --theme-text-dim: #7DD3FC;
   --theme-border: rgba(0, 166, 251, 0.3);
+  --theme-neon-goal: #FF00FF; /* Neon Magenta */
 }
 
 /* 16. Artemis' Moonlight (🌙) */
@@ -285,6 +301,7 @@ body.theme-artemis-moonlight {
   --theme-text: #F8FAFC;
   --theme-text-dim: #94A3B8;
   --theme-border: rgba(165, 180, 252, 0.2);
+  --theme-neon-goal: #00FFFF; /* Neon Cyan */
 }
 
 /* 17. Hermes' Swiftness (👟) */
@@ -297,6 +314,7 @@ body.theme-hermes-swiftness {
   --theme-text: #FFF7ED;
   --theme-text-dim: #FB923C;
   --theme-border: rgba(249, 115, 22, 0.3);
+  --theme-neon-goal: #FF073A; /* Neon Red */
 }
 
 /* 18. Spartan Grit (🛡️) */
@@ -309,6 +327,7 @@ body.theme-spartan-grit {
   --theme-text: #FEE2E2;
   --theme-text-dim: #F87171;
   --theme-border: rgba(153, 27, 27, 0.3);
+  --theme-neon-goal: #FFD700; /* Neon Gold */
 }
 
 /* 19. Oracle's Vision (🔮) */
@@ -321,6 +340,7 @@ body.theme-oracles-vision {
   --theme-text: #FAF5FF;
   --theme-text-dim: #D8B4FE;
   --theme-border: rgba(192, 132, 252, 0.3);
+  --theme-neon-goal: #39FF14; /* Neon Green */
 }
 
 
@@ -334,6 +354,7 @@ body.theme-obsidian {
   --theme-text: #EDF2F4;
   --theme-text-dim: #BDC4C6;
   --theme-border: rgba(0, 245, 212, 0.2);
+  --theme-neon-goal: #FF00FF; /* Neon Magenta */
 }
 
 /* 11. Olympian Gold ⚡ */
@@ -346,6 +367,7 @@ body.theme-olympian-gold {
   --theme-text: #FFFFFF;
   --theme-text-dim: #C5B358;
   --theme-border: rgba(212, 175, 55, 0.3);
+  --theme-neon-goal: #FFFFFF; /* Bright White */
 }
 
 /* 12. Aegean Mist 🌊 */
@@ -358,6 +380,7 @@ body.theme-aegean-mist {
   --theme-text: #F0F9FF;
   --theme-text-dim: #A5D8FF;
   --theme-border: rgba(0, 201, 255, 0.3);
+  --theme-neon-goal: #FF00FF; /* Neon Magenta */
 }
 
 /* 13. Hades' Ember 🔥 */
@@ -370,6 +393,7 @@ body.theme-hades-ember {
   --theme-text: #FEE2E2;
   --theme-text-dim: #EF4444;
   --theme-border: rgba(255, 69, 0, 0.3);
+  --theme-neon-goal: #00FFFF; /* Neon Cyan */
 }
 
 /* 14. Athena's Wisdom 🦉 */
@@ -382,6 +406,7 @@ body.theme-athenas-wisdom {
   --theme-text: #E3E8D8;
   --theme-text-dim: #556B2F;
   --theme-border: rgba(139, 154, 103, 0.3);
+  --theme-neon-goal: #39FF14; /* Neon Green */
 }
 
 /* 15. Dionysus' Vineyard 🍇 */
@@ -394,6 +419,7 @@ body.theme-dionysus-vineyard {
   --theme-text: #F3E8FF;
   --theme-text-dim: #9D4EDD;
   --theme-border: rgba(123, 44, 191, 0.3);
+  --theme-neon-goal: #39FF14; /* Neon Green */
 }
 
 /* 16. Poseidon's Depths 🔱 */
@@ -406,6 +432,7 @@ body.theme-poseidons-depths {
   --theme-text: #E0F2F1;
   --theme-text-dim: #4FB0C6;
   --theme-border: rgba(0, 166, 251, 0.3);
+  --theme-neon-goal: #FF00FF; /* Neon Magenta */
 }
 
 /* 17. Artemis' Moonlight 🌙 */
@@ -418,6 +445,7 @@ body.theme-artemis-moonlight {
   --theme-text: #EEF2FF;
   --theme-text-dim: #6366F1;
   --theme-border: rgba(165, 180, 252, 0.3);
+  --theme-neon-goal: #00FFFF; /* Neon Cyan */
 }
 
 /* 18. Hermes' Swiftness 👟 */
@@ -430,6 +458,7 @@ body.theme-hermes-swiftness {
   --theme-text: #FFF7ED;
   --theme-text-dim: #FB923C;
   --theme-border: rgba(249, 115, 22, 0.3);
+  --theme-neon-goal: #FF073A; /* Neon Red */
 }
 
 /* 19. Spartan Grit 🛡️ */
@@ -442,6 +471,7 @@ body.theme-spartan-grit {
   --theme-text: #FEF2F2;
   --theme-text-dim: #EF4444;
   --theme-border: rgba(153, 27, 27, 0.3);
+  --theme-neon-goal: #FFD700; /* Neon Gold */
 }
 
 /* 20. Oracle's Vision 🔮 */
@@ -454,6 +484,7 @@ body.theme-oracles-vision {
   --theme-text: #FAF5FF;
   --theme-text-dim: #A855F7;
   --theme-border: rgba(192, 132, 252, 0.3);
+  --theme-neon-goal: #39FF14; /* Neon Green */
 }
 
 /* 21. Solar Flare ☀️ */
@@ -466,6 +497,7 @@ body.theme-solar-flare {
   --theme-text: #FFF7ED;
   --theme-text-dim: #FFB703;
   --theme-border: rgba(255, 159, 28, 0.3);
+  --theme-neon-goal: #00FFFF; /* Neon Cyan */
 }
 
 /* 22. Deep Sea 🌊 */
@@ -478,6 +510,7 @@ body.theme-deep-sea {
   --theme-text: #E9D8A6;
   --theme-text-dim: #94D2BD;
   --theme-border: rgba(0, 119, 182, 0.3);
+  --theme-neon-goal: #FF00FF; /* Neon Magenta */
 }
 
 /* 23. Sakura Spring 🌸 */
@@ -492,6 +525,7 @@ body.theme-sakura-spring {
   --theme-border: rgba(255, 77, 109, 0.3);
   --theme-placeholder: rgba(164, 19, 60, 0.4);
   --theme-input-bg: rgba(255, 255, 255, 0.9);
+  --theme-neon-goal: #39FF14; /* Neon Green */
 }
 
 /* 24. Neon Wasteland ⚡ */
@@ -504,6 +538,7 @@ body.theme-neon-wasteland {
   --theme-text: #C084FC;
   --theme-text-dim: #7B2CBF;
   --theme-border: rgba(57, 255, 20, 0.3);
+  --theme-neon-goal: #FF00E5; /* Neon Pink */
 }
 
 /* 25. Emerald City 🏰 */
@@ -516,6 +551,7 @@ body.theme-emerald-city {
   --theme-text: #D1FFD7;
   --theme-text-dim: #FFD700;
   --theme-border: rgba(80, 200, 120, 0.3);
+  --theme-neon-goal: #00FFFF; /* Neon Cyan */
 }
 
 /* 26. Carbon Fiber 🏎️ */
@@ -528,6 +564,7 @@ body.theme-carbon-fiber {
   --theme-text: #F1FAEE;
   --theme-text-dim: #A8DADC;
   --theme-border: rgba(230, 57, 70, 0.3);
+  --theme-neon-goal: #39FF14; /* Neon Green */
 }
 
 /* 27. Sahara Gold 🏜️ */
@@ -542,6 +579,7 @@ body.theme-sahara-gold {
   --theme-border: rgba(212, 175, 55, 0.3);
   --theme-placeholder: rgba(59, 46, 42, 0.4);
   --theme-input-bg: rgba(255, 255, 255, 0.9);
+  --theme-neon-goal: #FF00FF; /* Neon Magenta */
 }
 
 /* 28. Midnight Galaxy 🌌 */
@@ -554,6 +592,7 @@ body.theme-midnight-galaxy {
   --theme-text: #FFFFFF;
   --theme-text-dim: #9D4EDD;
   --theme-border: rgba(224, 170, 255, 0.3);
+  --theme-neon-goal: #39FF14; /* Neon Green */
 }
 
 /* 29. Nordic Frost 🧊 */
@@ -568,6 +607,7 @@ body.theme-nordic-frost {
   --theme-border: rgba(70, 130, 180, 0.3);
   --theme-placeholder: rgba(47, 79, 79, 0.4);
   --theme-input-bg: rgba(255, 255, 255, 0.9);
+  --theme-neon-goal: #FF00FF; /* Neon Magenta */
 }
 
 /* 30. Ember Forge ⚒️ */
@@ -580,6 +620,7 @@ body.theme-ember-forge {
   --theme-text: #FFDAB9;
   --theme-text-dim: #D2691E;
   --theme-border: rgba(255, 69, 0, 0.3);
+  --theme-neon-goal: #00FFFF; /* Neon Cyan */
 }
 
 /* ===== REMAINDER OF YOUR ORIGINAL CSS GOES HERE ===== */
@@ -734,7 +775,7 @@ body.theme-ember-forge {
   .meal-hdr{display:flex;justify-content:space-between;align-items:center;padding:11px 14px;margin:12px -16px 0;border-radius:var(--radius-md);color:#c2edf5;background:var(--bg-highest,#002b30)!important}
   .meal-title{font-size:14px;font-weight:800;letter-spacing:.03em;display:flex;align-items:center;gap:8px}
   .meal-cals{font-size:12px;color:rgba(255,255,255,0.85);font-weight:600}
-  .meal-add-btn{font-size:12px;color:#fff;background:rgba(255,255,255,0.2);border:1px solid rgba(255,255,255,0.4);border-radius:6px;cursor:pointer;padding:4px 11px;font-family:inherit;font-weight:700}
+  .meal-add-btn{font-size:12px;color:var(--theme-text);background:rgba(255,255,255,0.2);border:1px solid rgba(255,255,255,0.4);border-radius:6px;cursor:pointer;padding:4px 11px;font-family:inherit;font-weight:700}
   .meal-add-btn:hover{background:rgba(255,255,255,0.35)}
   .food-row{display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-top:1px solid rgba(36,78,85,0.35)}
   .food-name{font-size:13px;font-weight:600}
@@ -743,7 +784,7 @@ body.theme-ember-forge {
   .del-btn:hover{background:var(--danger-bg);color:var(--danger-text)}
 
   /* SEARCH */
-  .search-input{width:100%;padding:10px 12px;border:1px solid var(--theme-border, rgba(255,255,255,0.1));border-radius:var(--radius-md);background:var(--theme-input-bg, rgba(0,0,0,0.3));color:var(--theme-text, #fff);font-size:14px;font-family:inherit;outline:none}
+  .search-input{width:100%;padding:10px 12px;border:1px solid var(--theme-border, rgba(255,255,255,0.1));border-radius:var(--radius-md);background:var(--theme-input-bg, rgba(0,0,0,0.3));color:var(--theme-text);font-size:14px;font-family:inherit;outline:none}
   .search-input::placeholder{color:var(--theme-placeholder, rgba(255,255,255,0.4))}
   .search-input:focus{border-color:var(--blue);box-shadow:0 0 0 3px rgba(50,102,173,.15)}
   .result-wrap{border:1px solid var(--border);border-radius:var(--radius-md);overflow:hidden;margin-top:8px;background:var(--bg-highest,#002b30)}
@@ -876,11 +917,29 @@ body.theme-ember-forge {
   .micro-goal-unit{font-size:11px;color:var(--text2);width:32px}
 
   /* FORMS */
-  .field{display:flex;flex-direction:column;gap:4px;margin-bottom:10px;min-width:0}
-  .field label{font-size:11px;color:var(--theme-text-dim, #8b8b9b);font-weight:600}
-  .field input,.field select{padding:8px 10px;border:1px solid var(--theme-border, rgba(255,255,255,0.1));border-radius:var(--radius-md);background:var(--theme-input-bg, rgba(0,0,0,0.3));color:var(--theme-text, #fff);font-family:inherit;font-size:13px;outline:none;width:100%;box-sizing:border-box;min-width:0}
-  .field input::placeholder{color:var(--theme-placeholder, rgba(255,255,255,0.4))}
-  .field input:focus,.field select:focus{border-color:#89dce3;box-shadow:0 0 0 2px rgba(137,220,227,0.15)}
+  .field input, .field select { 
+    padding: 10px 14px; 
+    border: 1px solid var(--theme-border, rgba(255,255,255,0.1)); 
+    border-radius: var(--radius-md); 
+    background: var(--theme-input-bg, rgba(0,0,0,0.3)); 
+    color: var(--theme-text, #fff); 
+    font-family: inherit; 
+    font-size: 14px; 
+    outline: none; 
+    width: 100%; 
+    box-sizing: border-box; 
+    min-width: 0;
+    transition: border-color 0.2s, box-shadow 0.2s;
+  }
+  .field select {
+    appearance: none;
+    -webkit-appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%238b8b9b' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+    padding-right: 36px;
+  }
+  .field input:focus, .field select:focus { border-color: var(--theme-accent); box-shadow: 0 0 0 3px var(--theme-accent-dim); }
   .f2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
   .f3{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
   @media(max-width:360px){.f3{grid-template-columns:1fr 1fr}}
@@ -888,6 +947,46 @@ body.theme-ember-forge {
   .btn-p:hover{opacity:.8}
   .btn-s{padding:9px 16px;background:transparent;color:var(--text);border:0.5px solid var(--border2);border-radius:var(--radius-md);font-size:13px;cursor:pointer;font-family:inherit}
   .brow{display:flex;justify-content:flex-end;gap:8px;margin-top:10px}
+
+  /* PREMIUM FORM HARROWING (Fixed "marks" and artifacts) */
+  .mm-input, .mm-select {
+    width: 100%;
+    min-height: 52px;
+    padding: 12px 16px;
+    background: var(--theme-input-bg) !important;
+    border: 1px solid var(--theme-border) !important;
+    border-radius: 14px !important;
+    color: var(--theme-text) !important;
+    font-family: inherit;
+    font-size: 16px !important; /* Prevent iOS zoom */
+    outline: none;
+    transition: all 0.2s ease;
+    box-sizing: border-box;
+    appearance: none;
+    -webkit-appearance: none;
+  }
+
+  .mm-select {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 24 24' fill='none' stroke='%238b8b9b' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E") !important;
+    background-repeat: no-repeat !important;
+    background-position: right 14px center !important;
+    padding-right: 44px !important;
+  }
+
+  .mm-input:focus, .mm-select:focus {
+    border-color: var(--theme-accent) !important;
+    box-shadow: 0 0 0 4px var(--theme-accent-dim) !important;
+  }
+
+  /* Remove Number Spinners */
+  input[type="number"]::-webkit-inner-spin-button,
+  input[type="number"]::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+  input[type="number"] {
+    -moz-appearance: textfield;
+  }
 
   /* MISC */
   .hint{font-size:12px;color:var(--text2);text-align:center;padding:14px}
@@ -1045,10 +1144,18 @@ body.theme-ember-forge {
   /* Meal add button */
   .meal-add-btn { background: rgba(137,220,227,0.15) !important; border: 1px solid rgba(137,220,227,0.3) !important; color: #89dce3 !important; }
   .meal-add-btn:hover { background: rgba(137,220,227,0.25) !important; }
-  /* Search input focus */
-  .search-input:focus { border-color: #89dce3 !important; box-shadow: 0 0 0 3px rgba(137,220,227,.12) !important; }
   /* Unit sel / meal sel */
-  .unit-sel, .meal-sel { background: var(--bg-highest, #002b30) !important; border: 1px solid var(--border) !important; color: var(--text) !important; }
+  .unit-sel, .meal-sel { 
+    appearance: none;
+    -webkit-appearance: none;
+    background-color: var(--bg-highest, #002b30) !important; 
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%238b8b9b' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E") !important;
+    background-repeat: no-repeat !important;
+    background-position: right 10px center !important;
+    border: 1px solid var(--border) !important; 
+    color: var(--text) !important; 
+    padding-right: 32px !important;
+  }
   .shop-card{background:linear-gradient(180deg, rgba(255,255,255,0.08), rgba(255,255,255,0.03));border:1px solid var(--border2);border-radius:12px;padding:12px;display:flex;flex-direction:column;gap:6px;transition:border-color .2s,box-shadow .2s}
   .shop-buy-btn{border-radius:8px;font-weight:700;font-family:inherit;cursor:pointer;border:1px solid rgba(137,220,227,0.4);background:rgba(137,220,227,0.1);color:#89dce3;transition:opacity .15s;padding:7px 4px;width:100%;font-size:11px}
   .shop-buy-btn:hover:not(:disabled){opacity:.85}
@@ -1429,8 +1536,11 @@ nav.glass-nav{
   body.theme-light-surface .shop-tab-btn,
   body.theme-light-surface .btn-s,
   body.theme-light-surface .recent-chip,
-  body.theme-light-surface .macro-slider-label {
-    color: #54636f !important;
+  body.theme-light-surface .macro-slider-label,
+  body.theme-light-surface .meal-cals,
+  body.theme-light-surface .meal-hdr,
+  body.theme-light-surface .lbl {
+    color: #1e293b !important;
     text-shadow: none !important;
   }
 
@@ -1439,7 +1549,8 @@ nav.glass-nav{
   body.theme-light-surface .spm-val,
   body.theme-light-surface .ac-ratio,
   body.theme-light-surface .macro-slider-val {
-    color: #224b63 !important;
+    color: #0f172a !important;
+    font-weight: 800 !important;
     text-shadow: none !important;
   }
 
@@ -1641,6 +1752,7 @@ body.theme-island-palm {
   --theme-border: rgba(16, 185, 129, 0.4);
   --theme-placeholder: rgba(6, 78, 59, 0.4);
   --theme-input-bg: rgba(255, 255, 255, 0.9);
+  --theme-neon-goal: #FF00FF; /* Neon Magenta */
 }
 
 body.theme-azure-tide {
@@ -1655,6 +1767,7 @@ body.theme-azure-tide {
   --theme-border: rgba(6, 182, 212, 0.4);
   --theme-placeholder: rgba(8, 51, 68, 0.4);
   --theme-input-bg: rgba(255, 255, 255, 0.9);
+  --theme-neon-goal: #FF007F; /* Neon Rose */
 }
 
 body.theme-mango-salsa {
@@ -1669,6 +1782,7 @@ body.theme-mango-salsa {
   --theme-border: rgba(249, 115, 22, 0.4);
   --theme-placeholder: rgba(67, 20, 7, 0.4);
   --theme-input-bg: rgba(255, 255, 255, 0.9);
+  --theme-neon-goal: #00FFFF; /* Neon Cyan */
 }
 
 body.theme-hibiscus-bloom {
@@ -1683,6 +1797,7 @@ body.theme-hibiscus-bloom {
   --theme-border: rgba(225, 29, 72, 0.4);
   --theme-placeholder: rgba(76, 5, 25, 0.4);
   --theme-input-bg: rgba(255, 255, 255, 0.9);
+  --theme-neon-goal: #CCFF00; /* Neon Lime */
 }
 
 body.theme-blue-hawaiian {
@@ -1697,6 +1812,7 @@ body.theme-blue-hawaiian {
   --theme-border: rgba(59, 130, 246, 0.4);
   --theme-placeholder: rgba(23, 37, 84, 0.4);
   --theme-input-bg: rgba(255, 255, 255, 0.9);
+  --theme-neon-goal: #FF00E5; /* Neon Pink */
 }
 
 body.theme-solar-breeze {
@@ -1711,6 +1827,7 @@ body.theme-solar-breeze {
   --theme-border: rgba(245, 158, 11, 0.4);
   --theme-placeholder: rgba(69, 26, 3, 0.4);
   --theme-input-bg: rgba(255, 255, 255, 0.9);
+  --theme-neon-goal: #00F5D4; /* Neon Teal */
 }
 
 body.theme-coconut-milk {
@@ -1725,6 +1842,7 @@ body.theme-coconut-milk {
   --theme-border: rgba(113, 113, 122, 0.4);
   --theme-placeholder: rgba(24, 24, 27, 0.4);
   --theme-input-bg: rgba(255, 255, 255, 0.9);
+  --theme-neon-goal: #FF4500; /* Neon Orange-Red */
 }
 
 body.theme-golden-pine {
@@ -1739,6 +1857,7 @@ body.theme-golden-pine {
   --theme-border: rgba(132, 204, 22, 0.4);
   --theme-placeholder: rgba(26, 46, 5, 0.4);
   --theme-input-bg: rgba(255, 255, 255, 0.9);
+  --theme-neon-goal: #FF00FF; /* Neon Magenta */
 }
 
 body.theme-lava-orchid {
@@ -1753,6 +1872,7 @@ body.theme-lava-orchid {
   --theme-border: rgba(219, 39, 119, 0.4);
   --theme-placeholder: rgba(80, 7, 36, 0.4);
   --theme-input-bg: rgba(255, 255, 255, 0.9);
+  --theme-neon-goal: #00FFFF; /* Neon Cyan */
 }
 
 body.theme-surf-neon {
@@ -1767,6 +1887,7 @@ body.theme-surf-neon {
   --theme-border: rgba(217, 70, 239, 0.4);
   --theme-placeholder: rgba(8, 51, 68, 0.4);
   --theme-input-bg: rgba(255, 255, 255, 0.9);
+  --theme-neon-goal: #39FF14; /* Neon Green */
 }
 
 /* --- STOCK THEMES START HERE --- */
@@ -1778,7 +1899,12 @@ body.theme-light-surface [style*="color: #fff"],
 body.theme-light-surface [style*="color: white"],
 body.theme-light-surface [style*="color: rgb(255, 255, 255)"],
 body.theme-light-surface [style*="color: rgba(255, 255, 255, 1)"],
-body.theme-light-surface [style*="color: #FFFFFF"] {
+body.theme-light-surface [style*="color: #FFFFFF"],
+body.theme-light-surface .meal-hdr,
+body.theme-light-surface .meal-cals,
+body.theme-light-surface .meal-add-btn,
+body.theme-light-surface .del-btn,
+body.theme-light-surface .btn-p {
   color: var(--theme-text) !important;
 }
 

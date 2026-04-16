@@ -156,22 +156,22 @@ export const ProgressView: React.FC = () => {
           <div style={{ fontSize: '48px', fontWeight: '900', color: 'var(--theme-text)', lineHeight: 1 }}>
             {Math.abs(parseFloat(weightLb.toString()) - parseFloat(targetWeight.toString())).toFixed(1)}
           </div>
-          <div style={{ fontSize: '13px', color: 'var(--theme-text-dim)', textTransform: 'uppercase', letterSpacing: '1px', marginTop: 'var(--space-xs)', maxWidth: '400px', margin: 'var(--space-xs) auto 0' }}>
+          <div style={{ fontSize: '13px', color: 'var(--theme-text)', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '1px', marginTop: 'var(--space-xs)', maxWidth: '400px', margin: 'var(--space-xs) auto 0' }}>
             {unitWeight} remaining to Reach Your {targetWeight} {unitWeight} goal
           </div>
         </div>
 
         <div style={{ padding: '0 var(--space-xs)' }}>
-          <div style={{ height: '12px', background: 'var(--theme-panel-dim, rgba(255,255,255,0.05))', borderRadius: '20px', overflow: 'hidden', border: '1px solid var(--theme-border)', padding: '3px' }}>
+          <div style={{ height: '14px', background: 'var(--theme-panel, rgba(255,255,255,0.07))', borderRadius: '20px', overflow: 'hidden', border: '1px solid var(--theme-border, rgba(255,255,255,0.1))', padding: '3px' }}>
             <div style={{ 
               height: '100%', 
-              background: 'linear-gradient(90deg, var(--theme-accent), var(--theme-success))', 
+              background: 'linear-gradient(90deg, var(--theme-accent, #00C9FF), var(--theme-success, #92FE9D))', 
               borderRadius: '10px',
               width: `${Math.max(5, Math.min(100, (1 - Math.abs(weightLb - targetWeight) / 25) * 100))}%`,
-              transition: 'width 1s cubic-bezier(0.34, 1.56, 0.64, 1)'
+              transition: 'width 1.2s cubic-bezier(0.34, 1.56, 0.64, 1)'
             }} />
           </div>
-          <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '11px', color: 'var(--theme-text-dim)', marginTop: 'var(--space-md)' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '12px', fontWeight: '800', color: 'var(--theme-text)', marginTop: 'var(--space-md)' }}>
             <span>Current: {weightLb} {unitWeight}</span>
             <span>Target: {targetWeight} {unitWeight}</span>
           </div>
@@ -190,7 +190,7 @@ export const ProgressView: React.FC = () => {
             <label className="lbl">Body Weight ({unitWeight})</label>
             <input type="number" step="0.1" className="inp" placeholder="Enter weight..." value={dailyWeight} onChange={e => setDailyWeight(cleanNumInput(e.target.value))} />
           </div>
-          <button type="submit" className="btn" style={{ height: '42px', marginTop: 0, padding: '0 24px', background: 'var(--theme-accent)', color: '#000' }}><Check size={16} /> Save Weight Record</button>
+          <button type="submit" className="btn" style={{ height: '42px', marginTop: 0, padding: '0 24px', background: 'var(--theme-accent)', color: 'var(--theme-bg, #000)' }}><Check size={16} /> Save Weight Record</button>
         </form>
         <div style={{ fontSize: '11px', color: 'var(--theme-text-dim)', marginTop: '12px', fontWeight: '500' }}>💡 Tip: Logging weight for today updates your body stats & TDEE app-wide. Historical logs update your chart only.</div>
       </div>
@@ -297,7 +297,7 @@ export const ProgressView: React.FC = () => {
             <div style={{ fontSize: '11px', color: 'var(--theme-accent)', marginTop: '4px', textAlign: 'right', fontWeight: '800' }}>
               Final Target: {Math.round(computed.proteinG)}g / day
             </div>
-            <button type="submit" className="btn" style={{ background: 'var(--theme-accent)', color: '#000' }}><Save size={14} /> Save Activity</button>
+            <button type="submit" className="btn" style={{ background: 'var(--theme-accent)', color: 'var(--theme-bg, #000)' }}><Save size={14} /> Save Activity</button>
           </form>
         </div>
 
@@ -390,7 +390,7 @@ export const ProgressView: React.FC = () => {
                 <span style={{ color: (macroP + macroC + macroF) === 100 ? 'var(--theme-success)' : 'var(--theme-error)', fontWeight: 'bold' }}>
                   Total: {macroP + macroC + macroF}%
                 </span>
-                <button onClick={handleSaveMacrosAndWater} className="btn" style={{ padding: '8px 16px', marginTop: '0', background: 'var(--theme-accent)', color: '#000' }} disabled={(macroP + macroC + macroF) !== 100}>
+                <button onClick={handleSaveMacrosAndWater} className="btn" style={{ padding: '8px 16px', marginTop: '0', background: 'var(--theme-accent)', color: 'var(--theme-bg, #000)' }} disabled={(macroP + macroC + macroF) !== 100}>
                   <Check size={14} /> Apply Macros
                 </button>
               </div>
@@ -405,7 +405,7 @@ export const ProgressView: React.FC = () => {
                   <input type="range" min="0" max="250" step="5" value={waterGoal} onChange={e => setWaterGoal(Number(e.target.value))} style={{ accentColor: 'var(--theme-accent)' }} />
                 </div>
                 <div style={{ flex: 1 }}>
-                  <button onClick={handleSaveWaterOnly} className="btn" style={{ width: '100%', marginTop: '0', background: 'var(--theme-accent)', color: '#000' }}>
+                  <button onClick={handleSaveWaterOnly} className="btn" style={{ width: '100%', marginTop: '0', background: 'var(--theme-accent)', color: 'var(--theme-bg, #000)' }}>
                     <Check size={14} /> Apply Water
                   </button>
                 </div>
@@ -450,7 +450,7 @@ export const ProgressView: React.FC = () => {
                             onKeyDown={e => e.key === 'Enter' && saveCustomMicro(nutrient.k)}
                             style={{ width: '80px', padding: '4px 8px' }} 
                           />
-                          <button onClick={() => saveCustomMicro(nutrient.k)} className="btn" style={{ margin: 0, padding: '4px 8px', background: 'var(--theme-accent)', color: '#000' }}><Check size={14} /></button>
+                          <button onClick={() => saveCustomMicro(nutrient.k)} className="btn" style={{ margin: 0, padding: '4px 8px', background: 'var(--theme-accent)', color: 'var(--theme-bg, #000)' }}><Check size={14} /></button>
                         </div>
                       ) : (
                         <span 

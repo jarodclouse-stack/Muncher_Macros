@@ -25,7 +25,7 @@ const CollapsibleEntrySection = ({ title, isOpen, onToggle, children }: { title:
       <ChevronDown size={16} style={{ transform: isOpen ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s' }} />
     </button>
     {isOpen && (
-      <div style={{ padding: '0 16px 16px', borderTop: '1px solid rgba(255,255,255,0.05)' }}>
+      <div style={{ padding: '0 16px 16px', borderTop: '1px solid var(--theme-border-dim)' }}>
         <div style={{ height: '12px' }} />
         {children}
       </div>
@@ -44,37 +44,47 @@ const PantryFilter = ({ label, active, onClick }: { label: string, active: boole
       fontWeight: '800', 
       textTransform: 'uppercase',
       cursor: 'pointer',
-      border: 'none', /* Handled by class */
-      color: active ? '#fff' : 'var(--theme-text-dim)'
+      border: 'none',
+      color: active ? 'var(--theme-bg)' : 'var(--theme-text-dim)'
     }}>
     {label}
   </button>
 );
 
 const MacroPill = ({ label, val, unit, color }: { label: string, val: string | number, unit: string, color: string }) => (
-  <div style={{ flex: 1, padding: '10px', background: 'rgba(255,255,255,0.03)', borderRadius: '12px', textAlign: 'center' }}>
-    <div style={{ fontSize: '10px', color: 'var(--theme-text-dim)', fontWeight: '800', textTransform: 'uppercase' }}>{label}</div>
-    <div style={{ fontSize: '16px', fontWeight: '900', color }}>{val}<span style={{ fontSize: '10px', opacity: 0.6 }}>{unit}</span></div>
+  <div style={{ flex: 1, padding: '10px', background: 'var(--theme-panel-dim)', borderRadius: '16px', textAlign: 'center', border: '1px solid var(--theme-border)' }}>
+    <div style={{ fontSize: '10px', color: 'var(--theme-text-dim)', fontWeight: '900', textTransform: 'uppercase', letterSpacing: '0.5px' }}>{label}</div>
+    <div style={{ fontSize: '16px', fontWeight: '900', color }}>{val}<span style={{ fontSize: '10px', opacity: 0.8, color: 'inherit', marginLeft: '2px' }}>{unit}</span></div>
   </div>
 );
 
 const NutrientDetailRow = ({ label, value, unit, benefit }: { label: string, value: string | number, unit: string, benefit?: any }) => {
   const [showBenefit, setShowBenefit] = useState(false);
   return (
-    <div style={{ padding: '10px', background: 'rgba(255,255,255,0.02)', borderRadius: '10px', border: '1px solid rgba(255,255,255,0.05)', marginBottom: '8px' }}>
+    <div style={{ padding: '10px 14px', background: 'var(--theme-panel-dim)', borderRadius: '16px', border: '1px solid var(--theme-border)', marginBottom: '8px' }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-          <span style={{ fontSize: '13px', fontWeight: '700', color: '#fff' }}>{label}</span>
+          <span style={{ 
+            fontSize: '11px', 
+            fontWeight: '900', 
+            color: 'var(--theme-text)', 
+            background: 'var(--theme-panel)', 
+            padding: '4px 12px', 
+            borderRadius: '20px',
+            textTransform: 'uppercase',
+            letterSpacing: '0.5px',
+            border: '1px solid var(--theme-border)'
+          }}>{label}</span>
           {benefit && (
-            <button onClick={() => setShowBenefit(!showBenefit)} style={{ background: 'none', border: 'none', color: showBenefit ? 'var(--theme-accent)' : '#5b5b6b', cursor: 'pointer', padding: 0 }}>
+            <button onClick={() => setShowBenefit(!showBenefit)} style={{ background: 'none', border: 'none', color: showBenefit ? 'var(--theme-accent)' : 'var(--theme-text-dim)', cursor: 'pointer', padding: 4 }}>
               <Info size={14} />
             </button>
           )}
         </div>
-        <span style={{ fontSize: '13px', fontWeight: '800', color: 'var(--theme-accent)' }}>{value}{unit}</span>
+        <span style={{ fontSize: '13px', fontWeight: '900', color: 'var(--theme-accent)' }}>{value}<span style={{fontSize:'10px', opacity:0.8, marginLeft: '2px'}}>{unit}</span></span>
       </div>
       {showBenefit && benefit && (
-        <div style={{ marginTop: '8px', fontSize: '11px', color: '#8b8b9b', fontStyle: 'italic', borderTop: '1px solid rgba(255,255,255,0.05)', paddingTop: '8px' }}>
+        <div style={{ marginTop: '10px', fontSize: '11px', color: 'var(--theme-text-dim)', fontStyle: 'italic', borderTop: '1px solid var(--theme-border)', paddingTop: '10px', fontWeight: '600', lineHeight: '1.4' }}>
            {typeof benefit === 'string' ? benefit : benefit.summary}
         </div>
       )}
@@ -94,7 +104,7 @@ const EntryField = ({ label, value, onChange, placeholder }: { label: string, va
         const cleaned = (v.length > 1 && v.startsWith('0') && !v.startsWith('0.')) ? v.substring(1) : v;
         onChange(cleaned);
       }}
-      style={{ padding: '10px 12px', fontSize: '13px', background: 'var(--theme-input-bg)', border: '1px solid var(--theme-border)', borderRadius: '12px', color: '#fff', outline: 'none' }}
+      style={{ padding: '10px 12px', fontSize: '13px', background: 'var(--theme-input-bg)', border: '1px solid var(--theme-border)', borderRadius: '12px', color: 'var(--theme-text)', outline: 'none' }}
     />
   </div>
 );
@@ -129,7 +139,22 @@ export const PantryView: React.FC = () => {
   const [isSearching, setIsSearching] = useState(false);
   const [searchResults, setSearchResults] = useState<Food[]>([]);
   const [innerGlobalSearchTab, setInnerGlobalSearchTab] = useState<SearchTab>('search');
-  
+
+  // Performance: Debounce for both searches
+  React.useEffect(() => {
+    const timer = setTimeout(() => {
+      if (ingQuery.length > 2) handleIngSearch(undefined, ingQuery);
+    }, 500);
+    return () => clearTimeout(timer);
+  }, [ingQuery]);
+
+  React.useEffect(() => {
+    const timer = setTimeout(() => {
+      if (searchQuery.length > 2) handleGlobalSearch();
+    }, 500);
+    return () => clearTimeout(timer);
+  }, [searchQuery]);
+
   const [aiStagedResults, setAiStagedResults] = useState<Food[]>([]);
   const [isAiReviewing, setIsAiReviewing] = useState(false);
   const [isPantryPickerOpen, setIsPantryPickerOpen] = useState(false);
@@ -164,12 +189,13 @@ export const PantryView: React.FC = () => {
       if (res.ok) {
         const body = await res.json();
         const globalRes = body.foods || body.results || [];
-        setSearchResults([...localMatches, ...globalRes]);
+        // Cap results at 50 for performance
+        setSearchResults([...localMatches, ...globalRes].slice(0, 50));
       } else {
-        setSearchResults(localMatches);
+        setSearchResults(localMatches.slice(0, 50));
       }
     } catch {
-      setSearchResults(localMatches);
+      setSearchResults(localMatches.slice(0, 50));
     }
     setIsSearching(false);
   };
@@ -223,9 +249,10 @@ export const PantryView: React.FC = () => {
       const res = await fetch(`/api/food-search?q=${encodeURIComponent(q)}`);
       if (res.ok) {
         const body = await res.json();
-        setIngResults([...localMatches, ...(body.foods || body.results || [])]);
-      } else setIngResults(localMatches);
-    } catch { setIngResults(localMatches); }
+        const combined = [...localMatches, ...(body.foods || body.results || [])];
+        setIngResults(combined.slice(0, 30)); // Capped for ingredient dropdown performance
+      } else setIngResults(localMatches.slice(0, 30));
+    } catch { setIngResults(localMatches.slice(0, 30)); }
     setIsIngSearching(false);
   };
 
@@ -296,11 +323,11 @@ export const PantryView: React.FC = () => {
           position: 'sticky', 
           top: '0', 
           zIndex: 100, 
-          background: 'var(--theme-panel, rgba(0,0,0,0.1))', 
-          backdropFilter: 'blur(20px)',
-          WebkitBackdropFilter: 'blur(20px)',
+          background: 'var(--theme-panel)', 
+          backdropFilter: 'blur(25px)',
+          WebkitBackdropFilter: 'blur(25px)',
           padding: '24px 20px 16px 20px', 
-          borderBottom: '1px solid var(--theme-border, rgba(255,255,255,0.05))'
+          borderBottom: '1px solid var(--theme-border)'
         }}>
         <button onClick={() => { setActiveTab('search'); clearSearchState(); }} 
           className={`pantry-filter-chip ${activeTab === 'search' ? 'active' : ''}`}
@@ -328,7 +355,7 @@ export const PantryView: React.FC = () => {
             onTabChange={(t) => { setInnerGlobalSearchTab(t); clearSearchState(); }} 
           />
             
-            <div className="section" style={{ background: 'var(--theme-panel, rgba(255,255,255,0.03))', border: '1px solid var(--theme-border)', borderRadius: 'var(--radius-lg)', padding: 'var(--space-lg)', marginBottom: 'var(--space-xl)' }}>
+            <div className="section" style={{ background: 'var(--theme-panel)', border: '1px solid var(--theme-border)', borderRadius: 'var(--radius-lg)', padding: 'var(--space-lg)', marginBottom: 'var(--space-xl)' }}>
               {innerGlobalSearchTab === 'scan' ? (
                 <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 'var(--space-md)', padding: 'var(--space-md) 0' }}>
                   <BarcodeScanner 
@@ -365,7 +392,7 @@ export const PantryView: React.FC = () => {
                   />
                   <button 
                     type="submit"
-                    style={{ padding: '12px var(--space-lg)', background: 'var(--theme-accent)', border: 'none', borderRadius: 'var(--radius-md)', color: '#000', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                    style={{ padding: '12px var(--space-lg)', background: 'var(--theme-accent)', border: 'none', borderRadius: 'var(--radius-md)', color: 'var(--theme-bg)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                     {isSearching ? <Loader2 className="spin" size={20} /> : (innerGlobalSearchTab === 'search' ? <Search size={20} /> : <Sparkles size={20} />)}
                   </button>
                 </form>
@@ -374,23 +401,23 @@ export const PantryView: React.FC = () => {
               {searchResults.length > 0 && (
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginTop: '20px', maxHeight: '400px', overflowY: 'auto', paddingRight: '4px' }}>
                   {searchResults.map((f: Food, i) => (
-                    <div key={i} onClick={() => handleAddPreviewClick(f)} style={{ padding: '12px', background: 'rgba(0,0,0,0.4)', borderRadius: '12px', cursor: 'pointer', borderLeft: f.isLocal ? '3px solid var(--theme-success, #92FE9D)' : '3px solid var(--theme-accent, #00C9FF)', transition: 'background 0.2s', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <div key={i} onClick={() => handleAddPreviewClick(f)} style={{ padding: '14px', background: 'var(--theme-panel-dim)', borderRadius: '16px', cursor: 'pointer', borderLeft: f.isLocal ? '4px solid var(--theme-success)' : '4px solid var(--theme-accent)', transition: 'transform 0.2s', display: 'flex', justifyContent: 'space-between', alignItems: 'center', border: '1px solid var(--theme-border)' }}>
                       <div style={{ flex: 1 }}>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                          <div style={{ fontWeight: '700', fontSize: '14px', color: '#fff' }}>{f.name}</div>
-                          {f.brand && <div style={{ fontSize: '10px', color: 'rgba(255,255,255,0.6)', opacity: 0.6 }}>• {f.brand}</div>}
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                          <div style={{ fontWeight: '900', fontSize: '14px', color: 'var(--theme-text)' }}>{f.name}</div>
+                          {f.brand && <div style={{ fontSize: '10px', color: 'var(--theme-text-dim)', opacity: 0.6, fontWeight: '700' }}>• {f.brand}</div>}
                         </div>
-                        <div style={{ fontSize: '11px', color: 'rgba(255,255,255,0.5)', marginTop: '2px' }}>{f.serving} • {f.cal} kcal • P:{f.p}g C:{f.c}g F:{f.f}g</div>
+                        <div style={{ fontSize: '11px', color: 'var(--theme-text-dim)', marginTop: '4px', fontWeight: '600' }}>{f.serving} • {f.cal} kcal • P:{f.p}g C:{f.c}g F:{f.f}g</div>
                       </div>
-                      {f.isLocal && <BookmarkCheck size={16} color="var(--theme-success, #92FE9D)" />}
+                      {f.isLocal && <BookmarkCheck size={18} color="var(--theme-success)" />}
                     </div>
                   ))}
                 </div>
               )}
 
               {!isSearching && searchQuery && searchResults.length === 0 && (
-                <div style={{ textAlign: 'center', padding: '40px 20px', background: 'rgba(0,0,0,0.2)', borderRadius: '24px', marginTop: '20px', border: '1px dashed rgba(255,255,255,0.1)' }}>
-                  <div style={{ color: 'rgba(255,255,255,0.4)', fontSize: '13px', fontWeight: '800', marginBottom: '16px' }}>NO FOODS FOUND IN DATABASE</div>
+                <div style={{ textAlign: 'center', padding: '40px 20px', background: 'var(--theme-panel-dim)', borderRadius: '24px', marginTop: '20px', border: '1px dashed var(--theme-border)' }}>
+                  <div style={{ color: 'var(--theme-text-dim)', fontSize: '12px', fontWeight: '900', marginBottom: '16px', letterSpacing: '1px' }}>NO FOODS FOUND IN DATABASE</div>
                   {/^\d+$/.test(searchQuery) && searchQuery.length >= 8 ? (
                     <button 
                       onClick={() => {
@@ -399,14 +426,14 @@ export const PantryView: React.FC = () => {
                       }}
                       style={{ 
                         width: '100%', padding: '14px', background: 'var(--theme-accent)', border: 'none', 
-                        borderRadius: '16px', color: '#000', fontWeight: '900', fontSize: '12px',
+                        borderRadius: '16px', color: 'var(--theme-bg)', fontWeight: '900', fontSize: '12px',
                         display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px'
                       }}
                     >
                       <Plus size={18} /> CREATE FOOD WITH THIS BARCODE
                     </button>
                   ) : (
-                    <div style={{ fontSize: '11px', color: 'rgba(255,255,255,0.3)' }}>Try a broader search or add it manually in the Kitchen Lab</div>
+                    <div style={{ fontSize: '11px', color: 'var(--theme-text-dim)', fontWeight: '600' }}>Try a broader search or add it manually in the Kitchen Lab</div>
                   )}
                 </div>
               )}
@@ -415,12 +442,12 @@ export const PantryView: React.FC = () => {
 
               {/* AI Review Step */}
               {isAiReviewing && aiStagedResults.length > 0 && (
-                <div style={{ marginTop: '20px', padding: '20px', background: 'rgba(0,0,0,0.5)', borderRadius: '24px', border: '1px solid rgba(0,180,255,0.2)' }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
-                    <div style={{ fontSize: '14px', fontWeight: '900', color: '#fff', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                      <Sparkles size={18} color="var(--theme-accent)" /> REVIEW DETECTED MEAL
+                <div style={{ marginTop: '20px', padding: '24px', background: 'var(--theme-panel)', borderRadius: '28px', border: '1px solid var(--theme-accent)', boxShadow: '0 12px 40px rgba(0,0,0,0.2)' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
+                    <div style={{ fontSize: '14px', fontWeight: '900', color: 'var(--theme-text)', display: 'flex', alignItems: 'center', gap: '8px', textTransform: 'uppercase', letterSpacing: '1px' }}>
+                      <Sparkles size={20} color="var(--theme-accent)" /> Review Detected Meal
                     </div>
-                    <button onClick={() => { setIsAiReviewing(false); setAiStagedResults([]); }} style={{ background: 'none', border: 'none', color: 'rgba(255,255,255,0.5)', cursor: 'pointer' }}><X size={18} /></button>
+                    <button onClick={() => { setIsAiReviewing(false); setAiStagedResults([]); }} style={{ background: 'var(--theme-panel-dim)', border: 'none', color: 'var(--theme-text-dim)', cursor: 'pointer', padding: '6px', borderRadius: '50%' }}><X size={20} /></button>
                   </div>
                   
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', marginBottom: '16px' }}>
@@ -429,27 +456,47 @@ export const PantryView: React.FC = () => {
                         const isExpanded = expandedAiIdx === i;
 
                       return (
-                        <div key={i} style={{ background: 'rgba(255,255,255,0.03)', padding: '16px', borderRadius: '18px', border: '1px solid rgba(255,255,255,0.08)', backdropFilter: 'blur(5px)' }}>
-                          <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
-                            <div style={{ fontWeight: '800', fontSize: '14px', color: '#fff' }}>{f.name}</div>
+                        <div key={i} style={{ background: 'var(--theme-panel-dim)', padding: '20px', borderRadius: '24px', border: '1px solid var(--theme-border)', backdropFilter: 'blur(10px)' }}>
+                          <div style={{ display: 'flex', flexDirection: 'column', marginBottom: '12px' }}>
+                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '12px' }}>
+                              <input 
+                                value={f.name} 
+                                onChange={(e) => {
+                                  const next = [...aiStagedResults];
+                                  next[i] = { ...f, name: e.target.value };
+                                  setAiStagedResults(next);
+                                }}
+                                style={{ 
+                                  flex: 1,
+                                  background: 'var(--theme-input-bg)', 
+                                  border: '1px solid var(--theme-border)', 
+                                  borderRadius: '12px',
+                                  color: 'var(--theme-text)', 
+                                  fontWeight: '900', 
+                                  fontSize: '15px', 
+                                  outline: 'none', 
+                                  padding: '10px 14px',
+                                  marginBottom: '4px' 
+                                }}
+                              />
                             <div style={{ display: 'flex', gap: '8px' }}>
                               <button 
                                 onClick={() => setExpandedAiIdx(isExpanded ? null : i)}
-                                style={{ background: 'rgba(255,255,255,0.05)', border: 'none', color: isExpanded ? 'var(--theme-accent)' : '#fff', padding: '4px 8px', borderRadius: '8px', fontSize: '10px', fontWeight: '900', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '4px' }}
+                                style={{ background: 'var(--theme-panel)', border: '1px solid var(--theme-border)', color: isExpanded ? 'var(--theme-accent)' : 'var(--theme-text)', padding: '6px 10px', borderRadius: '10px', fontSize: '11px', fontWeight: '900', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '6px' }}
                               >
-                                <Info size={12} /> {isExpanded ? 'HIDE' : 'INFO'}
+                                <Info size={14} /> {isExpanded ? 'HIDE' : 'INFO'}
                               </button>
                               <button onClick={() => {
                                 const next = aiStagedResults.filter((_, idx) => idx !== i);
                                 setAiStagedResults(next);
                                 if (next.length === 0) setIsAiReviewing(false);
                                 if (isExpanded) setExpandedAiIdx(null);
-                              }} style={{ background: 'none', border: 'none', color: '#FF6B6B', cursor: 'pointer' }}><X size={14} /></button>
+                              }} style={{ background: 'none', border: 'none', color: 'var(--theme-error)', cursor: 'pointer', padding: '4px' }}><X size={18} /></button>
                             </div>
                           </div>
                           
                           {/* Nutrients Display (Live Edit Mode) */}
-                          <div style={{ marginBottom: '12px', background: 'rgba(255,255,255,0.03)', padding: '12px', borderRadius: '14px', border: '1px solid rgba(255,255,255,0.08)' }}>
+                          <div style={{ marginBottom: '16px', background: 'var(--theme-panel)', padding: '16px', borderRadius: '20px', border: '1px solid var(--theme-border)' }}>
                             <NutritionFactsDisplay 
                               food={f} 
                               multiplier={multiplier} 
@@ -461,7 +508,7 @@ export const PantryView: React.FC = () => {
                             />
                           </div>
   
-                          <div style={{ display: 'flex', gap: '8px' }}>
+                          <div style={{ display: 'flex', gap: '10px' }}>
                             <input 
                               type="number" 
                               value={f.stagedQty} 
@@ -470,7 +517,7 @@ export const PantryView: React.FC = () => {
                                 next[i] = { ...f, stagedQty: e.target.value };
                                 setAiStagedResults(next);
                               }}
-                              style={{ width: '60px', background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '8px', color: '#fff', fontSize: '12px', padding: '6px' }} 
+                              style={{ width: '70px', background: 'var(--theme-input-bg)', border: '1px solid var(--theme-border)', borderRadius: '10px', color: 'var(--theme-text)', fontSize: '13px', padding: '10px', fontWeight: '900', textAlign: 'center' }} 
                             />
                             <select 
                               value={f.stagedUnit} 
@@ -479,8 +526,8 @@ export const PantryView: React.FC = () => {
                                 next[i] = { ...f, stagedUnit: e.target.value };
                                 setAiStagedResults(next);
                               }}
-                              style={{ flex: 1, background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '8px', color: '#fff', fontSize: '12px', padding: '6px' }}>
-                              {SERVING_UNITS.map(u => <option key={u.v} value={u.v} style={{ background: '#222' }}>{u.v}</option>)}
+                              style={{ flex: 1, background: 'var(--theme-input-bg)', border: '1px solid var(--theme-border)', borderRadius: '10px', color: 'var(--theme-text)', fontSize: '13px', padding: '10px', fontWeight: '800' }}>
+                              {SERVING_UNITS.map(u => <option key={u.v} value={u.v} style={{ background: 'var(--theme-panel)', color: 'var(--theme-text)' }}>{u.v}</option>)}
                             </select>
                           </div>
                         </div>
@@ -501,8 +548,8 @@ export const PantryView: React.FC = () => {
                         setAiStagedResults([]);
                         alert("Meal logged to Breakfast!");
                       }}
-                      style={{ flex: 2, padding: '14px', background: 'var(--theme-accent)', border: 'none', borderRadius: '14px', color: '#000', fontWeight: '900', fontSize: '13px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
-                      <Check size={18} /> CONFIRM ALL
+                      style={{ flex: 2, padding: '14px', background: 'var(--theme-accent)', border: 'none', borderRadius: '16px', color: 'var(--theme-bg)', fontWeight: '900', fontSize: '13px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px', boxShadow: '0 4px 15px var(--theme-accent-dim)' }}>
+                      <Check size={20} /> CONFIRM ALL
                     </button>
                     <button 
                       onClick={() => {
@@ -528,7 +575,7 @@ export const PantryView: React.FC = () => {
       {activeTab === 'manual' && (
         <div style={{ padding: '20px 20px 0 20px' }}>
           <div style={{ height: '20px' }} />
-          <h2 style={{ fontSize: '18px', fontWeight: '800', marginBottom: '20px', color: '#fff' }}>KITCHEN LAB</h2>
+          <h2 style={{ fontSize: '18px', fontWeight: '800', marginBottom: '20px', color: 'var(--theme-text)' }}>KITCHEN LAB</h2>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-md)' }}>
             <EntryField label="Food Name" value={form.name} onChange={v => setForm({...form, name: v})} placeholder="e.g. Grilled Chicken" />
             
@@ -540,8 +587,8 @@ export const PantryView: React.FC = () => {
                   className="inp"
                   value={form.sUnit}
                   onChange={e => setForm({...form, sUnit: e.target.value})}
-                  style={{ padding: '8px 10px', fontSize: '13px', background: 'var(--theme-input-bg)', border: '1px solid var(--theme-border)', borderRadius: 'var(--radius-md)', color: '#fff' }}>
-                  {SERVING_UNITS.map(u => <option key={u.v} value={u.v}>{u.v}</option>)}
+                  style={{ padding: '10px 12px', fontSize: '13px', background: 'var(--theme-input-bg)', border: '1px solid var(--theme-border)', borderRadius: '12px', color: 'var(--theme-text)', fontWeight: '800' }}>
+                  {SERVING_UNITS.map(u => <option key={u.v} value={u.v} style={{background: 'var(--theme-panel)'}}>{u.v}</option>)}
                 </select>
               </div>
             </div>
@@ -630,7 +677,6 @@ export const PantryView: React.FC = () => {
                   className="inp" placeholder="Search recipe ingredients..." 
                   value={ingQuery} onChange={e => {
                     setIngQuery(e.target.value);
-                    if (e.target.value.length > 2) handleIngSearch(undefined, e.target.value);
                   }}
                   style={{ flex: 1, padding: '10px', fontSize: '12px' }}
                 />
@@ -794,7 +840,7 @@ export const PantryView: React.FC = () => {
                     ingredientItems: []
                   });
                 }}
-                style={{ flex: 2, padding: '14px', background: 'var(--theme-accent)', border: 'none', borderRadius: '12px', color: '#000', fontWeight: '800', cursor: 'pointer' }}>
+                style={{ flex: 2, padding: '14px', background: 'var(--theme-accent)', border: 'none', borderRadius: '12px', color: 'var(--theme-bg, #000)', fontWeight: '800', cursor: 'pointer' }}>
                 {editingIndex !== null ? 'Update Food' : 'Save to Pantry'}
               </button>
               <button 
@@ -908,7 +954,7 @@ export const PantryView: React.FC = () => {
                     alignItems: 'center' 
                   }}>
                   <div style={{ flex: 1 }}>
-                    <div style={{ fontWeight: '700', fontSize: '14px', color: '#fff' }}>{f.name}</div>
+                    <div style={{ fontWeight: '700', fontSize: '14px', color: 'var(--theme-text)' }}>{f.name}</div>
                     <div style={{ fontSize: '11px', color: 'rgba(255,255,255,0.5)', marginTop: '2px' }}>{f.serving} • {f.cal} kcal • P:{f.p}g C:{f.c}g F:{f.f}g</div>
                   </div>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
@@ -938,8 +984,24 @@ export const PantryView: React.FC = () => {
 
       {/* Food Preview Configuration Overlay */}
       {configuringFood && (
-          <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.85)', backdropFilter: 'blur(10px)', display: 'flex', alignItems: 'flex-end', zIndex: 2000 }}>
-            <div style={{ width: '100%', background: 'var(--theme-bg)', borderRadius: '24px 24px 0 0', border: '1px solid var(--theme-border)', padding: '24px', maxHeight: '90vh', overflowY: 'auto' }}>
+        <div style={{ 
+          position: 'fixed', 
+          inset: 0, 
+          zIndex: 1500, 
+          background: 'rgba(0,0,0,0.85)', 
+          backdropFilter: 'blur(10px)', 
+          display: 'flex', 
+          alignItems: 'flex-end' 
+        }}>
+          <div style={{ 
+            width: '100%', 
+            maxHeight: '85vh', 
+            background: 'var(--theme-bg, #0a0d11)', 
+            borderTop: '2px solid var(--theme-accent)', 
+            borderRadius: '24px 24px 0 0', 
+            padding: '24px', 
+            overflowY: 'auto' 
+          }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '20px' }}>
                 <div>
                   <input 
@@ -1090,7 +1152,7 @@ export const PantryView: React.FC = () => {
                     setConfiguringFood(null);
                     alert("Added to Diary!");
                   }}
-                  style={{ width: '100%', padding: '16px', background: 'var(--theme-success, #92FE9D)', border: 'none', borderRadius: '16px', color: '#000', fontWeight: '900', fontSize: '15px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px', boxShadow: '0 8px 24px rgba(146,254,157,0.15)' }}>
+                  style={{ width: '100%', padding: '16px', background: 'var(--theme-success, #92FE9D)', border: 'none', borderRadius: '16px', color: 'var(--theme-bg, #000)', fontWeight: '900', fontSize: '15px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px', boxShadow: '0 8px 24px rgba(146,254,157,0.15)' }}>
                   <Plus size={20} /> ADD TO DIARY
                 </button>
 

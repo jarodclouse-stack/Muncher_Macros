@@ -41,6 +41,7 @@ interface DiaryContextState {
   duplicateCustomFood: (idx: number) => void;
   isScannerActive: boolean;
   setIsScannerActive: (val: boolean) => void;
+  updateLocalCache: (newCache: LocalCache) => void;
 }
 
 const DiaryContext = createContext<DiaryContextState>({} as DiaryContextState);
@@ -163,82 +164,94 @@ export const DiaryProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   };
 
   const addFoodLog = (meal: string, food: Food) => {
-    const updated = { ...localCache };
-    const day = updated[currentDate] || {};
-    const log = [...(day.foodLog || [])];
-    log.push({ meal, f: food });
-    day.foodLog = log;
-    updated[currentDate] = day;
-    updateCacheDebounced(updated);
+    setLocalCache(prev => {
+      const updated = { ...prev };
+      const currentDay = updated[currentDate] || {};
+      const newLog = [...(currentDay.foodLog || [])];
+      newLog.push({ meal, f: food });
+      updated[currentDate] = { ...currentDay, foodLog: newLog };
+      
+      if (syncTimeoutRef.current) clearTimeout(syncTimeoutRef.current);
+      syncTimeoutRef.current = setTimeout(() => saveCloudData(updated), 1500) as any;
+      return updated;
+    });
   };
 
   const removeFoodLog = (meal: string, idx: number) => {
-    const updated = { ...localCache };
-    const day = updated[currentDate] || {};
-    const log = [...(day.foodLog || [])];
-    // filter carefully: find the matching relative index within the particular meal slice
-    let localIdx = 0;
-    const globalIdx = log.findIndex(item => {
-      if (item.meal === meal) {
-        if (localIdx === idx) return true;
-        localIdx++;
+    setLocalCache(prev => {
+      const updated = { ...prev };
+      const currentDay = updated[currentDate] || {};
+      const log = [...(currentDay.foodLog || [])];
+      
+      let localIdx = 0;
+      const globalIdx = log.findIndex(item => {
+        if (item.meal === meal) {
+          if (localIdx === idx) return true;
+          localIdx++;
+        }
+        return false;
+      });
+      
+      if (globalIdx !== -1) {
+        log.splice(globalIdx, 1);
+        updated[currentDate] = { ...currentDay, foodLog: log };
+        if (syncTimeoutRef.current) clearTimeout(syncTimeoutRef.current);
+        syncTimeoutRef.current = setTimeout(() => saveCloudData(updated), 1500) as any;
       }
-      return false;
+      return updated;
     });
-    
-    if (globalIdx !== -1) log.splice(globalIdx, 1);
-    
-    day.foodLog = log;
-    updated[currentDate] = day;
-    updateCacheDebounced(updated);
   };
 
   const updateFoodLog = (meal: string, idx: number, updatedFood: Food) => {
-    const updated = { ...localCache };
-    const day = updated[currentDate] || {};
-    const log = [...(day.foodLog || [])];
-    
-    let localIdx = 0;
-    const globalIdx = log.findIndex(item => {
-      if (item.meal === meal) {
-        if (localIdx === idx) return true;
-        localIdx++;
+    setLocalCache(prev => {
+      const updated = { ...prev };
+      const currentDay = updated[currentDate] || {};
+      const log = [...(currentDay.foodLog || [])];
+      
+      let localIdx = 0;
+      const globalIdx = log.findIndex(item => {
+        if (item.meal === meal) {
+          if (localIdx === idx) return true;
+          localIdx++;
+        }
+        return false;
+      });
+      
+      if (globalIdx !== -1) {
+        log[globalIdx] = { ...log[globalIdx], f: updatedFood };
+        updated[currentDate] = { ...currentDay, foodLog: log };
+        if (syncTimeoutRef.current) clearTimeout(syncTimeoutRef.current);
+        syncTimeoutRef.current = setTimeout(() => saveCloudData(updated), 1500) as any;
       }
-      return false;
+      return updated;
     });
-    
-    if (globalIdx !== -1) {
-      log[globalIdx] = { ...log[globalIdx], f: updatedFood };
-    }
-    
-    day.foodLog = log;
-    updated[currentDate] = day;
-    updateCacheDebounced(updated);
   };
 
   const moveFoodLog = (oldMeal: string, idx: number, newMeal: string) => {
-    const updated = { ...localCache };
-    const day = updated[currentDate] || {};
-    const log = [...(day.foodLog || [])];
-    
-    let localIdx = 0;
-    const globalIdx = log.findIndex(item => {
-      if (item.meal === oldMeal) {
-        if (localIdx === idx) return true;
-        localIdx++;
+    setLocalCache(prev => {
+      const updated = { ...prev };
+      const currentDay = updated[currentDate] || {};
+      const log = [...(currentDay.foodLog || [])];
+      
+      let localIdx = 0;
+      const globalIdx = log.findIndex(item => {
+        if (item.meal === oldMeal) {
+          if (localIdx === idx) return true;
+          localIdx++;
+        }
+        return false;
+      });
+  
+      if (globalIdx !== -1) {
+        const item = { ...log[globalIdx], meal: newMeal };
+        log.splice(globalIdx, 1);
+        log.push(item);
+        updated[currentDate] = { ...currentDay, foodLog: log };
+        if (syncTimeoutRef.current) clearTimeout(syncTimeoutRef.current);
+        syncTimeoutRef.current = setTimeout(() => saveCloudData(updated), 1500) as any;
       }
-      return false;
+      return updated;
     });
-
-    if (globalIdx !== -1) {
-      const item = { ...log[globalIdx], meal: newMeal };
-      log.splice(globalIdx, 1);
-      log.push(item);
-    }
-    
-    day.foodLog = log;
-    updated[currentDate] = day;
-    updateCacheDebounced(updated);
   };
 
   const updateGoals = (partialGoals: Record<string, any>) => {
@@ -342,7 +355,8 @@ export const DiaryProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       updateSettings, purchaseTheme,
       stagingTray, addToTray, removeFromTray, updateTrayItem, clearTray,
       toggleFavorite, duplicateCustomFood, moveFoodLog,
-      isScannerActive, setIsScannerActive
+      isScannerActive, setIsScannerActive,
+      updateLocalCache: updateCacheDebounced
     }}>
       {children}
     </DiaryContext.Provider>
