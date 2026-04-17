@@ -125,7 +125,7 @@ export const DiaryView: React.FC = () => {
           marginBottom: '24px', 
           fontSize: '14px', 
           lineHeight: '1.5',
-          color: 'var(--theme-text)', 
+          color: 'var(--theme-accent)', 
           display: 'flex', 
           alignItems: 'flex-start', 
           gap: '12px',

@@ -8,7 +8,6 @@ import {
   Search, Sparkles, Plus, Check, 
   X, Loader2, Info, FileText, Trash2
 } from 'lucide-react';
-import { BarcodeScanner } from './BarcodeScanner';
 import { SearchCoaster, type SearchTab } from './SearchCoaster';
 import { NutritionFactsDisplay } from './NutritionFactsDisplay';
 
@@ -459,14 +458,14 @@ export const AddFoodModal: React.FC<AddFoodModalProps> = ({ meal, onClose }) => 
                       <span style={{ fontSize: '9px', color: 'var(--theme-text-dim)', opacity: 0.5, background: 'var(--theme-panel-dim)', padding: '2px 6px', borderRadius: '6px' }}>v2.2-QTY-FORCE</span>
                     </div>
                     </div>
-                    <button onClick={() => { setIsAiReviewing(false); setAiStagedResults([]); }} style={{ background: 'var(--theme-panel-dim)', border: 'none', color: 'var(--theme-text-dim)', borderRadius: '50%', padding: '4px', cursor: 'pointer' }}><X size={18} /></button>
+                    <button onClick={() => { setIsAiReviewing(false); setAiStagedResults([]); }} style={{ background: 'var(--theme-panel-dim)', border: '1px solid var(--theme-border)', color: 'var(--theme-text-dim)', borderRadius: '12px', padding: '6px 12px', cursor: 'pointer', fontSize: '11px', fontWeight: '800' }}>DISMISS</button>
                   </div>
                   
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', marginBottom: '20px' }}>
                     {aiStagedResults.map((f, i) => (
                       <div key={i} style={{ background: 'rgba(0,0,0,0.3)', padding: '16px', borderRadius: '18px', border: '1px solid rgba(255,255,255,0.08)' }}>
                         <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '10px' }}>
-                          <div style={{ fontWeight: '800', fontSize: '14px', color: 'var(--theme-text)' }}>{f.name}</div>
+                          <div style={{ fontWeight: '800', fontSize: '14px', color: 'var(--theme-accent)' }}>{f.name}</div>
                           <div style={{ display: 'flex', gap: '8px' }}>
                             <button 
                               onClick={(e) => {
@@ -586,23 +585,56 @@ export const AddFoodModal: React.FC<AddFoodModalProps> = ({ meal, onClose }) => 
                         </div>
                       </div>
                     ))}
+                    
+                    {/* Add Ingredient Button */}
+                    <button 
+                      onClick={() => {
+                        const newItem: Food = {
+                          name: 'New Ingredient',
+                          cal: 0, p: 0, c: 0, f: 0,
+                          serving: '1 serving',
+                          sQty: 1,
+                          sUnit: 'serving',
+                          stagedQty: '1',
+                          stagedUnit: 'serving',
+                          showNutrientIntel: true
+                        };
+                        setAiStagedResults([...aiStagedResults, newItem]);
+                      }}
+                      style={{ 
+                        width: '100%', 
+                        padding: '16px', 
+                        background: 'rgba(255,255,255,0.03)', 
+                        border: '1px dashed var(--theme-accent)', 
+                        borderRadius: '18px', 
+                        color: 'var(--theme-accent)', 
+                        fontWeight: '800', 
+                        fontSize: '13px', 
+                        cursor: 'pointer',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        gap: '8px',
+                        marginTop: '4px'
+                      }}
+                    >
+                      <Plus size={18} /> ADD INGREDIENT
+                    </button>
                   </div>
 
                   <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px', marginTop: '10px' }}>
                     <button 
                       onClick={() => {
-                        aiStagedResults.forEach(f => {
-                           const mult = computeMultiplier(f.serving || '', f.stagedUnit || 'piece', parseFloat(f.stagedQty || '1') || 1);
-                           const scaled = scaleLegacyFoodByAmount(f, mult);
-                           saveCustomFood({
-                             ...scaled,
-                             id: crypto.randomUUID(),
-                             isLocal: true,
-                             sQty: parseFloat(f.stagedQty || '1'),
-                             sUnit: f.stagedUnit || 'piece'
-                           });
-                        });
-                        alert(`${aiStagedResults.length} items added to your Kitchen individually!`);
+                        const mealData = {
+                          name: `AI Meal: ${searchQuery.length > 20 ? searchQuery.substring(0, 20) + '...' : searchQuery}`,
+                          serving: '1 meal',
+                          items: aiStagedResults.map(f => {
+                            const mult = computeMultiplier(f.serving || '', f.stagedUnit || 'piece', parseFloat(f.stagedQty || '1') || 1);
+                            return scaleLegacyFoodByAmount(f, mult);
+                          })
+                        };
+                        saveCustomFood(mealData as any);
+                        alert("Meal template saved to Kitchen!");
                         setIsAiReviewing(false);
                         setAiStagedResults([]);
                       }}
@@ -644,7 +676,7 @@ export const AddFoodModal: React.FC<AddFoodModalProps> = ({ meal, onClose }) => 
                           const mult = computeMultiplier(f.serving || '', f.stagedUnit || 'piece', parseFloat(f.stagedQty || '1') || 1);
                           const scaled = scaleLegacyFoodByAmount(f, mult);
                           scaled.serving = `${f.stagedQty} ${f.stagedUnit}`;
-                          scaled._base = f; // Lossless reference
+                          scaled._base = f; 
                           addToTray(scaled);
                         });
                         setIsAiReviewing(false);
@@ -655,32 +687,6 @@ export const AddFoodModal: React.FC<AddFoodModalProps> = ({ meal, onClose }) => 
                     </button>
                   </div>
                 </div>
-              )}
-            </div>
-          ) : activeTab === 'scan' ? (
-            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '20px', padding: '20px 0' }}>
-              <BarcodeScanner 
-                onScanSuccess={(result) => {
-                  if (typeof result === 'object' && result !== null) {
-                    // It's a nutrition label OR a successful barcode lookup result
-                    setAiStagedResults([{ ...result, stagedQty: '1', stagedUnit: 'serving', showNutrientIntel: false }]);
-                    setIsAiReviewing(true);
-                    setActiveTab('describe');
-                  } else {
-                    // It's a raw barcode or QR code string
-                    const displayQuery = typeof result === 'string' ? result : (result?.name || '');
-                    setQuery(String(displayQuery));
-                    if (displayQuery) {
-                      handleStandardSearch({ preventDefault: () => {} } as React.FormEvent);
-                    }
-                    setActiveTab('search');
-                  }
-                }}
-                onScanError={(err) => setErrorMsg(err)}
-              />
-              <p style={{ fontSize: '13px', color: 'var(--theme-text-dim)', textAlign: 'center', maxWidth: '280px', lineHeight: '1.4' }}>
-                Scans **Nutrition Labels**, **Barcodes**, and **QR Codes**. Take a clear photo for best results.
-              </p>
             </div>
           ) : null}
         </div>
@@ -875,7 +881,7 @@ const SearchResultItem = React.memo(({ food, onClick, localIdx, onDelete }: { fo
     }}>
     <div style={{ flex: 1 }}>
       <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-        <div style={{ fontWeight: '800', color: 'var(--theme-text)', fontSize: '15px' }}>{food.name}</div>
+        <div style={{ fontWeight: '800', color: 'var(--theme-accent)', fontSize: '15px' }}>{food.name}</div>
         {food.brand && <div style={{ fontSize: '10px', color: 'var(--theme-text-dim)', opacity: 0.6 }}>• {food.brand}</div>}
       </div>
       <div style={{ display: 'flex', gap: '8px', alignItems: 'center', marginTop: '4px' }}>

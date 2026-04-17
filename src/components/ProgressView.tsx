@@ -192,7 +192,7 @@ export const ProgressView: React.FC = () => {
           </div>
           <button type="submit" className="btn" style={{ height: '42px', marginTop: 0, padding: '0 24px', background: 'var(--theme-accent)', color: 'var(--theme-panel-base, #000)', fontWeight: '800', boxShadow: '0 0 10px var(--theme-accent-dim)' }}><Check size={16} /> Save Weight Record</button>
         </form>
-        <div style={{ fontSize: '12px', color: 'var(--theme-text)', marginTop: '16px', fontWeight: '700', background: 'var(--theme-accent-dim)', padding: '10px', borderRadius: '8px', border: '1px solid var(--theme-accent-dim)' }}>💡 Tip: Logging weight for today updates your body stats & TDEE app-wide. Historical logs update your chart only.</div>
+        <div style={{ fontSize: '12px', color: 'var(--theme-accent)', marginTop: '16px', fontWeight: '700', background: 'var(--theme-accent-dim)', padding: '10px', borderRadius: '8px', border: '1px solid var(--theme-accent-dim)' }}>💡 Tip: Logging weight for today updates your body stats & TDEE app-wide. Historical logs update your chart only.</div>
       </div>
 
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '20px' }}>

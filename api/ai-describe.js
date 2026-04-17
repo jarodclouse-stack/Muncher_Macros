@@ -176,11 +176,13 @@ export default async function handler(req, res) {
   Meal: "${description}"
 
   DIETARY PERCEPTION PROTOCOL (MANDATORY):
-  1. ITEM COUNT: How many of this item did the user describe? (e.g. "2 eggs" -> 2).
-  2. PER UNIT NUTRITION: What is the nutrition for exactly ONE (1) of this item? 
-  3. JSON POPULATION:
-     - Set "detectedCount" to the number from step 1.
-     - Set "cal", "p", "c", "f" to the values from step 2.
+  1. DECONSTRUCTION: Break the meal down into its core individual components/ingredients (e.g., "Chicken Salad Sandwich" -> ["Chicken Breast", "Mayonnaise", "Celery", "Bread Slices"]).
+  2. ITEM COUNT: How many units of each component? (e.g. "2 eggs" -> 2).
+  3. PER UNIT NUTRITION: What is the nutrition for exactly ONE (1) of that specific unit? 
+  4. JSON POPULATION:
+     - Set "name" to the specific ingredient name.
+     - Set "detectedCount" to the number from step 2.
+     - Set "cal", "p", "c", "f" to the values from step 3.
 
   IF YOU DEFAULT TO 1 WHEN THE USER MENTIONED A DIFFERENT NUMBER, THE DATA WILL BE REJECTED.
 

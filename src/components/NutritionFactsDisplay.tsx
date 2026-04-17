@@ -32,7 +32,7 @@ export const NutritionFactsDisplay: React.FC<NutritionFactsDisplayProps> = ({ fo
         <span style={{ 
           fontSize: '11px', 
           fontWeight: '900', 
-          color: 'var(--theme-text)',
+          color: 'var(--theme-accent)',
           background: 'var(--theme-panel)',
           padding: '4px 12px',
           borderRadius: '20px',

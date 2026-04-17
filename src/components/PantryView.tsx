@@ -10,7 +10,6 @@ import { getNutrientDescriptions } from '../lib/nutrient-info';
 import { computeMultiplier, scaleLegacyFoodByAmount, calculateMacroBalance, scaleToTarget } from '../lib/food/serving-converter';
 import { getPairingSuggestions } from '../lib/food/smart-pairing';
 
-import { BarcodeScanner } from './BarcodeScanner';
 import { SearchCoaster, type SearchTab } from './SearchCoaster';
 import { NutritionFactsDisplay } from './NutritionFactsDisplay';
 import type { Food, RecipeItem } from '../types/food';
@@ -94,7 +93,7 @@ const NutrientDetailRow = ({ label, value, unit, benefit }: { label: string, val
 
 const EntryField = ({ label, value, onChange, placeholder }: { label: string, value: string, onChange: (v: string) => void, placeholder?: string }) => (
   <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
-    <label style={{ fontSize: '10px', color: 'var(--theme-text-dim)', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.5px' }}>{label}</label>
+    <label style={{ fontSize: '10px', color: 'var(--theme-accent)', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.5px' }}>{label}</label>
     <input 
       className="inp" 
       value={value || ''} 
@@ -104,7 +103,7 @@ const EntryField = ({ label, value, onChange, placeholder }: { label: string, va
         const cleaned = (v.length > 1 && v.startsWith('0') && !v.startsWith('0.')) ? v.substring(1) : v;
         onChange(cleaned);
       }}
-      style={{ padding: '10px 12px', fontSize: '13px', background: 'var(--theme-input-bg)', border: '1px solid var(--theme-border)', borderRadius: '12px', color: 'var(--theme-text)', outline: 'none' }}
+      style={{ padding: '10px 12px', fontSize: '13px', background: 'var(--theme-panel-dim)', border: '1px solid var(--theme-border)', borderRadius: '12px', color: 'var(--theme-text)', outline: 'none' }}
     />
   </div>
 );
@@ -356,30 +355,6 @@ export const PantryView: React.FC = () => {
           />
             
             <div className="section" style={{ background: 'var(--theme-panel)', border: '1px solid var(--theme-border)', borderRadius: 'var(--radius-lg)', padding: 'var(--space-lg)', marginBottom: 'var(--space-xl)' }}>
-              {innerGlobalSearchTab === 'scan' ? (
-                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 'var(--space-md)', padding: 'var(--space-md) 0' }}>
-                  <BarcodeScanner 
-                    onScanSuccess={(result) => {
-                      if (typeof result === 'object' && result !== null) {
-                        // It's a nutrition label OR a successful barcode lookup result
-                        setAiStagedResults([{ ...result, stagedQty: '1', stagedUnit: 'serving' }]);
-                        setIsAiReviewing(true);
-                        setInnerGlobalSearchTab('search'); // Switch to results view
-                      } else {
-                        // It's a raw barcode or QR code string
-                        const displayQuery = typeof result === 'string' ? result : (result?.name || '');
-                        setSearchQuery(String(displayQuery));
-                        handleGlobalSearch();
-                        setInnerGlobalSearchTab('search');
-                      }
-                    }}
-                    onScanError={(err) => setErrorMsg(err)}
-                  />
-                  <p style={{ fontSize: '12px', color: 'var(--theme-text-dim)', textAlign: 'center', maxWidth: '200px' }}>
-                    Point at a barcode or QR code. Take a clear photo for best results.
-                  </p>
-                </div>
-              ) : (
                 <form 
                   className="search-bar-wrap" 
                   onSubmit={innerGlobalSearchTab === 'search' ? handleGlobalSearch : (innerGlobalSearchTab === 'ai-search' ? handleGlobalAISearch : handleGlobalAIDescribe)}>
@@ -396,7 +371,6 @@ export const PantryView: React.FC = () => {
                     {isSearching ? <Loader2 className="spin" size={20} /> : (innerGlobalSearchTab === 'search' ? <Search size={20} /> : <Sparkles size={20} />)}
                   </button>
                 </form>
-              )}
 
               {searchResults.length > 0 && (
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginTop: '20px', maxHeight: '400px', overflowY: 'auto', paddingRight: '4px' }}>
@@ -578,19 +552,19 @@ export const PantryView: React.FC = () => {
       {activeTab === 'manual' && (
         <div style={{ padding: '20px 20px 0 20px' }}>
           <div style={{ height: '20px' }} />
-          <h2 style={{ fontSize: '18px', fontWeight: '800', marginBottom: '20px', color: 'var(--theme-text)' }}>KITCHEN LAB</h2>
+          <h2 style={{ fontSize: '18px', fontWeight: '800', marginBottom: '20px', color: 'var(--theme-accent)' }}>KITCHEN LAB</h2>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-md)' }}>
             <EntryField label="Food Name" value={form.name} onChange={v => setForm({...form, name: v})} placeholder="e.g. Grilled Chicken" />
             
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 'var(--space-sm)' }}>
               <EntryField label="Serving Amount" value={String(form.sQty || 100)} onChange={v => setForm({...form, sQty: parseFloat(v) || 0})} placeholder="100" />
               <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-xs)' }}>
-                <label style={{ fontSize: '10px', color: 'var(--theme-text-dim)', fontWeight: '800' }}>SERVING UNIT</label>
+                <label style={{ fontSize: '10px', color: 'var(--theme-accent)', fontWeight: '800' }}>SERVING UNIT</label>
                 <select 
                   className="inp"
                   value={form.sUnit}
                   onChange={e => setForm({...form, sUnit: e.target.value})}
-                  style={{ padding: '10px 12px', fontSize: '13px', background: 'var(--theme-input-bg)', border: '1px solid var(--theme-border)', borderRadius: '12px', color: 'var(--theme-text)', fontWeight: '800' }}>
+                  style={{ padding: '10px 12px', fontSize: '13px', background: 'var(--theme-panel-dim)', border: '1px solid var(--theme-border)', borderRadius: '12px', color: 'var(--theme-text)', fontWeight: '800' }}>
                   {SERVING_UNITS.map(u => <option key={u.v} value={u.v} style={{background: 'var(--theme-panel)'}}>{u.v}</option>)}
                 </select>
               </div>
