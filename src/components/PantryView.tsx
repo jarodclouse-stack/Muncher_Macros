@@ -456,7 +456,8 @@ export const PantryView: React.FC = () => {
                         const isExpanded = expandedAiIdx === i;
 
                       return (
-                        <div key={i} style={{ background: 'var(--theme-panel-dim)', padding: '20px', borderRadius: '24px', border: '1px solid var(--theme-border)', backdropFilter: 'blur(10px)' }}>
+                        <React.Fragment key={i}>
+                        <div style={{ background: 'var(--theme-panel-dim)', padding: '20px', borderRadius: '24px', border: '1px solid var(--theme-border)', backdropFilter: 'blur(10px)' }}>
                           <div style={{ display: 'flex', flexDirection: 'column', marginBottom: '12px' }}>
                             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '12px' }}>
                               <input 
@@ -494,6 +495,7 @@ export const PantryView: React.FC = () => {
                               }} style={{ background: 'none', border: 'none', color: 'var(--theme-error)', cursor: 'pointer', padding: '4px' }}><X size={18} /></button>
                             </div>
                           </div>
+                        </div>
                           
                           {/* Nutrients Display (Live Edit Mode) */}
                           <div style={{ marginBottom: '16px', background: 'var(--theme-panel)', padding: '16px', borderRadius: '20px', border: '1px solid var(--theme-border)' }}>
@@ -531,8 +533,9 @@ export const PantryView: React.FC = () => {
                             </select>
                           </div>
                         </div>
-                      );
-                    })}
+                      </React.Fragment>
+                    );
+                  })}
                   </div>
 
                   <div style={{ display: 'flex', gap: '8px' }}>
@@ -1176,8 +1179,8 @@ export const PantryView: React.FC = () => {
                   RE-SAVE TO PANTRY
                 </button>
               </div>
-            </div>
           </div>
+        </div>
       )}
     </div>
   );

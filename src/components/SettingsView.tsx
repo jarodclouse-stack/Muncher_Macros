@@ -1,6 +1,9 @@
+import React, { useState } from 'react';
 import ReactDOM from 'react-dom';
-import { User, Mail, Lock, ShieldCheck, AlertCircle, Loader2, Settings as SettingsIcon, Trash2, Palette, RotateCcw, Check, X } from 'lucide-react';
+import { User, Mail, Lock, ShieldCheck, AlertCircle, Loader2, Settings as SettingsIcon, Trash2, Palette, RotateCcw, Check, X, BookmarkCheck } from 'lucide-react';
 import { useTheme, type ThemeName } from '../context/ThemeContext';
+import { useAuth } from '../context/AuthContext';
+import { useDiary } from '../context/DiaryContext';
 import { getRewardBreakdown } from '../lib/reward-utils';
 import { supabase } from '../lib/supabase';
 
@@ -501,6 +504,8 @@ export const SettingsView: React.FC<{ onClose: () => void }> = ({ onClose }) => 
     document.body
   );
 };
+
+export default SettingsView;
 
 const NotificationToggle = ({ label, desc, checked, onChange }: { label: string, desc: string, checked: boolean, onChange: (val: boolean) => void }) => (
   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>

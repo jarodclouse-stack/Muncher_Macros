@@ -446,7 +446,7 @@ export const AddFoodModal: React.FC<AddFoodModalProps> = ({ meal, onClose }) => 
                     }}
                   />
                 </div>
-              </div>
+            </div>
 
               {/* AI Review Step */}
               {activeTab === 'describe' && isAiReviewing && aiStagedResults.length > 0 && (
@@ -848,17 +848,15 @@ export const AddFoodModal: React.FC<AddFoodModalProps> = ({ meal, onClose }) => 
                   <Sparkles size={18} color="var(--theme-accent)" /> USE AS INGREDIENT
                 </button>
               </div>
-            </div>
           </div>
+        </div>
       )}
-
-
     </div>,
     document.body
   );
 };
 
-);
+export default AddFoodModal;
 
 const SearchResultItem = React.memo(({ food, onClick, localIdx, onDelete }: { food: any, onClick: () => void, localIdx?: number, onDelete: (idx: number) => void }) => (
   <div 

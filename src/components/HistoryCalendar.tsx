@@ -107,3 +107,5 @@ export const HistoryCalendar: React.FC<{ onSelectDate?: (d: string) => void }> =
     </div>
   );
 };
+
+export default HistoryCalendar;
