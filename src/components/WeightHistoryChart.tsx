@@ -63,7 +63,7 @@ export const WeightHistoryChart: React.FC<WeightHistoryChartProps> = ({ localCac
       {
         label: 'Weight',
         data: entries.map(e => e.weight),
-        borderColor: 'var(--theme-text, #00C9FF)', // Use theme text for high contrast weight line
+        borderColor: 'var(--theme-accent, #00C9FF)', // Sync with legend marker
         backgroundColor: (context: any) => {
           const chart = context.chart;
           const {ctx, chartArea} = chart;
@@ -92,8 +92,8 @@ export const WeightHistoryChart: React.FC<WeightHistoryChartProps> = ({ localCac
         fill: true,
         borderWidth: 4,
         pointRadius: window === '7d' ? 6 : 4,
-        pointBackgroundColor: 'var(--theme-text, #FFFFFF)', // Dark marker in light theme, bright in dark
-        pointBorderColor: 'var(--theme-bg, #00C9FF)',
+        pointBackgroundColor: 'var(--theme-accent, #00C9FF)', // High vibrancy marker
+        pointBorderColor: 'var(--theme-bg, #000)',
         pointBorderWidth: 2,
         pointHoverRadius: 8,
         pointHoverBackgroundColor: 'var(--theme-accent, #00C9FF)',
@@ -159,14 +159,15 @@ export const WeightHistoryChart: React.FC<WeightHistoryChartProps> = ({ localCac
         position: 'top',
         labels: {
           color: 'var(--theme-text)',
-          font: { size: 11, weight: '700' },
+          font: { size: 12, weight: '800' }, // Hardened font weight
           boxWidth: 14,
+          padding: 15
         }
       },
       tooltip: {
         backgroundColor: 'var(--theme-panel-base)',
         titleColor: 'var(--theme-text)',
-        bodyColor: 'var(--theme-text-dim)',
+        bodyColor: 'var(--theme-text)', // Hardened for legibility
         borderColor: 'var(--theme-accent)',
         borderWidth: 1,
         padding: 12,
@@ -179,15 +180,15 @@ export const WeightHistoryChart: React.FC<WeightHistoryChartProps> = ({ localCac
         grid: { color: 'var(--theme-border-dim, rgba(255,255,255,0.05))', drawBorder: false },
         ticks: { 
             color: 'var(--theme-text)', 
-            font: { size: 10, weight: '600' },
+            font: { size: 11, weight: '900' }, // Contrast hardening for ticks
             padding: 8
         },
       },
       x: {
         grid: { display: false },
         ticks: { 
-            color: 'var(--theme-text-dim)', 
-            font: { size: 10 },
+            color: 'var(--theme-text)', // Using full text color for x-axis in dark mode
+            font: { size: 11, weight: '700' },
             padding: 8
         },
       },
@@ -215,7 +216,7 @@ export const WeightHistoryChart: React.FC<WeightHistoryChartProps> = ({ localCac
               style={{
                 background: window === w ? 'var(--theme-accent-dim, rgba(0,201,255,0.15))' : 'transparent',
                 border: 'none',
-                color: window === w ? 'var(--theme-accent, #00C9FF)' : 'var(--theme-text-dim, #8b8b9b)',
+                color: window === w ? 'var(--theme-accent, #00C9FF)' : 'var(--theme-text)',
                 padding: '6px 12px',
                 borderRadius: '6px',
                 fontSize: '11px',
@@ -248,8 +249,8 @@ export const WeightHistoryChart: React.FC<WeightHistoryChartProps> = ({ localCac
             background: 'var(--theme-panel-dim)', 
             padding: '8px 16px', 
             borderRadius: '24px',
-            border: `2px solid ${trend.dirColor}`,
-            boxShadow: `0 4px 12px ${trend.dirColor}20`
+            border: `3px solid ${trend.dirColor}`, // Thicker border for contrast hardening
+            boxShadow: `0 0 15px ${trend.dirColor}40`, // Luminous glow
           }}>
             {trend.icon}
             <span style={{ color: trend.dirColor, fontWeight: '900', fontSize: '12px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>{trend.direction}</span>
@@ -265,10 +266,11 @@ export const WeightHistoryChart: React.FC<WeightHistoryChartProps> = ({ localCac
             border: '1px solid var(--theme-border)',
             display: 'flex',
             alignItems: 'center',
-            gap: '6px'
+            gap: '6px',
+            boxShadow: '0 0 15px var(--theme-accent-dim)' // luminous glow for variation
           }}>
-            <span style={{ color: 'var(--theme-text-dim)', fontSize: '10px', textTransform: 'uppercase' }}>Variation</span>
-            <span style={{ color: 'var(--theme-accent)', fontSize: '13px' }}>{trend.totalChange >= 0 ? '+' : ''}{trend.totalChange.toFixed(1)} <span style={{fontSize: '10px'}}>{unitWeight}</span></span>
+            <span style={{ color: 'var(--theme-text)', fontSize: '11px', textTransform: 'uppercase', fontWeight: '900' }}>Variation</span>
+            <span style={{ color: 'var(--theme-accent)', fontSize: '15px', fontWeight: '900' }}>{trend.totalChange >= 0 ? '+' : ''}{trend.totalChange.toFixed(1)} <span style={{fontSize: '11px'}}>{unitWeight}</span></span>
           </div>
         </div>
       )}

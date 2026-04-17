@@ -179,8 +179,8 @@ export const ProgressView: React.FC = () => {
       </div>
 
       {/* 5. Weight Tools (Manual Entry) */}
-      <div className="section" id="weight-logging" style={{ background: 'var(--theme-panel)', border: '1px solid var(--theme-border)', borderRadius: 'var(--radius-lg)', padding: 'var(--space-xl)' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '16px', fontWeight: '700', marginBottom: 'var(--space-lg)', color: 'var(--theme-text)' }}><Scale size={18} color="var(--theme-accent, #4DABF7)" /> Weight Record & History</div>
+      <div className="section" id="weight-logging" style={{ background: 'var(--theme-panel)', border: '1px solid var(--theme-border)', borderRadius: 'var(--radius-lg)', padding: 'var(--space-xl)', boxShadow: '0 8px 30px rgba(0,0,0,0.15)' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '18px', fontWeight: '900', marginBottom: 'var(--space-lg)', color: 'var(--theme-accent)', textTransform: 'uppercase', letterSpacing: '1px' }}><Scale size={20} color="var(--theme-accent)" /> Weight Record & History</div>
         <form onSubmit={handleSaveDailyWeight} style={{ display: 'flex', gap: 'var(--space-md)', flexWrap: 'wrap', alignItems: 'flex-end' }}>
           <div style={{ flex: 1, minWidth: '120px' }}>
             <label className="lbl">Record Date</label>
@@ -190,9 +190,9 @@ export const ProgressView: React.FC = () => {
             <label className="lbl">Body Weight ({unitWeight})</label>
             <input type="number" step="0.1" className="inp" placeholder="Enter weight..." value={dailyWeight} onChange={e => setDailyWeight(cleanNumInput(e.target.value))} />
           </div>
-          <button type="submit" className="btn" style={{ height: '42px', marginTop: 0, padding: '0 24px', background: 'var(--theme-accent)', color: 'var(--theme-bg, #000)' }}><Check size={16} /> Save Weight Record</button>
+          <button type="submit" className="btn" style={{ height: '42px', marginTop: 0, padding: '0 24px', background: 'var(--theme-accent)', color: 'var(--theme-panel-base, #000)', fontWeight: '800', boxShadow: '0 0 10px var(--theme-accent-dim)' }}><Check size={16} /> Save Weight Record</button>
         </form>
-        <div style={{ fontSize: '11px', color: 'var(--theme-text-dim)', marginTop: '12px', fontWeight: '500' }}>💡 Tip: Logging weight for today updates your body stats & TDEE app-wide. Historical logs update your chart only.</div>
+        <div style={{ fontSize: '12px', color: 'var(--theme-text)', marginTop: '16px', fontWeight: '700', background: 'var(--theme-accent-dim)', padding: '10px', borderRadius: '8px', border: '1px solid var(--theme-accent-dim)' }}>💡 Tip: Logging weight for today updates your body stats & TDEE app-wide. Historical logs update your chart only.</div>
       </div>
 
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '20px' }}>
