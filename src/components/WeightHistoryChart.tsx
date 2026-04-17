@@ -28,8 +28,19 @@ interface WeightHistoryChartProps {
 }
 
 export const WeightHistoryChart: React.FC<WeightHistoryChartProps> = ({ localCache, targetWeight }) => {
-  const [window, setWindow] = useState<'7d' | '30d' | 'all'>('30d');
+  const [windowRange, setWindow] = useState<'7d' | '30d' | 'all'>('30d');
   const unitWeight = localCache.settings?.units?.weight || 'lb';
+
+  // Helper to resolve CSS variables to actual color strings
+  const getVar = (name: string, fallback: string) => {
+    if (typeof window === 'undefined') return fallback;
+    return getComputedStyle(document.body).getPropertyValue(name).trim() || fallback;
+  };
+
+  const resolvedAccent = getVar('--theme-accent', '#00C9FF');
+  const resolvedText = getVar('--theme-text', '#FFFFFF');
+  const resolvedTextDim = getVar('--theme-text-dim', '#8b8b9b');
+  const resolvedBg = getVar('--theme-panel-base', '#000000');
 
   const { chartData, trend } = useMemo(() => {
     // 1. Gather all date-keyed weights
@@ -44,8 +55,8 @@ export const WeightHistoryChart: React.FC<WeightHistoryChartProps> = ({ localCac
     if (entries.length === 0) return { chartData: null, trend: null };
 
     // 2. Filter by window
-    if (window !== 'all') {
-      const days = window === '7d' ? 7 : 30;
+    if (windowRange !== 'all') {
+      const days = windowRange === '7d' ? 7 : 30;
       const cutoff = new Date();
       cutoff.setDate(cutoff.getDate() - days);
       entries = entries.filter(e => new Date(e.date + 'T12:00:00') >= cutoff);
@@ -59,15 +70,6 @@ export const WeightHistoryChart: React.FC<WeightHistoryChartProps> = ({ localCac
         return d.toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
     });
 
-    const getVar = (name: string, fallback: string) => {
-        if (typeof window === 'undefined') return fallback;
-        return getComputedStyle(document.body).getPropertyValue(name).trim() || fallback;
-    };
-
-    const resolvedAccent = getVar('--theme-accent', '#00C9FF');
-    const resolvedText = getVar('--theme-text', '#FFFFFF');
-    const resolvedTextDim = getVar('--theme-text-dim', '#8b8b9b');
-
     const datasets = [
       {
         label: 'Weight',
@@ -78,9 +80,6 @@ export const WeightHistoryChart: React.FC<WeightHistoryChartProps> = ({ localCac
           const {ctx, chartArea} = chart;
           if (!chartArea) return null;
           const gradient = ctx.createLinearGradient(0, chartArea.top, 0, chartArea.bottom);
-          
-          // Robust color parsing for Chart.js gradients
-          let accentColor = getComputedStyle(document.body).getPropertyValue('--theme-accent').trim() || '#00C9FF';
           
           // Helper to add alpha safely
           const addAlpha = (color: string, alpha: number) => {
@@ -100,7 +99,7 @@ export const WeightHistoryChart: React.FC<WeightHistoryChartProps> = ({ localCac
         },
         fill: true,
         borderWidth: 4,
-        pointRadius: window === '7d' ? 6 : 4,
+        pointRadius: windowRange === '7d' ? 6 : 4,
         pointBackgroundColor: resolvedAccent, // Luminous resolved accent
         pointBorderColor: '#ffffff', // Explicitly white to avoid "black surround"
         pointBorderWidth: 2,
@@ -157,7 +156,7 @@ export const WeightHistoryChart: React.FC<WeightHistoryChartProps> = ({ localCac
         daySpan
       }
     };
-  }, [localCache, window, targetWeight]);
+  }, [localCache, windowRange, targetWeight, resolvedAccent, resolvedText, resolvedTextDim]);
 
   const options: any = {
     responsive: true,
@@ -223,9 +222,9 @@ export const WeightHistoryChart: React.FC<WeightHistoryChartProps> = ({ localCac
               key={w}
               onClick={() => setWindow(w)}
               style={{
-                background: window === w ? 'var(--theme-accent-dim, rgba(0,201,255,0.15))' : 'transparent',
+                background: windowRange === w ? 'var(--theme-accent-dim, rgba(0,201,255,0.15))' : 'transparent',
                 border: 'none',
-                color: window === w ? 'var(--theme-accent, #00C9FF)' : 'var(--theme-text)',
+                color: windowRange === w ? 'var(--theme-accent, #00C9FF)' : 'var(--theme-text)',
                 padding: '6px 12px',
                 borderRadius: '6px',
                 fontSize: '11px',
@@ -243,7 +242,7 @@ export const WeightHistoryChart: React.FC<WeightHistoryChartProps> = ({ localCac
 
       <div style={{ height: '220px', width: '100%' }}>
         {chartData ? <Line data={chartData} options={options} /> : (
-            <div style={{ height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--theme-text-dim)', fontSize: '13px', fontWeight: '600' }}>
+            <div style={{ height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', color: resolvedTextDim, fontSize: '13px', fontWeight: '600' }}>
                 No weight data logged for this period.
             </div>
         )}
