@@ -59,11 +59,20 @@ export const WeightHistoryChart: React.FC<WeightHistoryChartProps> = ({ localCac
         return d.toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
     });
 
+    const getVar = (name: string, fallback: string) => {
+        if (typeof window === 'undefined') return fallback;
+        return getComputedStyle(document.body).getPropertyValue(name).trim() || fallback;
+    };
+
+    const resolvedAccent = getVar('--theme-accent', '#00C9FF');
+    const resolvedText = getVar('--theme-text', '#FFFFFF');
+    const resolvedTextDim = getVar('--theme-text-dim', '#8b8b9b');
+
     const datasets = [
       {
         label: 'Weight',
         data: entries.map(e => e.weight),
-        borderColor: 'var(--theme-accent, #00C9FF)', // Sync with legend marker
+        borderColor: resolvedAccent, // Use resolved string for Canvas support
         backgroundColor: (context: any) => {
           const chart = context.chart;
           const {ctx, chartArea} = chart;
@@ -85,19 +94,19 @@ export const WeightHistoryChart: React.FC<WeightHistoryChartProps> = ({ localCac
               return color;
           };
 
-          gradient.addColorStop(0, addAlpha(accentColor, 0.4));
-          gradient.addColorStop(1, addAlpha(accentColor, 0));
+          gradient.addColorStop(0, addAlpha(resolvedAccent, 0.4));
+          gradient.addColorStop(1, addAlpha(resolvedAccent, 0));
           return gradient;
         },
         fill: true,
         borderWidth: 4,
         pointRadius: window === '7d' ? 6 : 4,
-        pointBackgroundColor: 'var(--theme-accent, #00C9FF)', // High vibrancy marker
-        pointBorderColor: 'var(--theme-bg, #000)',
+        pointBackgroundColor: resolvedAccent, // Luminous resolved accent
+        pointBorderColor: '#ffffff', // Explicitly white to avoid "black surround"
         pointBorderWidth: 2,
         pointHoverRadius: 8,
-        pointHoverBackgroundColor: 'var(--theme-accent, #00C9FF)',
-        pointHoverBorderColor: 'var(--theme-text, #FFFFFF)',
+        pointHoverBackgroundColor: resolvedAccent,
+        pointHoverBorderColor: resolvedText,
         pointHoverBorderWidth: 2,
         tension: 0.4,
       }
@@ -107,7 +116,7 @@ export const WeightHistoryChart: React.FC<WeightHistoryChartProps> = ({ localCac
         datasets.push({
             label: 'Goal',
             data: entries.map(() => targetWeight),
-            borderColor: 'var(--theme-neon-goal, rgba(237, 209, 85, 0.8))', // Use neon goal variable
+            borderColor: getVar('--theme-neon-goal', 'rgba(237, 209, 85, 0.8)'), 
             backgroundColor: 'transparent',
             borderWidth: 3,
             borderDash: [5, 5] as any,
@@ -158,17 +167,17 @@ export const WeightHistoryChart: React.FC<WeightHistoryChartProps> = ({ localCac
         display: true,
         position: 'top',
         labels: {
-          color: 'var(--theme-text)',
+          color: resolvedText, // Resolved string
           font: { size: 12, weight: '800' }, // Hardened font weight
           boxWidth: 14,
           padding: 15
         }
       },
       tooltip: {
-        backgroundColor: 'var(--theme-panel-base)',
-        titleColor: 'var(--theme-text)',
-        bodyColor: 'var(--theme-text)', // Hardened for legibility
-        borderColor: 'var(--theme-accent)',
+        backgroundColor: resolvedBg === '#000000' || resolvedBg === '#000' ? '#1a1a1a' : resolvedBg, // Resolve tooltip background
+        titleColor: resolvedText,
+        bodyColor: resolvedText, // Hardened for legibility
+        borderColor: resolvedAccent,
         borderWidth: 1,
         padding: 12,
         cornerRadius: 12,
@@ -179,7 +188,7 @@ export const WeightHistoryChart: React.FC<WeightHistoryChartProps> = ({ localCac
       y: {
         grid: { color: 'var(--theme-border-dim, rgba(255,255,255,0.05))', drawBorder: false },
         ticks: { 
-            color: 'var(--theme-text)', 
+            color: resolvedText, // Resolved string
             font: { size: 11, weight: '900' }, // Contrast hardening for ticks
             padding: 8
         },
@@ -187,7 +196,7 @@ export const WeightHistoryChart: React.FC<WeightHistoryChartProps> = ({ localCac
       x: {
         grid: { display: false },
         ticks: { 
-            color: 'var(--theme-text)', // Using full text color for x-axis in dark mode
+            color: resolvedText, // Resolved string
             font: { size: 11, weight: '700' },
             padding: 8
         },
