@@ -686,7 +686,7 @@ export const AddFoodModal: React.FC<AddFoodModalProps> = ({ meal, onClose }) => 
                       <Check size={18} /> CONFIRM ITEMS TO DIARY
                     </button>
                   </div>
-                </div>
+                )}
             </div>
           ) : null}
         </div>
