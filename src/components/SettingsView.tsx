@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import ReactDOM from 'react-dom';
-import { User, Mail, Lock, ShieldCheck, AlertCircle, Loader2, Settings as SettingsIcon, Trash2, Palette, RotateCcw, Check, X, BookmarkCheck } from 'lucide-react';
+import { User, Mail, Lock, ShieldCheck, AlertCircle, Loader2, Settings as SettingsIcon, Trash2, Palette, RotateCcw, Check, X } from 'lucide-react';
 import { useTheme, type ThemeName } from '../context/ThemeContext';
 import { useAuth } from '../context/AuthContext';
 import { useDiary } from '../context/DiaryContext';
@@ -192,6 +192,8 @@ export const SettingsView: React.FC<{ onClose: () => void }> = ({ onClose }) => 
 
     // 3. Update settings
     newCache.settings = {
+      notifications: {},
+      purchasedThemes: [],
       ...newCache.settings,
       units: { ...(newCache.settings?.units || { height: 'cm' }), weight: toUnit }
     };

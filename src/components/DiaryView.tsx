@@ -107,12 +107,12 @@ export const DiaryView: React.FC = () => {
           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', background: 'var(--theme-panel-dim)', padding: '16px', borderRadius: '16px', border: '1px solid var(--theme-border)' }}>
             <span style={{ color: 'var(--theme-text-dim)', fontSize: '12px', marginBottom: '4px', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Consumed</span>
             <span style={{ fontSize: '24px', fontWeight: '900', color: 'var(--theme-text)' }}>{totals.calories}</span>
-            <span style={{ color: 'var(--theme-accent)', fontSize: '11px', mt: '4px', fontWeight: '700' }}>kcal</span>
+            <span style={{ color: 'var(--theme-accent)', fontSize: '11px', marginTop: '4px', fontWeight: '700' }}>kcal</span>
           </div>
           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', background: 'var(--theme-panel-dim)', padding: '16px', borderRadius: '16px', border: '1px solid var(--theme-border)' }}>
             <span style={{ color: 'var(--theme-text-dim)', fontSize: '12px', marginBottom: '4px', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Remaining</span>
             <span style={{ fontSize: '24px', fontWeight: '900', color: remainingCals >= 0 ? 'var(--theme-success)' : 'var(--theme-error)' }}>{Math.abs(remainingCals)}</span>
-            <span style={{ color: remainingCals >= 0 ? 'var(--theme-success)' : 'var(--theme-error)', fontSize: '11px', mt: '4px', fontWeight: '700' }}>{remainingCals < 0 ? 'kcal over' : 'kcal target'}</span>
+            <span style={{ color: remainingCals >= 0 ? 'var(--theme-success)' : 'var(--theme-error)', fontSize: '11px', marginTop: '4px', fontWeight: '700' }}>{remainingCals < 0 ? 'kcal over' : 'kcal target'}</span>
           </div>
         </div>
 

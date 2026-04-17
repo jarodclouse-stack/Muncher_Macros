@@ -23,8 +23,6 @@ export const NutritionView: React.FC = () => {
 
   const [expandedMicro, setExpandedMicro] = useState<string | null>(null);
 
-  // Get CSS Variables for Chart
-  const getVar = (name: string) => typeof window !== 'undefined' ? getComputedStyle(document.body).getPropertyValue(name).trim() : '';
   const proteinColor = 'var(--theme-error)';
   const carbsColor = 'var(--theme-accent)';
   const fatColor = 'var(--theme-warning)';
