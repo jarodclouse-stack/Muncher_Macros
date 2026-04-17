@@ -1,7 +1,7 @@
 import React from 'react';
 import { Search, Sparkles } from 'lucide-react';
 
-export type SearchTab = 'search' | 'ai-search' | 'describe';
+export type SearchTab = 'search' | 'ai-search' | 'describe' | 'scan';
 
 interface SearchCoasterProps {
   activeTab: SearchTab;
@@ -68,10 +68,21 @@ export const SearchCoaster: React.FC<SearchCoasterProps> = ({ activeTab, onTabCh
         position: 'relative',
         zIndex: 1,
         display: 'grid',
-        gridTemplateColumns: 'repeat(3, 1fr)',
-        gap: '8px',
+        gridTemplateColumns: 'repeat(4, 1fr)',
+        gap: '6px',
         ...style 
       }}>
+        <TabBtn 
+          active={activeTab === 'scan'} 
+          onClick={() => onTabChange('scan')} 
+          icon={(
+            <div style={{ display: 'flex', gap: '2px', alignItems: 'center' }}>
+              <Barcode size={14} />
+              <FileText size={14} />
+            </div>
+          )} 
+          label="Scan" 
+        />
         <TabBtn 
           active={activeTab === 'describe'} 
           onClick={() => onTabChange('describe')} 

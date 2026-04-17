@@ -6,8 +6,9 @@ import type { Food } from '../types/food';
 import { computeMultiplier, scaleLegacyFoodByAmount, sumFoods } from '../lib/food/serving-converter';
 import { 
   Search, Sparkles, Plus, Check, 
-  X, Loader2, Info, FileText, Trash2
+  X, Loader2, Info, FileText, Trash2, Barcode
 } from 'lucide-react';
+import { BarcodeScanner } from './BarcodeScanner';
 import { SearchCoaster, type SearchTab } from './SearchCoaster';
 import { NutritionFactsDisplay } from './NutritionFactsDisplay';
 
@@ -447,7 +448,31 @@ export const AddFoodModal: React.FC<AddFoodModalProps> = ({ meal, onClose }) => 
               </div>
             </div>
           </div>
-        ) : null}
+          ) : activeTab === 'scan' ? (
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '20px', padding: '20px 0' }}>
+              <BarcodeScanner 
+                onScanSuccess={(result) => {
+                  if (typeof result === 'object' && result !== null) {
+                    setAiStagedResults([{ ...result, stagedQty: '1', stagedUnit: 'serving', showNutrientIntel: false }]);
+                    setIsAiReviewing(true);
+                    setActiveTab('describe');
+                  } else {
+                    const displayQuery = typeof result === 'string' ? result : (result?.name || '');
+                    setQuery(String(displayQuery));
+                    if (displayQuery) {
+                      const dummyEvent = { preventDefault: () => {} } as React.FormEvent;
+                      handleStandardSearch(dummyEvent);
+                    }
+                    setActiveTab('search');
+                  }
+                }}
+                onScanError={(err) => setErrorMsg(err)}
+              />
+              <p style={{ fontSize: '13px', color: 'var(--theme-text-dim)', textAlign: 'center', maxWidth: '280px', lineHeight: '1.4', fontWeight: '600' }}>
+                Scans <span style={{ color: 'var(--theme-accent)' }}>Nutrition Labels</span> and <span style={{ color: 'var(--theme-accent)' }}>Barcodes</span>. Take a clear photo for best results. No QR codes needed.
+              </p>
+            </div>
+          ) : null}
 
           {/* AI Review Step - Visible for both AI Search and Describe tabs */}
           {isAiReviewing && aiStagedResults.length > 0 && (
