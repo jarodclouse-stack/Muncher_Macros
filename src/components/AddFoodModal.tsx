@@ -442,14 +442,16 @@ export const AddFoodModal: React.FC<AddFoodModalProps> = ({ meal, onClose }) => 
                       outline: 'none', 
                       resize: 'none',
                       transition: 'border-color 0.2s'
-                    }}
-                  />
-                </div>
+                  }}
+                />
+              </div>
             </div>
+          </div>
+        ) : null}
 
-              {/* AI Review Step */}
-              {activeTab === 'describe' && isAiReviewing && aiStagedResults.length > 0 && (
-                <div style={{ padding: '20px', background: 'rgba(0,180,255,0.03)', borderRadius: '24px', border: '1px solid rgba(0,180,255,0.15)', backdropFilter: 'blur(10px)' }}>
+          {/* AI Review Step - Visible for both AI Search and Describe tabs */}
+          {isAiReviewing && aiStagedResults.length > 0 && (
+            <div style={{ padding: '20px', background: 'rgba(0,180,255,0.03)', borderRadius: '24px', border: '1px solid rgba(0,180,255,0.15)', backdropFilter: 'blur(10px)', marginTop: '16px' }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
                     <div style={{ fontSize: '13px', fontWeight: '900', color: 'var(--theme-text)', display: 'flex', alignItems: 'center', gap: '8px', letterSpacing: '0.5px' }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
@@ -626,7 +628,7 @@ export const AddFoodModal: React.FC<AddFoodModalProps> = ({ meal, onClose }) => 
                     <button 
                       onClick={() => {
                         const mealData = {
-                          name: `AI Meal: ${searchQuery.length > 20 ? searchQuery.substring(0, 20) + '...' : searchQuery}`,
+                          name: `AI Meal: ${(query || mealDesc).length > 20 ? (query || mealDesc).substring(0, 20) + '...' : (query || mealDesc)}`,
                           serving: '1 meal',
                           items: aiStagedResults.map(f => {
                             const mult = computeMultiplier(f.serving || '', f.stagedUnit || 'piece', parseFloat(f.stagedQty || '1') || 1);
@@ -686,9 +688,8 @@ export const AddFoodModal: React.FC<AddFoodModalProps> = ({ meal, onClose }) => 
                       <Check size={18} /> CONFIRM ITEMS TO DIARY
                     </button>
                   </div>
-                )}
-            </div>
-          ) : null}
+                </div>
+              )}
         </div>
 
         {/* Persistent Staging Tray (Floating at Bottom) */}
