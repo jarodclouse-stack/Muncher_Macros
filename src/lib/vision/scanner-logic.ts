@@ -1,8 +1,18 @@
 import { BrowserBarcodeReader, BrowserMultiFormatReader, DecodeHintType, BarcodeFormat } from '@zxing/library';
 
-// Shared reader instances
+// Shared reader instances with aggressive decoding hints
+const hints = new Map<DecodeHintType, any>();
+hints.set(DecodeHintType.TRY_HARDER, true);
+hints.set(DecodeHintType.POSSIBLE_FORMATS, [
+  BarcodeFormat.UPC_A, 
+  BarcodeFormat.UPC_E, 
+  BarcodeFormat.EAN_13, 
+  BarcodeFormat.EAN_8, 
+  BarcodeFormat.CODE_128
+]);
+
 const barcodeReader = new BrowserBarcodeReader();
-const multiFormatReader = new BrowserMultiFormatReader();
+const multiFormatReader = new BrowserMultiFormatReader(hints);
 
 export interface ScanResult {
   success: boolean;
@@ -31,17 +41,6 @@ const isURL = (text: string): boolean => {
  */
 export const scanBarcode = async (imageBlob: Blob): Promise<ScanResult> => {
   const url = URL.createObjectURL(imageBlob);
-  const hints = new Map<DecodeHintType, any>();
-
-  hints.set(DecodeHintType.TRY_HARDER, true);
-  // Add all common food formats
-  hints.set(DecodeHintType.POSSIBLE_FORMATS, [
-    BarcodeFormat.UPC_A, 
-    BarcodeFormat.UPC_E, 
-    BarcodeFormat.EAN_13, 
-    BarcodeFormat.EAN_8, 
-    BarcodeFormat.CODE_128
-  ]);
 
   try {
     // Try BarcodeReader first
@@ -51,12 +50,13 @@ export const scanBarcode = async (imageBlob: Blob): Promise<ScanResult> => {
       if (isURL(text)) return { success: false, error: "Result is a web link. Only food codes are allowed." };
       return { success: true, text };
     } catch (e) {
-      // Fallback to MultiFormatReader with aggressive hints
-      const result = await multiFormatReader.decodeFromImageUrl(url, hints);
+      // Fallback to MultiFormatReader with aggressive hints (configured in constructor)
+      const result = await multiFormatReader.decodeFromImageUrl(url);
       const text = result.getText();
       if (isURL(text)) return { success: false, error: "Result is a web link. Only food codes are allowed." };
       return { success: true, text };
     }
+
   } catch (err) {
     console.error("Barcode scan failed", err);
     return { success: false, error: "No barcode detected. Try a clearer photo or enter the code manually." };
