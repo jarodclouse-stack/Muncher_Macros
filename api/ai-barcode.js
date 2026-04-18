@@ -44,9 +44,11 @@ async function anthropicRequest(prompt, apiKey, modelIndex = 0) {
   });
 }
 
-const BARCODE_PROMPT = `Analyze this image and find the product barcode (typically a series of black and white lines with numbers below).
+const BARCODE_PROMPT = `Analyze this image and find the product barcode.
+Prioritize reading the Human Readable Interpretation numbers (the digits printed directly below or beside the barcode stripes). 
+These digits are usually 8, 12, or 13 numbers long.
 Return ONLY the raw digit sequence (UPC/EAN). No spaces or dashes.
-If NO barcode is found, return the text: "NO_BARCODE_DETECTED".
+If NO barcode digits are found, return the text: "NO_BARCODE_DETECTED".
 Return ONLY the digits or the failure phrase. No markdown or conversational text.`;
 
 async function readBody(req) {
