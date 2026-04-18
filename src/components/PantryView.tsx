@@ -653,7 +653,6 @@ export const PantryView: React.FC = () => {
                 </div>
               )}
             </div>
-          </div>
         )}
 
       {activeTab === 'manual' && (

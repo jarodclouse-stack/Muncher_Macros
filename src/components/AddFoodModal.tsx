@@ -450,7 +450,6 @@ export const AddFoodModal: React.FC<AddFoodModalProps> = ({ meal, onClose }) => 
                 </div>
               </div>
             </div>
-          </div>
           ) : activeTab === 'scan' ? (
             <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '20px', padding: '20px 0' }}>
               <BarcodeScanner 
