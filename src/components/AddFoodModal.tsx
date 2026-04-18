@@ -229,7 +229,7 @@ export const AddFoodModal: React.FC<AddFoodModalProps> = ({ meal, onClose }) => 
   };
 
   return ReactDOM.createPortal(
-    <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.5)', backdropFilter: 'blur(12px)', WebkitBackdropFilter: 'blur(12px)', zIndex: 5000, display: 'flex', flexDirection: 'column', alignItems: 'center', transition: 'all 0.4s ease' }}>
+    <div className="glass" style={{ position: 'fixed', inset: 0, zIndex: 5000, display: 'flex', flexDirection: 'column', alignItems: 'center', transition: 'all var(--transition-smooth)' }}>
       <div style={{ position: 'fixed', bottom: '10px', right: '10px', fontSize: '9px', color: 'var(--theme-text-dim)', opacity: 0.2, pointerEvents: 'none', zIndex: 9999 }}>v2.7-GLASSMORPHIC</div>
       
       {/* Header */}
@@ -242,7 +242,7 @@ export const AddFoodModal: React.FC<AddFoodModalProps> = ({ meal, onClose }) => 
       </div>
 
       {/* Scrollable Content Container */}
-      <div style={{ flex: 1, width: '100%', maxWidth: '500px', display: 'flex', flexDirection: 'column', padding: '10px 20px 100px', gap: '24px', overflowY: 'auto', WebkitOverflowScrolling: 'touch' }}>
+      <div style={{ flex: 1, width: '100%', maxWidth: '500px', display: 'flex', flexDirection: 'column', padding: '10px var(--space-md) 100px', gap: 'var(--space-lg)', overflowY: 'auto', WebkitOverflowScrolling: 'touch' }}>
         
         <SearchCoaster 
           activeTab={activeTab} 
@@ -264,7 +264,7 @@ export const AddFoodModal: React.FC<AddFoodModalProps> = ({ meal, onClose }) => 
           <div style={{ color: 'var(--theme-error)', fontSize: '12px', marginBottom: '8px', textAlign: 'center' }}>{errorMsg}</div>
           
           {activeTab === 'search' || activeTab === 'ai-search' ? (
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-md)' }}>
               <form 
                 onSubmit={(e) => {
                   e.preventDefault();
@@ -281,7 +281,7 @@ export const AddFoodModal: React.FC<AddFoodModalProps> = ({ meal, onClose }) => 
                       setQuery(e.target.value);
                       if (errorMsg) setErrorMsg('');
                     }}
-                    style={{ width: '100%', padding: '16px 16px 16px 44px', background: 'var(--theme-input-bg)', border: '1px solid var(--theme-border)', borderRadius: '18px', color: 'var(--theme-text)', outline: 'none', fontSize: '15px', minHeight: '52px' }}
+                    style={{ width: '100%', padding: 'var(--space-md) var(--space-md) var(--space-md) 44px', background: 'var(--theme-input-bg)', border: '1px solid var(--theme-border)', borderRadius: '18px', color: 'var(--theme-text)', outline: 'none', fontSize: '15px', minHeight: '52px' }}
                   />
                   <div style={{ position: 'absolute', left: '16px', top: '50%', transform: 'translateY(-50%)', color: 'var(--theme-text-dim)' }}>
                     {searching ? <Loader2 className="spin" size={20} /> : <Search size={20} />}
@@ -291,7 +291,7 @@ export const AddFoodModal: React.FC<AddFoodModalProps> = ({ meal, onClose }) => 
 
 
               {results.length > 0 && !isAiReviewing && (
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', maxHeight: '400px', overflowY: 'auto', paddingRight: '4px' }}>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-xs)', maxHeight: '400px', overflowY: 'auto', paddingRight: '4px' }}>
                   {results.map((f, i) => (
                     <SearchResultItem 
                       key={i} 
@@ -832,17 +832,14 @@ export default AddFoodModal;
 const SearchResultItem = React.memo(({ food, onClick, localIdx, onDelete }: { food: any, onClick: () => void, localIdx?: number, onDelete: (idx: number) => void }) => (
   <div 
     onClick={onClick} 
+    className="glass-card"
     style={{ 
-      padding: '16px', 
-      background: 'rgba(0,0,0,0.4)', 
-      borderRadius: '20px', 
-      border: '1px solid rgba(255,255,255,0.08)', 
+      padding: 'var(--space-md)', 
       cursor: 'pointer', 
-      transition: 'all 0.2s cubic-bezier(0.4, 0, 0.2, 1)',
+      transition: 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)',
       display: 'flex', 
       justifyContent: 'space-between', 
-      alignItems: 'center',
-      backdropFilter: 'blur(5px)'
+      alignItems: 'center'
     }}>
     <div style={{ flex: 1 }}>
       <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
@@ -877,7 +874,7 @@ const SearchResultItem = React.memo(({ food, onClick, localIdx, onDelete }: { fo
 ));
 
 const QuickMacro = ({ label, val, unit, color }: any) => (
-  <div style={{ background: 'var(--theme-panel-dim)', padding: '10px 4px', borderRadius: '14px', border: '1px solid var(--theme-border)', textAlign: 'center' }}>
+  <div className="glass-card" style={{ padding: 'var(--space-sm) var(--space-xs)', textAlign: 'center' }}>
     <div style={{ fontSize: '9px', color: 'var(--theme-text-dim)', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '4px' }}>{label}</div>
     <div style={{ fontSize: '15px', color: color, fontWeight: '900' }}>{val}<span style={{ fontSize: '10px', fontWeight: '600', marginLeft: '1px' }}>{unit}</span></div>
   </div>

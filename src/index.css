@@ -25,7 +25,7 @@
   --radius-md: 12px;
   --radius-lg: 24px;
   --transition-fast: 0.2s ease;
-  --transition-smooth: 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-smooth: 0.8s cubic-bezier(0.4, 0, 0.2, 1);
 
   /* Standardized Spacing Scale (Expanded for Breathability) */
   --space-xs: 10px;
@@ -34,9 +34,9 @@
   --space-lg: 26px;
   --space-xl: 32px;
 
-  /* Aesthetic Polish Tokens */
-  --glass-shine: inset 0 1px 1px 0 rgba(255, 255, 255, 0.12);
-  --glass-glow: 0 12px 40px -12px rgba(0, 0, 0, 0.4);
+  /* Aesthetic Polish Tokens (Glass 2.0 Plus) */
+  --glass-shine: inset 0 1px 1px 0 rgba(255, 255, 255, 0.15);
+  --glass-glow: 0 16px 48px -12px rgba(0, 0, 0, 0.5);
 }
 
 /* ===== GLOBAL RESETS ===== */
@@ -124,8 +124,8 @@ body.theme-glacier-peak {
   --theme-panel-dim: rgba(255, 255, 255, 0.5);
   --theme-accent: #0077B6;
   --theme-accent-dim: rgba(0, 119, 182, 0.1);
-  --theme-text: #2A5A8A;
-  --theme-text-dim: #6A8ABA;
+  --theme-text: #0077B6;
+  --theme-text-dim: #457B9D;
   --theme-border: rgba(0, 119, 182, 0.15);
   --theme-placeholder: rgba(26, 42, 58, 0.4);
   --theme-input-bg: rgba(255, 255, 255, 0.7);
@@ -192,8 +192,8 @@ body.theme-matcha-zen {
   --theme-panel-dim: rgba(255, 255, 255, 0.5);
   --theme-accent: #5D7A54;
   --theme-accent-dim: rgba(122, 155, 118, 0.15);
-  --theme-text: #5D7A54;
-  --theme-text-dim: #8BA882;
+  --theme-text: #7A9B76;
+  --theme-text-dim: #A8B58D;
   --theme-border: rgba(122, 155, 118, 0.25);
   --theme-placeholder: rgba(61, 74, 58, 0.4);
   --theme-input-bg: rgba(255, 255, 255, 0.7);
@@ -208,8 +208,8 @@ body.theme-sandstone {
   --theme-panel-dim: rgba(255, 255, 255, 0.6);
   --theme-accent: #966C42;
   --theme-accent-dim: rgba(166, 124, 82, 0.15);
-  --theme-text: #866442;
-  --theme-text-dim: #A68C72;
+  --theme-text: #A67C52;
+  --theme-text-dim: #C4A484;
   --theme-border: rgba(166, 124, 182, 0.25);
   --theme-placeholder: rgba(74, 58, 42, 0.4);
   --theme-input-bg: rgba(255, 255, 255, 0.7);
@@ -237,8 +237,8 @@ body.theme-aegean-mist {
   --theme-panel-dim: rgba(255, 255, 255, 0.5);
   --theme-accent: #0077AA;
   --theme-accent-dim: rgba(0, 136, 204, 0.1);
-  --theme-text: #0066AA;
-  --theme-text-dim: #4A9ABA;
+  --theme-text: #0088CC;
+  --theme-text-dim: #4FB0C6;
   --theme-border: rgba(0, 136, 204, 0.15);
   --theme-placeholder: rgba(0, 51, 102, 0.4);
   --theme-input-bg: rgba(255, 255, 255, 0.7);
@@ -530,8 +530,8 @@ body.theme-sakura-spring {
   --theme-panel-dim: rgba(255, 255, 255, 0.7);
   --theme-accent: #C9184A;
   --theme-accent-dim: rgba(255, 77, 109, 0.15);
-  --theme-text: #C9184A;
-  --theme-text-dim: #FF4D6D;
+  --theme-text: #FF4D6D;
+  --theme-text-dim: #FF758F;
   --theme-border: rgba(255, 77, 109, 0.25);
   --theme-placeholder: rgba(164, 19, 60, 0.35);
   --theme-input-bg: rgba(255, 255, 255, 0.85);
@@ -584,8 +584,8 @@ body.theme-sahara-gold {
   --theme-panel-base: #EBD7AA;
   --theme-accent: #D4AF37;
   --theme-accent-dim: rgba(212, 175, 55, 0.15);
-  --theme-text: #3B2E2A;
-  --theme-text-dim: #785A28;
+  --theme-text: #785A28;
+  --theme-text-dim: #B08D57;
   --theme-border: rgba(212, 175, 55, 0.3);
   --theme-placeholder: rgba(59, 46, 42, 0.4);
   --theme-input-bg: rgba(255, 255, 255, 0.9);
@@ -637,16 +637,16 @@ body.theme-ember-forge {
 /* ===== REMAINDER OF YOUR ORIGINAL CSS GOES HERE ===== */
 /* Dark mode — Macro Munchers is always dark */
   .glass{
-    background: linear-gradient(135deg, rgba(255,255,255,0.1), rgba(255,255,255,0.02));
-    backdrop-filter: blur(25px);
-    -webkit-backdrop-filter: blur(25px);
+    background: linear-gradient(135deg, rgba(255,255,255,0.12), rgba(255,255,255,0.03));
+    backdrop-filter: blur(40px);
+    -webkit-backdrop-filter: blur(40px);
     border: 1px solid var(--theme-border);
     box-shadow: var(--glass-shine), var(--glass-glow);
   }
   .glass-card{
-    background: linear-gradient(135deg, rgba(255,255,255,0.12), rgba(255,255,255,0.03));
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
+    background: linear-gradient(135deg, rgba(255,255,255,0.15), rgba(255,255,255,0.04));
+    backdrop-filter: blur(30px);
+    -webkit-backdrop-filter: blur(30px);
     border: 1px solid var(--theme-border);
     box-shadow: var(--glass-shine), var(--glass-glow);
   }
@@ -719,19 +719,19 @@ body.theme-ember-forge {
     border: 1px solid var(--theme-border);
     border-radius: var(--radius-lg);
     padding: var(--space-md);
-    box-shadow: var(--glass-shine), 0 12px 40px -10px rgba(0,0,0,0.5);
+    box-shadow: var(--glass-shine), 0 16px 52px -12px rgba(0,0,0,0.5);
     position: relative;
     overflow: hidden;
-    transition: transform var(--transition-fast), box-shadow var(--transition-fast);
+    transition: transform var(--transition-fast), box-shadow var(--transition-fast), background-color var(--transition-smooth);
   }
   .card:hover {
-    box-shadow: var(--glass-shine), 0 16px 48px -8px rgba(0,0,0,0.6);
+    box-shadow: var(--glass-shine), 0 20px 60px -8px rgba(0,0,0,0.6);
   }
   .card::after {
     content: "";
     position: absolute;
     inset: 0;
-    background: radial-gradient(circle at 20% 0%, rgba(255,255,255,0.1), transparent 50%);
+    background: radial-gradient(circle at 10% 0%, rgba(255,255,255,0.12), transparent 40%);
     pointer-events: none;
   }
   .card-info{

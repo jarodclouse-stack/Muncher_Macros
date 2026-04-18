@@ -85,13 +85,13 @@ export const DiaryView: React.FC = () => {
     <div className="section" style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-lg)' }}>
       
       {/* Daily Cheer Banner */}
-      <div style={{ background: 'var(--theme-accent-dim, rgba(255,215,0,0.05))', border: '1px solid var(--theme-border)', borderRadius: 'var(--radius-md)', padding: 'var(--space-md)', display: 'flex', alignItems: 'center', gap: 'var(--space-sm)' }}>
+      <div className="glass-card" style={{ padding: 'var(--space-md)', display: 'flex', alignItems: 'center', gap: 'var(--space-sm)' }}>
           <span style={{ fontSize: '18px' }}>✨</span>
           <span style={{ fontSize: '13px', fontWeight: '600', color: 'var(--theme-accent, #FFD700)', fontStyle: 'italic' }}>{randomCheer}</span>
       </div>
 
       {/* Daily Summary Card */}
-      <div className="section" style={{ background: 'linear-gradient(145deg, var(--theme-panel) 0%, rgba(255,255,255,0.01) 100%)', border: '1px solid var(--theme-border)', borderRadius: 'var(--radius-lg)', padding: 'var(--space-xl)', position: 'relative', overflow: 'hidden' }}>
+      <div className="card" style={{ padding: 'var(--space-xl)' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 'var(--space-lg)' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-md)', flex: 1, justifyContent: 'center' }}>
             <button onClick={() => changeDate(-1)} style={{ background: 'var(--theme-panel)', border: 'none', color: 'var(--theme-text)', cursor: 'pointer', padding: '10px', borderRadius: 'var(--radius-md)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><ChevronLeft size={20} /></button>
@@ -103,40 +103,37 @@ export const DiaryView: React.FC = () => {
           </div>
         </div>
 
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', marginBottom: '16px' }}>
-          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', background: 'var(--theme-panel-dim)', padding: '16px', borderRadius: '16px', border: '1px solid var(--theme-border)' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 'var(--space-md)', marginBottom: 'var(--space-md)' }}>
+          <div className="glass-card" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', padding: 'var(--space-md)' }}>
             <span style={{ color: 'var(--theme-text-dim)', fontSize: '12px', marginBottom: '4px', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Consumed</span>
             <span style={{ fontSize: '24px', fontWeight: '900', color: 'var(--theme-text)' }}>{totals.calories}</span>
             <span style={{ color: 'var(--theme-accent)', fontSize: '11px', marginTop: '4px', fontWeight: '700' }}>kcal</span>
           </div>
-          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', background: 'var(--theme-panel-dim)', padding: '16px', borderRadius: '16px', border: '1px solid var(--theme-border)' }}>
+          <div className="glass-card" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', padding: 'var(--space-md)' }}>
             <span style={{ color: 'var(--theme-text-dim)', fontSize: '12px', marginBottom: '4px', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Remaining</span>
             <span style={{ fontSize: '24px', fontWeight: '900', color: remainingCals >= 0 ? 'var(--theme-success)' : 'var(--theme-error)' }}>{Math.abs(remainingCals)}</span>
             <span style={{ color: remainingCals >= 0 ? 'var(--theme-success)' : 'var(--theme-error)', fontSize: '11px', marginTop: '4px', fontWeight: '700' }}>{remainingCals < 0 ? 'kcal over' : 'kcal target'}</span>
           </div>
         </div>
 
-        <div style={{ 
-          background: 'var(--theme-accent-dim, rgba(0,201,255,0.05))', 
-          border: '1px solid rgba(0,201,255,0.1)',
+        <div className="glass-card" style={{ 
           borderLeft: '4px solid var(--theme-accent, #00C9FF)', 
-          padding: '16px 20px', 
-          borderRadius: '16px', 
-          marginBottom: '24px', 
+          padding: 'var(--space-md) var(--space-lg)', 
+          marginBottom: 'var(--space-lg)', 
           fontSize: '14px', 
           lineHeight: '1.5',
           color: 'var(--theme-accent)', 
           display: 'flex', 
           alignItems: 'flex-start', 
-          gap: '12px',
-          margin: '0 4px 24px 4px'
+          gap: 'var(--space-sm)',
+          margin: '0 4px var(--space-lg) 4px'
         }}>
           <Sparkles size={18} color="var(--theme-accent, #00C9FF)" style={{ flexShrink: 0, marginTop: '2px' }} />
           <span style={{ fontWeight: '600' }}>{generateDailyStatus()}</span>
         </div>
 
         {/* Macros */}
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '12px', marginBottom: '12px' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 'var(--space-sm)', marginBottom: 'var(--space-sm)' }}>
           <MacroCard label="Protein" value={totals.protein} total={computed.proteinG || 150} color="var(--theme-error)" icon={<Utensils size={14} />} />
           <MacroCard label="Carbs" value={totals.carbs} total={computed.carbG || 200} color="var(--theme-accent)" icon={<Utensils size={14} />} />
           <MacroCard label="Fat" value={totals.fat} total={computed.fatG || 60} color="var(--theme-warning)" icon={<Utensils size={14} />} />
@@ -160,7 +157,7 @@ export const DiaryView: React.FC = () => {
 
 
         return (
-          <div key={meal} className="section" style={{ background: 'var(--theme-panel)', border: '1px solid var(--theme-border)', borderRadius: 'var(--radius-lg)', padding: 'var(--space-xl)' }}>
+          <div key={meal} className="card" style={{ padding: 'var(--space-xl)' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 'var(--space-md)' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-sm)' }}>
                 <h3 style={{ fontSize: '16px', fontWeight: '700', margin: 0, color: 'var(--theme-text)' }}>{meal}</h3>
@@ -210,11 +207,8 @@ const NutrientDetailRow = ({ label, value, unit, benefit }: any) => {
   const [showBenefit, setShowBenefit] = useState(false);
   
   return (
-    <div style={{ 
-      padding: '12px 16px', 
-      background: 'var(--theme-panel-dim)', 
-      borderRadius: '20px', 
-      border: '1px solid var(--theme-border)',
+    <div className="glass-card" style={{ 
+      padding: 'var(--space-sm) var(--space-md)', 
       display: 'flex',
       justifyContent: 'space-between',
       alignItems: 'center'
@@ -269,8 +263,8 @@ const DiaryEntryItem = ({ log, onRemove, onEditPortion, onMove }: any) => {
   const f = log.f;
 
   return (
-    <div style={{ marginBottom: '8px' }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '12px', background: 'var(--theme-panel-dim, rgba(0,0,0,0.2))', borderRadius: '12px', transition: 'all 0.2s' }}>
+    <div style={{ marginBottom: 'var(--space-xs)' }}>
+      <div className="glass-card" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: 'var(--space-sm)' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flex: 1 }}>
           <button 
             onClick={() => setIsOpen(!isOpen)} 
@@ -309,7 +303,7 @@ const DiaryEntryItem = ({ log, onRemove, onEditPortion, onMove }: any) => {
       </div>
       
       {isOpen && (
-        <div style={{ margin: '4px 12px 12px 12px', padding: '20px', background: 'var(--theme-panel, rgba(255,255,255,0.02))', borderRadius: '20px', border: '1px solid var(--theme-border, rgba(255,255,255,0.05))', boxShadow: 'inset 0 0 20px rgba(0,0,0,0.2)' }}>
+        <div className="glass" style={{ margin: 'var(--space-xs) var(--space-md) var(--space-md) var(--space-md)', padding: 'var(--space-lg)' }}>
           <div style={{ fontSize: '10px', fontWeight: '800', color: 'var(--theme-accent, #00C9FF)', letterSpacing: '1px', marginBottom: '12px', textTransform: 'uppercase' }}>Nutrition Intelligence</div>
           
           {/* Main Macros */}
@@ -391,7 +385,7 @@ const DiaryEntryItem = ({ log, onRemove, onEditPortion, onMove }: any) => {
 };
 
 const NutrientMiniCard = ({ label, value, unit, color }: any) => (
-  <div style={{ textAlign: 'center', background: 'var(--theme-panel-dim)', padding: '10px', borderRadius: '16px', border: '1px solid var(--theme-border)' }}>
+  <div className="glass-card" style={{ textAlign: 'center', padding: 'var(--space-sm)' }}>
     <div style={{ fontSize: '9px', color: 'var(--theme-text-dim)', textTransform: 'uppercase', marginBottom: '4px', fontWeight: '900', letterSpacing: '0.5px' }}>{label}</div>
     <div style={{ fontWeight: '900', color: color, fontSize: '16px' }}>{value || 0}<span style={{ fontSize: '10px', marginLeft: '1px', opacity: 0.8 }}>{unit}</span></div>
   </div>

@@ -109,7 +109,7 @@ export const BarcodeScanner: React.FC<BarcodeScannerProps> = ({
   };
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '12px', width: '100%', minHeight: '260px' }}>
+    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 'var(--space-md)', width: '100%', minHeight: '260px' }}>
       <input 
         type="file" accept="image/*" 
         ref={fileInputRef} onChange={handleFileSelect} 
@@ -118,11 +118,11 @@ export const BarcodeScanner: React.FC<BarcodeScannerProps> = ({
 
       {/* Step 1: Selection Phase */}
       {!scanType && status === 'idle' && (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', width: '100%', animation: 'slideDown 0.3s ease-out' }}>
-          <div style={{ textAlign: 'center', marginBottom: '8px' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-md)', width: '100%', animation: 'slideDown 0.3s ease-out' }}>
+          <div style={{ textAlign: 'center', marginBottom: 'var(--space-xs)' }}>
             <div style={{ fontSize: '11px', fontWeight: '900', color: 'var(--theme-accent)', textTransform: 'uppercase', letterSpacing: '2px', opacity: 0.8 }}>Select Scan Mode</div>
           </div>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', width: '100%' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 'var(--space-md)', width: '100%' }}>
             <ScanCategoryBtn 
               icon={<FileText size={24} />} 
               label="Nutrition Label" 
@@ -139,23 +139,21 @@ export const BarcodeScanner: React.FC<BarcodeScannerProps> = ({
 
       {/* Step 2: Source Selection Phase */}
       {scanType && status === 'selecting-source' && (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', width: '100%', animation: 'slideDown 0.3s ease-out' }}>
-            <div style={{ textAlign: 'center', marginBottom: '8px' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-md)', width: '100%', animation: 'slideDown 0.3s ease-out' }}>
+            <div style={{ textAlign: 'center', marginBottom: 'var(--space-xs)' }}>
                <div style={{ fontSize: '10px', fontWeight: '900', color: 'var(--theme-accent)', textTransform: 'uppercase', letterSpacing: '2px' }}>SOURCE FOR {scanType.toUpperCase()}</div>
             </div>
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', width: '100%' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 'var(--space-md)', width: '100%' }}>
               <button 
                 onClick={triggerCamera}
+                className="card source-btn"
                 style={{
                   display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
-                  gap: '12px', background: 'var(--theme-panel)', border: '1px solid var(--theme-border)',
-                  borderRadius: '24px', padding: '32px 16px', cursor: 'pointer', transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
-                  boxShadow: '0 8px 24px rgba(0,0,0,0.3)',
+                  gap: 'var(--space-md)', padding: 'var(--space-xl) var(--space-md)', cursor: 'pointer', transition: 'all var(--transition-smooth)',
                   color: '#fff'
                 }}
-                className="source-btn"
               >
-                <div style={{ background: 'rgba(0, 201, 255, 0.1)', padding: '16px', borderRadius: '50%', marginBottom: '4px' }}>
+                <div style={{ background: 'var(--theme-accent-dim)', padding: 'var(--space-md)', borderRadius: '50%', marginBottom: '4px' }}>
                   <Camera size={28} color="var(--theme-accent)" />
                 </div>
                 <span style={{ fontSize: '12px', fontWeight: '900', textTransform: 'uppercase', letterSpacing: '1px' }}>Take Photo</span>
@@ -163,16 +161,14 @@ export const BarcodeScanner: React.FC<BarcodeScannerProps> = ({
 
               <button 
                 onClick={triggerUpload}
+                className="glass-card source-btn"
                 style={{
                   display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
-                  gap: '12px', background: 'rgba(255,255,255,0.03)', border: '1px solid var(--theme-border)',
-                  borderRadius: '24px', padding: '32px 16px', cursor: 'pointer', transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
-                  boxShadow: '0 8px 24px rgba(0,0,0,0.3)',
+                  gap: 'var(--space-md)', padding: 'var(--space-xl) var(--space-md)', cursor: 'pointer', transition: 'all var(--transition-smooth)',
                   color: '#fff'
                 }}
-                className="source-btn"
               >
-                <div style={{ background: 'rgba(255,255,255,0.05)', padding: '16px', borderRadius: '50%', marginBottom: '4px' }}>
+                <div style={{ background: 'rgba(255,255,255,0.05)', padding: 'var(--space-md)', borderRadius: '50%', marginBottom: '4px' }}>
                   <Plus size={28} color="var(--theme-accent)" />
                 </div>
                 <span style={{ fontSize: '12px', fontWeight: '900', textTransform: 'uppercase', letterSpacing: '1px' }}>Upload Image</span>

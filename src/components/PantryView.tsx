@@ -463,7 +463,7 @@ export const PantryView: React.FC = () => {
               </div>
             </div>
           ) : (
-            <div className="section" style={{ background: 'var(--theme-panel)', border: '1px solid var(--theme-border)', borderRadius: 'var(--radius-lg)', padding: 'var(--space-lg)', marginBottom: 'var(--space-xl)' }}>
+            <div className="card" style={{ padding: 'var(--space-lg)', marginBottom: 'var(--space-xl)' }}>
                 <form 
                   className="search-bar-wrap" 
                   onSubmit={innerGlobalSearchTab === 'search' ? handleGlobalSearch : handleGlobalAISearch}>
@@ -489,9 +489,9 @@ export const PantryView: React.FC = () => {
           )}
 
           {searchResults.length > 0 && !isAiReviewing && (
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginTop: '20px', maxHeight: '400px', overflowY: 'auto', paddingRight: '4px' }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-xs)', marginTop: 'var(--space-md)', maxHeight: '400px', overflowY: 'auto', paddingRight: '4px' }}>
               {searchResults.map((f: Food, i) => (
-                <div key={i} onClick={() => handleAddPreviewClick(f)} style={{ padding: '14px', background: 'var(--theme-panel-dim)', borderRadius: '16px', cursor: 'pointer', borderLeft: f.isLocal ? '4px solid var(--theme-success)' : '4px solid var(--theme-accent)', transition: 'transform 0.2s', display: 'flex', justifyContent: 'space-between', alignItems: 'center', border: '1px solid var(--theme-border)' }}>
+                <div key={i} onClick={() => handleAddPreviewClick(f)} className="glass-card" style={{ padding: 'var(--space-sm) var(--space-md)', cursor: 'pointer', borderLeft: f.isLocal ? '4px solid var(--theme-success)' : '4px solid var(--theme-accent)', transition: 'transform 0.2s', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                   <div style={{ flex: 1 }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                       <div style={{ fontWeight: '900', fontSize: '14px', color: 'var(--theme-text)' }}>{f.name}</div>
@@ -506,7 +506,7 @@ export const PantryView: React.FC = () => {
           )}
 
           {!isSearching && searchQuery && searchResults.length === 0 && !isAiReviewing && (
-            <div style={{ textAlign: 'center', padding: '40px 20px', background: 'var(--theme-panel-dim)', borderRadius: '24px', marginTop: '20px', border: '1px dashed var(--theme-border)' }}>
+            <div className="glass-card" style={{ textAlign: 'center', padding: 'var(--space-xl)', marginTop: 'var(--space-md)', borderStyle: 'dashed' }}>
               <div style={{ color: 'var(--theme-text-dim)', fontSize: '12px', fontWeight: '900', marginBottom: '16px', letterSpacing: '1px' }}>NO FOODS FOUND IN DATABASE</div>
               {/^\d+$/.test(searchQuery) && searchQuery.length >= 8 ? (
                 <button 
@@ -532,7 +532,7 @@ export const PantryView: React.FC = () => {
 
               {/* AI Review Step */}
               {isAiReviewing && aiStagedResults.length > 0 && (
-                <div style={{ marginTop: '20px', padding: '16px', background: 'var(--theme-panel)', borderRadius: '24px', border: '1px solid var(--theme-accent)', boxShadow: '0 12px 40px rgba(0,0,0,0.2)', width: '100%', boxSizing: 'border-box' }}>
+                <div className="card" style={{ marginTop: 'var(--space-md)', padding: 'var(--space-md)', border: '1px solid var(--theme-accent)', width: '100%', boxSizing: 'border-box' }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
                     <div style={{ fontSize: '13px', fontWeight: '900', color: 'var(--theme-text)', display: 'flex', alignItems: 'center', gap: '8px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
                       <Sparkles size={18} color="var(--theme-accent)" /> REVIEW DETECTED MEAL
@@ -545,12 +545,8 @@ export const PantryView: React.FC = () => {
                       const multiplier = computeMultiplier(f.serving || '100g', f.stagedUnit || 'serving', parseFloat(String(f.stagedQty)) || 1);
                       
                       return (
-                        <div key={i} style={{ 
-                          background: 'rgba(255,255,255,0.03)', 
-                          padding: '16px', 
-                          borderRadius: '20px', 
-                          border: '1px solid var(--theme-border)', 
-                          backdropFilter: 'blur(10px)',
+                        <div key={i} className="glass-card" style={{ 
+                          padding: 'var(--space-md)', 
                           width: '100%',
                           boxSizing: 'border-box'
                         }}>
