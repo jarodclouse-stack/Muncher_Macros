@@ -150,10 +150,11 @@ export const PantryView: React.FC = () => {
 
   React.useEffect(() => {
     const timer = setTimeout(() => {
+      if (innerGlobalSearchTab === 'describe') return;
       if (searchQuery.length > 2) handleGlobalSearch();
     }, 500);
     return () => clearTimeout(timer);
-  }, [searchQuery]);
+  }, [searchQuery, innerGlobalSearchTab]);
 
   const [aiStagedResults, setAiStagedResults] = useState<Food[]>([]);
   const [isAiReviewing, setIsAiReviewing] = useState(false);
@@ -580,17 +581,19 @@ export const PantryView: React.FC = () => {
                         </div>
                           
                           {/* Nutrients Display (Live Edit Mode) */}
-                          <div style={{ marginBottom: '16px', background: 'var(--theme-panel)', padding: '16px', borderRadius: '20px', border: '1px solid var(--theme-border)' }}>
-                            <NutritionFactsDisplay 
-                              food={f} 
-                              multiplier={multiplier} 
-                              onEdit={(key, val) => {
-                                const next = [...aiStagedResults];
-                                next[i] = { ...f, [key]: val };
-                                setAiStagedResults(next);
-                              }}
-                            />
-                          </div>
+                          {isExpanded && (
+                            <div style={{ marginBottom: '16px', background: 'var(--theme-panel)', padding: '16px', borderRadius: '20px', border: '1px solid var(--theme-border)' }}>
+                              <NutritionFactsDisplay 
+                                food={f} 
+                                multiplier={multiplier} 
+                                onEdit={(key, val) => {
+                                  const next = [...aiStagedResults];
+                                  next[i] = { ...f, [key]: val };
+                                  setAiStagedResults(next);
+                                }}
+                              />
+                            </div>
+                          )}
   
                           <div style={{ display: 'flex', gap: '10px' }}>
                             <input 
