@@ -457,8 +457,8 @@ export const AddFoodModal: React.FC<AddFoodModalProps> = ({ meal, onClose }) => 
                           </div>
                         </div>
 
-                        {/* Nutritional Breakdown Inline - LIVE SCALING */}
-                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '6px', marginBottom: '12px', background: 'rgba(255,255,255,0.03)', padding: '8px', borderRadius: '12px' }}>
+                        {/* Nutritional Breakdown Inline - Distinguishing Bubble */}
+                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '6px', marginBottom: '12px', background: 'var(--theme-panel-dim)', border: '1px solid var(--theme-border)', padding: '10px', borderRadius: '16px' }}>
                           {(() => {
                             const currentQty = parseFloat(f.stagedQty) || 0;
                             const mult = computeMultiplier(f.serving || '100g', f.stagedUnit, currentQty);
@@ -524,7 +524,7 @@ export const AddFoodModal: React.FC<AddFoodModalProps> = ({ meal, onClose }) => 
                               next[i] = { ...f, stagedQty: e.target.value };
                               setAiStagedResults(next);
                             }}
-                            style={{ width: '70px', background: 'var(--theme-input-bg)', border: '1px solid var(--theme-border)', borderRadius: '10px', color: 'var(--theme-text)', fontSize: '12px', padding: '8px', outline: 'none' }} 
+                            style={{ width: '75px', background: 'var(--theme-panel-dim)', border: '1.5px solid var(--theme-border)', borderRadius: '12px', color: 'var(--theme-text)', fontSize: '13px', padding: '12px', textAlign: 'center', outline: 'none', fontWeight: '900' }} 
                           />
                           <select 
                             value={f.stagedUnit} 
@@ -533,7 +533,7 @@ export const AddFoodModal: React.FC<AddFoodModalProps> = ({ meal, onClose }) => 
                               next[i] = { ...f, stagedUnit: e.target.value };
                               setAiStagedResults(next);
                             }}
-                            style={{ flex: 1, background: 'var(--theme-input-bg)', border: '1px solid var(--theme-border)', borderRadius: '10px', color: 'var(--theme-text)', fontSize: '12px', padding: '8px', outline: 'none' }}>
+                            style={{ flex: 1, background: 'var(--theme-panel-dim)', border: '1.5px solid var(--theme-border)', borderRadius: '12px', color: 'var(--theme-text)', fontSize: '13px', padding: '12px', outline: 'none', fontWeight: '800' }}>
                             {SERVING_UNITS.map(u => <option key={u.v} value={u.v} style={{ background: 'var(--theme-bg)' }}>{u.v}</option>)}
                           </select>
                         </div>

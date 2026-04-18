@@ -386,12 +386,12 @@ export const PantryView: React.FC = () => {
           ) : innerGlobalSearchTab === 'describe' ? (
             <div style={{ padding: '0 0 20px 0' }}>
               <div style={{ 
-                background: 'rgba(15, 15, 20, 0.4)', 
+                background: 'rgba(30, 35, 55, 0.6)', 
                 borderRadius: '28px', 
                 padding: '24px', 
-                border: '1.5px solid rgba(255,255,255,0.08)', 
+                border: '1.5px solid rgba(255,255,255,0.12)', 
                 boxShadow: '0 20px 40px rgba(0,0,0,0.4)',
-                backdropFilter: 'blur(10px)',
+                backdropFilter: 'blur(20px)',
                 marginTop: '10px'
               }}>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
@@ -421,7 +421,7 @@ export const PantryView: React.FC = () => {
                     style={{ 
                       width: '100%', 
                       padding: '18px', 
-                      background: 'linear-gradient(135deg, rgba(0, 201, 255, 0.15), rgba(0, 201, 255, 0.05))', 
+                      background: 'linear-gradient(135deg, rgba(0, 201, 255, 0.25), rgba(0, 201, 255, 0.1))', 
                       border: '1.5px solid var(--theme-accent, #00C9FF)', 
                       borderRadius: '18px', 
                       color: 'var(--theme-accent, #00C9FF)', 
@@ -433,7 +433,7 @@ export const PantryView: React.FC = () => {
                       alignItems: 'center', 
                       gap: '12px',
                       transition: 'all 0.3s ease',
-                      boxShadow: '0 8px 24px rgba(0, 201, 255, 0.15)',
+                      boxShadow: '0 8px 32px rgba(0, 201, 255, 0.2)',
                       opacity: isSearching || !searchQuery.trim() ? 0.5 : 1
                     }}>
                     {isSearching ? <Loader2 className="spin" size={20} /> : <FileText size={20} />}
@@ -447,8 +447,8 @@ export const PantryView: React.FC = () => {
                     style={{ 
                       width: '100%', 
                       minHeight: '160px', 
-                      background: 'rgba(0,0,0,0.3)', 
-                      border: '1px solid rgba(255,255,255,0.1)', 
+                      background: 'rgba(255,255,255,0.06)', 
+                      border: '1px solid rgba(255,255,255,0.15)', 
                       borderRadius: '20px', 
                       padding: '20px', 
                       color: 'var(--theme-text)', 
@@ -600,8 +600,8 @@ export const PantryView: React.FC = () => {
                               </div>
                           </div>
 
-                          {/* Quick Stats Row */}
-                          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '6px', marginBottom: '12px', background: 'rgba(255,255,255,0.02)', padding: '8px', borderRadius: '12px' }}>
+                          {/* Quick Stats Row - Distinguishing Bubble */}
+                          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '6px', marginBottom: '12px', background: 'var(--theme-panel-dim)', border: '1px solid var(--theme-border)', padding: '10px', borderRadius: '16px' }}>
                             <div style={{ textAlign: 'center' }}><div style={{ fontSize: '8px', color: 'var(--theme-text-dim)', fontWeight: '700' }}>KCAL</div><div style={{ fontSize: '11px', fontWeight: '900', color: 'var(--theme-text)' }}>{Math.round((Number(f.cal) || 0) * multiplier)}</div></div>
                             <div style={{ textAlign: 'center' }}><div style={{ fontSize: '8px', color: 'var(--theme-text-dim)', fontWeight: '700' }}>P</div><div style={{ fontSize: '11px', fontWeight: '900', color: 'var(--theme-error)' }}>{((Number(f.p) || 0) * multiplier).toFixed(1)}g</div></div>
                             <div style={{ textAlign: 'center' }}><div style={{ fontSize: '8px', color: 'var(--theme-text-dim)', fontWeight: '700' }}>C</div><div style={{ fontSize: '11px', fontWeight: '900', color: 'var(--theme-accent)' }}>{((Number(f.c) || 0) * multiplier).toFixed(1)}g</div></div>
@@ -633,7 +633,7 @@ export const PantryView: React.FC = () => {
                               next[i] = { ...f, stagedQty: e.target.value };
                               setAiStagedResults(next);
                             }}
-                            style={{ width: '70px', background: 'rgba(255,255,255,0.05)', border: '1px solid var(--theme-border)', borderRadius: '10px', color: 'var(--theme-text)', fontSize: '13px', padding: '10px', textAlign: 'center', outline: 'none' }} 
+                            style={{ width: '75px', background: 'var(--theme-panel-dim)', border: '1.5px solid var(--theme-border)', borderRadius: '12px', color: 'var(--theme-text)', fontSize: '13px', padding: '12px', textAlign: 'center', outline: 'none', fontWeight: '900' }} 
                           />
                           <select 
                             value={f.stagedUnit} 
@@ -642,7 +642,7 @@ export const PantryView: React.FC = () => {
                               next[i] = { ...f, stagedUnit: e.target.value };
                               setAiStagedResults(next);
                             }}
-                            style={{ flex: 1, background: 'rgba(255,255,255,0.05)', border: '1px solid var(--theme-border)', borderRadius: '10px', color: 'var(--theme-text)', fontSize: '13px', padding: '10px', outline: 'none' }}>
+                            style={{ flex: 1, background: 'var(--theme-panel-dim)', border: '1.5px solid var(--theme-border)', borderRadius: '12px', color: 'var(--theme-text)', fontSize: '13px', padding: '12px', outline: 'none', fontWeight: '800' }}>
                             {SERVING_UNITS.map(u => <option key={u.v} value={u.v} style={{ background: 'var(--theme-panel)', color: 'var(--theme-text)' }}>{u.v}</option>)}
                           </select>
                         </div>
