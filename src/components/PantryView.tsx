@@ -654,7 +654,7 @@ export const PantryView: React.FC = () => {
                               setConfiguringFood(f);
                               setEditName(f.name || '');
                               setServingQty(f.stagedQty || '1');
-                              setServingUnit(f.stagedUnit);
+                              setServingUnit(f.stagedUnit || 'serving');
                             }}
                             style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', padding: '10px', background: 'rgba(255,255,255,0.03)', border: '1px solid var(--theme-border)', borderRadius: '12px', color: 'var(--theme-text)', fontSize: '11px', fontWeight: '900', cursor: 'pointer' }}
                           >
