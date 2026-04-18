@@ -6,7 +6,7 @@ import type { Food } from '../types/food';
 import { computeMultiplier, scaleLegacyFoodByAmount, sumFoods } from '../lib/food/serving-converter';
 import { 
   Search, Sparkles, Plus, Check, 
-  X, Loader2, Info, FileText, Trash2, Barcode
+  X, Loader2, Info, FileText, Trash2
 } from 'lucide-react';
 import { BarcodeScanner } from './BarcodeScanner';
 import { SearchCoaster, type SearchTab } from './SearchCoaster';
