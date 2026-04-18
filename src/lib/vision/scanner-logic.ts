@@ -31,8 +31,8 @@ const isURL = (text: string): boolean => {
  */
 export const scanBarcode = async (imageBlob: Blob): Promise<ScanResult> => {
   const url = URL.createObjectURL(imageBlob);
-  try {
   const hints = new Map<DecodeHintType, any>();
+
   hints.set(DecodeHintType.TRY_HARDER, true);
   // Add all common food formats
   hints.set(DecodeHintType.POSSIBLE_FORMATS, [
