@@ -257,6 +257,7 @@ export const AddFoodModal: React.FC<AddFoodModalProps> = ({ meal, onClose }) => 
     e.preventDefault();
     if (!mealDesc) return;
     setSearching(true);
+    setResults([]);
     setAiStagedResults([]);
     setErrorMsg('');
     try {
@@ -352,7 +353,7 @@ export const AddFoodModal: React.FC<AddFoodModalProps> = ({ meal, onClose }) => 
               </form>
 
 
-              {results.length > 0 && (
+              {results.length > 0 && !isAiReviewing && (
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', maxHeight: '400px', overflowY: 'auto', paddingRight: '4px' }}>
                   {results.map((f, i) => (
                     <SearchResultItem 

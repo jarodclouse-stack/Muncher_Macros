@@ -222,6 +222,7 @@ export const PantryView: React.FC = () => {
     e.preventDefault();
     if (!searchQuery) return;
     setIsSearching(true);
+    setSearchResults([]);
     setAiStagedResults([]);
     try {
       const res = await fetch('/api/ai-describe', {
@@ -479,7 +480,7 @@ export const PantryView: React.FC = () => {
             </div>
           )}
 
-          {searchResults.length > 0 && (
+          {searchResults.length > 0 && !isAiReviewing && (
             <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginTop: '20px', maxHeight: '400px', overflowY: 'auto', paddingRight: '4px' }}>
               {searchResults.map((f: Food, i) => (
                 <div key={i} onClick={() => handleAddPreviewClick(f)} style={{ padding: '14px', background: 'var(--theme-panel-dim)', borderRadius: '16px', cursor: 'pointer', borderLeft: f.isLocal ? '4px solid var(--theme-success)' : '4px solid var(--theme-accent)', transition: 'transform 0.2s', display: 'flex', justifyContent: 'space-between', alignItems: 'center', border: '1px solid var(--theme-border)' }}>
