@@ -3,7 +3,7 @@ import { AuthProvider, useAuth } from './context/AuthContext';
 import { DiaryProvider } from './context/DiaryContext';
 import { LoginScreen } from './pages/LoginScreen';
 import { MainDashboard } from './pages/MainDashboard';
-import { ThemeProvider } from './context/ThemeProvider';
+import { ThemeProvider } from './context/ThemeContext';
 import { BackgroundGlow } from './components/BackgroundGlow';
 import './index.css';
 

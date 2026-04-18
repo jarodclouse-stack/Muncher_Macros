@@ -103,7 +103,7 @@ export const AddFoodModal: React.FC<AddFoodModalProps> = ({ meal, onClose }) => 
   
   const [mealDesc, setMealDesc] = useState('');
   const [targetMeal, setTargetMeal] = useState(meal);
-  const [highProteinOnly, setHighProteinOnly] = useState(false);
+  const [highProteinOnly] = useState(false);
   const [configuringFood, setConfiguringFood] = useState<Food | null>(null);
   const [editName, setEditName] = useState('');
   const [saveToPantry, setSaveToPantry] = useState(false);

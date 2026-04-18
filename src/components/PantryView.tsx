@@ -374,7 +374,7 @@ export const PantryView: React.FC = () => {
                 Scans <span style={{ color: 'var(--theme-accent)' }}>Nutrition Labels</span> and <span style={{ color: 'var(--theme-accent)' }}>Barcodes</span>. Take a clear photo for best results.
               </p>
             </div>
-          ) : innerGlobalSearchTab === 'ai-describe' ? (
+          ) : innerGlobalSearchTab === 'describe' ? (
             <div style={{ padding: '0 0 20px 0' }}>
               <div style={{ 
                 background: 'rgba(15, 15, 20, 0.4)', 
