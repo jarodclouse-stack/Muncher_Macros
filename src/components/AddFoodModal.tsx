@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom';
 import { useDiary } from '../context/DiaryContext';
 import { SERVING_UNITS } from '../lib/constants';
 import type { Food } from '../types/food';
-import { computeMultiplier, scaleLegacyFoodByAmount, sumFoods } from '../lib/food/serving-converter';
+import { computeMultiplier, scaleLegacyFoodByAmount, sumFoods, normalizeFoodResult } from '../lib/food/serving-converter';
 import { 
   Search, Sparkles, Plus, Check, 
   X, Loader2, Info, FileText, Trash2
@@ -12,70 +12,7 @@ import { BarcodeScanner } from './BarcodeScanner';
 import { SearchCoaster, type SearchTab } from './SearchCoaster';
 import { NutritionFactsDisplay } from './NutritionFactsDisplay';
 
-// Helper: Ensure Calories = (P*4) + (C*4) + (F*9)
-const enforceCalorieConsistency = (food: Food): Food => {
-  const p = Number(food.p) || 0;
-  const c = Number(food.c) || 0;
-  const f = Number(food.f) || 0;
-  const macroCals = Math.round(p * 4 + c * 4 + f * 9);
-  
-  // If the stated calories are significantly different from macro calculation,
-  // we follow the macro calculation for physical consistency.
-  return {
-    ...food,
-    cal: macroCals
-  };
-};
 
-// Helper: Robust rounding for all nutrients (ported from index_old.html logic)
-const normalizeFoodResult = (food: any): Food => {
-  const r = (val: number | string | undefined, decimals = 1) => {
-    const n = Number(val) || 0;
-    const factor = Math.pow(10, decimals);
-    return Math.round(n * factor) / factor;
-  };
-
-  const normalized = {
-    ...food,
-    name: food.name || 'Unknown food',
-    serving: food.serving || '1 serving',
-    sQty: Number(food.stagedQty != null ? food.stagedQty : (food.sQty != null ? food.sQty : 1)) || 1,
-    sUnit: food.stagedUnit || food.sUnit || 'piece',
-    p: r(food.p),
-    c: r(food.c),
-    f: r(food.f),
-    fb: r(food.fb),
-    sat: r(food.sat),
-    trans: r(food.trans),
-    mono: r(food.mono),
-    poly: r(food.poly),
-    chol: Math.round(Number(food.chol) || 0),
-    sugars: r(food.sugars),
-    Sodium: Math.round(Number(food.Sodium) || 0),
-    Potassium: Math.round(Number(food.Potassium) || 0),
-    Calcium: Math.round(Number(food.Calcium) || 0),
-    Iron: r(food.Iron),
-    'Vitamin C': r(food['Vitamin C']),
-    'Vitamin A': Math.round(Number(food['Vitamin A']) || 0),
-    'Vitamin D': r(food['Vitamin D']),
-    'Vitamin B1': r(food['Vitamin B1'], 2),
-    'Vitamin B2': r(food['Vitamin B2'], 2),
-    'Vitamin B3': r(food['Vitamin B3'], 2),
-    'Vitamin B5': r(food['Vitamin B5'], 2),
-    'Vitamin B6': r(food['Vitamin B6'], 2),
-    'Vitamin B12': r(food['Vitamin B12'], 2),
-    'Vitamin E': r(food['Vitamin E']),
-    'Vitamin K': r(food['Vitamin K']),
-    Magnesium: Math.round(Number(food.Magnesium) || 0),
-    Zinc: r(food.Zinc),
-    Phosphorus: Math.round(Number(food.Phosphorus) || 0),
-    Manganese: r(food.Manganese, 2),
-    Selenium: r(food.Selenium),
-    Copper: r(food.Copper, 3),
-  };
-
-  return enforceCalorieConsistency(normalized);
-};
 
 interface AddFoodModalProps {
   meal: string;

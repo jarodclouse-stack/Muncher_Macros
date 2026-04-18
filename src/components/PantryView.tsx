@@ -7,7 +7,7 @@ import {
 } from 'lucide-react';
 import { ALL_MICRO_KEYS, MICRO_UNITS, SERVING_UNITS, MICRO_CATEGORIES } from '../lib/constants';
 import { getNutrientDescriptions } from '../lib/nutrient-info';
-import { computeMultiplier, scaleLegacyFoodByAmount, calculateMacroBalance, scaleToTarget } from '../lib/food/serving-converter';
+import { computeMultiplier, normalizeFoodResult, scaleLegacyFoodByAmount, calculateMacroBalance, scaleToTarget } from '../lib/food/serving-converter';
 import { getPairingSuggestions } from '../lib/food/smart-pairing';
 
 import { SearchCoaster, type SearchTab } from './SearchCoaster';
@@ -652,8 +652,8 @@ export const PantryView: React.FC = () => {
                             onClick={(e) => {
                               e.stopPropagation();
                               setConfiguringFood(f);
-                              setEditName(f.name);
-                              setServingQty(f.stagedQty);
+                              setEditName(f.name || '');
+                              setServingQty(f.stagedQty || '1');
                               setServingUnit(f.stagedUnit);
                             }}
                             style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', padding: '10px', background: 'rgba(255,255,255,0.03)', border: '1px solid var(--theme-border)', borderRadius: '12px', color: 'var(--theme-text)', fontSize: '11px', fontWeight: '900', cursor: 'pointer' }}
