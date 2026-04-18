@@ -291,8 +291,8 @@ export const AddFoodModal: React.FC<AddFoodModalProps> = ({ meal, onClose }) => 
   };
 
   return ReactDOM.createPortal(
-    <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.6)', backdropFilter: 'blur(8px)', zIndex: 5000, display: 'flex', flexDirection: 'column', alignItems: 'center', transition: 'all 0.3s' }}>
-      <div style={{ position: 'fixed', bottom: '10px', right: '10px', fontSize: '9px', color: 'var(--theme-text-dim)', opacity: 0.2, pointerEvents: 'none', zIndex: 9999 }}>v2.6-HARDENED</div>
+    <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.5)', backdropFilter: 'blur(12px)', WebkitBackdropFilter: 'blur(12px)', zIndex: 5000, display: 'flex', flexDirection: 'column', alignItems: 'center', transition: 'all 0.4s ease' }}>
+      <div style={{ position: 'fixed', bottom: '10px', right: '10px', fontSize: '9px', color: 'var(--theme-text-dim)', opacity: 0.2, pointerEvents: 'none', zIndex: 9999 }}>v2.7-GLASSMORPHIC</div>
       
       {/* Header */}
       <div style={{ width: '100%', maxWidth: '600px', padding: '24px 20px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
@@ -351,25 +351,6 @@ export const AddFoodModal: React.FC<AddFoodModalProps> = ({ meal, onClose }) => 
                 </div>
               </form>
 
-              {activeTab === 'search' && (
-                 <div style={{ display: 'flex', justifyContent: 'flex-start', alignItems: 'center', gap: '8px', padding: '0 4px' }}>
-                    <button 
-                      onClick={() => setHighProteinOnly(!highProteinOnly)}
-                      style={{ 
-                        padding: '6px 12px', 
-                        borderRadius: '10px', 
-                        background: highProteinOnly ? 'rgba(146, 254, 157, 0.1)' : 'rgba(255,255,255,0.05)', 
-                        border: '1px solid',
-                        borderColor: highProteinOnly ? 'var(--theme-success)' : 'rgba(255,255,255,0.1)',
-                        color: highProteinOnly ? 'var(--theme-success)' : 'var(--theme-text-dim)',
-                        fontSize: '11px', fontWeight: '800', cursor: 'pointer', transition: 'all 0.2s', display: 'flex', alignItems: 'center', gap: '6px'
-                      }}>
-                      {highProteinOnly ? <Check size={12} /> : <div style={{width:12, height:12, borderRadius:'50%', border:'1px solid currentColor'}} />}
-                      PROTEIN 20G+
-                    </button>
-                    <span style={{ fontSize: '10px', color: 'var(--theme-text-dim)', opacity: 0.5, fontWeight: '600' }}>Filter Kitchen & Global results</span>
-                 </div>
-              )}
 
               {results.length > 0 && (
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', maxHeight: '400px', overflowY: 'auto', paddingRight: '4px' }}>
