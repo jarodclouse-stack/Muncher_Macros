@@ -167,7 +167,6 @@ export const PantryView: React.FC = () => {
   const [servingQty, setServingQty] = useState('1');
   const [servingUnit, setServingUnit] = useState('serving');
   const [showFullNutrition, setShowFullNutrition] = useState(false);
-  const [expandedAiIdx, setExpandedAiIdx] = useState<number | null>(null);
 
   const clearSearchState = () => {
     setSearchResults([]);
@@ -233,7 +232,15 @@ export const PantryView: React.FC = () => {
       });
       const body = await res.json();
       const detected = (body.foods || []) as Food[];
-      setAiStagedResults(detected.map((f: Food) => ({ ...f, stagedQty: '1', stagedUnit: f.sUnit || 'serving' })));
+      setAiStagedResults(detected.map((f: Food) => {
+        const norm = normalizeFoodResult(f);
+        return { 
+          ...norm, 
+          stagedQty: f.stagedQty || f.sQty?.toString() || '1', 
+          stagedUnit: f.stagedUnit || f.sUnit || 'piece',
+          showNutrientIntel: false
+        };
+      }));
       setIsAiReviewing(true);
     } catch {
       setErrorMsg("AI Describe failed.");
@@ -533,96 +540,166 @@ export const PantryView: React.FC = () => {
                     <button onClick={() => { setIsAiReviewing(false); setAiStagedResults([]); }} style={{ background: 'rgba(255,255,255,0.05)', border: 'none', color: 'var(--theme-text-dim)', cursor: 'pointer', padding: '6px', borderRadius: '50%' }}><X size={18} /></button>
                   </div>
                   
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', marginBottom: '16px' }}>
-                      {aiStagedResults.map((f, i) => {
-                        const multiplier = computeMultiplier(f.serving || '', f.stagedUnit || 'serving', parseFloat(String(f.stagedQty)) || 1);
-                        const isExpanded = expandedAiIdx === i;
-
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', marginBottom: '16px' }}>
+                    {aiStagedResults.map((f, i) => {
+                      const multiplier = computeMultiplier(f.serving || '100g', f.stagedUnit || 'serving', parseFloat(String(f.stagedQty)) || 1);
+                      
                       return (
-                        <React.Fragment key={i}>
-                        <div style={{ background: 'var(--theme-panel-dim)', padding: '12px', borderRadius: '20px', border: '1px solid var(--theme-border)', backdropFilter: 'blur(10px)', width: '100%', boxSizing: 'border-box' }}>
-                          <div style={{ display: 'flex', flexDirection: 'column', marginBottom: '8px' }}>
-                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '10px', flexWrap: 'wrap' }}>
-                              <input 
-                                value={f.name} 
-                                onChange={(e) => {
+                        <div key={i} style={{ 
+                          background: 'rgba(255,255,255,0.03)', 
+                          padding: '16px', 
+                          borderRadius: '20px', 
+                          border: '1px solid var(--theme-border)', 
+                          backdropFilter: 'blur(10px)',
+                          width: '100%',
+                          boxSizing: 'border-box'
+                        }}>
+                          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px', gap: '10px', flexWrap: 'wrap' }}>
+                            <input 
+                              value={f.name} 
+                              onChange={(e) => {
+                                const next = [...aiStagedResults];
+                                next[i] = { ...f, name: e.target.value };
+                                setAiStagedResults(next);
+                              }}
+                              style={{ 
+                                flex: 1,
+                                minWidth: '140px',
+                                background: 'rgba(255,255,255,0.05)', 
+                                border: '1px solid var(--theme-border)', 
+                                borderRadius: '12px',
+                                color: 'var(--theme-text)', 
+                                fontWeight: '900', 
+                                fontSize: '14px', 
+                                outline: 'none', 
+                                padding: '10px'
+                              }}
+                            />
+                            <div style={{ display: 'flex', gap: '6px', alignItems: 'center' }}>
+                              <button 
+                                onClick={(e) => {
+                                  e.stopPropagation();
                                   const next = [...aiStagedResults];
-                                  next[i] = { ...f, name: e.target.value };
+                                  next[i] = { ...f, showNutrientIntel: !f.showNutrientIntel };
                                   setAiStagedResults(next);
                                 }}
                                 style={{ 
-                                  flex: 1,
-                                  minWidth: '150px',
-                                  background: 'rgba(255,255,255,0.05)', 
-                                  border: '1px solid var(--theme-border)', 
-                                  borderRadius: '12px',
-                                  color: 'var(--theme-text)', 
-                                  fontWeight: '900', 
-                                  fontSize: '14px', 
-                                  outline: 'none', 
-                                  padding: '10px',
-                                  marginBottom: '4px' 
-                                }}
-                              />
-                            <div style={{ display: 'flex', gap: '6px', alignItems: 'center' }}>
-                              <button 
-                                onClick={() => setExpandedAiIdx(isExpanded ? null : i)}
-                                style={{ background: 'var(--theme-panel)', border: '1px solid var(--theme-border)', color: isExpanded ? 'var(--theme-accent)' : 'var(--theme-text-dim)', padding: '6px 8px', borderRadius: '8px', fontSize: '9px', fontWeight: '800', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '4px' }}
-                              >
-                                <Info size={12} /> {isExpanded ? 'HIDE' : 'INFO'}
+                                  background: f.showNutrientIntel ? 'rgba(0, 201, 255, 0.15)' : 'rgba(255,255,255,0.05)', 
+                                  border: '1px solid',
+                                  borderColor: f.showNutrientIntel ? 'var(--theme-accent)' : 'rgba(255,255,255,0.1)',
+                                  color: f.showNutrientIntel ? 'var(--theme-accent)' : 'var(--theme-text-dim)', 
+                                  borderRadius: '8px', padding: '6px 10px', fontSize: '10px', fontWeight: '800', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '4px'
+                                }}>
+                                <Info size={12} /> {f.showNutrientIntel ? 'HIDE' : 'INFO'}
                               </button>
-                              <button onClick={() => {
-                                const next = aiStagedResults.filter((_, idx) => idx !== i);
-                                setAiStagedResults(next);
-                                if (next.length === 0) setIsAiReviewing(false);
-                                if (isExpanded) setExpandedAiIdx(null);
-                              }} style={{ background: 'none', border: 'none', color: 'var(--theme-error)', cursor: 'pointer', padding: '4px' }}><X size={16} /></button>
-                            </div>
-                          </div>
-                        </div>
-                          
-                          {/* Nutrients Display (Live Edit Mode) */}
-                          {isExpanded && (
-                            <div style={{ marginBottom: '16px', background: 'var(--theme-panel)', padding: '16px', borderRadius: '20px', border: '1px solid var(--theme-border)' }}>
-                              <NutritionFactsDisplay 
-                                food={f} 
-                                multiplier={multiplier} 
-                                onEdit={(key, val) => {
-                                  const next = [...aiStagedResults];
-                                  next[i] = { ...f, [key]: val };
+                                <button onClick={() => {
+                                  const next = aiStagedResults.filter((_, idx) => idx !== i);
                                   setAiStagedResults(next);
-                                }}
-                              />
-                            </div>
-                          )}
-  
-                          <div style={{ display: 'flex', gap: '10px' }}>
-                            <input 
-                              type="number" 
-                              value={f.stagedQty} 
-                              onChange={(e) => {
-                                const next = [...aiStagedResults];
-                                next[i] = { ...f, stagedQty: e.target.value };
-                                setAiStagedResults(next);
-                              }}
-                              style={{ width: '70px', background: 'var(--theme-input-bg)', border: '1px solid var(--theme-border)', borderRadius: '10px', color: 'var(--theme-text)', fontSize: '13px', padding: '10px', fontWeight: '900', textAlign: 'center' }} 
-                            />
-                            <select 
-                              value={f.stagedUnit} 
-                              onChange={(e) => {
-                                const next = [...aiStagedResults];
-                                next[i] = { ...f, stagedUnit: e.target.value };
-                                setAiStagedResults(next);
-                              }}
-                              style={{ flex: 1, background: 'var(--theme-input-bg)', border: '1px solid var(--theme-border)', borderRadius: '10px', color: 'var(--theme-text)', fontSize: '13px', padding: '10px', fontWeight: '800' }}>
-                              {SERVING_UNITS.map(u => <option key={u.v} value={u.v} style={{ background: 'var(--theme-panel)', color: 'var(--theme-text)' }}>{u.v}</option>)}
-                            </select>
+                                  if (next.length === 0) setIsAiReviewing(false);
+                                }} style={{ background: 'none', border: 'none', color: 'var(--theme-error)', cursor: 'pointer', padding: '4px' }}><X size={18} /></button>
+                              </div>
                           </div>
+
+                          {/* Quick Stats Row */}
+                          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '6px', marginBottom: '12px', background: 'rgba(255,255,255,0.02)', padding: '8px', borderRadius: '12px' }}>
+                            <div style={{ textAlign: 'center' }}><div style={{ fontSize: '8px', color: 'var(--theme-text-dim)', fontWeight: '700' }}>KCAL</div><div style={{ fontSize: '11px', fontWeight: '900', color: 'var(--theme-text)' }}>{Math.round((Number(f.cal) || 0) * multiplier)}</div></div>
+                            <div style={{ textAlign: 'center' }}><div style={{ fontSize: '8px', color: 'var(--theme-text-dim)', fontWeight: '700' }}>P</div><div style={{ fontSize: '11px', fontWeight: '900', color: 'var(--theme-error)' }}>{((Number(f.p) || 0) * multiplier).toFixed(1)}g</div></div>
+                            <div style={{ textAlign: 'center' }}><div style={{ fontSize: '8px', color: 'var(--theme-text-dim)', fontWeight: '700' }}>C</div><div style={{ fontSize: '11px', fontWeight: '900', color: 'var(--theme-accent)' }}>{((Number(f.c) || 0) * multiplier).toFixed(1)}g</div></div>
+                            <div style={{ textAlign: 'center' }}><div style={{ fontSize: '8px', color: 'var(--theme-text-dim)', fontWeight: '700' }}>F</div><div style={{ fontSize: '11px', fontWeight: '900', color: 'var(--theme-warning)' }}>{((Number(f.f) || 0) * multiplier).toFixed(1)}g</div></div>
+                          </div>
+                      
+                        {/* Nutrition Intel Expandable Block */}
+                        {f.showNutrientIntel && (
+                          <div style={{ marginBottom: '16px', background: 'rgba(255,255,255,0.02)', padding: '12px', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.05)' }}>
+                            <NutritionFactsDisplay 
+                              food={f} 
+                              multiplier={multiplier} 
+                              onEdit={(key, val) => {
+                                const next = [...aiStagedResults];
+                                next[i] = { ...f, [key]: val };
+                                setAiStagedResults(next);
+                              }}
+                            />
+                          </div>
+                        )}
+
+                        <div style={{ display: 'flex', gap: '8px' }}>
+                          <input 
+                            type="number" 
+                            step="any"
+                            value={f.stagedQty} 
+                            onChange={(e) => {
+                              const next = [...aiStagedResults];
+                              next[i] = { ...f, stagedQty: e.target.value };
+                              setAiStagedResults(next);
+                            }}
+                            style={{ width: '70px', background: 'rgba(255,255,255,0.05)', border: '1px solid var(--theme-border)', borderRadius: '10px', color: 'var(--theme-text)', fontSize: '13px', padding: '10px', textAlign: 'center', outline: 'none' }} 
+                          />
+                          <select 
+                            value={f.stagedUnit} 
+                            onChange={(e) => {
+                              const next = [...aiStagedResults];
+                              next[i] = { ...f, stagedUnit: e.target.value };
+                              setAiStagedResults(next);
+                            }}
+                            style={{ flex: 1, background: 'rgba(255,255,255,0.05)', border: '1px solid var(--theme-border)', borderRadius: '10px', color: 'var(--theme-text)', fontSize: '13px', padding: '10px', outline: 'none' }}>
+                            {SERVING_UNITS.map(u => <option key={u.v} value={u.v} style={{ background: 'var(--theme-panel)', color: 'var(--theme-text)' }}>{u.v}</option>)}
+                          </select>
                         </div>
-                      </React.Fragment>
+
+                        <div style={{ display: 'flex', gap: '8px', marginTop: '12px', borderTop: '1px solid rgba(255,255,255,0.05)', paddingTop: '10px' }}>
+                          <button 
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setConfiguringFood(f);
+                              setEditName(f.name);
+                              setServingQty(f.stagedQty);
+                              setServingUnit(f.stagedUnit);
+                            }}
+                            style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', padding: '10px', background: 'rgba(255,255,255,0.03)', border: '1px solid var(--theme-border)', borderRadius: '12px', color: 'var(--theme-text)', fontSize: '11px', fontWeight: '900', cursor: 'pointer' }}
+                          >
+                            <Info size={12} color="var(--theme-accent)" /> TWEAK INGREDIENT
+                          </button>
+                        </div>
+                      </div>
                     );
                   })}
                   </div>
+
+                  {/* Add Ingredient Button */}
+                  <button 
+                    onClick={() => {
+                      const newItem: Food = {
+                        name: 'New Ingredient',
+                        cal: 0, p: 0, c: 0, f: 0,
+                        serving: '1 serving',
+                        sQty: 1,
+                        sUnit: 'serving',
+                        stagedQty: '1',
+                        stagedUnit: 'serving',
+                        showNutrientIntel: true
+                      };
+                      setAiStagedResults([...aiStagedResults, newItem]);
+                    }}
+                    style={{ 
+                      width: '100%', 
+                      padding: '16px', 
+                      background: 'rgba(0, 201, 255, 0.03)', 
+                      border: '1px dashed var(--theme-accent)', 
+                      borderRadius: '18px', 
+                      color: 'var(--theme-accent)', 
+                      fontWeight: '800', 
+                      fontSize: '13px', 
+                      cursor: 'pointer',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      gap: '8px',
+                      marginBottom: '20px'
+                    }}
+                  >
+                    <Plus size={18} /> ADD INGREDIENT
+                  </button>
 
                   <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
                     <button 

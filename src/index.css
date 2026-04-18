@@ -16,6 +16,11 @@
   --theme-placeholder: rgba(237, 242, 244, 0.4);
   --theme-neon-goal: #FF00FF; /* Neon Magenta */
   
+  /* Semantic Colors */
+  --theme-error: #FF3E4E;
+  --theme-warning: #FFB000;
+  --theme-success: #92FE9D;
+  
   /* Shared Core Defaults */
   --radius-md: 12px;
   --radius-lg: 24px;

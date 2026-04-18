@@ -528,9 +528,9 @@ export const AddFoodModal: React.FC<AddFoodModalProps> = ({ meal, onClose }) => 
                             return (
                               <>
                                 <div style={{ textAlign: 'center' }}><div style={{ fontSize: '9px', color: 'var(--theme-text-dim, rgba(255,255,255,0.4))', fontWeight: '700' }}>KCAL</div><div style={{ fontSize: '12px', fontWeight: '900', color: 'var(--theme-text)' }}>{Math.round((Number(f.cal) || 0) * mult)}</div></div>
-                                <div style={{ textAlign: 'center' }}><div style={{ fontSize: '9px', color: 'rgba(255,255,255,0.4)', fontWeight: '700' }}>P</div><div style={{ fontSize: '12px', fontWeight: '900', color: 'var(--theme-success, #92FE9D)' }}>{((Number(f.p) || 0) * mult).toFixed(1)}g</div></div>
-                                <div style={{ textAlign: 'center' }}><div style={{ fontSize: '9px', color: 'rgba(255,255,255,0.4)', fontWeight: '700' }}>C</div><div style={{ fontSize: '12px', fontWeight: '900', color: 'var(--theme-accent, #00C9FF)' }}>{((Number(f.c) || 0) * mult).toFixed(1)}g</div></div>
-                                <div style={{ textAlign: 'center' }}><div style={{ fontSize: '9px', color: 'rgba(255,255,255,0.4)', fontWeight: '700' }}>F</div><div style={{ fontSize: '12px', fontWeight: '900', color: '#FF6B6B' }}>{((Number(f.f) || 0) * mult).toFixed(1)}g</div></div>
+                                <div style={{ textAlign: 'center' }}><div style={{ fontSize: '9px', color: 'rgba(255,255,255,0.4)', fontWeight: '700' }}>P</div><div style={{ fontSize: '12px', fontWeight: '900', color: 'var(--theme-error)' }}>{((Number(f.p) || 0) * mult).toFixed(1)}g</div></div>
+                                <div style={{ textAlign: 'center' }}><div style={{ fontSize: '9px', color: 'rgba(255,255,255,0.4)', fontWeight: '700' }}>C</div><div style={{ fontSize: '12px', fontWeight: '900', color: 'var(--theme-accent)' }}>{((Number(f.c) || 0) * mult).toFixed(1)}g</div></div>
+                                <div style={{ textAlign: 'center' }}><div style={{ fontSize: '9px', color: 'rgba(255,255,255,0.4)', fontWeight: '700' }}>F</div><div style={{ fontSize: '12px', fontWeight: '900', color: 'var(--theme-warning)' }}>{((Number(f.f) || 0) * mult).toFixed(1)}g</div></div>
                               </>
                             );
                           })()}
