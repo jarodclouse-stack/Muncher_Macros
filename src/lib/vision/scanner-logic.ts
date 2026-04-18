@@ -1,4 +1,4 @@
-import { BrowserBarcodeReader, BrowserMultiFormatReader } from '@zxing/library';
+import { BrowserBarcodeReader, BrowserMultiFormatReader, DecodeHintType, BarcodeFormat } from '@zxing/library';
 
 // Shared reader instances
 const barcodeReader = new BrowserBarcodeReader();
@@ -32,6 +32,18 @@ const isURL = (text: string): boolean => {
 export const scanBarcode = async (imageBlob: Blob): Promise<ScanResult> => {
   const url = URL.createObjectURL(imageBlob);
   try {
+  const hints = new Map<DecodeHintType, any>();
+  hints.set(DecodeHintType.TRY_HARDER, true);
+  // Add all common food formats
+  hints.set(DecodeHintType.POSSIBLE_FORMATS, [
+    BarcodeFormat.UPC_A, 
+    BarcodeFormat.UPC_E, 
+    BarcodeFormat.EAN_13, 
+    BarcodeFormat.EAN_8, 
+    BarcodeFormat.CODE_128
+  ]);
+
+  try {
     // Try BarcodeReader first
     try {
       const result = await barcodeReader.decodeFromImageUrl(url);
@@ -39,8 +51,8 @@ export const scanBarcode = async (imageBlob: Blob): Promise<ScanResult> => {
       if (isURL(text)) return { success: false, error: "Result is a web link. Only food codes are allowed." };
       return { success: true, text };
     } catch (e) {
-      // Fallback to MultiFormatReader which is more aggressive
-      const result = await multiFormatReader.decodeFromImageUrl(url);
+      // Fallback to MultiFormatReader with aggressive hints
+      const result = await multiFormatReader.decodeFromImageUrl(url, hints);
       const text = result.getText();
       if (isURL(text)) return { success: false, error: "Result is a web link. Only food codes are allowed." };
       return { success: true, text };

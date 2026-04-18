@@ -54,10 +54,9 @@ export const BarcodeScanner: React.FC<BarcodeScannerProps> = ({
           setStatus('ai-reading');
           const aiResult = await extractBarcodeDigits(imageBlob);
           if (aiResult.success && aiResult.text) {
-            setDetectedText(aiResult.text);
-            setManualCode(aiResult.text); 
-            setStatus('failed');
-            setError("We found a code but couldn't verify it automatically. Try searching for these numbers manually.");
+            onScanSuccess(aiResult.text);
+            setStatus('idle');
+            setScanType(null);
           } else {
             throw new Error(aiResult.error || "Could not read code. Ensure it is clear.");
           }

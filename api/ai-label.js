@@ -44,22 +44,19 @@ async function anthropicRequest(prompt, apiKey, modelIndex = 0) {
   });
 }
 
-const LABEL_PROMPT = `DEEP SCAN: Extract EVERY piece of nutrition data from this label.
-Return ONLY a valid JSON object. 
+const LABEL_PROMPT = `GLOBAL DEEP SCAN: Extract EVERY nutritional data point from this label.
+Return ONLY a strictly valid JSON object. 
 
-Requirements:
-1. MANDATORY KEYS: name, brand, serving, sUnit, sQty, cal, p (protein), c (carbs), f (fat).
-2. VITAMIN/MINERAL FOOTER: You must explicitly look at the bottom row of the label. Extract: 
-   - "Vitamin D" (mcg)
-   - "Calcium" (mg)
-   - "Iron" (mg)
-   - "Potassium" (mg)
-   - "Sodium" (mg)
-   - "Magnesium" (mg)
-   - Any other vitamins (Vitamin A, Vitamin C, Zinc, etc.) found.
-3. DATA FORMAT: Use these EXACT keys (e.g. "Vitamin D", "Iron"). Return ONLY the number (integer or float). Use 0 if not found.
-4. INGREDIENTS: Extract the full ingredients list string.
-5. NO CONVERSATION: Return only the raw minified JSON. No markdown backticks.`;
+Critical Rules:
+1. MANDATORY MACROS: name, brand, serving, sUnit, sQty, cal, p (protein), c (carbs), f (fat).
+2. TOTAL MINERAL SCAN: You must scan the entire label for minerals. 
+   - SODIUM: Often found in the middle section (near Cholesterol/Fiber). REQUIRED.
+   - POTASSIUM: Often found in the bottom footer. REQUIRED.
+   - VITAMINS/MINERALS: Look specifically for Calcium, Iron, Vitamin D, Magnesium, Zinc, and Vitamin C.
+3. DATA CROSS-CHECK: If a value is listed both in milligrams (mg) and % Daily Value, prioritize the absolute milligram/mcg value.
+4. KEYS & VALUES: Use EXACT keys (e.g., "Sodium", "Magnesium", "Vitamin D"). Return ONLY the raw number (integer or float). 
+5. ABSENCE: If a nutrient is explicitly not listed on the label, use 0. Do not guess.
+6. FORMAT: Return only the final minified JSON string. No markdown, no conversation.`;
 
 async function readBody(req) {
   if (req.body && typeof req.body === 'object') return req.body;
