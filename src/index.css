@@ -117,15 +117,15 @@ body.theme-glacier-peak {
   --theme-bg: #F0F4F8;
   --theme-panel: rgba(255, 255, 255, 0.9);
   --theme-panel-base: #FFFFFF;
-  --theme-panel-dim: rgba(0, 119, 182, 0.05);
+  --theme-panel-dim: rgba(255, 255, 255, 0.5);
   --theme-accent: #0077B6;
   --theme-accent-dim: rgba(0, 119, 182, 0.1);
-  --theme-text: #1A2A3A;
-  --theme-text-dim: #5A6A7A;
+  --theme-text: #0E1A2A;
+  --theme-text-dim: #4A5A6A;
   --theme-border: rgba(0, 119, 182, 0.15);
-  --theme-placeholder: rgba(26, 42, 58, 0.5);
-  --theme-input-bg: rgba(255, 255, 255, 0.8);
-  --theme-neon-goal: #FF00E5; /* Neon Magenta */
+  --theme-placeholder: rgba(26, 42, 58, 0.4);
+  --theme-input-bg: rgba(255, 255, 255, 0.7);
+  --theme-neon-goal: #FF00E5;
 }
 
 /* 4. Forest Phantom */
@@ -180,36 +180,36 @@ body.theme-quantum-violet {
   --theme-neon-goal: #00F5D4; /* Neon Teal */
 }
 
-/* 8. Matcha Zen */
+/* 8. Matcha Zen (Light Theme) */
 body.theme-matcha-zen {
   --theme-bg: #E6E9E1;
   --theme-panel: rgba(255, 255, 255, 0.85);
   --theme-panel-base: #FFFFFF;
-  --theme-panel-dim: rgba(122, 155, 118, 0.1);
-  --theme-accent: #7A9B76;
+  --theme-panel-dim: rgba(255, 255, 255, 0.5);
+  --theme-accent: #5D7A54;
   --theme-accent-dim: rgba(122, 155, 118, 0.15);
-  --theme-text: #3D4A3A;
-  --theme-text-dim: #6B7568;
+  --theme-text: #2D3A2A;
+  --theme-text-dim: #5B6558;
   --theme-border: rgba(122, 155, 118, 0.25);
-  --theme-placeholder: rgba(61, 74, 58, 0.5);
-  --theme-input-bg: rgba(255, 255, 255, 0.8);
-  --theme-neon-goal: #FF10F0; /* Neon Pink */
+  --theme-placeholder: rgba(61, 74, 58, 0.4);
+  --theme-input-bg: rgba(255, 255, 255, 0.7);
+  --theme-neon-goal: #FF10F0;
 }
 
-/* 9. Sandstone */
+/* 9. Sandstone (Light Theme) */
 body.theme-sandstone {
   --theme-bg: #F4E8D1;
   --theme-panel: rgba(255, 250, 240, 0.9);
   --theme-panel-base: #FFFBF0;
-  --theme-panel-dim: rgba(166, 124, 82, 0.1);
-  --theme-accent: #A67C52;
+  --theme-panel-dim: rgba(255, 255, 255, 0.6);
+  --theme-accent: #966C42;
   --theme-accent-dim: rgba(166, 124, 82, 0.15);
-  --theme-text: #4A3A2A;
-  --theme-text-dim: #8A7A6A;
-  --theme-border: rgba(166, 124, 82, 0.3);
-  --placeholder: rgba(74, 58, 42, 0.5);
-  --theme-input-bg: rgba(255, 255, 255, 0.8);
-  --theme-neon-goal: #00F5D4; /* Neon Teal */
+  --theme-text: #3A2A1A;
+  --theme-text-dim: #7A6A5A;
+  --theme-border: rgba(166, 124, 182, 0.25);
+  --theme-placeholder: rgba(74, 58, 42, 0.4);
+  --theme-input-bg: rgba(255, 255, 255, 0.7);
+  --theme-neon-goal: #008B8B;
 }
 
 /* 10. Olympian Gold (⚡) */
@@ -230,15 +230,15 @@ body.theme-aegean-mist {
   --theme-bg: #F0FBFF;
   --theme-panel: rgba(255, 255, 255, 0.9);
   --theme-panel-base: #FFFFFF;
-  --theme-panel-dim: rgba(0, 201, 255, 0.05);
-  --theme-accent: #0088CC;
+  --theme-panel-dim: rgba(255, 255, 255, 0.5);
+  --theme-accent: #0077AA;
   --theme-accent-dim: rgba(0, 136, 204, 0.1);
-  --theme-text: #003366;
-  --theme-text-dim: #507DA0;
+  --theme-text: #002244;
+  --theme-text-dim: #406D90;
   --theme-border: rgba(0, 136, 204, 0.15);
-  --theme-placeholder: rgba(0, 51, 102, 0.5);
-  --theme-input-bg: rgba(255, 255, 255, 0.8);
-  --theme-neon-goal: #FF00FF; /* Neon Magenta */
+  --theme-placeholder: rgba(0, 51, 102, 0.4);
+  --theme-input-bg: rgba(255, 255, 255, 0.7);
+  --theme-neon-goal: #FF00FF;
 }
 
 /* 12. Hades' Ember (🔥) */
@@ -259,15 +259,15 @@ body.theme-athenas-wisdom {
   --theme-bg: #F5F5DC;
   --theme-panel: rgba(255, 255, 250, 0.9);
   --theme-panel-base: #FFFBF0;
-  --theme-panel-dim: rgba(139, 154, 103, 0.05);
-  --theme-accent: #6B8E23;
+  --theme-panel-dim: rgba(255, 255, 255, 0.5);
+  --theme-accent: #556B2F;
   --theme-accent-dim: rgba(107, 142, 35, 0.1);
-  --theme-text: #2F4F4F;
-  --theme-text-dim: #556B2F;
+  --theme-text: #1F3F3F;
+  --theme-text-dim: #455B1F;
   --theme-border: rgba(107, 142, 35, 0.2);
-  --theme-placeholder: rgba(47, 79, 79, 0.5);
-  --theme-input-bg: rgba(255, 255, 255, 0.8);
-  --theme-neon-goal: #39FF14; /* Neon Green */
+  --theme-placeholder: rgba(47, 79, 79, 0.4);
+  --theme-input-bg: rgba(255, 255, 255, 0.7);
+  --theme-neon-goal: #228B22;
 }
 
 /* 14. Dionysus' Vineyard (🍇) */
@@ -518,19 +518,20 @@ body.theme-deep-sea {
   --theme-neon-goal: #FF00FF; /* Neon Magenta */
 }
 
-/* 23. Sakura Spring 🌸 */
+/* 23. Sakura Spring (🌸) - Light Theme */
 body.theme-sakura-spring {
   --theme-bg: #FFF0F3;
-  --theme-panel: rgba(255, 230, 235, 0.8);
+  --theme-panel: rgba(255, 230, 235, 0.9);
   --theme-panel-base: #FFE6EB;
-  --theme-accent: #FF4D6D;
+  --theme-panel-dim: rgba(255, 255, 255, 0.7);
+  --theme-accent: #C9184A;
   --theme-accent-dim: rgba(255, 77, 109, 0.15);
-  --theme-text: #590D22;
-  --theme-text-dim: #C9184A;
-  --theme-border: rgba(255, 77, 109, 0.3);
-  --theme-placeholder: rgba(164, 19, 60, 0.4);
-  --theme-input-bg: rgba(255, 255, 255, 0.9);
-  --theme-neon-goal: #39FF14; /* Neon Green */
+  --theme-text: #490D12;
+  --theme-text-dim: #A9183A;
+  --theme-border: rgba(255, 77, 109, 0.25);
+  --theme-placeholder: rgba(164, 19, 60, 0.35);
+  --theme-input-bg: rgba(255, 255, 255, 0.85);
+  --theme-neon-goal: #FF1493;
 }
 
 /* 24. Neon Wasteland ⚡ */
@@ -600,19 +601,20 @@ body.theme-midnight-galaxy {
   --theme-neon-goal: #39FF14; /* Neon Green */
 }
 
-/* 29. Nordic Frost 🧊 */
+/* 29. Nordic Frost (🧊) - Light Theme */
 body.theme-nordic-frost {
   --theme-bg: #F0F8FF;
-  --theme-panel: rgba(230, 245, 255, 0.8);
+  --theme-panel: rgba(230, 245, 255, 0.9);
   --theme-panel-base: #E6F5FF;
-  --theme-accent: #4682B4;
+  --theme-panel-dim: rgba(255, 255, 255, 0.6);
+  --theme-accent: #3672A4;
   --theme-accent-dim: rgba(70, 130, 180, 0.15);
-  --theme-text: #2F4F4F;
-  --theme-text-dim: #5F9EA0;
-  --theme-border: rgba(70, 130, 180, 0.3);
+  --theme-text: #1F3F3F;
+  --theme-text-dim: #4F8EA0;
+  --theme-border: rgba(70, 130, 180, 0.25);
   --theme-placeholder: rgba(47, 79, 79, 0.4);
-  --theme-input-bg: rgba(255, 255, 255, 0.9);
-  --theme-neon-goal: #FF00FF; /* Neon Magenta */
+  --theme-input-bg: rgba(255, 255, 255, 0.8);
+  --theme-neon-goal: #00CED1;
 }
 
 /* 30. Ember Forge ⚒️ */
