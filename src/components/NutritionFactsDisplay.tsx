@@ -25,24 +25,25 @@ export const NutritionFactsDisplay: React.FC<NutritionFactsDisplayProps> = ({ fo
           display: 'flex', 
           justifyContent: 'space-between', 
           alignItems: 'center', 
-          padding: '10px 0', 
+          padding: '6px 0', 
           borderBottom: '1px solid var(--theme-border-dim, rgba(255,255,255,0.05))' 
         }}
       >
         <span style={{ 
-          fontSize: '11px', 
+          fontSize: '10px', 
           fontWeight: '900', 
           color: 'var(--theme-accent)',
           background: 'var(--theme-panel)',
-          padding: '4px 12px',
+          padding: '3px 10px',
           borderRadius: '20px',
           textTransform: 'uppercase',
-          letterSpacing: '1px',
+          letterSpacing: '0.5px',
           border: '1px solid var(--theme-border)',
           boxShadow: '0 2px 8px rgba(0,0,0,0.05)'
         }}>
           {label}
         </span>
+
         
         {onEdit ? (
           <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>

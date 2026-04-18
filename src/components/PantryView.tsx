@@ -104,7 +104,7 @@ const EntryField = ({ label, value, onChange, placeholder }: { label: string, va
         const cleaned = (v.length > 1 && v.startsWith('0') && !v.startsWith('0.')) ? v.substring(1) : v;
         onChange(cleaned);
       }}
-      style={{ padding: '10px 12px', fontSize: '13px', background: 'var(--theme-panel-dim)', border: '1px solid var(--theme-border)', borderRadius: '12px', color: 'var(--theme-text)', outline: 'none' }}
+      style={{ padding: '10px 12px', fontSize: '13px', background: 'rgba(255,255,255,0.06)', border: '1px solid var(--theme-border)', borderRadius: '12px', color: 'var(--theme-text)', outline: 'none' }}
     />
   </div>
 );
@@ -1032,7 +1032,7 @@ export const PantryView: React.FC = () => {
               isOpen={openSection === 'fats'} 
               onToggle={() => setOpenSection(openSection === 'fats' ? null : 'fats')}
             >
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(130px, 1fr))', gap: '8px' }}>
                 <EntryField label="Fiber (g)" value={String(form.fiber || 0)} onChange={v => setForm({...form, fiber: parseFloat(v) || 0})} />
                 <EntryField label="Sugars (g)" value={String(form.sugars || 0)} onChange={v => setForm({...form, sugars: parseFloat(v) || 0})} />
                 <EntryField label="Sat Fat (g)" value={String(form.sat || 0)} onChange={v => setForm({...form, sat: parseFloat(v) || 0})} />
@@ -1051,7 +1051,7 @@ export const PantryView: React.FC = () => {
                 isOpen={openSection === cat.cat} 
                 onToggle={() => setOpenSection(openSection === cat.cat ? null : cat.cat)}
               >
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(130px, 1fr))', gap: '8px' }}>
                   {cat.keys.map(k => (
                     <EntryField 
                       key={k.k} 

@@ -23,28 +23,34 @@ export const NutritionView: React.FC = () => {
 
   const [expandedMicro, setExpandedMicro] = useState<string | null>(null);
 
-  const proteinColor = 'var(--theme-error)';
-  const carbsColor = 'var(--theme-accent)';
-  const fatColor = 'var(--theme-warning)';
+  const resolvedColors = useMemo(() => {
+    if (typeof window === 'undefined') return { protein: '#ff4b4b', carbs: '#00c9ff', fat: '#fcc419' };
+    const style = getComputedStyle(document.documentElement);
+    return {
+      protein: style.getPropertyValue('--theme-error').trim() || '#ff4b4b',
+      carbs: style.getPropertyValue('--theme-accent').trim() || '#00c9ff',
+      fat: style.getPropertyValue('--theme-warning').trim() || '#fcc419'
+    };
+  }, [localCache.theme]);
 
-  const macroData = {
+  const macroData = useMemo(() => ({
     labels: ['Protein', 'Carbs', 'Fat'],
     datasets: [
       {
         data: [totals.protein, totals.carbs, totals.fat],
-        backgroundColor: [proteinColor, carbsColor, fatColor],
+        backgroundColor: [resolvedColors.protein, resolvedColors.carbs, resolvedColors.fat],
         borderWidth: 0,
         hoverOffset: 4
       }
     ]
-  };
+  }), [totals, resolvedColors]);
 
   const macroOptions = {
     cutout: '80%',
-    plugins: {
-      legend: { display: false }
-    }
+    plugins: { legend: { display: false } },
+    maintainAspectRatio: false
   };
+
 
   return (
     <div className="section" style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-lg)' }}>
