@@ -12,6 +12,7 @@ import { getPairingSuggestions } from '../lib/food/smart-pairing';
 
 import { SearchCoaster, type SearchTab } from './SearchCoaster';
 import { NutritionFactsDisplay } from './NutritionFactsDisplay';
+import { BarcodeScanner } from './BarcodeScanner';
 import type { Food, RecipeItem } from '../types/food';
 
 const CollapsibleEntrySection = ({ title, isOpen, onToggle, children }: { title: string, isOpen: boolean, onToggle: () => void, children: React.ReactNode }) => (
@@ -354,6 +355,26 @@ export const PantryView: React.FC = () => {
             onTabChange={(t) => { setInnerGlobalSearchTab(t); clearSearchState(); }} 
           />
             
+          {innerGlobalSearchTab === 'scan' ? (
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '20px', padding: '20px 0' }}>
+              <BarcodeScanner 
+                onScanSuccess={(result) => {
+                  if (typeof result === 'object' && result !== null) {
+                    setAiStagedResults([{ ...result, stagedQty: '1', stagedUnit: 'serving' }]);
+                    setIsAiReviewing(true);
+                  } else {
+                    setSearchQuery(String(result));
+                    const dummyEvent = { preventDefault: () => {} } as React.FormEvent;
+                    handleGlobalSearch(dummyEvent);
+                  }
+                }}
+                onScanError={(err) => setErrorMsg(err)}
+              />
+              <p style={{ fontSize: '13px', color: 'var(--theme-text-dim)', textAlign: 'center', maxWidth: '280px', lineHeight: '1.4', fontWeight: '600' }}>
+                Scans <span style={{ color: 'var(--theme-accent)' }}>Nutrition Labels</span> and <span style={{ color: 'var(--theme-accent)' }}>Barcodes</span>. Take a clear photo for best results.
+              </p>
+            </div>
+          ) : (
             <div className="section" style={{ background: 'var(--theme-panel)', border: '1px solid var(--theme-border)', borderRadius: 'var(--radius-lg)', padding: 'var(--space-lg)', marginBottom: 'var(--space-xl)' }}>
                 <form 
                   className="search-bar-wrap" 
@@ -371,48 +392,50 @@ export const PantryView: React.FC = () => {
                     {isSearching ? <Loader2 className="spin" size={20} /> : (innerGlobalSearchTab === 'search' ? <Search size={20} /> : <Sparkles size={20} />)}
                   </button>
                 </form>
+            </div>
+          )}
 
-              {searchResults.length > 0 && (
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginTop: '20px', maxHeight: '400px', overflowY: 'auto', paddingRight: '4px' }}>
-                  {searchResults.map((f: Food, i) => (
-                    <div key={i} onClick={() => handleAddPreviewClick(f)} style={{ padding: '14px', background: 'var(--theme-panel-dim)', borderRadius: '16px', cursor: 'pointer', borderLeft: f.isLocal ? '4px solid var(--theme-success)' : '4px solid var(--theme-accent)', transition: 'transform 0.2s', display: 'flex', justifyContent: 'space-between', alignItems: 'center', border: '1px solid var(--theme-border)' }}>
-                      <div style={{ flex: 1 }}>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                          <div style={{ fontWeight: '900', fontSize: '14px', color: 'var(--theme-text)' }}>{f.name}</div>
-                          {f.brand && <div style={{ fontSize: '10px', color: 'var(--theme-text-dim)', opacity: 0.6, fontWeight: '700' }}>• {f.brand}</div>}
-                        </div>
-                        <div style={{ fontSize: '11px', color: 'var(--theme-text-dim)', marginTop: '4px', fontWeight: '600' }}>{f.serving} • {f.cal} kcal • P:{f.p}g C:{f.c}g F:{f.f}g</div>
-                      </div>
-                      {f.isLocal && <BookmarkCheck size={18} color="var(--theme-success)" />}
+          {searchResults.length > 0 && (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginTop: '20px', maxHeight: '400px', overflowY: 'auto', paddingRight: '4px' }}>
+              {searchResults.map((f: Food, i) => (
+                <div key={i} onClick={() => handleAddPreviewClick(f)} style={{ padding: '14px', background: 'var(--theme-panel-dim)', borderRadius: '16px', cursor: 'pointer', borderLeft: f.isLocal ? '4px solid var(--theme-success)' : '4px solid var(--theme-accent)', transition: 'transform 0.2s', display: 'flex', justifyContent: 'space-between', alignItems: 'center', border: '1px solid var(--theme-border)' }}>
+                  <div style={{ flex: 1 }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                      <div style={{ fontWeight: '900', fontSize: '14px', color: 'var(--theme-text)' }}>{f.name}</div>
+                      {f.brand && <div style={{ fontSize: '10px', color: 'var(--theme-text-dim)', opacity: 0.6, fontWeight: '700' }}>• {f.brand}</div>}
                     </div>
-                  ))}
+                    <div style={{ fontSize: '11px', color: 'var(--theme-text-dim)', marginTop: '4px', fontWeight: '600' }}>{f.serving} • {f.cal} kcal • P:{f.p}g C:{f.c}g F:{f.f}g</div>
+                  </div>
+                  {f.isLocal && <BookmarkCheck size={18} color="var(--theme-success)" />}
                 </div>
-              )}
+              ))}
+            </div>
+          )}
 
-              {!isSearching && searchQuery && searchResults.length === 0 && (
-                <div style={{ textAlign: 'center', padding: '40px 20px', background: 'var(--theme-panel-dim)', borderRadius: '24px', marginTop: '20px', border: '1px dashed var(--theme-border)' }}>
-                  <div style={{ color: 'var(--theme-text-dim)', fontSize: '12px', fontWeight: '900', marginBottom: '16px', letterSpacing: '1px' }}>NO FOODS FOUND IN DATABASE</div>
-                  {/^\d+$/.test(searchQuery) && searchQuery.length >= 8 ? (
-                    <button 
-                      onClick={() => {
-                        setForm({...form, name: "New Product", barcode: searchQuery});
-                        setActiveTab('manual');
-                      }}
-                      style={{ 
-                        width: '100%', padding: '14px', background: 'var(--theme-accent)', border: 'none', 
-                        borderRadius: '16px', color: 'var(--theme-bg)', fontWeight: '900', fontSize: '12px',
-                        display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px'
-                      }}
-                    >
-                      <Plus size={18} /> CREATE FOOD WITH THIS BARCODE
-                    </button>
-                  ) : (
-                    <div style={{ fontSize: '11px', color: 'var(--theme-text-dim)', fontWeight: '600' }}>Try a broader search or add it manually in the Kitchen Lab</div>
-                  )}
-                </div>
+          {!isSearching && searchQuery && searchResults.length === 0 && (
+            <div style={{ textAlign: 'center', padding: '40px 20px', background: 'var(--theme-panel-dim)', borderRadius: '24px', marginTop: '20px', border: '1px dashed var(--theme-border)' }}>
+              <div style={{ color: 'var(--theme-text-dim)', fontSize: '12px', fontWeight: '900', marginBottom: '16px', letterSpacing: '1px' }}>NO FOODS FOUND IN DATABASE</div>
+              {/^\d+$/.test(searchQuery) && searchQuery.length >= 8 ? (
+                <button 
+                  onClick={() => {
+                    setForm({...form, name: "New Product", barcode: searchQuery});
+                    setActiveTab('manual');
+                  }}
+                  style={{ 
+                    width: '100%', padding: '14px', background: 'var(--theme-accent)', border: 'none', 
+                    borderRadius: '16px', color: 'var(--theme-bg)', fontWeight: '900', fontSize: '12px',
+                    display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px'
+                  }}
+                >
+                  <Plus size={18} /> CREATE FOOD WITH THIS BARCODE
+                </button>
+              ) : (
+                <div style={{ fontSize: '11px', color: 'var(--theme-text-dim)', fontWeight: '600' }}>Try a broader search or add it manually in the Kitchen Lab</div>
               )}
-              
-              {errorMsg && <div style={{ color: 'var(--theme-error)', fontSize: '13px', marginTop: '12px', textAlign: 'center' }}>{errorMsg}</div>}
+            </div>
+          )}
+          
+          {errorMsg && <div style={{ color: 'var(--theme-error)', fontSize: '13px', marginTop: '12px', textAlign: 'center' }}>{errorMsg}</div>}
 
               {/* AI Review Step */}
               {isAiReviewing && aiStagedResults.length > 0 && (

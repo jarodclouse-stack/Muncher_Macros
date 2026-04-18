@@ -119,19 +119,22 @@ export const BarcodeScanner: React.FC<BarcodeScannerProps> = ({
 
       {/* Step 1: Selection Phase */}
       {!scanType && status === 'idle' && (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', width: '100%', animation: 'slideDown 0.3s ease-out' }}>
-          <ScanCategoryBtn 
-            icon={<FileText size={20} />} 
-            label="Nutrition Label" 
-            sub="Scan facts for AI analysis"
-            onClick={() => { setScanType('nutrition'); setStatus('selecting-source'); }} 
-          />
-          <ScanCategoryBtn 
-            icon={<Barcode size={20} />} 
-            label="Barcode" 
-            sub="Scan product code for lookup"
-            onClick={() => { setScanType('barcode'); setStatus('selecting-source'); }} 
-          />
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', width: '100%', animation: 'slideDown 0.3s ease-out' }}>
+          <div style={{ textAlign: 'center', marginBottom: '8px' }}>
+            <div style={{ fontSize: '11px', fontWeight: '900', color: 'var(--theme-accent)', textTransform: 'uppercase', letterSpacing: '2px', opacity: 0.8 }}>Select Scan Mode</div>
+          </div>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', width: '100%' }}>
+            <ScanCategoryBtn 
+              icon={<FileText size={24} />} 
+              label="Nutrition Label" 
+              onClick={() => { setScanType('nutrition'); setStatus('selecting-source'); }} 
+            />
+            <ScanCategoryBtn 
+              icon={<Barcode size={24} />} 
+              label="Barcode" 
+              onClick={() => { setScanType('barcode'); setStatus('selecting-source'); }} 
+            />
+          </div>
         </div>
       )}
 
@@ -139,33 +142,41 @@ export const BarcodeScanner: React.FC<BarcodeScannerProps> = ({
       {scanType && status === 'selecting-source' && (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', width: '100%', animation: 'slideDown 0.3s ease-out' }}>
             <div style={{ textAlign: 'center', marginBottom: '8px' }}>
-               <div style={{ fontSize: '10px', fontWeight: '900', color: 'var(--theme-accent)', textTransform: 'uppercase', letterSpacing: '2px' }}>SOURCE FOR {scanType}</div>
+               <div style={{ fontSize: '10px', fontWeight: '900', color: 'var(--theme-accent)', textTransform: 'uppercase', letterSpacing: '2px' }}>SOURCE FOR {scanType.toUpperCase()}</div>
             </div>
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', width: '100%' }}>
               <button 
                 onClick={triggerCamera}
                 style={{
                   display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
-                  gap: '8px', background: 'var(--theme-panel)', border: '1px solid var(--theme-border)',
-                  borderRadius: '20px', padding: '32px 16px', cursor: 'pointer', transition: 'all 0.2s',
-                  boxShadow: '0 4px 15px rgba(0,0,0,0.2)'
+                  gap: '12px', background: 'var(--theme-panel)', border: '1px solid var(--theme-border)',
+                  borderRadius: '24px', padding: '32px 16px', cursor: 'pointer', transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+                  boxShadow: '0 8px 24px rgba(0,0,0,0.3)',
+                  color: '#fff'
                 }}
+                className="source-btn"
               >
-                <Camera size={26} color="var(--theme-accent)" />
-                <span style={{ fontSize: '11px', fontWeight: '900', color: 'var(--theme-text)', textTransform: 'uppercase', letterSpacing: '1px' }}>Take Photo</span>
+                <div style={{ background: 'rgba(0, 201, 255, 0.1)', padding: '16px', borderRadius: '50%', marginBottom: '4px' }}>
+                  <Camera size={28} color="var(--theme-accent)" />
+                </div>
+                <span style={{ fontSize: '12px', fontWeight: '900', textTransform: 'uppercase', letterSpacing: '1px' }}>Take Photo</span>
               </button>
 
               <button 
                 onClick={triggerUpload}
                 style={{
                   display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
-                  gap: '8px', background: 'rgba(255,255,255,0.03)', border: '1px solid var(--theme-border)',
-                  borderRadius: '20px', padding: '32px 16px', cursor: 'pointer', transition: 'all 0.2s',
-                  boxShadow: '0 4px 15px rgba(0,0,0,0.2)'
+                  gap: '12px', background: 'rgba(255,255,255,0.03)', border: '1px solid var(--theme-border)',
+                  borderRadius: '24px', padding: '32px 16px', cursor: 'pointer', transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+                  boxShadow: '0 8px 24px rgba(0,0,0,0.3)',
+                  color: '#fff'
                 }}
+                className="source-btn"
               >
-                <Plus size={26} color="var(--theme-accent)" />
-                <span style={{ fontSize: '11px', fontWeight: '900', color: 'var(--theme-text)', textTransform: 'uppercase', letterSpacing: '1px' }}>Upload Image</span>
+                <div style={{ background: 'rgba(255,255,255,0.05)', padding: '16px', borderRadius: '50%', marginBottom: '4px' }}>
+                  <Plus size={28} color="var(--theme-accent)" />
+                </div>
+                <span style={{ fontSize: '12px', fontWeight: '900', textTransform: 'uppercase', letterSpacing: '1px' }}>Upload Image</span>
               </button>
             </div>
             
@@ -296,23 +307,21 @@ export const BarcodeScanner: React.FC<BarcodeScannerProps> = ({
   );
 };
 
-const ScanCategoryBtn = ({ icon, label, sub, onClick }: any) => (
+const ScanCategoryBtn = ({ icon, label, onClick }: any) => (
   <button 
     onClick={onClick}
     style={{
-      width: '100%', display: 'flex', alignItems: 'center', gap: '16px',
-      padding: '20px', background: 'rgba(255,255,255,0.03)', border: '1px solid var(--theme-border)',
-      borderRadius: '24px', cursor: 'pointer', transition: 'all 0.2s', textAlign: 'left',
-      boxShadow: '0 4px 15px rgba(0,0,0,0.1)'
+      flex: 1,
+      display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
+      gap: '12px', background: 'var(--theme-panel)', border: '1px solid var(--theme-border)',
+      borderRadius: '24px', padding: '32px 16px', cursor: 'pointer', transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+      boxShadow: '0 8px 24px rgba(0,0,0,0.3)',
+      color: '#fff'
     }}
   >
-    <div style={{ background: 'rgba(0, 201, 255, 0.1)', padding: '12px', borderRadius: '16px', color: 'var(--theme-accent)' }}>
+    <div style={{ background: 'rgba(0, 201, 255, 0.1)', padding: '16px', borderRadius: '50%', color: 'var(--theme-accent)' }}>
       {icon}
     </div>
-    <div style={{ flex: 1 }}>
-      <div style={{ fontSize: '13px', fontWeight: '900', color: 'var(--theme-text)', textTransform: 'uppercase', letterSpacing: '1px' }}>{label}</div>
-      <div style={{ fontSize: '10px', color: 'var(--theme-text-dim)', fontWeight: '700' }}>{sub}</div>
-    </div>
-    <ArrowRight size={18} color="var(--theme-accent)" />
+    <div style={{ fontSize: '12px', fontWeight: '900', textTransform: 'uppercase', letterSpacing: '1px', textAlign: 'center' }}>{label}</div>
   </button>
 );
