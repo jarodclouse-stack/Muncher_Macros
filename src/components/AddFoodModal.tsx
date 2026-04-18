@@ -469,7 +469,7 @@ export const AddFoodModal: React.FC<AddFoodModalProps> = ({ meal, onClose }) => 
                 onScanError={(err) => setErrorMsg(err)}
               />
               <p style={{ fontSize: '13px', color: 'var(--theme-text-dim)', textAlign: 'center', maxWidth: '280px', lineHeight: '1.4', fontWeight: '600' }}>
-                Scans <span style={{ color: 'var(--theme-accent)' }}>Nutrition Labels</span> and <span style={{ color: 'var(--theme-accent)' }}>Barcodes</span>. Take a clear photo for best results. No QR codes needed.
+                Scans <span style={{ color: 'var(--theme-accent)' }}>Nutrition Labels</span> and <span style={{ color: 'var(--theme-accent)' }}>Barcodes</span>. Take a clear photo for best results.
               </p>
             </div>
           ) : null}

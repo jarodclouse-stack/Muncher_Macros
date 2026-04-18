@@ -130,7 +130,7 @@ export const ImageCropperModal: React.FC<ImageCropperModalProps> = ({ image, onC
               color: aspect === 1 ? '#000' : '#fff',
               transition: 'all 0.2s'
             }}>
-            SQUARE (LABEL/QR)
+            SQUARE (LABEL)
           </button>
           <button 
             onClick={() => setAspect(undefined)}

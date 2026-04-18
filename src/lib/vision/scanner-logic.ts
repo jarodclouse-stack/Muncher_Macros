@@ -53,32 +53,6 @@ export const scanBarcode = async (imageBlob: Blob): Promise<ScanResult> => {
   }
 };
 
-/**
- * Decodes a QR Code from a Blob/File (using MultiFormatReader for best results)
- */
-export const scanQRCode = async (imageBlob: Blob): Promise<ScanResult> => {
-  const url = URL.createObjectURL(imageBlob);
-  try {
-    const result = await multiFormatReader.decodeFromImageUrl(url);
-    const text = result.getText();
-    
-    // Check if it's a URL (common in QR codes)
-    if (isURL(text)) {
-      return { success: false, error: "Result is a web link. This app requires nutrition labels, barcodes, or food-specific QR codes." };
-    }
-
-    // Extraction logic: If it's a product URL, extract the GTIN/UPC
-    const gtinMatch = text.match(/\/(\d{12,14})\/?$/);
-    if (gtinMatch) return { success: true, text: gtinMatch[1].replace(/^0+/, '') };
-
-    return { success: true, text };
-  } catch (err) {
-    console.error("QR scan failed", err);
-    return { success: false, error: "No QR code detected." };
-  } finally {
-    URL.revokeObjectURL(url);
-  }
-};
 
 /**
  * Processes a Nutrition Label by calling the AI API
@@ -163,7 +137,7 @@ export const extractBarcodeDigits = async (imageBlob: Blob): Promise<ScanResult>
 };
 
 /**
- * Centralized Barcode/QR Lookup Logic
+ * Centralized Barcode Lookup Logic
  */
 export const lookupBarcode = async (code: string): Promise<ScanResult> => {
   try {

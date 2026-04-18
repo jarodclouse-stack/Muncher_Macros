@@ -1,5 +1,5 @@
 import React from 'react';
-import { Search, Sparkles } from 'lucide-react';
+import { Search, Sparkles, Barcode, FileText } from 'lucide-react';
 
 export type SearchTab = 'search' | 'ai-search' | 'describe' | 'scan';
 

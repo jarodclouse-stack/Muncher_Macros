@@ -478,9 +478,7 @@ const WeeklyReport = ({ localCache, currentDate, targetCal }: any) => {
             <div style={{ background: 'var(--theme-panel-dim, rgba(0,0,0,0.2))', padding: '16px', borderRadius: '16px', textAlign: 'center' }}>
               <div style={{ fontSize: '10px', color: 'var(--theme-text-dim, #8b8b9b)', textTransform: 'uppercase', marginBottom: '8px', fontWeight: '700' }}>Avg Calories</div>
               <div style={{ fontSize: '20px', fontWeight: '900', color: Math.abs(calDiff) < 150 ? 'var(--theme-success, #92FE9D)' : calDiff > 0 ? 'var(--theme-error, #FF6B6B)' : 'var(--theme-accent, #4DABF7)' }}>{avgCal}</div>
-              <p style={{ fontSize: '13px', color: '#8b8b9b', textAlign: 'center', maxWidth: '280px', lineHeight: '1.4' }}>
-                Scans **Nutrition Labels**, **Barcodes**, and **QR Codes**. Take a clear photo for best results.
-              </p>
+              <div style={{ fontSize: '10px', color: 'var(--theme-text-dim, #8b8b9b)', marginTop: '4px' }}>7-day rolling average</div>
             </div>
             <div style={{ background: 'var(--theme-panel-dim, rgba(0,0,0,0.2))', padding: '16px', borderRadius: '16px', textAlign: 'center' }}>
               <div style={{ fontSize: '10px', color: 'var(--theme-text-dim, #8b8b9b)', textTransform: 'uppercase', marginBottom: '8px', fontWeight: '700' }}>On Target</div>
