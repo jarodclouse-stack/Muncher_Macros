@@ -400,9 +400,9 @@ export const PantryView: React.FC = () => {
                     </div>
                     <div>
                       <h3 style={{ margin: 0, fontSize: '15px', fontWeight: '900', color: 'var(--theme-text)', textTransform: 'uppercase', letterSpacing: '1.5px' }}>
-                        Global Intelligence
+                        Analyze Meal Intelligence
                       </h3>
-                      <div style={{ fontSize: '10px', color: 'var(--theme-text-dim)', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.5px', marginTop: '2px' }}>AI Meal Description Analysis</div>
+                      <div style={{ fontSize: '10px', color: 'var(--theme-text-dim)', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.5px', marginTop: '2px' }}>AI-Powered Complex Parsing</div>
                     </div>
                   </div>
 
@@ -427,8 +427,8 @@ export const PantryView: React.FC = () => {
                       boxShadow: '0 8px 24px rgba(0, 201, 255, 0.15)',
                       opacity: isSearching || !searchQuery.trim() ? 0.5 : 1
                     }}>
-                    {isSearching ? <Loader2 className="spin" size={20} /> : <Activity size={20} />}
-                    <span style={{ letterSpacing: '1.5px' }}>{isSearching ? 'ANALYZING MEAL...' : 'DESCRIBE & ANALYZE'}</span>
+                    {isSearching ? <Loader2 className="spin" size={20} /> : <FileText size={20} />}
+                    <span style={{ letterSpacing: '1.5px' }}>{isSearching ? 'ANALYZING MEAL...' : 'ANALYZE MEAL DESCRIPTION'}</span>
                   </button>
 
                   <textarea 
