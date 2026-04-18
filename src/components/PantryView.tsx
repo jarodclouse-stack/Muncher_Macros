@@ -633,7 +633,7 @@ export const PantryView: React.FC = () => {
                               next[i] = { ...f, stagedQty: e.target.value };
                               setAiStagedResults(next);
                             }}
-                            style={{ width: '75px', background: 'var(--theme-panel-dim)', border: '1.5px solid var(--theme-border)', borderRadius: '12px', color: 'var(--theme-text)', fontSize: '13px', padding: '12px', textAlign: 'center', outline: 'none', fontWeight: '900' }} 
+                            style={{ width: '75px', background: 'rgba(0,0,0,0.06)', border: '1px solid var(--theme-border)', borderRadius: '12px', color: 'var(--theme-text)', fontSize: '13px', padding: '12px', textAlign: 'center', outline: 'none', fontWeight: '900' }} 
                           />
                           <select 
                             value={f.stagedUnit} 
@@ -642,7 +642,7 @@ export const PantryView: React.FC = () => {
                               next[i] = { ...f, stagedUnit: e.target.value };
                               setAiStagedResults(next);
                             }}
-                            style={{ flex: 1, background: 'var(--theme-panel-dim)', border: '1.5px solid var(--theme-border)', borderRadius: '12px', color: 'var(--theme-text)', fontSize: '13px', padding: '12px', outline: 'none', fontWeight: '800' }}>
+                            style={{ flex: 1, background: 'rgba(0,0,0,0.06)', border: '1px solid var(--theme-border)', borderRadius: '12px', color: 'var(--theme-text)', fontSize: '13px', padding: '12px', outline: 'none', fontWeight: '800' }}>
                             {SERVING_UNITS.map(u => <option key={u.v} value={u.v} style={{ background: 'var(--theme-panel)', color: 'var(--theme-text)' }}>{u.v}</option>)}
                           </select>
                         </div>
