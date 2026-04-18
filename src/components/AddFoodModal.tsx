@@ -389,14 +389,34 @@ export const AddFoodModal: React.FC<AddFoodModalProps> = ({ meal, onClose }) => 
               )}
             </div>
           ) : activeTab === 'describe' ? (
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-              <div style={{ background: 'rgba(255,255,255,0.03)', borderRadius: '24px', padding: '24px', border: '1px solid rgba(255,255,255,0.1)', boxShadow: '0 10px 30px rgba(0,0,0,0.2)' }}>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '10px', color: 'var(--theme-accent)' }}>
-                    <Sparkles size={24} style={{ filter: 'drop-shadow(0 0 8px var(--theme-accent))' }} />
-                    <h3 style={{ margin: 0, fontSize: '16px', fontWeight: '900', color: 'var(--theme-text)', textTransform: 'uppercase', letterSpacing: '1px' }}>
-                      Analyze Meal Intelligence
-                    </h3>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+              <div style={{ 
+                background: 'rgba(15, 15, 20, 0.4)', 
+                borderRadius: '28px', 
+                padding: '28px', 
+                border: '1.5px solid rgba(255,255,255,0.08)', 
+                boxShadow: '0 20px 40px rgba(0,0,0,0.4)',
+                backdropFilter: 'blur(10px)'
+              }}>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '12px', color: 'var(--theme-accent)', marginBottom: '4px' }}>
+                    <div style={{ 
+                      background: 'var(--theme-accent-dim)', 
+                      padding: '10px', 
+                      borderRadius: '12px', 
+                      display: 'flex', 
+                      alignItems: 'center', 
+                      justifyContent: 'center',
+                      border: '1px solid rgba(0, 201, 255, 0.2)'
+                    }}>
+                      <Sparkles size={22} style={{ filter: 'drop-shadow(0 0 5px var(--theme-accent))' }} />
+                    </div>
+                    <div>
+                      <h3 style={{ margin: 0, fontSize: '15px', fontWeight: '900', color: 'var(--theme-text)', textTransform: 'uppercase', letterSpacing: '1.5px' }}>
+                        Analyze Meal Intelligence
+                      </h3>
+                      <div style={{ fontSize: '10px', color: 'var(--theme-text-dim)', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.5px', marginTop: '2px' }}>AI-Powered Complex Parsing</div>
+                    </div>
                   </div>
 
                   <button 
@@ -404,27 +424,28 @@ export const AddFoodModal: React.FC<AddFoodModalProps> = ({ meal, onClose }) => 
                     disabled={searching || !mealDesc.trim()}
                     style={{ 
                       width: '100%', 
-                      padding: '16px', 
-                      background: 'rgba(0, 201, 255, 0.1)', 
-                      border: '1px solid var(--theme-accent, #00C9FF)', 
-                      borderRadius: '16px', 
+                      padding: '18px', 
+                      background: 'linear-gradient(135deg, rgba(0, 201, 255, 0.15), rgba(0, 201, 255, 0.05))', 
+                      border: '1.5px solid var(--theme-accent, #00C9FF)', 
+                      borderRadius: '18px', 
                       color: 'var(--theme-accent, #00C9FF)', 
                       fontWeight: '900', 
-                      fontSize: '14px',
+                      fontSize: '13px',
                       cursor: 'pointer', 
                       display: 'flex', 
                       justifyContent: 'center', 
                       alignItems: 'center', 
-                      gap: '10px',
+                      gap: '12px',
                       transition: 'all 0.3s ease',
-                      boxShadow: '0 4px 15px rgba(0, 201, 255, 0.1)'
+                      boxShadow: '0 8px 24px rgba(0, 201, 255, 0.15)',
+                      opacity: searching || !mealDesc.trim() ? 0.5 : 1
                     }}>
                     {searching ? <Loader2 className="spin" size={20} /> : <FileText size={20} />}
-                    <span style={{ letterSpacing: '1px' }}>{searching ? 'ANALYZING...' : 'ANALYZE MEAL DESCRIPTION'}</span>
+                    <span style={{ letterSpacing: '1.5px' }}>{searching ? 'ANALYZING MEAL...' : 'ANALYZE MEAL DESCRIPTION'}</span>
                   </button>
 
                   <textarea 
-                    placeholder="Type your whole meal here... (e.g. '2 scrambled eggs and 1 piece of toast')"
+                    placeholder="Describe your whole meal here... (e.g. '3 scrambled eggs with spinach and a cup of black coffee')"
                     value={mealDesc}
                     onChange={(e) => {
                       setMealDesc(e.target.value);
@@ -432,19 +453,20 @@ export const AddFoodModal: React.FC<AddFoodModalProps> = ({ meal, onClose }) => 
                     }}
                     style={{ 
                       width: '100%', 
-                      minHeight: '140px', 
-                      background: 'rgba(0,0,0,0.2)', 
+                      minHeight: '160px', 
+                      background: 'rgba(0,0,0,0.3)', 
                       border: '1px solid rgba(255,255,255,0.1)', 
-                      borderRadius: '18px', 
-                      padding: '18px', 
+                      borderRadius: '20px', 
+                      padding: '20px', 
                       color: 'var(--theme-text)', 
-                      fontSize: '15px', 
-                      lineHeight: '1.6', 
                       outline: 'none', 
-                      resize: 'none',
-                      transition: 'border-color 0.2s'
-                  }}
-                />
+                      fontSize: '15px', 
+                      lineHeight: '1.6',
+                      fontFamily: 'inherit',
+                      resize: 'none'
+                    }}
+                  />
+                </div>
               </div>
             </div>
           </div>
@@ -455,7 +477,6 @@ export const AddFoodModal: React.FC<AddFoodModalProps> = ({ meal, onClose }) => 
                   if (typeof result === 'object' && result !== null) {
                     setAiStagedResults([{ ...result, stagedQty: '1', stagedUnit: 'serving', showNutrientIntel: false }]);
                     setIsAiReviewing(true);
-                    setActiveTab('describe');
                   } else {
                     const displayQuery = typeof result === 'string' ? result : (result?.name || '');
                     setQuery(String(displayQuery));

@@ -374,18 +374,102 @@ export const PantryView: React.FC = () => {
                 Scans <span style={{ color: 'var(--theme-accent)' }}>Nutrition Labels</span> and <span style={{ color: 'var(--theme-accent)' }}>Barcodes</span>. Take a clear photo for best results.
               </p>
             </div>
+          ) : innerGlobalSearchTab === 'ai-describe' ? (
+            <div style={{ padding: '0 0 20px 0' }}>
+              <div style={{ 
+                background: 'rgba(15, 15, 20, 0.4)', 
+                borderRadius: '28px', 
+                padding: '24px', 
+                border: '1.5px solid rgba(255,255,255,0.08)', 
+                boxShadow: '0 20px 40px rgba(0,0,0,0.4)',
+                backdropFilter: 'blur(10px)',
+                marginTop: '10px'
+              }}>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '12px', color: 'var(--theme-accent)', marginBottom: '4px' }}>
+                    <div style={{ 
+                      background: 'var(--theme-accent-dim)', 
+                      padding: '10px', 
+                      borderRadius: '12px', 
+                      display: 'flex', 
+                      alignItems: 'center', 
+                      justifyContent: 'center',
+                      border: '1px solid rgba(0, 201, 255, 0.2)'
+                    }}>
+                      <Sparkles size={22} style={{ filter: 'drop-shadow(0 0 5px var(--theme-accent))' }} />
+                    </div>
+                    <div>
+                      <h3 style={{ margin: 0, fontSize: '15px', fontWeight: '900', color: 'var(--theme-text)', textTransform: 'uppercase', letterSpacing: '1.5px' }}>
+                        Global Intelligence
+                      </h3>
+                      <div style={{ fontSize: '10px', color: 'var(--theme-text-dim)', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.5px', marginTop: '2px' }}>AI Meal Description Analysis</div>
+                    </div>
+                  </div>
+
+                  <button 
+                    onClick={(e) => { e.preventDefault(); handleGlobalAIDescribe(e); }}
+                    disabled={isSearching || !searchQuery.trim()}
+                    style={{ 
+                      width: '100%', 
+                      padding: '18px', 
+                      background: 'linear-gradient(135deg, rgba(0, 201, 255, 0.15), rgba(0, 201, 255, 0.05))', 
+                      border: '1.5px solid var(--theme-accent, #00C9FF)', 
+                      borderRadius: '18px', 
+                      color: 'var(--theme-accent, #00C9FF)', 
+                      fontWeight: '900', 
+                      fontSize: '13px',
+                      cursor: 'pointer', 
+                      display: 'flex', 
+                      justifyContent: 'center', 
+                      alignItems: 'center', 
+                      gap: '12px',
+                      transition: 'all 0.3s ease',
+                      boxShadow: '0 8px 24px rgba(0, 201, 255, 0.15)',
+                      opacity: isSearching || !searchQuery.trim() ? 0.5 : 1
+                    }}>
+                    {isSearching ? <Loader2 className="spin" size={20} /> : <Activity size={20} />}
+                    <span style={{ letterSpacing: '1.5px' }}>{isSearching ? 'ANALYZING MEAL...' : 'DESCRIBE & ANALYZE'}</span>
+                  </button>
+
+                  <textarea 
+                    placeholder="Describe your whole meal here... (e.g. '3 scrambled eggs with spinach and a cup of black coffee')"
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    style={{ 
+                      width: '100%', 
+                      minHeight: '160px', 
+                      background: 'rgba(0,0,0,0.3)', 
+                      border: '1px solid rgba(255,255,255,0.1)', 
+                      borderRadius: '20px', 
+                      padding: '20px', 
+                      color: 'var(--theme-text)', 
+                      outline: 'none', 
+                      fontSize: '15px', 
+                      lineHeight: '1.6',
+                      fontFamily: 'inherit',
+                      resize: 'none'
+                    }}
+                  />
+                </div>
+              </div>
+            </div>
           ) : (
             <div className="section" style={{ background: 'var(--theme-panel)', border: '1px solid var(--theme-border)', borderRadius: 'var(--radius-lg)', padding: 'var(--space-lg)', marginBottom: 'var(--space-xl)' }}>
                 <form 
                   className="search-bar-wrap" 
-                  onSubmit={innerGlobalSearchTab === 'search' ? handleGlobalSearch : (innerGlobalSearchTab === 'ai-search' ? handleGlobalAISearch : handleGlobalAIDescribe)}>
-                  <input 
-                    type="text" 
-                    placeholder={innerGlobalSearchTab === 'search' ? "Search for foods, brands..." : (innerGlobalSearchTab === 'ai-search' ? "Explain the food..." : "Describe your whole meal...")}
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    style={{ flex: 1, background: 'var(--theme-input-bg)', border: '1px solid var(--theme-border)', borderRadius: 'var(--radius-md)', padding: '12px var(--space-md)', color: 'var(--theme-text)', fontSize: '14px', outline: 'none' }}
-                  />
+                  onSubmit={innerGlobalSearchTab === 'search' ? handleGlobalSearch : handleGlobalAISearch}>
+                  <div style={{ position: 'relative', flex: 1 }}>
+                    <input 
+                      type="text" 
+                      placeholder={innerGlobalSearchTab === 'search' ? "Search for foods, brands..." : "Explain food (AI search)..."}
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                      style={{ width: '100%', background: 'var(--theme-input-bg)', border: '1px solid var(--theme-border)', borderRadius: 'var(--radius-md)', padding: '12px 12px 12px 40px', color: 'var(--theme-text)', fontSize: '14px', outline: 'none' }}
+                    />
+                    <div style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: 'var(--theme-text-dim)' }}>
+                      <Search size={18} />
+                    </div>
+                  </div>
                   <button 
                     type="submit"
                     style={{ padding: '12px var(--space-lg)', background: 'var(--theme-accent)', border: 'none', borderRadius: 'var(--radius-md)', color: 'var(--theme-bg)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
