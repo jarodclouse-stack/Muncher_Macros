@@ -1791,30 +1791,56 @@ body.theme-light-surface .inp::placeholder {
   color: var(--theme-placeholder) !important;
 }
 
-/* FORCE ABSOLUTE WHITE ON ALL DARK BUBBLES (UNIVERSAL SYNCHRONIZATION) */
-.glass-card, 
-.glass-card *,
-.card,
-.card * {
+/* --- LUMINOUS MASTER CONTRAST VAULT --- */
+
+/* Absolute Synchronization: All descendants of analytical bubbles MUST match the Cheer Banner color */
+body div.glass-card, 
+body div.glass-card *,
+body div.card,
+body div.card * {
   color: #FFFFFF !important;
+  transition: color 0.3s ease;
 }
 
-.glass-card .text-dim,
-.glass-card .lbl,
-.card .text-dim,
-.card .lbl {
+/* Secondary labels/dim text synchronization at high-fidelity white */
+body div.glass-card .text-dim,
+body div.glass-card .lbl,
+body div.card .text-dim,
+body div.card .lbl,
+body div.glass-card span[style*="opacity: 0.6"],
+body div.card span[style*="opacity: 0.6"] {
   color: rgba(255, 255, 255, 0.9) !important;
+  opacity: 1 !important; /* Prevent double-dimming */
 }
 
-/* Re-allow accent colors to pop if explicitly defined with local scope */
-.glass-card [style*="color: var(--theme-accent)"],
-.card [style*="color: var(--theme-accent)"],
-.glass-card [style*="color: var(--theme-success)"],
-.card [style*="color: var(--theme-success)"],
-.glass-card [style*="color: var(--theme-warning)"],
-.card [style*="color: var(--theme-warning)"],
-.glass-card [style*="color: var(--theme-error)"],
-.card [style*="color: var(--theme-error)"] {
+/* Luminous Breath Animation: For premium 'fading and contrasting' UI feel */
+@keyframes luminous-breath {
+  0% { 
+    border-color: rgba(255, 255, 255, 0.1); 
+    box-shadow: 0 8px 32px rgba(0,0,0,0.15); 
+  }
+  50% { 
+    border-color: var(--theme-accent, #00C9FF); 
+    box-shadow: 0 12px 48px rgba(0,0,0,0.25), 0 0 15px var(--theme-accent-dim, rgba(0,201,255,0.2)); 
+  }
+  100% { 
+    border-color: rgba(255, 255, 255, 0.1); 
+    box-shadow: 0 8px 32px rgba(0,0,0,0.15); 
+  }
+}
+
+.luminous-breath {
+  animation: luminous-breath 6s infinite ease-in-out;
+  transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Re-allow accent colors to pop ONLY for explicit status items */
+body .glass-card .status-color,
+body .card .status-color,
+body .glass-card [style*="color: var(--theme-success)"],
+body .card [style*="color: var(--theme-success)"],
+body .glass-card [style*="color: var(--theme-error)"],
+body .card [style*="color: var(--theme-error)"] {
   color: inherit !important;
 }
 

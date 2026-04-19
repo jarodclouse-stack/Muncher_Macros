@@ -85,13 +85,13 @@ export const DiaryView: React.FC = () => {
     <div className="section" style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-lg)' }}>
       
       {/* Daily Cheer Banner */}
-      <div className="glass-card" style={{ padding: 'var(--space-md)', display: 'flex', alignItems: 'center', gap: 'var(--space-sm)', boxShadow: '0 8px 32px rgba(0,0,0,0.15)' }}>
+      <div className="glass-card luminous-breath" style={{ padding: 'var(--space-md)', display: 'flex', alignItems: 'center', gap: 'var(--space-sm)', boxShadow: '0 8px 32px rgba(0,0,0,0.15)' }}>
           <span style={{ fontSize: '18px' }}>✨</span>
-          <span style={{ fontSize: '13px', fontWeight: '900', color: 'var(--theme-text-on-panel)', fontStyle: 'italic', letterSpacing: '0.4px', textShadow: '0 0 8px rgba(255,255,255,0.4)' }}>{randomCheer}</span>
+          <span style={{ fontSize: '13px', fontWeight: '900', color: '#FFFFFF', fontStyle: 'italic', letterSpacing: '0.4px', textShadow: '0 0 8px rgba(255,255,255,0.4)' }}>{randomCheer}</span>
       </div>
 
       {/* Daily Summary Card */}
-      <div className="card" style={{ padding: 'var(--space-xl)' }}>
+      <div className="card luminous-breath" style={{ padding: 'var(--space-xl)' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 'var(--space-lg)' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-md)', flex: 1, justifyContent: 'center' }}>
             <button onClick={() => changeDate(-1)} style={{ background: 'var(--theme-panel)', border: 'none', color: 'var(--theme-text)', cursor: 'pointer', padding: '10px', borderRadius: 'var(--radius-md)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><ChevronLeft size={20} /></button>
@@ -116,13 +116,13 @@ export const DiaryView: React.FC = () => {
           </div>
         </div>
 
-        <div className="glass-card" style={{ 
+        <div className="glass-card luminous-breath" style={{ 
           borderLeft: '4px solid var(--theme-accent, #00C9FF)', 
           padding: 'var(--space-md) var(--space-lg)', 
           marginBottom: 'var(--space-lg)', 
           fontSize: '15px', 
           lineHeight: '1.5',
-          color: 'var(--theme-text-on-panel)', 
+          color: '#FFFFFF', 
           display: 'flex', 
           alignItems: 'flex-start', 
           gap: 'var(--space-sm)',
