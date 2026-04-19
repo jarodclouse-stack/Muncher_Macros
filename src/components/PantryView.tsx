@@ -385,13 +385,10 @@ export const PantryView: React.FC = () => {
             </div>
           ) : innerGlobalSearchTab === 'describe' ? (
             <div style={{ padding: '0 0 20px 0' }}>
-              <div style={{ 
-                background: 'rgba(30, 35, 55, 0.6)', 
-                borderRadius: '28px', 
+              <div className="glass-card luminous-breath" style={{ 
                 padding: '24px', 
                 border: '1.5px solid rgba(255,255,255,0.12)', 
                 boxShadow: '0 20px 40px rgba(0,0,0,0.4)',
-                backdropFilter: 'blur(20px)',
                 marginTop: '10px'
               }}>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
@@ -408,7 +405,7 @@ export const PantryView: React.FC = () => {
                       <Sparkles size={22} style={{ filter: 'drop-shadow(0 0 5px var(--theme-accent))' }} />
                     </div>
                     <div>
-                      <h3 style={{ margin: 0, fontSize: '15px', fontWeight: '900', color: 'var(--theme-text-on-panel)', textTransform: 'uppercase', letterSpacing: '1.5px' }}>
+                        <h3 style={{ margin: 0, fontSize: '15px', fontWeight: '900', color: '#FFFFFF', textTransform: 'uppercase', letterSpacing: '1.5px' }}>
                         Analyze Meal Intelligence
                       </h3>
                       <div style={{ fontSize: '10px', color: 'var(--theme-text-dim-on-panel)', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.5px', marginTop: '2px' }}>AI-Powered Complex Parsing</div>
@@ -424,7 +421,7 @@ export const PantryView: React.FC = () => {
                       background: 'linear-gradient(135deg, rgba(0, 201, 255, 0.25), rgba(0, 201, 255, 0.1))', 
                       border: '1.5px solid var(--theme-accent, #00C9FF)', 
                       borderRadius: '18px', 
-                      color: 'var(--theme-text-on-panel)', 
+                      color: '#FFFFFF', 
                       fontWeight: '900', 
                       fontSize: '13px',
                       cursor: 'pointer', 
@@ -1102,16 +1099,15 @@ export const PantryView: React.FC = () => {
                 <div 
                   key={originalIdx} 
                   onClick={() => handleAddPreviewClick(f)}
+                  className="glass-card luminous-breath"
                   style={{ 
-                    padding: '12px', 
-                    background: 'rgba(0,0,0,0.4)', 
-                    borderRadius: '12px', 
+                    padding: '16px', 
                     cursor: 'pointer', 
-                    borderLeft: '3px solid var(--theme-accent, #00C9FF)', 
-                    transition: 'background 0.2s', 
+                    borderLeft: '4px solid var(--theme-accent, #00C9FF)', 
                     display: 'flex', 
                     justifyContent: 'space-between', 
-                    alignItems: 'center' 
+                    alignItems: 'center',
+                    marginBottom: '4px'
                   }}>
                   <div style={{ flex: 1 }}>
                     <div style={{ fontWeight: '700', fontSize: '14px', color: 'var(--theme-text-on-panel)' }}>{f.name}</div>
