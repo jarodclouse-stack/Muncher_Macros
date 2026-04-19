@@ -408,10 +408,10 @@ export const PantryView: React.FC = () => {
                       <Sparkles size={22} style={{ filter: 'drop-shadow(0 0 5px var(--theme-accent))' }} />
                     </div>
                     <div>
-                      <h3 style={{ margin: 0, fontSize: '15px', fontWeight: '900', color: 'var(--theme-text)', textTransform: 'uppercase', letterSpacing: '1.5px' }}>
+                      <h3 style={{ margin: 0, fontSize: '15px', fontWeight: '900', color: '#fff', textTransform: 'uppercase', letterSpacing: '1.5px' }}>
                         Analyze Meal Intelligence
                       </h3>
-                      <div style={{ fontSize: '10px', color: 'var(--theme-text-dim)', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.5px', marginTop: '2px' }}>AI-Powered Complex Parsing</div>
+                      <div style={{ fontSize: '10px', color: 'rgba(255,255,255,0.8)', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.5px', marginTop: '2px' }}>AI-Powered Complex Parsing</div>
                     </div>
                   </div>
 
@@ -424,7 +424,7 @@ export const PantryView: React.FC = () => {
                       background: 'linear-gradient(135deg, rgba(0, 201, 255, 0.25), rgba(0, 201, 255, 0.1))', 
                       border: '1.5px solid var(--theme-accent, #00C9FF)', 
                       borderRadius: '18px', 
-                      color: 'var(--theme-accent, #00C9FF)', 
+                      color: '#fff', 
                       fontWeight: '900', 
                       fontSize: '13px',
                       cursor: 'pointer', 
@@ -723,7 +723,7 @@ export const PantryView: React.FC = () => {
                         setAiStagedResults([]);
                         alert("Items saved to Pantry!");
                       }}
-                      style={{ flex: 1, minWidth: '140px', padding: '14px', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '16px', color: 'var(--theme-text)', fontWeight: '800', fontSize: '11px', cursor: 'pointer' }}>
+                      style={{ flex: 1, minWidth: '140px', padding: '14px', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '16px', color: '#fff', fontWeight: '900', fontSize: '12px', cursor: 'pointer' }}>
                       SAVE TO PANTRY
                     </button>
                   </div>
@@ -1114,8 +1114,8 @@ export const PantryView: React.FC = () => {
                     alignItems: 'center' 
                   }}>
                   <div style={{ flex: 1 }}>
-                    <div style={{ fontWeight: '700', fontSize: '14px', color: 'var(--theme-text)' }}>{f.name}</div>
-                    <div style={{ fontSize: '11px', color: 'rgba(255,255,255,0.5)', marginTop: '2px' }}>{f.serving} • {f.cal} kcal • P:{f.p}g C:{f.c}g F:{f.f}g</div>
+                    <div style={{ fontWeight: '700', fontSize: '14px', color: '#fff' }}>{f.name}</div>
+                    <div style={{ fontSize: '11px', color: 'rgba(255,255,255,0.8)', marginTop: '2px' }}>{f.serving} • {f.cal} kcal • P:{f.p}g C:{f.c}g F:{f.f}g</div>
                   </div>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
                     <button 
