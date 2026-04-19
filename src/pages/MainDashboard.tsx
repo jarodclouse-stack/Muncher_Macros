@@ -56,10 +56,15 @@ export const MainDashboard: React.FC = () => {
               <img src={legacyLogo} alt="MM" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
             </div>
             <div>
-              <h1 style={{ fontSize: '16px', fontWeight: '800', margin: 0, display: 'flex', alignItems: 'center', gap: '4px', textShadow: '0 0 10px rgba(0,201,255,0.3)' }}>
-                Macro Munchers {activeTab === 'pantry' && <ChevronRight size={14} color="var(--theme-accent, #00C9FF)" />}
+              <h1 style={{ fontSize: '15px', fontWeight: '900', margin: 0, display: 'flex', alignItems: 'center', gap: '8px', textTransform: 'uppercase', letterSpacing: '1px', textShadow: '0 0 10px rgba(0,201,255,0.2)' }}>
+                {activeTab === 'diary' && <Utensils size={18} color="var(--theme-accent)" />}
+                {activeTab === 'nutrition' && <Activity size={18} color="var(--theme-accent)" />}
+                {activeTab === 'pantry' && <Plus size={18} color="var(--theme-accent)" />}
+                {activeTab === 'progress' && <Flame size={18} color="var(--theme-accent)" />}
+                {activeTab === 'badges' && <Award size={18} color="var(--theme-accent)" />}
+                {activeTab === 'pantry' ? 'ADD FOOD' : activeTab.toUpperCase()}
               </h1>
-              <p style={{ fontSize: '12px', color: 'var(--theme-text-dim, #8b8b9b)', margin: 0 }}>Welcome, {user?.email?.split('@')[0] || 'Guest'}!</p>
+              <p style={{ fontSize: '11px', color: 'var(--theme-text-dim, #8b8b9b)', margin: '2px 0 0 0', fontWeight: '600', opacity: 0.8 }}>Macro Munchers • {user?.email?.split('@')[0] || 'Guest'}</p>
             </div>
           </div>
           
@@ -166,10 +171,12 @@ export const MainDashboard: React.FC = () => {
           display: 'flex', 
           justifyContent: 'space-around', 
           background: 'var(--theme-panel, rgba(20, 24, 34, 0.85))', 
-          backdropFilter: 'blur(15px)', 
+          backdropFilter: 'blur(20px) saturate(180%)', 
+          WebkitBackdropFilter: 'blur(20px) saturate(180%)',
           borderTop: '1px solid var(--theme-border, rgba(255,255,255,0.05))', 
-          padding: '12px 0 calc(env(safe-area-inset-bottom) + 12px) 0', 
-          zIndex: 100 
+          padding: '8px 12px calc(env(safe-area-inset-bottom) + 8px) 12px', 
+          zIndex: 100,
+          gap: '4px'
         }}>
           <NavItem active={activeTab === 'diary'} onClick={() => setActiveTab('diary')} label="Diary" icon={<Utensils size={20} />} />
           <NavItem active={activeTab === 'nutrition'} onClick={() => setActiveTab('nutrition')} label="Nutrition" icon={<Activity size={20} />} />
@@ -189,24 +196,39 @@ const NavItem = ({ active, onClick, label, icon }: { active: boolean, onClick: (
     type="button"
     onClick={onClick} 
     style={{ 
-      background: 'none', 
+      background: active ? 'var(--theme-accent-dim)' : 'none', 
       border: 'none', 
+      borderRadius: '16px',
       color: active ? 'var(--theme-accent, #00C9FF)' : 'var(--theme-text-dim, #8b8b9b)', 
       display: 'flex', 
       flexDirection: 'column', 
       alignItems: 'center', 
-      gap: '6px', 
+      justifyContent: 'center',
+      gap: '4px', 
       cursor: 'pointer', 
-      transition: 'all 0.2s', 
+      transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)', 
       flex: 1,
-      padding: '8px 4px',
+      padding: '12px 4px',
       outline: 'none',
+      position: 'relative',
       WebkitTapHighlightColor: 'transparent'
     }}>
-    <div style={{ transform: active ? 'scale(1.1)' : 'scale(1)', transition: 'transform 0.2s' }}>
+    {active && (
+      <div style={{ 
+        position: 'absolute', 
+        top: '-8px', 
+        left: '20%', 
+        right: '20%', 
+        height: '2px', 
+        background: 'var(--theme-accent)', 
+        boxShadow: '0 0 10px var(--theme-accent)',
+        borderRadius: '2px'
+      }} />
+    )}
+    <div style={{ transform: active ? 'scale(1.2)' : 'scale(1)', transition: 'transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1)' }}>
       {icon}
     </div>
-    <span style={{ fontSize: '10px', fontWeight: active ? '800' : '500', letterSpacing: '0.02em', textTransform: 'uppercase' }}>{label}</span>
+    <span style={{ fontSize: '10px', fontWeight: active ? '900' : '600', letterSpacing: '0.04em', textTransform: 'uppercase' }}>{label}</span>
   </button>
 );
 
