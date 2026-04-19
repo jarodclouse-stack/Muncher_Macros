@@ -299,7 +299,7 @@ const DiaryEntryItem = ({ log, onRemove, onEditPortion, onMove }: any) => {
           </div>
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-          <div style={{ fontWeight: '700', fontSize: '14px', color: 'var(--theme-text)' }}>{Math.round(f.calories || f.cal || 0)} <span style={{ fontSize: '10px', fontWeight: 'normal', color: 'var(--theme-text-dim, #8b8b9b)' }}>kcal</span></div>
+          <div style={{ fontWeight: '700', fontSize: '14px', color: 'var(--theme-text-on-panel)' }}>{Math.round(f.calories || f.cal || 0)} <span style={{ fontSize: '10px', fontWeight: 'normal', color: 'var(--theme-text-dim-on-panel)' }}>kcal</span></div>
           <button onClick={onRemove} style={{ background: 'none', border: 'none', color: 'var(--theme-error, #FF6B6B)', cursor: 'pointer', padding: '4px' }}><Trash2 size={16} /></button>
         </div>
       </div>
@@ -349,7 +349,7 @@ const DiaryEntryItem = ({ log, onRemove, onEditPortion, onMove }: any) => {
                     borderRadius: '8px',
                     border: '1px solid rgba(255,255,255,0.1)',
                     background: 'rgba(255,255,255,0.05)',
-                    color: 'var(--theme-text)',
+                    color: 'var(--theme-text-on-panel)',
                     fontSize: '11px',
                     fontWeight: '700',
                     cursor: 'pointer'
@@ -367,7 +367,7 @@ const DiaryEntryItem = ({ log, onRemove, onEditPortion, onMove }: any) => {
               <div style={{ fontSize: '10px', fontWeight: '900', color: 'var(--theme-accent, #00C9FF)', letterSpacing: '2px', marginBottom: '10px', textTransform: 'uppercase' }}>Ingredients Label</div>
               <div style={{ 
                 fontSize: '11px', 
-                color: 'var(--theme-text-dim, #c0c0d0)', 
+                color: 'var(--theme-text-dim-on-panel)', 
                 lineHeight: '1.6', 
                 background: 'var(--theme-panel-dim, rgba(255,255,255,0.03))', 
                 padding: '12px', 
@@ -388,7 +388,7 @@ const DiaryEntryItem = ({ log, onRemove, onEditPortion, onMove }: any) => {
 
 const NutrientMiniCard = ({ label, value, unit, color }: any) => (
   <div className="glass-card" style={{ textAlign: 'center', padding: 'var(--space-sm)' }}>
-    <div style={{ fontSize: '9px', color: 'var(--theme-text-dim)', textTransform: 'uppercase', marginBottom: '4px', fontWeight: '900', letterSpacing: '0.5px' }}>{label}</div>
+    <div style={{ fontSize: '9px', color: 'var(--theme-text-dim-on-panel)', textTransform: 'uppercase', marginBottom: '4px', fontWeight: '900', letterSpacing: '0.5px' }}>{label}</div>
     <div style={{ fontWeight: '900', color: color, fontSize: '16px' }}>{value || 0}<span style={{ fontSize: '10px', marginLeft: '1px', opacity: 0.8 }}>{unit}</span></div>
   </div>
 );
@@ -397,10 +397,10 @@ const MacroCard = ({ label, value, total, color, icon }: any) => {
   const pct = Math.min(100, (value / (total || 1)) * 100);
   return (
     <div style={{ background: 'var(--theme-panel-dim)', padding: '16px', borderRadius: '20px', display: 'flex', flexDirection: 'column', border: '1px solid var(--theme-border)' }}>
-      <span style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '11px', color: 'var(--theme-text-dim)', marginBottom: '8px', fontWeight: '900', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+      <span style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '11px', color: 'var(--theme-text-dim-on-panel)', marginBottom: '8px', fontWeight: '900', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
         {icon} {label}
       </span>
-      <div style={{ fontSize: '14px', fontWeight: '900', marginBottom: '8px', color: 'var(--theme-text)' }}>{Math.round(value)}g <span style={{ fontSize: '11px', color: 'var(--theme-text-dim)', fontWeight: '600', opacity: 0.6 }}>/ {Math.round(total)}g</span></div>
+      <div style={{ fontSize: '14px', fontWeight: '900', marginBottom: '8px', color: 'var(--theme-text-on-panel)' }}>{Math.round(value)}g <span style={{ fontSize: '11px', color: 'var(--theme-text-dim-on-panel)', fontWeight: '600', opacity: 0.6 }}>/ {Math.round(total)}g</span></div>
       <div style={{ height: '6px', background: 'var(--theme-panel)', borderRadius: '3px', overflow: 'hidden', border: '1px solid var(--theme-border)' }}>
         <div style={{ width: `${pct}%`, height: '100%', background: color, borderRadius: '3px', boxShadow: `0 0 10px ${color}40` }} />
       </div>
@@ -460,7 +460,7 @@ const WeeklyReport = ({ localCache, currentDate, targetCal }: any) => {
       <div onClick={() => setIsOpen(!isOpen)} style={{ padding: '16px 20px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer', background: isOpen ? 'var(--theme-panel-dim, rgba(255,255,255,0.03))' : 'transparent' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
           <Activity size={18} color="var(--theme-accent, #00C9FF)" />
-          <span style={{ fontSize: '15px', fontWeight: '800', color: 'var(--theme-text)' }}>This Week</span>
+          <span style={{ fontSize: '15px', fontWeight: '800', color: 'var(--theme-text-on-panel)' }}>This Week</span>
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
           {!isOpen && <span style={{ fontSize: '11px', color: consistencyColor, fontWeight: '700', textTransform: 'uppercase' }}>{stdDev} σ Consistency</span>}
@@ -472,14 +472,14 @@ const WeeklyReport = ({ localCache, currentDate, targetCal }: any) => {
         <div style={{ padding: '20px', borderTop: '1px solid var(--theme-border, rgba(255,255,255,0.05))' }}>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '12px', marginBottom: '20px' }}>
             <div style={{ background: 'var(--theme-panel-dim, rgba(0,0,0,0.2))', padding: '16px', borderRadius: '16px', textAlign: 'center' }}>
-              <div style={{ fontSize: '10px', color: 'var(--theme-text-dim, #8b8b9b)', textTransform: 'uppercase', marginBottom: '8px', fontWeight: '700' }}>Avg Calories</div>
+              <div style={{ fontSize: '10px', color: 'var(--theme-text-dim-on-panel)', textTransform: 'uppercase', marginBottom: '8px', fontWeight: '700' }}>Avg Calories</div>
               <div style={{ fontSize: '20px', fontWeight: '900', color: Math.abs(calDiff) < 150 ? 'var(--theme-success, #92FE9D)' : calDiff > 0 ? 'var(--theme-error, #FF6B6B)' : 'var(--theme-accent, #4DABF7)' }}>{avgCal}</div>
-              <div style={{ fontSize: '10px', color: 'var(--theme-text-dim, #8b8b9b)', marginTop: '4px' }}>7-day rolling average</div>
+              <div style={{ fontSize: '10px', color: 'var(--theme-text-dim-on-panel)', marginTop: '4px' }}>7-day rolling average</div>
             </div>
             <div style={{ background: 'var(--theme-panel-dim, rgba(0,0,0,0.2))', padding: '16px', borderRadius: '16px', textAlign: 'center' }}>
-              <div style={{ fontSize: '10px', color: 'var(--theme-text-dim, #8b8b9b)', textTransform: 'uppercase', marginBottom: '8px', fontWeight: '700' }}>On Target</div>
+              <div style={{ fontSize: '10px', color: 'var(--theme-text-dim-on-panel)', textTransform: 'uppercase', marginBottom: '8px', fontWeight: '700' }}>On Target</div>
               <div style={{ fontSize: '20px', fontWeight: '900', color: 'var(--theme-success, #92FE9D)' }}>{onTarget}/{loggedDays.length}</div>
-              <div style={{ fontSize: '10px', color: 'var(--theme-text-dim, #8b8b9b)', marginTop: '4px' }}>days ±15%</div>
+              <div style={{ fontSize: '10px', color: 'var(--theme-text-dim-on-panel)', marginTop: '4px' }}>days ±15%</div>
             </div>
           </div>
 
@@ -488,15 +488,15 @@ const WeeklyReport = ({ localCache, currentDate, targetCal }: any) => {
             <div style={{ fontSize: '10px', color: 'var(--theme-accent, #00C9FF)', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '12px' }}>Deep Dietary Intelligence</div>
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '8px' }}>
               <div>
-                <div style={{ fontSize: '9px', color: 'var(--theme-text-dim, #8b8b9b)', marginBottom: '4px' }}>Variation</div>
+                <div style={{ fontSize: '9px', color: 'var(--theme-text-dim-on-panel)', marginBottom: '4px' }}>Variation</div>
                 <div style={{ fontSize: '14px', fontWeight: '800', color: consistencyColor }}>±{stdDev} <span style={{ fontSize: '10px', fontWeight: '400' }}>kcal</span></div>
               </div>
               <div style={{ borderLeft: '1px solid var(--theme-border, rgba(255,255,255,0.05))', paddingLeft: '8px' }}>
-                <div style={{ fontSize: '9px', color: 'var(--theme-text-dim, #8b8b9b)', marginBottom: '4px' }}>Best Day</div>
+                <div style={{ fontSize: '9px', color: 'var(--theme-text-dim-on-panel)', marginBottom: '4px' }}>Best Day</div>
                 <div style={{ fontSize: '12px', fontWeight: '700', color: 'var(--theme-success, #92FE9D)' }}>{bestDay.label}</div>
               </div>
               <div style={{ borderLeft: '1px solid var(--theme-border, rgba(255,255,255,0.05))', paddingLeft: '8px' }}>
-                <div style={{ fontSize: '9px', color: 'var(--theme-text-dim, #8b8b9b)', marginBottom: '4px' }}>Worst Day</div>
+                <div style={{ fontSize: '9px', color: 'var(--theme-text-dim-on-panel)', marginBottom: '4px' }}>Worst Day</div>
                 <div style={{ fontSize: '12px', fontWeight: '700', color: 'var(--theme-error, #FF6B6B)' }}>{worstDay.label}</div>
               </div>
             </div>
@@ -528,8 +528,8 @@ const WeeklyReport = ({ localCache, currentDate, targetCal }: any) => {
                 const avg = Math.round(total / loggedDays.length);
                 return (
                   <div key={n.k} style={{ textAlign: 'center' }}>
-                    <div style={{ fontSize: '9px', color: 'var(--theme-text-dim, #5b5b6b)', marginBottom: '2px' }}>{n.k}</div>
-                    <div style={{ fontSize: '12px', fontWeight: '800', color: 'var(--theme-text)' }}>{avg}{n.u}</div>
+                    <div style={{ fontSize: '9px', color: 'var(--theme-text-dim-on-panel)', marginBottom: '2px' }}>{n.k}</div>
+                    <div style={{ fontSize: '12px', fontWeight: '800', color: 'var(--theme-text-on-panel)' }}>{avg}{n.u}</div>
                   </div>
                 );
               })}
@@ -559,7 +559,7 @@ const WeeklyReport = ({ localCache, currentDate, targetCal }: any) => {
 const WeeklyMacro = ({ label, val, color }: any) => (
   <div style={{ background: 'var(--theme-panel-dim, rgba(255,255,255,0.02))', padding: '10px 4px', borderRadius: '12px', textAlign: 'center', border: '1px solid var(--theme-border, rgba(255,255,255,0.03))' }}>
     <div style={{ fontSize: '9px', color: color, fontWeight: '800', marginBottom: '4px', textTransform: 'uppercase' }}>{label}</div>
-    <div style={{ fontSize: '14px', fontWeight: '900', color: 'var(--theme-text)' }}>{Math.round(val)}g</div>
+    <div style={{ fontSize: '14px', fontWeight: '900', color: 'var(--theme-text-on-panel)' }}>{Math.round(val)}g</div>
   </div>
 );
 
@@ -697,8 +697,8 @@ const HydrationCard = ({ current, goal, onAdd }: { current: number, goal: number
             </div>
           </div>
           <div style={{ textAlign: 'right' }}>
-            <div style={{ fontSize: '24px', fontWeight: '900', color: 'var(--theme-text)' }}>{(current || 0).toFixed(1)} <span style={{ fontSize: '14px', color: 'var(--theme-text-dim, #8b8b9b)', fontWeight: '500' }}>oz</span></div>
-            <div style={{ fontSize: '11px', color: 'var(--theme-text-dim, #8b8b9b)', fontWeight: '700' }}>GOAL: {goal} oz</div>
+            <div style={{ fontSize: '24px', fontWeight: '900', color: 'var(--theme-text-on-panel)' }}>{(current || 0).toFixed(1)} <span style={{ fontSize: '14px', color: 'var(--theme-text-dim-on-panel)', fontWeight: '500' }}>oz</span></div>
+            <div style={{ fontSize: '11px', color: 'var(--theme-text-dim-on-panel)', fontWeight: '700' }}>GOAL: {goal} oz</div>
           </div>
         </div>
 
@@ -716,9 +716,9 @@ const HydrationCard = ({ current, goal, onAdd }: { current: number, goal: number
                    onChange={e => setCustomVal(e.target.value)} 
                    onBlur={() => !customVal && setIsCustom(false)}
                    onKeyDown={e => e.key === 'Enter' && handleCustomAdd()}
-                   style={{ flex: 1, background: 'none', border: 'none', color: 'var(--theme-text)', padding: '0 8px', width: '100%', outline: 'none', fontSize: '14px' }} 
+                   style={{ flex: 1, background: 'none', border: 'none', color: 'var(--theme-text-on-panel)', padding: '0 8px', width: '100%', outline: 'none', fontSize: '14px' }} 
                  />
-               <button onClick={handleCustomAdd} style={{ background: mode === 'add' ? 'var(--theme-accent, #00C9FF)' : 'var(--theme-error, #FF6B6B)', border: 'none', borderRadius: '10px', color: mode === 'add' ? 'var(--theme-bg, #000)' : 'var(--theme-text)', padding: '0 12px', fontWeight: 'bold', cursor: 'pointer' }}>{mode === 'add' ? 'Add' : 'Remove'}</button>
+               <button onClick={handleCustomAdd} style={{ background: mode === 'add' ? 'var(--theme-accent, #00C9FF)' : 'var(--theme-error, #FF6B6B)', border: 'none', borderRadius: '10px', color: mode === 'add' ? 'var(--theme-bg, #000)' : 'var(--theme-text-on-panel)', padding: '0 12px', fontWeight: 'bold', cursor: 'pointer' }}>{mode === 'add' ? 'Add' : 'Remove'}</button>
              </div>
            ) : (
              <>
@@ -744,7 +744,7 @@ const WaterBtn = ({ icon, label, onClick, color = 'var(--theme-panel-dim, rgba(2
       background: color, 
       border: '1px solid var(--theme-border, rgba(255,255,255,0.05))', 
       borderRadius: '14px', 
-      color: 'var(--theme-text)', 
+      color: 'var(--theme-text-on-panel)', 
       display: 'flex', 
       flexDirection: 'column', 
       alignItems: 'center', 
