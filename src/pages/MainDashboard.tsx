@@ -8,7 +8,7 @@ import { PantryView } from '../components/PantryView';
 import { SettingsView } from '../components/SettingsView';
 import { useDiary } from '../context/DiaryContext';
 import { getRewardBreakdown } from '../lib/reward-utils';
-import { LogOut, Activity, Flame, Utensils, Award, Plus, Settings, ChevronRight, Gem, X, Info } from 'lucide-react';
+import { LogOut, Activity, Flame, Utensils, Award, Plus, Settings, Gem, X, Info } from 'lucide-react';
 import legacyLogo from '../assets/logo_legacy.png';
 
 export const MainDashboard: React.FC = () => {
