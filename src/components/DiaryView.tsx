@@ -273,7 +273,7 @@ const DiaryEntryItem = ({ log, onRemove, onEditPortion, onMove }: any) => {
             style={{ 
               background: isOpen ? 'var(--theme-accent-dim, rgba(0,201,255,0.1))' : 'var(--theme-panel-dim, rgba(255,255,255,0.05))', 
               border: 'none', 
-              color: isOpen ? 'var(--theme-accent, #00C9FF)' : 'var(--theme-text-dim, #8b8b9b)', 
+              color: isOpen ? 'var(--theme-accent, #00C9FF)' : 'var(--theme-text-dim-on-panel)', 
               cursor: 'pointer', 
               padding: '6px 12px',
               borderRadius: '8px',
@@ -287,10 +287,10 @@ const DiaryEntryItem = ({ log, onRemove, onEditPortion, onMove }: any) => {
             {isOpen ? 'HIDE' : 'DETAILS'}
           </button>
           <div>
-            <div style={{ fontWeight: '600', fontSize: '14px', color: 'var(--theme-text)' }}>
-              {f.name} <span style={{ fontSize: '10px', color: 'var(--theme-text-dim)', marginLeft: '6px', fontWeight: '800', opacity: 0.6 }}> (P:{f.p}g C:{f.c}g F:{f.f}g)</span>
+            <div style={{ fontWeight: '600', fontSize: '14px', color: 'var(--theme-text-on-panel)' }}>
+              {f.name} <span style={{ fontSize: '10px', color: 'var(--theme-text-dim-on-panel)', marginLeft: '6px', fontWeight: '800', opacity: 0.8 }}> (P:{f.p}g C:{f.c}g F:{f.f}g)</span>
             </div>
-            <div style={{ color: 'var(--theme-text-dim)', fontSize: '11px', display: 'flex', alignItems: 'center', gap: '4px', fontWeight: '600' }}>
+            <div style={{ color: 'var(--theme-text-dim-on-panel)', fontSize: '11px', display: 'flex', alignItems: 'center', gap: '4px', fontWeight: '600' }}>
               {f.serving}
               <button onClick={onEditPortion} style={{ background: 'none', border: 'none', color: 'var(--theme-accent)', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '2px', padding: '2px 4px', borderRadius: '4px', fontWeight: '900' }}>
                 <Scale size={10} /> Choose Portion
