@@ -37,6 +37,9 @@
   /* Aesthetic Polish Tokens (Glass 2.0 Plus) */
   --glass-shine: inset 0 1px 1px 0 rgba(255, 255, 255, 0.15);
   --glass-glow: 0 16px 48px -12px rgba(0, 0, 0, 0.5);
+  
+  /* Dynamic Shadow (Default Dark) */
+  --theme-shadow: 0 20px 40px -12px rgba(0, 0, 0, 0.5);
 }
 
 /* ===== GLOBAL RESETS ===== */
@@ -118,18 +121,20 @@ body.theme-gold-reserve {
 
 /* 3. Glacier Peak (Light Theme) */
 body.theme-glacier-peak {
-  --theme-bg: #F0F4F8;
-  --theme-panel: rgba(255, 255, 255, 0.9);
+  --theme-bg: linear-gradient(135deg, #E0F2FE 0%, #BAE6FD 100%);
+  --theme-panel: rgba(255, 255, 255, 0.85);
   --theme-panel-base: #FFFFFF;
   --theme-panel-dim: rgba(255, 255, 255, 0.5);
-  --theme-accent: #0077B6;
-  --theme-accent-dim: rgba(0, 119, 182, 0.1);
-  --theme-text: #0077B6;
-  --theme-text-dim: #457B9D;
-  --theme-border: rgba(0, 119, 182, 0.15);
-  --theme-placeholder: rgba(26, 42, 58, 0.4);
-  --theme-input-bg: rgba(255, 255, 255, 0.7);
+  --theme-accent: #0284C7;
+  --theme-accent-dim: rgba(2, 132, 199, 0.15);
+  --theme-text: #075985;
+  --theme-text-dim: #0369A1;
+  --theme-border: rgba(2, 132, 199, 0.2);
+  --theme-placeholder: rgba(7, 89, 133, 0.4);
+  --theme-input-bg: rgba(255, 255, 255, 0.8);
   --theme-neon-goal: #FF00E5;
+  --theme-shadow: 0 20px 40px -12px rgba(2, 132, 199, 0.25);
+  --glass-shine: inset 0 1px 1px 0 rgba(255, 255, 255, 0.6), 0 0 0 1px rgba(2, 132, 199, 0.05);
 }
 
 /* 4. Forest Phantom */
@@ -186,34 +191,38 @@ body.theme-quantum-violet {
 
 /* 8. Matcha Zen (Light Theme) */
 body.theme-matcha-zen {
-  --theme-bg: #E6E9E1;
+  --theme-bg: linear-gradient(135deg, #F0F4ED 0%, #DDE5D7 100%);
   --theme-panel: rgba(255, 255, 255, 0.85);
   --theme-panel-base: #FFFFFF;
   --theme-panel-dim: rgba(255, 255, 255, 0.5);
-  --theme-accent: #5D7A54;
-  --theme-accent-dim: rgba(122, 155, 118, 0.15);
-  --theme-text: #7A9B76;
-  --theme-text-dim: #A8B58D;
-  --theme-border: rgba(122, 155, 118, 0.25);
-  --theme-placeholder: rgba(61, 74, 58, 0.4);
-  --theme-input-bg: rgba(255, 255, 255, 0.7);
+  --theme-accent: #4B6344;
+  --theme-accent-dim: rgba(75, 99, 68, 0.15);
+  --theme-text: #344C2D;
+  --theme-text-dim: #4B6344;
+  --theme-border: rgba(75, 99, 68, 0.2);
+  --theme-placeholder: rgba(52, 76, 45, 0.4);
+  --theme-input-bg: rgba(255, 255, 255, 0.8);
   --theme-neon-goal: #FF10F0;
+  --theme-shadow: 0 20px 40px -12px rgba(75, 99, 68, 0.25);
+  --glass-shine: inset 0 1px 1px 0 rgba(255, 255, 255, 0.6), 0 0 0 1px rgba(75, 99, 68, 0.05);
 }
 
 /* 9. Sandstone (Light Theme) */
 body.theme-sandstone {
-  --theme-bg: #F4E8D1;
-  --theme-panel: rgba(255, 250, 240, 0.9);
-  --theme-panel-base: #FFFBF0;
-  --theme-panel-dim: rgba(255, 255, 255, 0.6);
-  --theme-accent: #966C42;
-  --theme-accent-dim: rgba(166, 124, 82, 0.15);
-  --theme-text: #A67C52;
-  --theme-text-dim: #C4A484;
-  --theme-border: rgba(166, 124, 182, 0.25);
-  --theme-placeholder: rgba(74, 58, 42, 0.4);
-  --theme-input-bg: rgba(255, 255, 255, 0.7);
-  --theme-neon-goal: #008B8B;
+  --theme-bg: linear-gradient(135deg, #FDF2F2 0%, #FAEDCD 100%);
+  --theme-panel: rgba(255, 255, 255, 0.85);
+  --theme-panel-base: #FFFFFF;
+  --theme-panel-dim: rgba(255, 255, 255, 0.5);
+  --theme-accent: #BC6C25;
+  --theme-accent-dim: rgba(188, 108, 37, 0.15);
+  --theme-text: #606C38;
+  --theme-text-dim: #BC6C25;
+  --theme-border: rgba(188, 108, 37, 0.2);
+  --theme-placeholder: rgba(96, 108, 56, 0.4);
+  --theme-input-bg: rgba(255, 255, 255, 0.8);
+  --theme-neon-goal: #283618;
+  --theme-shadow: 0 20px 40px -12px rgba(188, 108, 37, 0.2);
+  --glass-shine: inset 0 1px 1px 0 rgba(255, 255, 255, 0.6), 0 0 0 1px rgba(188, 108, 37, 0.05);
 }
 
 /* 10. Olympian Gold (⚡) */
@@ -231,18 +240,20 @@ body.theme-olympian-gold {
 
 /* 11. Aegean Mist (🌊) - Light Theme */
 body.theme-aegean-mist {
-  --theme-bg: #F0FBFF;
-  --theme-panel: rgba(255, 255, 255, 0.9);
+  --theme-bg: linear-gradient(135deg, #E0F2FE 0%, #BAE6FD 100%);
+  --theme-panel: rgba(255, 255, 255, 0.85);
   --theme-panel-base: #FFFFFF;
   --theme-panel-dim: rgba(255, 255, 255, 0.5);
-  --theme-accent: #0077AA;
-  --theme-accent-dim: rgba(0, 136, 204, 0.1);
-  --theme-text: #0088CC;
-  --theme-text-dim: #4FB0C6;
-  --theme-border: rgba(0, 136, 204, 0.15);
-  --theme-placeholder: rgba(0, 51, 102, 0.4);
-  --theme-input-bg: rgba(255, 255, 255, 0.7);
+  --theme-accent: #0284C7;
+  --theme-accent-dim: rgba(2, 132, 199, 0.15);
+  --theme-text: #075985;
+  --theme-text-dim: #0369A1;
+  --theme-border: rgba(2, 132, 199, 0.25);
+  --theme-placeholder: rgba(7, 89, 133, 0.4);
+  --theme-input-bg: rgba(255, 255, 255, 0.8);
   --theme-neon-goal: #FF00FF;
+  --theme-shadow: 0 20px 40px -12px rgba(2, 132, 199, 0.25);
+  --glass-shine: inset 0 1px 1px 0 rgba(255, 255, 255, 0.6), 0 0 0 1px rgba(2, 132, 199, 0.05);
 }
 
 /* 12. Hades' Ember (🔥) */
@@ -260,18 +271,20 @@ body.theme-hades-ember {
 
 /* 13. Athena's Wisdom (🦉) - Light Theme */
 body.theme-athenas-wisdom {
-  --theme-bg: #F5F5DC;
-  --theme-panel: rgba(255, 255, 250, 0.9);
-  --theme-panel-base: #FFFBF0;
+  --theme-bg: linear-gradient(135deg, #FEF9C3 0%, #D9F99D 100%);
+  --theme-panel: rgba(255, 255, 255, 0.88);
+  --theme-panel-base: #FFFFFF;
   --theme-panel-dim: rgba(255, 255, 255, 0.5);
-  --theme-accent: #556B2F;
-  --theme-accent-dim: rgba(107, 142, 35, 0.1);
-  --theme-text: #556B2F;
-  --theme-text-dim: #8B9A67;
-  --theme-border: rgba(107, 142, 35, 0.2);
-  --theme-placeholder: rgba(47, 79, 79, 0.4);
-  --theme-input-bg: rgba(255, 255, 255, 0.7);
-  --theme-neon-goal: #228B22;
+  --theme-accent: #3F6212;
+  --theme-accent-dim: rgba(63, 98, 18, 0.15);
+  --theme-text: #1A2E05;
+  --theme-text-dim: #3F6212;
+  --theme-border: rgba(63, 98, 18, 0.2);
+  --theme-placeholder: rgba(26, 46, 5, 0.4);
+  --theme-input-bg: rgba(255, 255, 255, 0.8);
+  --theme-neon-goal: #65A30D;
+  --theme-shadow: 0 20px 40px -12px rgba(63, 98, 18, 0.2);
+  --glass-shine: inset 0 1px 1px 0 rgba(255, 255, 255, 0.6), 0 0 0 1px rgba(63, 98, 18, 0.05);
 }
 
 /* 14. Dionysus' Vineyard (🍇) */
@@ -524,18 +537,20 @@ body.theme-deep-sea {
 
 /* 23. Sakura Spring (🌸) - Light Theme */
 body.theme-sakura-spring {
-  --theme-bg: #FFF0F3;
-  --theme-panel: rgba(255, 230, 235, 0.9);
-  --theme-panel-base: #FFE6EB;
-  --theme-panel-dim: rgba(255, 255, 255, 0.7);
-  --theme-accent: #C9184A;
-  --theme-accent-dim: rgba(255, 77, 109, 0.15);
-  --theme-text: #FF4D6D;
-  --theme-text-dim: #FF758F;
-  --theme-border: rgba(255, 77, 109, 0.25);
-  --theme-placeholder: rgba(164, 19, 60, 0.35);
+  --theme-bg: linear-gradient(135deg, #FFEDF1 0%, #FBCFE8 100%);
+  --theme-panel: rgba(255, 255, 255, 0.85);
+  --theme-panel-base: #FFFFFF;
+  --theme-panel-dim: rgba(255, 255, 255, 0.6);
+  --theme-accent: #BE185D;
+  --theme-accent-dim: rgba(190, 24, 93, 0.15);
+  --theme-text: #831843;
+  --theme-text-dim: #BE185D;
+  --theme-border: rgba(190, 24, 93, 0.25);
+  --theme-placeholder: rgba(131, 24, 67, 0.4);
   --theme-input-bg: rgba(255, 255, 255, 0.85);
-  --theme-neon-goal: #FF1493;
+  --theme-neon-goal: #ED64A6;
+  --theme-shadow: 0 20px 40px -12px rgba(190, 24, 93, 0.2);
+  --glass-shine: inset 0 1px 1px 0 rgba(255, 255, 255, 0.6), 0 0 0 1px rgba(190, 24, 93, 0.05);
 }
 
 /* 24. Neon Wasteland ⚡ */
@@ -607,18 +622,20 @@ body.theme-midnight-galaxy {
 
 /* 29. Nordic Frost (🧊) - Light Theme */
 body.theme-nordic-frost {
-  --theme-bg: #F0F8FF;
-  --theme-panel: rgba(230, 245, 255, 0.9);
-  --theme-panel-base: #E6F5FF;
-  --theme-panel-dim: rgba(255, 255, 255, 0.6);
-  --theme-accent: #3672A4;
-  --theme-accent-dim: rgba(70, 130, 180, 0.15);
-  --theme-text: #3672A4;
-  --theme-text-dim: #60AABA;
-  --theme-border: rgba(70, 130, 180, 0.25);
-  --theme-placeholder: rgba(47, 79, 79, 0.4);
+  --theme-bg: linear-gradient(135deg, #F0F9FF 0%, #E0F2FE 100%);
+  --theme-panel: rgba(255, 255, 255, 0.85);
+  --theme-panel-base: #FFFFFF;
+  --theme-panel-dim: rgba(255, 255, 255, 0.5);
+  --theme-accent: #0369A1;
+  --theme-accent-dim: rgba(3, 105, 161, 0.15);
+  --theme-text: #0C4A6E;
+  --theme-text-dim: #0369A1;
+  --theme-border: rgba(3, 105, 161, 0.2);
+  --theme-placeholder: rgba(12, 74, 110, 0.4);
   --theme-input-bg: rgba(255, 255, 255, 0.8);
-  --theme-neon-goal: #00CED1;
+  --theme-neon-goal: #0EA5E9;
+  --theme-shadow: 0 20px 40px -12px rgba(3, 105, 161, 0.2);
+  --glass-shine: inset 0 1px 1px 0 rgba(255, 255, 255, 0.6), 0 0 0 1px rgba(3, 105, 161, 0.05);
 }
 
 /* 30. Ember Forge ⚒️ */
@@ -641,14 +658,14 @@ body.theme-ember-forge {
     backdrop-filter: blur(40px);
     -webkit-backdrop-filter: blur(40px);
     border: 1px solid var(--theme-border);
-    box-shadow: var(--glass-shine), var(--glass-glow);
+    box-shadow: var(--glass-shine), var(--theme-shadow);
   }
   .glass-card{
     background: linear-gradient(135deg, rgba(255,255,255,0.15), rgba(255,255,255,0.04));
     backdrop-filter: blur(30px);
     -webkit-backdrop-filter: blur(30px);
     border: 1px solid var(--theme-border);
-    box-shadow: var(--glass-shine), var(--glass-glow);
+    box-shadow: var(--glass-shine), var(--theme-shadow);
   }
   .font-headline{font-family:"Manrope",sans-serif!important}
   .nc-title{font-family:"Manrope",sans-serif;font-weight:800;font-size:22px;color:var(--primary);letter-spacing:-.02em}
@@ -719,10 +736,10 @@ body.theme-ember-forge {
     border: 1px solid var(--theme-border);
     border-radius: var(--radius-lg);
     padding: var(--space-md);
-    box-shadow: var(--glass-shine), 0 16px 52px -12px rgba(0,0,0,0.5);
+    box-shadow: var(--glass-shine), var(--theme-shadow);
     position: relative;
     overflow: hidden;
-    transition: transform var(--transition-fast), box-shadow var(--transition-fast), background-color var(--transition-smooth);
+    transition: transform var(--transition-fast), box-shadow var(--transition-smooth), background-color var(--transition-smooth);
   }
   .card:hover {
     box-shadow: var(--glass-shine), 0 20px 60px -8px rgba(0,0,0,0.6);
