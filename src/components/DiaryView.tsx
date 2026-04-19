@@ -162,7 +162,7 @@ export const DiaryView: React.FC = () => {
           <div key={meal} className="card" style={{ padding: 'var(--space-xl)' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 'var(--space-md)' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-sm)' }}>
-                <h3 style={{ fontSize: '16px', fontWeight: '700', margin: 0, color: 'var(--theme-text)' }}>{meal}</h3>
+                <h3 style={{ fontSize: '16px', fontWeight: '700', margin: 0, color: 'var(--theme-text-on-panel)' }}>{meal}</h3>
               </div>
               <span style={{ fontSize: '14px', color: 'var(--theme-accent)', fontWeight: '600' }}>{mealCals} kcal</span>
             </div>
@@ -219,7 +219,7 @@ const NutrientDetailRow = ({ label, value, unit, benefit }: any) => {
         <span style={{ 
           fontWeight: '900', 
           fontSize: '11px', 
-          color: 'var(--theme-text)', 
+          color: 'var(--theme-text-on-panel)', 
           textTransform: 'uppercase', 
           letterSpacing: '0.5px',
           background: 'var(--theme-panel)',
@@ -237,7 +237,7 @@ const NutrientDetailRow = ({ label, value, unit, benefit }: any) => {
           </button>
         )}
       </div>
-      <span style={{ fontWeight: '900', fontSize: '13px', color: 'var(--theme-accent)' }}>{value}<span style={{fontSize: '10px', opacity: 0.8, marginLeft: '2px'}}>{unit}</span></span>
+        <span style={{ fontWeight: '900', fontSize: '13px', color: '#FFFFFF' }}>{value}<span style={{fontSize: '10px', opacity: 0.8, marginLeft: '2px'}}> {unit}</span></span>
       
       {showBenefit && benefit && (
         <div style={{ marginTop: '10px', paddingTop: '10px', borderTop: '1px solid var(--theme-border, rgba(255,255,255,0.05))' }}>

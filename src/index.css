@@ -1791,19 +1791,31 @@ body.theme-light-surface .inp::placeholder {
   color: var(--theme-placeholder) !important;
 }
 
-/* Force Light Text on Dark Bubbles for Light Themes */
-body.theme-light-surface {
-  --theme-text-on-panel: #FFFFFF;
-  --theme-text-dim-on-panel: rgba(255, 255, 255, 0.85); /* Slightly brighter for better pop */
+/* FORCE ABSOLUTE WHITE ON ALL DARK BUBBLES (UNIVERSAL SYNCHRONIZATION) */
+.glass-card, 
+.glass-card *,
+.card,
+.card * {
+  color: #FFFFFF !important;
 }
 
-.glass-card, .card {
-  color: var(--theme-text-on-panel) !important;
+.glass-card .text-dim,
+.glass-card .lbl,
+.card .text-dim,
+.card .lbl {
+  color: rgba(255, 255, 255, 0.9) !important;
 }
 
-.glass-card *, .card * {
-  /* Only apply if not already explicitly styled with an important override */
-  color: inherit;
+/* Re-allow accent colors to pop if explicitly defined with local scope */
+.glass-card [style*="color: var(--theme-accent)"],
+.card [style*="color: var(--theme-accent)"],
+.glass-card [style*="color: var(--theme-success)"],
+.card [style*="color: var(--theme-success)"],
+.glass-card [style*="color: var(--theme-warning)"],
+.card [style*="color: var(--theme-warning)"],
+.glass-card [style*="color: var(--theme-error)"],
+.card [style*="color: var(--theme-error)"] {
+  color: inherit !important;
 }
 
 /* TROPICAL ESCAPE COLLECTION 🏝️ */
