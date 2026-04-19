@@ -87,7 +87,7 @@ export const DiaryView: React.FC = () => {
       {/* Daily Cheer Banner */}
       <div className="glass-card" style={{ padding: 'var(--space-md)', display: 'flex', alignItems: 'center', gap: 'var(--space-sm)' }}>
           <span style={{ fontSize: '18px' }}>✨</span>
-          <span style={{ fontSize: '13px', fontWeight: '600', color: 'var(--theme-accent, #FFD700)', fontStyle: 'italic' }}>{randomCheer}</span>
+          <span style={{ fontSize: '13px', fontWeight: '800', color: '#fff', fontStyle: 'italic', letterSpacing: '0.3px' }}>{randomCheer}</span>
       </div>
 
       {/* Daily Summary Card */}
@@ -105,14 +105,14 @@ export const DiaryView: React.FC = () => {
 
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 'var(--space-md)', marginBottom: 'var(--space-md)' }}>
           <div className="glass-card" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', padding: 'var(--space-md)' }}>
-            <span style={{ color: 'var(--theme-text-dim)', fontSize: '12px', marginBottom: '4px', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Consumed</span>
-            <span style={{ fontSize: '24px', fontWeight: '900', color: 'var(--theme-text)' }}>{totals.calories}</span>
-            <span style={{ color: 'var(--theme-accent)', fontSize: '11px', marginTop: '4px', fontWeight: '700' }}>kcal</span>
+            <span style={{ color: 'rgba(255,255,255,0.6)', fontSize: '12px', marginBottom: '4px', fontWeight: '900', textTransform: 'uppercase', letterSpacing: '0.8px' }}>Consumed</span>
+            <span style={{ fontSize: '26px', fontWeight: '900', color: '#fff' }}>{totals.calories}</span>
+            <span style={{ color: 'var(--theme-accent)', fontSize: '11px', marginTop: '4px', fontWeight: '800', letterSpacing: '0.5px' }}>kcal</span>
           </div>
           <div className="glass-card" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', padding: 'var(--space-md)' }}>
-            <span style={{ color: 'var(--theme-text-dim)', fontSize: '12px', marginBottom: '4px', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Remaining</span>
-            <span style={{ fontSize: '24px', fontWeight: '900', color: remainingCals >= 0 ? 'var(--theme-success)' : 'var(--theme-error)' }}>{Math.abs(remainingCals)}</span>
-            <span style={{ color: remainingCals >= 0 ? 'var(--theme-success)' : 'var(--theme-error)', fontSize: '11px', marginTop: '4px', fontWeight: '700' }}>{remainingCals < 0 ? 'kcal over' : 'kcal target'}</span>
+            <span style={{ color: 'rgba(255,255,255,0.6)', fontSize: '12px', marginBottom: '4px', fontWeight: '900', textTransform: 'uppercase', letterSpacing: '0.8px' }}>Remaining</span>
+            <span style={{ fontSize: '26px', fontWeight: '900', color: '#fff' }}>{Math.abs(remainingCals)}</span>
+            <span style={{ color: remainingCals >= 0 ? 'var(--theme-success)' : 'var(--theme-error)', fontSize: '11px', marginTop: '4px', fontWeight: '800', letterSpacing: '0.5px' }}>{remainingCals < 0 ? 'KCAL OVER' : 'KCAL TARGET'}</span>
           </div>
         </div>
 
@@ -122,14 +122,15 @@ export const DiaryView: React.FC = () => {
           marginBottom: 'var(--space-lg)', 
           fontSize: '14px', 
           lineHeight: '1.5',
-          color: 'var(--theme-accent)', 
+          color: '#fff', 
           display: 'flex', 
           alignItems: 'flex-start', 
           gap: 'var(--space-sm)',
-          margin: '0 4px var(--space-lg) 4px'
+          margin: '0 4px var(--space-lg) 4px',
+          boxShadow: '0 8px 32px rgba(0,0,0,0.15)'
         }}>
           <Sparkles size={18} color="var(--theme-accent, #00C9FF)" style={{ flexShrink: 0, marginTop: '2px' }} />
-          <span style={{ fontWeight: '600' }}>{generateDailyStatus()}</span>
+          <span style={{ fontWeight: '700', letterSpacing: '0.2px' }}>{generateDailyStatus()}</span>
         </div>
 
         {/* Macros */}
