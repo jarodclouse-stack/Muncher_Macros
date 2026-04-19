@@ -87,7 +87,7 @@ export const DiaryView: React.FC = () => {
       {/* Daily Cheer Banner */}
       <div className="glass-card" style={{ padding: 'var(--space-md)', display: 'flex', alignItems: 'center', gap: 'var(--space-sm)', boxShadow: '0 8px 32px rgba(0,0,0,0.15)' }}>
           <span style={{ fontSize: '18px' }}>✨</span>
-          <span style={{ fontSize: '13px', fontWeight: '900', color: '#fff', fontStyle: 'italic', letterSpacing: '0.4px', textShadow: '0 0 8px rgba(255,255,255,0.4)' }}>{randomCheer}</span>
+          <span style={{ fontSize: '13px', fontWeight: '900', color: 'var(--theme-text-on-panel)', fontStyle: 'italic', letterSpacing: '0.4px', textShadow: '0 0 8px rgba(255,255,255,0.4)' }}>{randomCheer}</span>
       </div>
 
       {/* Daily Summary Card */}
@@ -105,13 +105,13 @@ export const DiaryView: React.FC = () => {
 
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 'var(--space-md)', marginBottom: 'var(--space-md)' }}>
           <div className="glass-card" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', padding: 'var(--space-md)', boxShadow: '0 8px 32px rgba(0,0,0,0.1)' }}>
-            <span style={{ color: 'rgba(255,255,255,0.95)', fontSize: '12px', marginBottom: '4px', fontWeight: '900', textTransform: 'uppercase', letterSpacing: '1px' }}>Consumed</span>
-            <span style={{ fontSize: '28px', fontWeight: '900', color: '#fff', textShadow: '0 0 12px rgba(255,255,255,0.3)' }}>{totals.calories}</span>
+            <span style={{ color: 'var(--theme-text-dim-on-panel)', fontSize: '12px', marginBottom: '4px', fontWeight: '900', textTransform: 'uppercase', letterSpacing: '1px' }}>Consumed</span>
+            <span style={{ fontSize: '28px', fontWeight: '900', color: 'var(--theme-text-on-panel)', textShadow: '0 0 12px rgba(255,255,255,0.3)' }}>{totals.calories}</span>
             <span style={{ color: 'var(--theme-accent)', fontSize: '11px', marginTop: '4px', fontWeight: '900', letterSpacing: '1px' }}>kcal</span>
           </div>
           <div className="glass-card" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', padding: 'var(--space-md)', boxShadow: '0 8px 32px rgba(0,0,0,0.1)' }}>
-            <span style={{ color: 'rgba(255,255,255,0.95)', fontSize: '12px', marginBottom: '4px', fontWeight: '900', textTransform: 'uppercase', letterSpacing: '1px' }}>Remaining</span>
-            <span style={{ fontSize: '28px', fontWeight: '900', color: '#fff', textShadow: '0 0 12px rgba(255,255,255,0.3)' }}>{Math.abs(remainingCals)}</span>
+            <span style={{ color: 'var(--theme-text-dim-on-panel)', fontSize: '12px', marginBottom: '4px', fontWeight: '900', textTransform: 'uppercase', letterSpacing: '1px' }}>Remaining</span>
+            <span style={{ fontSize: '28px', fontWeight: '900', color: 'var(--theme-text-on-panel)', textShadow: '0 0 12px rgba(255,255,255,0.3)' }}>{Math.abs(remainingCals)}</span>
             <span style={{ color: remainingCals >= 0 ? 'var(--theme-success)' : '#ff8585', fontSize: '11px', marginTop: '4px', fontWeight: '900', letterSpacing: '1px' }}>{remainingCals < 0 ? 'KCAL OVER' : 'KCAL TARGET'}</span>
           </div>
         </div>
@@ -122,7 +122,7 @@ export const DiaryView: React.FC = () => {
           marginBottom: 'var(--space-lg)', 
           fontSize: '15px', 
           lineHeight: '1.5',
-          color: '#fff', 
+          color: 'var(--theme-text-on-panel)', 
           display: 'flex', 
           alignItems: 'flex-start', 
           gap: 'var(--space-sm)',
@@ -130,7 +130,7 @@ export const DiaryView: React.FC = () => {
           boxShadow: '0 12px 40px rgba(0,0,0,0.2)',
           textShadow: '0 0 10px rgba(255,255,255,0.2)'
         }}>
-          <Sparkles size={18} color="#fff" style={{ flexShrink: 0, marginTop: '2px', filter: 'drop-shadow(0 0 5px var(--theme-accent))' }} />
+          <Sparkles size={18} color="var(--theme-text-on-panel)" style={{ flexShrink: 0, marginTop: '2px', filter: 'drop-shadow(0 0 5px var(--theme-accent))' }} />
           <span style={{ fontWeight: '800', letterSpacing: '0.3px' }}>{generateDailyStatus()}</span>
         </div>
 

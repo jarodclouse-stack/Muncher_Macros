@@ -38,6 +38,10 @@
   --theme-panel-tint: rgba(255, 255, 255, 0.12);
   --theme-shadow: 0 20px 40px -12px rgba(0, 0, 0, 0.5);
   --theme-glow-bleed: radial-gradient(circle at 50% 50%, var(--theme-accent-dim), transparent 70%);
+
+  /* Contrast Mastery Rule (Default) */
+  --theme-text-on-panel: var(--theme-text);
+  --theme-text-dim-on-panel: var(--theme-text-dim);
 }
 
 /* ===== GLOBAL RESETS ===== */
@@ -1783,13 +1787,23 @@ body.theme-light-surface .ac-desc {
   color: var(--theme-text-dim) !important;
 }
 
-body.theme-light-surface .inp {
-  background: var(--theme-input-bg) !important;
-  color: var(--theme-text) !important;
-}
-
 body.theme-light-surface .inp::placeholder {
   color: var(--theme-placeholder) !important;
+}
+
+/* Force Light Text on Dark Bubbles for Light Themes */
+body.theme-light-surface {
+  --theme-text-on-panel: #FFFFFF;
+  --theme-text-dim-on-panel: rgba(255, 255, 255, 0.75);
+}
+
+.glass-card, .card {
+  color: var(--theme-text-on-panel) !important;
+}
+
+.glass-card *, .card * {
+  /* Only apply if not already explicitly styled with an important override */
+  color: inherit;
 }
 
 /* TROPICAL ESCAPE COLLECTION 🏝️ */
