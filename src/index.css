@@ -1794,7 +1794,7 @@ body.theme-light-surface .inp::placeholder {
 /* Force Light Text on Dark Bubbles for Light Themes */
 body.theme-light-surface {
   --theme-text-on-panel: #FFFFFF;
-  --theme-text-dim-on-panel: rgba(255, 255, 255, 0.75);
+  --theme-text-dim-on-panel: rgba(255, 255, 255, 0.85); /* Slightly brighter for better pop */
 }
 
 .glass-card, .card {
@@ -1962,12 +1962,12 @@ body.theme-surf-neon {
 
 /* READABILITY OVERRIDES FOR LIGHT THEMES */
 
-/* Nuclear CSS - Overrides inline white text with theme dark color on light surfaces */
-body.theme-light-surface [style*="color: #fff"],
-body.theme-light-surface [style*="color: white"],
-body.theme-light-surface [style*="color: rgb(255, 255, 255)"],
-body.theme-light-surface [style*="color: rgba(255, 255, 255, 1)"],
-body.theme-light-surface [style*="color: #FFFFFF"],
+/* Nuclear CSS - Overrides inline white text ONLY if outside of our dark bubbles */
+body.theme-light-surface [style*="color: #fff"]:not(.glass-card *):not(.card *),
+body.theme-light-surface [style*="color: white"]:not(.glass-card *):not(.card *),
+body.theme-light-surface [style*="color: rgb(255, 255, 255)"]:not(.glass-card *):not(.card *),
+body.theme-light-surface [style*="color: rgba(255, 255, 255, 1)"]:not(.glass-card *):not(.card *),
+body.theme-light-surface [style*="color: #FFFFFF"]:not(.glass-card *):not(.card *),
 body.theme-light-surface .meal-hdr,
 body.theme-light-surface .meal-cals,
 body.theme-light-surface .meal-add-btn,
@@ -1976,9 +1976,9 @@ body.theme-light-surface .btn-p {
   color: var(--theme-text) !important;
 }
 
-/* Specific override for dim text in light themes */
-body.theme-light-surface [style*="color: rgba(255, 255, 255, 0.7)"],
-body.theme-light-surface [style*="color: rgba(255, 255, 255, 0.6)"] {
+/* Specific override for dim text in light themes - ignoring panel-bound text */
+body.theme-light-surface [style*="color: rgba(255, 255, 255, 0.7)"]:not(.glass-card *):not(.card *),
+body.theme-light-surface [style*="color: rgba(255, 255, 255, 0.6)"]:not(.glass-card *):not(.card *) {
   color: var(--theme-text-dim) !important;
 }
 
