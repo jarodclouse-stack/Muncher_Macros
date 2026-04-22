@@ -1816,8 +1816,9 @@ body div.glass-card .lbl,
 body div.card .text-dim,
 body div.card .lbl,
 body div.glass-card span[style*="opacity: 0.6"],
-body div.card span[style*="opacity: 0.6"] {
-  color: rgba(255, 255, 255, 0.9) !important;
+body div.card span[style*="opacity: 0.6"],
+.luminous-primary-force-white {
+  color: #FFFFFF !important;
   opacity: 1 !important; /* Prevent double-dimming */
 }
 

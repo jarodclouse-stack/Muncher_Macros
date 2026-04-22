@@ -87,7 +87,7 @@ export const DiaryView: React.FC = () => {
       {/* Daily Cheer Banner */}
       <div className="glass-card luminous-breath" style={{ padding: 'var(--space-md)', display: 'flex', alignItems: 'center', gap: 'var(--space-sm)', boxShadow: '0 8px 32px rgba(0,0,0,0.15)' }}>
           <span style={{ fontSize: '18px' }}>✨</span>
-          <span style={{ fontSize: '13px', fontWeight: '900', color: '#FFFFFF', fontStyle: 'italic', letterSpacing: '0.4px', textShadow: '0 0 8px rgba(255,255,255,0.4)' }}>{randomCheer}</span>
+          <span className="luminous-primary-force-white" style={{ fontSize: '13px', fontWeight: '900', fontStyle: 'italic', letterSpacing: '0.4px', textShadow: '0 0 8px rgba(255,255,255,0.4)' }}>{randomCheer}</span>
       </div>
 
       {/* Daily Summary Card */}
@@ -96,8 +96,8 @@ export const DiaryView: React.FC = () => {
           <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-md)', flex: 1, justifyContent: 'center' }}>
             <button onClick={() => changeDate(-1)} style={{ background: 'var(--theme-panel)', border: 'none', color: 'var(--theme-text)', cursor: 'pointer', padding: '10px', borderRadius: 'var(--radius-md)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><ChevronLeft size={20} /></button>
             <div style={{ textAlign: 'center' }}>
-              <h2 style={{ fontSize: '18px', fontWeight: '800', margin: 0, color: '#FFFFFF' }}>{displayDate}</h2>
-              <div style={{ fontSize: '11px', color: 'rgba(255,255,255,0.9)', fontWeight: '600', textTransform: 'uppercase', letterSpacing: '0.05em', marginTop: '2px' }}>Personal Diary</div>
+              <h2 className="luminous-primary-force-white" style={{ fontSize: '18px', fontWeight: '800', margin: 0 }}>{displayDate}</h2>
+              <div className="luminous-primary-force-white" style={{ fontSize: '11px', opacity: 0.9, fontWeight: '600', textTransform: 'uppercase', letterSpacing: '0.05em', marginTop: '2px' }}>Personal Diary</div>
             </div>
             <button onClick={() => changeDate(1)} style={{ background: 'var(--theme-panel)', border: 'none', color: 'var(--theme-text)', cursor: 'pointer', padding: '10px', borderRadius: 'var(--radius-md)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><ChevronRight size={20} /></button>
           </div>
@@ -105,14 +105,14 @@ export const DiaryView: React.FC = () => {
 
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 'var(--space-md)', marginBottom: 'var(--space-md)' }}>
           <div className="glass-card" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', padding: 'var(--space-md)', boxShadow: '0 8px 32px rgba(0,0,0,0.1)' }}>
-            <span style={{ color: '#FFFFFF', opacity: 0.8, fontSize: '11px', marginBottom: '4px', fontWeight: '900', textTransform: 'uppercase', letterSpacing: '1px' }}>Consumed</span>
-            <span style={{ fontSize: '32px', fontWeight: '900', color: '#FFFFFF', textShadow: '0 0 15px rgba(255,255,255,0.4)', lineHeight: '1' }}>{totals.calories}</span>
-            <span style={{ color: '#FFFFFF', opacity: 0.6, fontSize: '10px', marginTop: '6px', fontWeight: '900', letterSpacing: '1.5px', textTransform: 'uppercase' }}>kcal</span>
+            <span className="luminous-primary-force-white" style={{ opacity: 0.8, fontSize: '11px', marginBottom: '4px', fontWeight: '900', textTransform: 'uppercase', letterSpacing: '1px' }}>Consumed</span>
+            <span className="luminous-primary-force-white" style={{ fontSize: '32px', fontWeight: '900', textShadow: '0 0 15px rgba(255,255,255,0.4)', lineHeight: '1' }}>{totals.calories}</span>
+            <span className="luminous-primary-force-white" style={{ opacity: 0.6, fontSize: '10px', marginTop: '6px', fontWeight: '900', letterSpacing: '1.5px', textTransform: 'uppercase' }}>kcal</span>
           </div>
           <div className="glass-card" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', padding: 'var(--space-md)', boxShadow: '0 8px 32px rgba(0,0,0,0.1)' }}>
-            <span style={{ color: '#FFFFFF', opacity: 0.8, fontSize: '11px', marginBottom: '4px', fontWeight: '900', textTransform: 'uppercase', letterSpacing: '1px' }}>Remaining</span>
-            <span style={{ fontSize: '32px', fontWeight: '900', color: '#FFFFFF', textShadow: '0 0 15px rgba(255,255,255,0.4)', lineHeight: '1' }}>{Math.abs(remainingCals)}</span>
-            <span style={{ color: '#FFFFFF', fontSize: '10px', marginTop: '6px', fontWeight: '900', letterSpacing: '1.5px', textTransform: 'uppercase' }}>{remainingCals < 0 ? 'OVER' : 'TARGET'}</span>
+            <span className="luminous-primary-force-white" style={{ opacity: 0.8, fontSize: '11px', marginBottom: '4px', fontWeight: '900', textTransform: 'uppercase', letterSpacing: '1px' }}>Remaining</span>
+            <span className="luminous-primary-force-white" style={{ fontSize: '32px', fontWeight: '900', textShadow: '0 0 15px rgba(255,255,255,0.4)', lineHeight: '1' }}>{Math.abs(remainingCals)}</span>
+            <span className="luminous-primary-force-white" style={{ fontSize: '10px', marginTop: '6px', fontWeight: '900', letterSpacing: '1.5px', textTransform: 'uppercase' }}>{remainingCals < 0 ? 'OVER' : 'TARGET'}</span>
           </div>
         </div>
 
@@ -131,7 +131,7 @@ export const DiaryView: React.FC = () => {
           textShadow: '0 2px 10px rgba(0,0,0,0.4), 0 0 15px rgba(255,255,255,0.15)'
         }}>
           <Sparkles size={18} color="#FFFFFF" style={{ flexShrink: 0, marginTop: '2px', filter: 'drop-shadow(0 0 8px rgba(255,255,255,0.5))' }} />
-          <span style={{ fontWeight: '800', letterSpacing: '0.3px', color: '#FFFFFF' }}>{generateDailyStatus()}</span>
+          <span className="luminous-primary-force-white" style={{ fontWeight: '800', letterSpacing: '0.3px' }}>{generateDailyStatus()}</span>
         </div>
 
         {/* Macros */}
