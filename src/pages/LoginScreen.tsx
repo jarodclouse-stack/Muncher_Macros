@@ -45,7 +45,7 @@ export const LoginScreen: React.FC = () => {
   };
 
   return (
-    <div className="login-screen" style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', background: 'linear-gradient(135deg, #1A1A2E 0%, #16213E 100%)', color: 'white', fontFamily: 'Inter, sans-serif' }}>
+    <div className="login-screen" style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', background: 'transparent', color: 'white', fontFamily: 'Inter, sans-serif' }}>
       <div style={{ background: 'rgba(255, 255, 255, 0.05)', padding: '40px', borderRadius: '24px', backdropFilter: 'blur(10px)', border: '1px solid rgba(255, 255, 255, 0.1)', width: '100%', maxWidth: '400px', boxShadow: '0 8px 32px rgba(0,0,0,0.3)' }}>
         
         {/* Legacy Logo Header */}
