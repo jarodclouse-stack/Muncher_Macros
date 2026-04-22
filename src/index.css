@@ -1798,8 +1798,14 @@ body div.glass-card,
 body div.glass-card *,
 body div.card,
 body div.card * {
-  color: #FFFFFF !important;
+  color: var(--theme-text-on-panel) !important;
   transition: color 0.3s ease;
+}
+
+body.theme-light-surface .glass-card,
+body.theme-light-surface .card {
+  --theme-text-on-panel: var(--theme-neon-goal, #FFFFFF);
+  --theme-text-dim-on-panel: rgba(255, 255, 255, 0.85);
 }
 
 /* Secondary labels/dim text synchronization at high-fidelity white */
@@ -1965,11 +1971,11 @@ body.theme-surf-neon {
 /* READABILITY OVERRIDES FOR LIGHT THEMES */
 
 /* Nuclear CSS - Overrides inline white text ONLY if outside of our dark bubbles */
-body.theme-light-surface [style*="color: #fff"]:not(.glass-card *):not(.card *),
-body.theme-light-surface [style*="color: white"]:not(.glass-card *):not(.card *),
-body.theme-light-surface [style*="color: rgb(255, 255, 255)"]:not(.glass-card *):not(.card *),
-body.theme-light-surface [style*="color: rgba(255, 255, 255, 1)"]:not(.glass-card *):not(.card *),
-body.theme-light-surface [style*="color: #FFFFFF"]:not(.glass-card *):not(.card *),
+body.theme-light-surface [style*="color: #fff"]:not(.glass-card):not(.card):not(.glass-card *):not(.card *),
+body.theme-light-surface [style*="color: white"]:not(.glass-card):not(.card):not(.glass-card *):not(.card *),
+body.theme-light-surface [style*="color: rgb(255, 255, 255)"]:not(.glass-card):not(.card):not(.glass-card *):not(.card *),
+body.theme-light-surface [style*="color: rgba(255, 255, 255, 1)"]:not(.glass-card):not(.card):not(.glass-card *):not(.card *),
+body.theme-light-surface [style*="color: #FFFFFF"]:not(.glass-card):not(.card):not(.glass-card *):not(.card *),
 body.theme-light-surface .meal-hdr,
 body.theme-light-surface .meal-cals,
 body.theme-light-surface .meal-add-btn,

@@ -87,7 +87,7 @@ export const DiaryView: React.FC = () => {
       {/* Daily Cheer Banner */}
       <div className="glass-card luminous-breath" style={{ padding: 'var(--space-md)', display: 'flex', alignItems: 'center', gap: 'var(--space-sm)', boxShadow: '0 8px 32px rgba(0,0,0,0.15)' }}>
           <span style={{ fontSize: '18px' }}>✨</span>
-          <span style={{ fontSize: '13px', fontWeight: '900', color: '#FFFFFF', fontStyle: 'italic', letterSpacing: '0.4px', textShadow: '0 0 8px rgba(255,255,255,0.4)' }}>{randomCheer}</span>
+          <span style={{ fontSize: '13px', fontWeight: '900', color: 'var(--theme-text-on-panel)', fontStyle: 'italic', letterSpacing: '0.4px', textShadow: '0 0 8px rgba(255,255,255,0.4)' }}>{randomCheer}</span>
       </div>
 
       {/* Daily Summary Card */}
@@ -131,7 +131,7 @@ export const DiaryView: React.FC = () => {
           textShadow: '0 2px 10px rgba(0,0,0,0.4), 0 0 15px rgba(255,255,255,0.15)'
         }}>
           <Sparkles size={18} color="var(--theme-text-on-panel)" style={{ flexShrink: 0, marginTop: '2px', filter: 'drop-shadow(0 0 8px rgba(255,255,255,0.5))' }} />
-          <span style={{ fontWeight: '800', letterSpacing: '0.3px' }}>{generateDailyStatus()}</span>
+          <span style={{ fontWeight: '800', letterSpacing: '0.3px', color: 'var(--theme-text-on-panel)' }}>{generateDailyStatus()}</span>
         </div>
 
         {/* Macros */}
