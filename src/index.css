@@ -696,13 +696,13 @@ body.theme-ember-forge {
     margin: 0;
     padding: 0;
     overflow-x: hidden;
-    background-color: transparent !important;
+    background-color: var(--theme-bg, #080A0F) !important;
   }
 
   body {
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
     color: var(--theme-text);
-    background: transparent !important;
+    background: var(--theme-bg) !important;
     font-size: 14px;
     transition: background-color var(--transition-smooth), color var(--transition-smooth);
   }
@@ -2177,60 +2177,72 @@ body:not(.theme-light-surface) .glass-card {
   100% { opacity: 0.2; transform: scale(1.2); }
 }
 
-/* NUCLEAR BACKGROUND ARCHITECTURE - GUARANTEED VISIBILITY */
-body::before {
-  content: "";
+/* MINIMALIST STATIC BACKGROUND SYSTEM (REF 2) */
+.bg-glow-container {
   position: fixed;
   inset: 0;
-  z-index: -10;
+  z-index: -1;
+  pointer-events: none;
+  overflow: hidden;
   background: var(--theme-bg);
 }
 
-body::after {
-  content: "";
-  position: fixed;
-  inset: -50%;
-  width: 200%;
-  height: 200%;
-  z-index: -9;
-  background-image: url('/luminous-masterpiece.png?v=3');
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
-  opacity: 0.8 !important; /* FORCED HIGH VISIBILITY */
-  filter: brightness(1.1) contrast(1.2) saturate(1.1);
-  mix-blend-mode: lighten; /* Ensures colors pop on dark backgrounds */
-  pointer-events: none;
-  animation: silk-ocean-flow 90s infinite linear;
+.static-blob {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(100px);
+  mix-blend-mode: screen;
+  opacity: 0.15;
+  background: var(--theme-accent);
 }
 
-/* THEME SPECIFIC AURA ENHANCEMENTS */
-body.theme-light-surface::after,
-body.theme-island-palm::after,
-body.theme-azure-tide::after,
-body.theme-mango-salsa::after,
-body.theme-hibiscus-bloom::after,
-body.theme-blue-hawaiian::after,
-body.theme-surf-neon::after {
-  opacity: 0.35 !important;
-  filter: brightness(1.1) contrast(1.1) saturate(1.5) hue-rotate(180deg);
+body.theme-light-surface .static-blob,
+body.theme-island-palm .static-blob,
+body.theme-azure-tide .static-blob,
+body.theme-mango-salsa .static-blob,
+body.theme-hibiscus-bloom .static-blob,
+body.theme-blue-hawaiian .static-blob,
+body.theme-surf-neon .static-blob {
   mix-blend-mode: multiply;
+  opacity: 0.08;
 }
 
-/* Extra vibrancy boost for tropical themes to make them "Pop" */
-body.theme-island-palm::after, 
-body.theme-hibiscus-bloom::after,
-body.theme-surf-neon::after {
-  opacity: 0.5 !important;
-  filter: brightness(1.2) contrast(1.2) saturate(2);
+.blob-top-right {
+  width: 80%;
+  height: 60%;
+  top: -10%;
+  right: -10%;
+  background: radial-gradient(circle, var(--theme-accent) 0%, transparent 70%);
 }
 
-@keyframes silk-ocean-flow {
-  0% { transform: translate(0, 0) rotate(0deg) scale(1); }
-  25% { transform: translate(3%, 4%) rotate(1.5deg) scale(1.05); }
-  50% { transform: translate(-2%, 7%) rotate(-1.5deg) scale(1.1); }
-  75% { transform: translate(-5%, -2%) rotate(1.5deg) scale(1.05); }
-  100% { transform: translate(0, 0) rotate(0deg) scale(1); }
+.blob-bottom-left {
+  width: 70%;
+  height: 50%;
+  bottom: -5%;
+  left: -5%;
+  background: radial-gradient(circle, var(--theme-accent) 0%, transparent 70%);
+}
+
+.blob-center {
+  width: 100%;
+  height: 100%;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: radial-gradient(circle, var(--theme-accent-dim) 0%, transparent 80%);
+  opacity: 0.1;
+}
+
+.contour-lines {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0.2;
+}
+
+body.theme-light-surface .contour-lines {
+  opacity: 0.1;
 }
 
 @keyframes searching-bar {
