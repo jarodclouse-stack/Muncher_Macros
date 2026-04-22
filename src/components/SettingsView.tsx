@@ -386,13 +386,13 @@ export const SettingsView: React.FC<{ onClose: () => void }> = ({ onClose }) => 
                     <div style={{ fontSize: '14px', fontWeight: '600', color: 'var(--theme-text)' }}>Weight Unit</div>
                     <div style={{ fontSize: '11px', color: 'var(--theme-text-dim)' }}>Kilograms vs Pounds</div>
                   </div>
-                  <div style={{ display: 'flex', background: 'var(--theme-panel-dim)', padding: '4px', borderRadius: 'var(--radius-md)' }}>
+                  <div style={{ display: 'flex', background: 'var(--theme-panel-dim)', padding: '4px', borderRadius: '999px', border: '1px solid var(--theme-border)' }}>
                     <button 
                       onClick={() => toggleWeightUnit('kg')}
-                      style={{ padding: '6px 12px', border: 'none', borderRadius: 'var(--radius-sm)', background: settings.units.weight === 'kg' ? 'var(--theme-accent)' : 'transparent', color: settings.units.weight === 'kg' ? '#000' : 'var(--theme-text-dim)', fontSize: '12px', fontWeight: '700', cursor: 'pointer' }}>KG</button>
+                      style={{ padding: '6px 16px', border: 'none', borderRadius: '999px', background: settings.units.weight === 'kg' ? 'var(--theme-accent)' : 'transparent', color: settings.units.weight === 'kg' ? '#000' : 'var(--theme-text-dim)', fontSize: '12px', fontWeight: '800', cursor: 'pointer', transition: 'all 0.2s' }}>KG</button>
                     <button 
                       onClick={() => toggleWeightUnit('lb')}
-                      style={{ padding: '6px 12px', border: 'none', borderRadius: 'var(--radius-sm)', background: settings.units.weight === 'lb' ? 'var(--theme-accent)' : 'transparent', color: settings.units.weight === 'lb' ? '#000' : 'var(--theme-text-dim)', fontSize: '12px', fontWeight: '700', cursor: 'pointer' }}>LB</button>
+                      style={{ padding: '6px 16px', border: 'none', borderRadius: '999px', background: settings.units.weight === 'lb' ? 'var(--theme-accent)' : 'transparent', color: settings.units.weight === 'lb' ? '#000' : 'var(--theme-text-dim)', fontSize: '12px', fontWeight: '800', cursor: 'pointer', transition: 'all 0.2s' }}>LB</button>
                   </div>
                 </div>
 
@@ -401,13 +401,13 @@ export const SettingsView: React.FC<{ onClose: () => void }> = ({ onClose }) => 
                     <div style={{ fontSize: '14px', fontWeight: '600', color: 'var(--theme-text)' }}>Height Unit</div>
                     <div style={{ fontSize: '11px', color: 'var(--theme-text-dim)' }}>Metric vs Imperial</div>
                   </div>
-                  <div style={{ display: 'flex', background: 'var(--theme-panel-dim)', padding: '4px', borderRadius: 'var(--radius-md)' }}>
+                  <div style={{ display: 'flex', background: 'var(--theme-panel-dim)', padding: '4px', borderRadius: '999px', border: '1px solid var(--theme-border)' }}>
                     <button 
                       onClick={() => updateSettings({ units: { ...settings.units, height: 'cm' } })}
-                      style={{ padding: '6px 12px', border: 'none', borderRadius: 'var(--radius-sm)', background: settings.units.height === 'cm' ? 'var(--theme-accent)' : 'transparent', color: settings.units.height === 'cm' ? '#000' : 'var(--theme-text-dim)', fontSize: '12px', fontWeight: '700', cursor: 'pointer' }}>CM</button>
+                      style={{ padding: '6px 16px', border: 'none', borderRadius: '999px', background: settings.units.height === 'cm' ? 'var(--theme-accent)' : 'transparent', color: settings.units.height === 'cm' ? '#000' : 'var(--theme-text-dim)', fontSize: '12px', fontWeight: '800', cursor: 'pointer', transition: 'all 0.2s' }}>CM</button>
                     <button 
                       onClick={() => updateSettings({ units: { ...settings.units, height: 'ft' } })}
-                      style={{ padding: '6px 12px', border: 'none', borderRadius: 'var(--radius-sm)', background: settings.units.height === 'ft' ? 'var(--theme-accent)' : 'transparent', color: settings.units.height === 'ft' ? '#000' : 'var(--theme-text-dim)', fontSize: '12px', fontWeight: '700', cursor: 'pointer' }}>FT/IN</button>
+                      style={{ padding: '6px 16px', border: 'none', borderRadius: '999px', background: settings.units.height === 'ft' ? 'var(--theme-accent)' : 'transparent', color: settings.units.height === 'ft' ? '#000' : 'var(--theme-text-dim)', fontSize: '12px', fontWeight: '800', cursor: 'pointer', transition: 'all 0.2s' }}>FT/IN</button>
                   </div>
                 </div>
               </div>
@@ -506,16 +506,40 @@ export const SettingsView: React.FC<{ onClose: () => void }> = ({ onClose }) => 
 export default SettingsView;
 
 const NotificationToggle = ({ label, desc, checked, onChange }: { label: string, desc: string, checked: boolean, onChange: (val: boolean) => void }) => (
-  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-    <div>
-      <div style={{ fontSize: '14px', fontWeight: '600', color: 'var(--theme-text)' }}>{label}</div>
-      <div style={{ fontSize: '11px', color: 'var(--theme-text-dim)' }}>{desc}</div>
+  <div 
+    onClick={() => onChange(!checked)}
+    style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer', padding: '4px 0' }}
+  >
+    <div style={{ flex: 1, paddingRight: '12px' }}>
+      <div style={{ fontSize: '14px', fontWeight: '700', color: 'var(--theme-text)' }}>{label}</div>
+      <div style={{ fontSize: '11px', color: 'var(--theme-text-dim)', marginTop: '2px' }}>{desc}</div>
     </div>
-    <input 
-      type="checkbox" 
-      checked={!!checked}
-      onChange={(e) => onChange(e.target.checked)}
-      style={{ width: '18px', height: '18px', accentColor: 'var(--theme-accent)', cursor: 'pointer' }}
-    />
+    <div 
+      style={{ 
+        width: '42px', 
+        height: '24px', 
+        borderRadius: '12px', 
+        background: checked ? 'var(--theme-accent)' : 'rgba(255,255,255,0.1)', 
+        border: `1px solid ${checked ? 'var(--theme-accent)' : 'var(--theme-border)'}`,
+        position: 'relative',
+        transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+        boxShadow: checked ? '0 0 15px var(--theme-accent-dim)' : 'none',
+        flexShrink: 0
+      }}
+    >
+      <div 
+        style={{ 
+          width: '18px', 
+          height: '18px', 
+          borderRadius: '50%', 
+          background: checked ? '#000' : '#fff', 
+          position: 'absolute', 
+          top: '2px', 
+          left: checked ? '20px' : '2px',
+          transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+          boxShadow: '0 2px 4px rgba(0,0,0,0.2)'
+        }} 
+      />
+    </div>
   </div>
 );
