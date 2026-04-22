@@ -3,11 +3,16 @@ import React from 'react';
 export const BackgroundGlow: React.FC = () => {
   return (
     <div className="bg-glow-container">
-      {/* High-Fidelity Silk Base Layer */}
-      <div className="luminous-silk-base" />
-      {/* Dynamic Aura Flow - Tints the silk with theme colors */}
+      {/* 1. Base Theme Color Layer (Deepest) */}
       <div className="luminous-silk-aura" />
-      {/* Overlay Grain for High-End finish */}
+      
+      {/* 2. High-Fidelity Silk Texture (Middle) */}
+      <div className="luminous-silk-base" />
+      
+      {/* 3. Accent Glow & Texture (Top of background stack) */}
+      <div className="silk-texture-wrap" />
+      
+      {/* 4. Micro-Noise Finish */}
       <div className="luminous-noise" />
     </div>
   );
