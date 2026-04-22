@@ -31,24 +31,36 @@ export const COMMON_UNITS = [
 export function extractBaseGrams(servingStr: string): number | null {
   if (!servingStr) return null;
   
-  // Strip common metadata that might confuse the parser (e.g., "(Adjusted)")
-  const cleanStr = servingStr.split('(')[0].trim().toLowerCase();
-  
-  // Try to find a numeric weight/volume within the cleaned string
-  const match = cleanStr.match(/(\d+(?:\.\d+)?)\s*(g|ml|oz|lb|kg|l)/i);
-  if (match) {
-    const val = parseFloat(match[1]);
-    const unit = match[2].toLowerCase();
-    switch(unit) {
-      case 'g': case 'ml': return val;
-      case 'oz': return val * 28.3495;
-      case 'lb': return val * 453.592;
-      case 'kg': return val * 1000;
-      case 'l': return val * 1000;
-      default: return val;
+  // Try to find a weight/volume inside parentheses first (often most accurate: "1 packet (50g)")
+  const parenMatch = servingStr.match(/\(([^)]+)\)/);
+  if (parenMatch) {
+    const inside = parenMatch[1].toLowerCase();
+    const weightMatch = inside.match(/(\d+(?:\.\d+)?)\s*(g|ml|oz|lb|kg|l)/i);
+    if (weightMatch) {
+      return parseMatch(weightMatch);
     }
   }
+
+  // Strip common metadata and search the whole string
+  const cleanStr = servingStr.toLowerCase();
+  const match = cleanStr.match(/(\d+(?:\.\d+)?)\s*(g|ml|oz|lb|kg|l)/i);
+  if (match) {
+    return parseMatch(match);
+  }
   return null;
+}
+
+function parseMatch(match: RegExpMatchArray): number {
+  const val = parseFloat(match[1]);
+  const unit = match[2].toLowerCase();
+  switch(unit) {
+    case 'g': case 'ml': return val;
+    case 'oz': return val * 28.3495;
+    case 'lb': return val * 453.592;
+    case 'kg': return val * 1000;
+    case 'l': return val * 1000;
+    default: return val;
+  }
 }
 
 export function computeMultiplier(baseServingStr: string, targetUnit: string, targetQty: number): number {

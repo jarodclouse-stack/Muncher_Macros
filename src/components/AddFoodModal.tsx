@@ -229,7 +229,17 @@ export const AddFoodModal: React.FC<AddFoodModalProps> = ({ meal, onClose }) => 
   };
 
   return ReactDOM.createPortal(
-    <div className="glass" style={{ position: 'fixed', inset: 0, zIndex: 5000, display: 'flex', flexDirection: 'column', alignItems: 'center', transition: 'all var(--transition-smooth)' }}>
+    <div style={{ 
+      position: 'fixed', 
+      inset: 0, 
+      zIndex: 5000, 
+      display: 'flex', 
+      flexDirection: 'column', 
+      alignItems: 'center', 
+      transition: 'all 0.3s ease', 
+      background: 'var(--theme-bg)', 
+      overflowY: 'auto' 
+    }}>
       <div style={{ position: 'fixed', bottom: '10px', right: '10px', fontSize: '9px', color: 'var(--theme-text-dim)', opacity: 0.2, pointerEvents: 'none', zIndex: 9999 }}>v2.7-GLASSMORPHIC</div>
       
       {/* Header */}
@@ -678,8 +688,8 @@ export const AddFoodModal: React.FC<AddFoodModalProps> = ({ meal, onClose }) => 
 
       {/* Food Configuration Overlay */}
       {configuringFood && (
-          <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.5)', backdropFilter: 'blur(15px)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 6000, padding: '20px' }}>
-            <div style={{ width: '100%', maxWidth: '500px', background: 'rgba(10,30,33,0.85)', borderRadius: '32px', border: '1px solid rgba(255,255,255,0.15)', padding: '24px 24px 60px', maxHeight: '90vh', overflowY: 'auto', boxShadow: '0 20px 50px rgba(0,0,0,0.6)', backdropFilter: 'blur(25px)' }}>
+          <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.7)', backdropFilter: 'blur(40px)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 6000, padding: '20px' }}>
+            <div className="glass-card" style={{ width: '100%', maxWidth: '500px', background: 'rgba(10,30,33,0.92)', borderRadius: '32px', border: '1px solid rgba(255,255,255,0.15)', padding: '24px 24px 60px', maxHeight: '90vh', overflowY: 'auto', boxShadow: '0 20px 50px rgba(0,0,0,0.6)', backdropFilter: 'blur(25px)' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '20px' }}>
                 <div>
                   <input 
@@ -694,7 +704,7 @@ export const AddFoodModal: React.FC<AddFoodModalProps> = ({ meal, onClose }) => 
 
               {/* Quick Macros */}
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '8px', marginBottom: '16px' }}>
-                <QuickMacro label="Calories" val={Math.round((Number(configuringFood.cal)||0) * computeMultiplier(configuringFood.serving||'', servingUnit, parseFloat(servingQty)||1))} unit="kcal" color="var(--theme-text)" />
+                <QuickMacro label="Calories" val={Math.round((Number(configuringFood.cal)||0) * computeMultiplier(configuringFood.serving||'', servingUnit, parseFloat(servingQty)||1))} unit="kcal" color="var(--theme-text-on-panel)" />
                 <QuickMacro label="Protein" val={Math.round((Number(configuringFood.p)||0) * computeMultiplier(configuringFood.serving||'', servingUnit, parseFloat(servingQty)||1))} unit="g" color="var(--theme-error)" />
                 <QuickMacro label="Carbs" val={Math.round((Number(configuringFood.c)||0) * computeMultiplier(configuringFood.serving||'', servingUnit, parseFloat(servingQty)||1))} unit="g" color="var(--theme-accent)" />
                 <QuickMacro label="Fat" val={Math.round((Number(configuringFood.f)||0) * computeMultiplier(configuringFood.serving||'', servingUnit, parseFloat(servingQty)||1))} unit="g" color="var(--theme-warning)" />
@@ -875,7 +885,7 @@ const SearchResultItem = React.memo(({ food, onClick, localIdx, onDelete }: { fo
 
 const QuickMacro = ({ label, val, unit, color }: any) => (
   <div className="glass-card" style={{ padding: 'var(--space-sm) var(--space-xs)', textAlign: 'center' }}>
-    <div style={{ fontSize: '9px', color: 'var(--theme-text-dim)', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '4px' }}>{label}</div>
-    <div style={{ fontSize: '15px', color: color, fontWeight: '900' }}>{val}<span style={{ fontSize: '10px', fontWeight: '600', marginLeft: '1px' }}>{unit}</span></div>
+    <div style={{ fontSize: '9px', color: 'var(--theme-text-on-panel)', opacity: 0.6, fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '4px' }}>{label}</div>
+    <div style={{ fontSize: '15px', color: color || 'var(--theme-text-on-panel)', fontWeight: '900' }}>{val}<span style={{ fontSize: '10px', color: 'var(--theme-text-on-panel)', opacity: 0.7, fontWeight: '600', marginLeft: '1px' }}>{unit}</span></div>
   </div>
 );
