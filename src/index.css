@@ -1772,12 +1772,12 @@ body.theme-light-surface .activity-card {
   color: var(--theme-text) !important;
 }
 
-body.theme-light-surface .card *,
-body.theme-light-surface .stat-box *,
-body.theme-light-surface .gsbox *,
-body.theme-light-surface .sp *,
-body.theme-light-surface .dd-section *,
-body.theme-light-surface .activity-card * {
+body.theme-light-surface .card *:not(.luminous-absolute-white),
+body.theme-light-surface .stat-box *:not(.luminous-absolute-white),
+body.theme-light-surface .gsbox *:not(.luminous-absolute-white),
+body.theme-light-surface .sp *:not(.luminous-absolute-white),
+body.theme-light-surface .dd-section *:not(.luminous-absolute-white),
+body.theme-light-surface .activity-card *:not(.luminous-absolute-white) {
   color: inherit !important;
 }
 
@@ -2017,6 +2017,12 @@ body.theme-light-surface .search-tab-active {
   filter: brightness(0.8);
 }
 
+/* Specific contrast darkening for macro denominators in light themes */
+body.theme-light-surface .luminous-macro-denom {
+  color: var(--theme-text) !important;
+  opacity: 0.9 !important;
+}
+
 
 /* GLASSMORPHIC BACKGROUND GLOWS */
 .bg-glow-container {
@@ -2084,8 +2090,8 @@ body.theme-light-surface .search-tab-active {
 }
 
 /* ATOMIC PRIORITY OVERRIDE - Final rule in file to bypass ALL theme logic */
-body .luminous-primary-force-white,
-body .luminous-primary-force-white * {
+body .luminous-absolute-white,
+body .luminous-absolute-white * {
   color: #FFFFFF !important;
   opacity: 1 !important;
 }
