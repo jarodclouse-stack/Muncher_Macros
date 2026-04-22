@@ -1798,14 +1798,16 @@ body div.glass-card,
 body div.glass-card *,
 body div.card,
 body div.card * {
+  /* Copying the Dark Theme approach: Force pure white for absolute contrast visibility */
+  --theme-text-on-panel: #FFFFFF !important;
+  --theme-text-dim-on-panel: rgba(255, 255, 255, 0.9) !important;
   color: var(--theme-text-on-panel) !important;
   transition: color 0.3s ease;
 }
 
 body.theme-light-surface .glass-card,
 body.theme-light-surface .card {
-  --theme-text-on-panel: #FFFFFF !important;
-  --theme-text-dim-on-panel: rgba(255, 255, 255, 0.9) !important;
+  /* Logic integrated into global vault above */
 }
 
 /* Secondary labels/dim text synchronization at high-fidelity white */
