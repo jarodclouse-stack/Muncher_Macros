@@ -456,7 +456,7 @@ const WeeklyReport = ({ localCache, currentDate, targetCal }: any) => {
   const consistencyColor = stdDev < 150 ? 'var(--theme-success, #92FE9D)' : stdDev < 300 ? 'var(--theme-warning, #FCC419)' : 'var(--theme-error, #FF6B6B)';
 
   return (
-    <div style={{ background: 'var(--theme-panel, rgba(255,255,255,0.02))', border: '1px solid var(--theme-border, rgba(255,255,255,0.05))', borderRadius: '20px', overflow: 'hidden' }}>
+    <div className="glass-card weekly-report-card luminous-breath" style={{ marginBottom: '24px', overflow: 'hidden' }}>
       <div onClick={() => setIsOpen(!isOpen)} style={{ padding: '16px 20px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer', background: isOpen ? 'var(--theme-panel-dim, rgba(255,255,255,0.03))' : 'transparent' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
           <Activity size={18} color="var(--theme-accent, #00C9FF)" />
@@ -469,14 +469,14 @@ const WeeklyReport = ({ localCache, currentDate, targetCal }: any) => {
       </div>
       
       {isOpen && (
-        <div style={{ padding: '20px', borderTop: '1px solid var(--theme-border, rgba(255,255,255,0.05))' }}>
+        <div style={{ padding: '20px', borderTop: '1px solid rgba(255,255,255,0.1)' }}>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '12px', marginBottom: '20px' }}>
-            <div style={{ background: 'var(--theme-panel-dim, rgba(0,0,0,0.2))', padding: '16px', borderRadius: '16px', textAlign: 'center' }}>
+            <div style={{ background: 'rgba(0,0,0,0.2)', padding: '16px', borderRadius: '16px', textAlign: 'center' }}>
               <div style={{ fontSize: '10px', color: 'var(--theme-text-dim-on-panel)', textTransform: 'uppercase', marginBottom: '8px', fontWeight: '700' }}>Avg Calories</div>
               <div style={{ fontSize: '20px', fontWeight: '900', color: Math.abs(calDiff) < 150 ? 'var(--theme-success, #92FE9D)' : calDiff > 0 ? 'var(--theme-error, #FF6B6B)' : 'var(--theme-accent, #4DABF7)' }}>{avgCal}</div>
               <div style={{ fontSize: '10px', color: 'var(--theme-text-dim-on-panel)', marginTop: '4px' }}>7-day rolling average</div>
             </div>
-            <div style={{ background: 'var(--theme-panel-dim, rgba(0,0,0,0.2))', padding: '16px', borderRadius: '16px', textAlign: 'center' }}>
+            <div style={{ background: 'rgba(0,0,0,0.2)', padding: '16px', borderRadius: '16px', textAlign: 'center' }}>
               <div style={{ fontSize: '10px', color: 'var(--theme-text-dim-on-panel)', textTransform: 'uppercase', marginBottom: '8px', fontWeight: '700' }}>On Target</div>
               <div style={{ fontSize: '20px', fontWeight: '900', color: 'var(--theme-success, #92FE9D)' }}>{onTarget}/{loggedDays.length}</div>
               <div style={{ fontSize: '10px', color: 'var(--theme-text-dim-on-panel)', marginTop: '4px' }}>days ±15%</div>
@@ -542,7 +542,7 @@ const WeeklyReport = ({ localCache, currentDate, targetCal }: any) => {
               const isTarget = Math.abs(d.cal - targetCal) < (targetCal * 0.15);
               return (
                 <div key={i} style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px' }}>
-                  <div style={{ width: '100%', height: '40px', background: 'var(--theme-panel-dim, rgba(255,255,255,0.05))', borderRadius: '4px', position: 'relative', overflow: 'hidden' }}>
+                  <div style={{ width: '100%', height: '40px', background: 'rgba(255,255,255,0.05)', borderRadius: '4px', position: 'relative', overflow: 'hidden' }}>
                     <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: `${height}%`, background: d.logged ? (isTarget ? 'var(--theme-success, #92FE9D)' : 'var(--theme-accent, #4DABF7)') : 'var(--theme-panel, rgba(255,255,255,0.05))', transition: 'height 0.5s ease' }} />
                   </div>
                   <span style={{ fontSize: '9px', color: 'var(--theme-text-dim, #8b8b9b)', fontWeight: '700' }}>{d.label}</span>
@@ -557,7 +557,7 @@ const WeeklyReport = ({ localCache, currentDate, targetCal }: any) => {
 };
 
 const WeeklyMacro = ({ label, val, color }: any) => (
-  <div style={{ background: 'var(--theme-panel-dim, rgba(255,255,255,0.02))', padding: '10px 4px', borderRadius: '12px', textAlign: 'center', border: '1px solid var(--theme-border, rgba(255,255,255,0.03))' }}>
+  <div style={{ background: 'rgba(255,255,255,0.03)', padding: '10px 4px', borderRadius: '12px', textAlign: 'center', border: '1px solid rgba(255,255,255,0.05)' }}>
     <div style={{ fontSize: '9px', color: color, fontWeight: '800', marginBottom: '4px', textTransform: 'uppercase' }}>{label}</div>
     <div style={{ fontSize: '14px', fontWeight: '900', color: 'var(--theme-text-on-panel)' }}>{Math.round(val)}g</div>
   </div>

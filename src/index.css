@@ -1813,6 +1813,12 @@ body div.card span[style*="opacity: 0.6"] {
   opacity: 1 !important; /* Prevent double-dimming */
 }
 
+/* Force dark analytical 'featured' tabs in light mode */
+body.theme-light-surface .weekly-report-card {
+  background: rgba(10, 30, 33, 0.5) !important;
+  border-color: rgba(255, 255, 255, 0.1) !important;
+}
+
 /* Luminous Breath Animation: For premium 'fading and contrasting' UI feel */
 @keyframes luminous-breath {
   0% { 
