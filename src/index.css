@@ -1816,9 +1816,8 @@ body div.glass-card .lbl,
 body div.card .text-dim,
 body div.card .lbl,
 body div.glass-card span[style*="opacity: 0.6"],
-body div.card span[style*="opacity: 0.6"],
-.luminous-primary-force-white {
-  color: #FFFFFF !important;
+body div.card span[style*="opacity: 0.6"] {
+  color: rgba(255, 255, 255, 0.9) !important;
   opacity: 1 !important; /* Prevent double-dimming */
 }
 
@@ -2082,4 +2081,11 @@ body.theme-light-surface .search-tab-active {
   0% { left: -40%; width: 30%; }
   50% { left: 40%; width: 50%; }
   100% { left: 110%; width: 30%; }
+}
+
+/* ATOMIC PRIORITY OVERRIDE - Final rule in file to bypass ALL theme logic */
+body .luminous-primary-force-white,
+body .luminous-primary-force-white * {
+  color: #FFFFFF !important;
+  opacity: 1 !important;
 }
