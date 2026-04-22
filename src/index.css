@@ -689,6 +689,8 @@ body.theme-ember-forge {
     margin: 0;
     padding: 0;
     overflow-x: hidden;
+  }
+
   html, body {
     width: 100%;
     margin: 0;
@@ -2202,11 +2204,25 @@ body::after {
   animation: silk-ocean-flow 90s infinite linear;
 }
 
-/* Light themes need a different blend to stay legible */
-body.theme-light-surface::after {
-  opacity: 0.3 !important;
-  filter: brightness(1.2) contrast(0.8) hue-rotate(180deg);
+/* THEME SPECIFIC AURA ENHANCEMENTS */
+body.theme-light-surface::after,
+body.theme-island-palm::after,
+body.theme-azure-tide::after,
+body.theme-mango-salsa::after,
+body.theme-hibiscus-bloom::after,
+body.theme-blue-hawaiian::after,
+body.theme-surf-neon::after {
+  opacity: 0.35 !important;
+  filter: brightness(1.1) contrast(1.1) saturate(1.5) hue-rotate(180deg);
   mix-blend-mode: multiply;
+}
+
+/* Extra vibrancy boost for tropical themes to make them "Pop" */
+body.theme-island-palm::after, 
+body.theme-hibiscus-bloom::after,
+body.theme-surf-neon::after {
+  opacity: 0.5 !important;
+  filter: brightness(1.2) contrast(1.2) saturate(2);
 }
 
 @keyframes silk-ocean-flow {
