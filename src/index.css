@@ -2170,80 +2170,56 @@ body:not(.theme-light-surface) .glass-card {
   100% { opacity: 0.2; transform: scale(1.2); }
 }
 
-/* LUMINOUS SILK ENGINE */
-.silk-ribbon {
-  position: absolute;
-  width: 140%;
-  height: 140%;
-  top: -20%;
-  left: -20%;
-  filter: url(#silk-warp) blur(20px);
-  opacity: 0.18;
-  mix-blend-mode: screen;
+/* LUMINOUS SILK DYNAMIC ENGINE - HIGH FIDELITY */
+.luminous-silk-base {
+  position: fixed;
+  inset: -50%;
+  width: 200%;
+  height: 200%;
+  background-image: url('/luminous-silk.png');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  filter: brightness(0.8) contrast(1.1);
+  opacity: 0.15;
   pointer-events: none;
-  animation: silk-drift 40s infinite alternate ease-in-out;
+  animation: silk-ocean-flow 80s infinite linear;
+  background-blend-mode: overlay;
+  background-color: var(--theme-bg);
 }
 
-body.theme-light-surface .silk-ribbon {
-  mix-blend-mode: multiply;
-  opacity: 0.08;
+body.theme-light-surface .luminous-silk-base {
+  opacity: 0.12;
+  filter: brightness(1.2) contrast(0.9);
+  background-blend-mode: soft-light;
 }
 
-.silk-1 {
-  background: linear-gradient(45deg, var(--theme-accent) 0%, transparent 100%);
-  animation-duration: 35s;
-}
-
-.silk-2 {
-  background: linear-gradient(-45deg, var(--theme-accent) 0%, transparent 100%);
-  filter: url(#silk-warp) blur(30px) hue-rotate(45deg);
-  animation-duration: 45s;
-  animation-delay: -5s;
-}
-
-.silk-3 {
-  background: linear-gradient(135deg, var(--theme-accent) 0%, transparent 100%);
-  filter: url(#silk-warp) blur(40px) hue-rotate(-45deg);
-  animation-duration: 50s;
-  animation-delay: -10s;
-}
-
-.silk-4 {
-  background: radial-gradient(circle, var(--theme-accent) 0%, transparent 70%);
-  filter: url(#silk-warp) blur(25px) contrast(150%);
-  top: 15%;
-  left: 25%;
-  width: 90%;
-  height: 90%;
-  animation: silk-pulse 20s infinite alternate ease-in-out;
-  opacity: 0.25;
-}
-
-.silk-texture {
+.luminous-silk-aura {
   position: fixed;
   inset: 0;
   pointer-events: none;
-  z-index: 2;
-  opacity: 0.04;
-  background: repeating-linear-gradient(
-    45deg,
-    transparent 0px,
-    transparent 2px,
-    rgba(255, 255, 255, 0.15) 3px,
-    transparent 4px
-  );
-  mask-image: radial-gradient(circle at center, black 0%, transparent 85%);
+  background: radial-gradient(circle at 50% 50%, var(--theme-accent-dim) 0%, transparent 80%);
+  mix-blend-mode: color-dodge;
+  opacity: 0.4;
+  animation: aura-breathe 15s infinite alternate ease-in-out;
 }
 
-@keyframes silk-drift {
-  0% { transform: translate(0, 0) rotate(0deg); }
-  50% { transform: translate(60px, 40px) rotate(3deg); }
-  100% { transform: translate(-40px, -60px) rotate(-3deg); }
+body.theme-light-surface .luminous-silk-aura {
+  mix-blend-mode: multiply;
+  opacity: 0.15;
 }
 
-@keyframes silk-pulse {
-  0% { transform: scale(1); opacity: 0.15; }
-  100% { transform: scale(1.3); opacity: 0.35; }
+@keyframes silk-ocean-flow {
+  0% { transform: translate(0, 0) rotate(0deg) scale(1); }
+  25% { transform: translate(2%, 2%) rotate(1deg) scale(1.05); }
+  50% { transform: translate(-1%, 3%) rotate(-1deg) scale(1.1); }
+  75% { transform: translate(-3%, -1%) rotate(1deg) scale(1.05); }
+  100% { transform: translate(0, 0) rotate(0deg) scale(1); }
+}
+
+@keyframes aura-breathe {
+  0% { opacity: 0.2; transform: scale(1); }
+  100% { opacity: 0.5; transform: scale(1.2); }
 }
 @keyframes searching-bar {
   0% { left: -40%; width: 30%; }
