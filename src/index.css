@@ -2076,44 +2076,73 @@ body.theme-light-surface .glow-blob {
 }
 
 .glow-blob-4 {
-  width: 250px;
-  height: 250px;
+  width: 400px;
+  height: 400px;
   background: var(--theme-accent, #00C9FF);
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  animation: blob-heartbeat 12s infinite alternate ease-in-out;
-  opacity: 0.1;
-  filter: blur(60px);
+  animation: blob-heartbeat 15s infinite alternate ease-in-out, nebula-flow 30s infinite linear;
+  opacity: 0.15;
+  filter: blur(80px);
 }
 
 .glow-blob-5 {
-  width: 800px;
-  height: 800px;
+  width: 900px;
+  height: 900px;
   background: var(--theme-accent-dim, rgba(255,255,255,0.05));
   bottom: -200px;
   left: -200px;
-  animation: blob-rotate 40s infinite linear;
-  opacity: 0.05;
-  filter: blur(120px);
+  animation: blob-rotate 60s infinite linear, nebula-flow 45s infinite reverse linear;
+  opacity: 0.08;
+  filter: blur(140px);
+}
+
+.glow-shine {
+  width: 150px;
+  height: 150px;
+  background: radial-gradient(circle, #FFFFFF 0%, var(--theme-accent) 50%, transparent 100%);
+  top: 30%;
+  right: 20%;
+  animation: blob-float 10s infinite alternate ease-in-out, sparkle-pulse 4s infinite alternate ease-in-out;
+  opacity: 0.25;
+  filter: blur(40px);
+  mix-blend-mode: plus-lighter;
 }
 
 .luminous-noise {
   position: fixed;
   inset: 0;
   z-index: 1;
-  opacity: 0.015;
+  opacity: 0.02;
   pointer-events: none;
   background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
 }
 
-/* Hardened Glass for Dark Themes */
+/* Hardened Glass for Dark Themes with Neon Pulse */
 body:not(.theme-light-surface) .glass-card {
-  backdrop-filter: blur(25px);
+  backdrop-filter: blur(35px);
   box-shadow: 
-    0 8px 32px 0 rgba(0,0,0,0.37),
-    inset 0 0 15px 0 var(--theme-accent-dim, rgba(255,255,255,0.05)),
-    0 0 0 1px rgba(255,255,255,0.08);
+    0 8px 32px 0 rgba(0,0,0,0.45),
+    inset 0 0 20px 0 var(--theme-accent-dim, rgba(255,255,255,0.05)),
+    0 0 0 1px rgba(255,255,255,0.1);
+  border: 1px solid rgba(255,255,255,0.05);
+  animation: glass-neon-pulse 8s infinite alternate ease-in-out;
+}
+
+@keyframes glass-neon-pulse {
+  0% { border-color: rgba(255,255,255,0.05); box-shadow: 0 8px 32px 0 rgba(0,0,0,0.45), inset 0 0 20px 0 var(--theme-accent-dim); }
+  100% { border-color: var(--theme-accent-dim); box-shadow: 0 12px 48px 0 rgba(0,0,0,0.55), inset 0 0 30px 0 var(--theme-accent-dim), 0 0 15px var(--theme-accent-dim); }
+}
+
+@keyframes nebula-flow {
+  0% { filter: blur(80px) hue-rotate(0deg); }
+  100% { filter: blur(80px) hue-rotate(360deg); }
+}
+
+@keyframes sparkle-pulse {
+  0% { transform: scale(1) translate(0,0); opacity: 0.15; }
+  100% { transform: scale(1.5) translate(20px, -20px); opacity: 0.35; }
 }
 
 @keyframes blob-float {
