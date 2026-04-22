@@ -1973,11 +1973,11 @@ body.theme-surf-neon {
 /* READABILITY OVERRIDES FOR LIGHT THEMES */
 
 /* Nuclear CSS - Overrides inline white text ONLY if outside of our dark bubbles */
-body.theme-light-surface [style*="color: #fff"]:not(.glass-card):not(.card):not(.glass-card *):not(.card *),
-body.theme-light-surface [style*="color: white"]:not(.glass-card):not(.card):not(.glass-card *):not(.card *),
-body.theme-light-surface [style*="color: rgb(255, 255, 255)"]:not(.glass-card):not(.card):not(.glass-card *):not(.card *),
-body.theme-light-surface [style*="color: rgba(255, 255, 255, 1)"]:not(.glass-card):not(.card):not(.glass-card *):not(.card *),
-body.theme-light-surface [style*="color: #FFFFFF"]:not(.glass-card):not(.card):not(.glass-card *):not(.card *),
+body.theme-light-surface [style*="color: #fff"]:not(.glass-card):not(.card):not(.glass-card *):not(.card *):not([style*="color: #FFFFFF"]),
+body.theme-light-surface [style*="color: white"]:not(.glass-card):not(.card):not(.glass-card *):not(.card *):not([style*="color: #FFFFFF"]),
+body.theme-light-surface [style*="color: rgb(255, 255, 255)"]:not(.glass-card):not(.card):not(.glass-card *):not(.card *):not([style*="color: #FFFFFF"]),
+body.theme-light-surface [style*="color: rgba(255, 255, 255, 1)"]:not(.glass-card):not(.card):not(.glass-card *):not(.card *):not([style*="color: #FFFFFF"]),
+body.theme-light-surface [style*="color: #FFFFFF"]:not(.glass-card):not(.card):not(.glass-card *):not(.card *) {
 body.theme-light-surface .meal-hdr,
 body.theme-light-surface .meal-cals,
 body.theme-light-surface .meal-add-btn,
