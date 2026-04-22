@@ -63,10 +63,6 @@ export const BadgesView: React.FC = () => {
     { id: 'mango-salsa', name: 'Mango Salsa', emoji: '🥭', price: 0, colors: ['#FFF7ED', '#F97316'] },
     { id: 'hibiscus-bloom', name: 'Hibiscus Bloom', emoji: '🌺', price: 0, colors: ['#FFF1F2', '#E11D48'] },
     { id: 'blue-hawaiian', name: 'Blue Hawaiian', emoji: '🍹', price: 0, colors: ['#EFF6FF', '#3B82F6'] },
-    { id: 'solar-breeze', name: 'Solar Breeze', emoji: '☀️', price: 0, colors: ['#FEFCE8', '#F59E0B'] },
-    { id: 'coconut-milk', name: 'Coconut Milk', emoji: '🥥', price: 0, colors: ['#FAFAFA', '#71717A'] },
-    { id: 'golden-pine', name: 'Golden Pine', emoji: '🍍', price: 0, colors: ['#FEFCE8', '#84CC16'] },
-    { id: 'lava-orchid', name: 'Lava Orchid', emoji: '🌋', price: 0, colors: ['#FDF2F8', '#DB2777'] },
     { id: 'surf-neon', name: 'Surf Neon', emoji: '🏄', price: 0, colors: ['#ECFEFF', '#D946EF'] },
   ];
 
