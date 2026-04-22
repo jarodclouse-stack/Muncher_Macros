@@ -22,7 +22,8 @@ export const SearchCoaster: React.FC<SearchCoasterProps> = ({ activeTab, onTabCh
       backdropFilter: 'blur(18px)',
       boxShadow: '0 15px 45px rgba(0,0,0,0.3)',
       margin: '0 0 16px 0',
-      overflow: 'hidden' // Contain the heartbeat
+      overflow: 'hidden', // Contain the heartbeat
+      flexShrink: 0
     }}>
       {/* Secret Heartbeat Glow */}
       <div style={{

@@ -2075,3 +2075,8 @@ body.theme-light-surface .search-tab-active {
   0% { opacity: 0.1; transform: scale(0.9); }
   100% { opacity: 0.2; transform: scale(1.2); }
 }
+@keyframes searching-bar {
+  0% { left: -40%; width: 30%; }
+  50% { left: 40%; width: 50%; }
+  100% { left: 110%; width: 30%; }
+}

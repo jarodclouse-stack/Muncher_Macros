@@ -293,9 +293,33 @@ export const AddFoodModal: React.FC<AddFoodModalProps> = ({ meal, onClose }) => 
                     }}
                     style={{ width: '100%', padding: 'var(--space-md) var(--space-md) var(--space-md) 44px', background: 'var(--theme-input-bg)', border: '1px solid var(--theme-border)', borderRadius: '18px', color: 'var(--theme-text)', outline: 'none', fontSize: '15px', minHeight: '52px' }}
                   />
-                  <div style={{ position: 'absolute', left: '16px', top: '50%', transform: 'translateY(-50%)', color: 'var(--theme-text-dim)' }}>
+                  <div style={{ position: 'absolute', left: '16px', top: '50%', transform: 'translateY(-50%)', color: 'var(--theme-accent)' }}>
                     {searching ? <Loader2 className="spin" size={20} /> : <Search size={20} />}
                   </div>
+                  
+                  {/* High-Fidelity Loading Progress Bar */}
+                  {searching && (
+                    <div style={{ 
+                      position: 'absolute',
+                      bottom: '-4px',
+                      left: '20px',
+                      right: '20px',
+                      height: '3px', 
+                      background: 'rgba(255,255,255,0.05)', 
+                      borderRadius: '3px', 
+                      overflow: 'hidden',
+                      zIndex: 10
+                    }}>
+                      <div style={{ 
+                        height: '100%', 
+                        width: '40%', 
+                        background: 'var(--theme-accent)', 
+                        borderRadius: '3px',
+                        boxShadow: '0 0 10px var(--theme-accent)',
+                        animation: 'searching-bar 1.5s infinite ease-in-out' 
+                      }} />
+                    </div>
+                  )}
                 </div>
               </form>
 
