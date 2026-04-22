@@ -1804,8 +1804,8 @@ body div.card * {
 
 body.theme-light-surface .glass-card,
 body.theme-light-surface .card {
-  --theme-text-on-panel: var(--theme-neon-goal, #FFFFFF);
-  --theme-text-dim-on-panel: rgba(255, 255, 255, 0.85);
+  --theme-text-on-panel: #FFFFFF !important;
+  --theme-text-dim-on-panel: rgba(255, 255, 255, 0.9) !important;
 }
 
 /* Secondary labels/dim text synchronization at high-fidelity white */
