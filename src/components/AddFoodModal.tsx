@@ -291,7 +291,18 @@ export const AddFoodModal: React.FC<AddFoodModalProps> = ({ meal, onClose }) => 
                       setQuery(e.target.value);
                       if (errorMsg) setErrorMsg('');
                     }}
-                    style={{ width: '100%', padding: 'var(--space-md) var(--space-md) var(--space-md) 44px', background: 'var(--theme-input-bg)', border: '1px solid var(--theme-border)', borderRadius: '18px', color: 'var(--theme-text)', outline: 'none', fontSize: '15px', minHeight: '52px' }}
+                    style={{ 
+                      width: '100%', 
+                      padding: 'var(--space-md) var(--space-md) var(--space-md) 44px', 
+                      background: 'rgba(10, 30, 33, 0.08)', 
+                      border: '1px solid var(--theme-border)', 
+                      borderRadius: '18px', 
+                      color: 'var(--theme-text)', 
+                      outline: 'none', 
+                      fontSize: '15px', 
+                      minHeight: '52px',
+                      boxShadow: 'inset 0 2px 4px rgba(0,0,0,0.05)'
+                    }}
                   />
                   <div style={{ position: 'absolute', left: '16px', top: '50%', transform: 'translateY(-50%)', color: 'var(--theme-accent)' }}>
                     {searching ? <Loader2 className="spin" size={20} /> : <Search size={20} />}
