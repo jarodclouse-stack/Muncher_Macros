@@ -1861,7 +1861,7 @@ body .card [style*="color: var(--theme-error)"] {
 /* TROPICAL ESCAPE COLLECTION 🏝️ */
 
 body.theme-island-palm {
-  --theme-bg: radial-gradient(circle at 50% 50%, #DCFCE7 0%, #BBF7D0 50%, #F0FDF4 100%);
+  --theme-bg: #F0FDF4;
   --theme-panel: hsla(145, 70%, 98%, 0.4);
   --theme-panel-tint: hsla(145, 60%, 92%, 0.4);
   --theme-panel-base: hsla(145, 70%, 99%, 0.5);
@@ -1879,7 +1879,7 @@ body.theme-island-palm {
 }
 
 body.theme-azure-tide {
-  --theme-bg: radial-gradient(circle at 50% 50%, #BAE6FD 0%, #7DD3FC 50%, #F0F9FF 100%);
+  --theme-bg: #F0F9FF;
   --theme-panel: hsla(199, 100%, 98%, 0.4);
   --theme-panel-tint: hsla(199, 80%, 90%, 0.4);
   --theme-panel-base: hsla(199, 100%, 99%, 0.5);
@@ -1897,7 +1897,7 @@ body.theme-azure-tide {
 }
 
 body.theme-mango-salsa {
-  --theme-bg: radial-gradient(circle at 50% 50%, #FFEDD5 0%, #FED7AA 50%, #FFF7ED 100%);
+  --theme-bg: #FFF7ED;
   --theme-panel: hsla(32, 100%, 98%, 0.4);
   --theme-panel-tint: hsla(32, 90%, 92%, 0.4);
   --theme-panel-base: hsla(32, 100%, 99%, 0.5);
@@ -1915,7 +1915,7 @@ body.theme-mango-salsa {
 }
 
 body.theme-hibiscus-bloom {
-  --theme-bg: radial-gradient(circle at 50% 50%, #FFE4E6 0%, #FECDD3 50%, #FFF1F2 100%);
+  --theme-bg: #FFF1F2;
   --theme-panel: hsla(350, 100%, 98%, 0.4);
   --theme-panel-tint: hsla(350, 90%, 92%, 0.4);
   --theme-panel-base: hsla(350, 100%, 99%, 0.5);
@@ -1933,7 +1933,7 @@ body.theme-hibiscus-bloom {
 }
 
 body.theme-blue-hawaiian {
-  --theme-bg: radial-gradient(circle at 50% 50%, #DBEAFE 0%, #BFDBFE 50%, #EFF6FF 100%);
+  --theme-bg: #EFF6FF;
   --theme-panel: hsla(214, 100%, 98%, 0.4);
   --theme-panel-tint: hsla(214, 90%, 92%, 0.4);
   --theme-panel-base: hsla(214, 100%, 99%, 0.5);
@@ -1951,7 +1951,7 @@ body.theme-blue-hawaiian {
 }
 
 body.theme-surf-neon {
-  --theme-bg: radial-gradient(circle at 50% 50%, #F5D0FE 0%, #F0ABFC 50%, #ECFEFF 100%);
+  --theme-bg: #ECFEFF;
   --theme-panel: hsla(285, 100%, 98%, 0.4);
   --theme-panel-tint: hsla(285, 90%, 92%, 0.4);
   --theme-panel-base: hsla(285, 100%, 99%, 0.5);
@@ -2040,6 +2040,12 @@ body.theme-light-surface .luminous-macro-denom {
   filter: blur(80px);
   opacity: 0.15;
   mix-blend-mode: screen;
+}
+
+body.theme-light-surface .glow-blob {
+  mix-blend-mode: multiply;
+  opacity: 0.1;
+  filter: blur(100px);
 }
 
 .glow-blob-1 {
