@@ -1798,6 +1798,19 @@ body.theme-light-surface .inp::placeholder {
   color: var(--theme-placeholder) !important;
 }
 
+/* DIARY HEADER DARKENING FOR LIGHT THEMES */
+body.theme-light-surface .diary-header-text {
+  color: #1e293b !important; /* Deep dark slate */
+  text-shadow: none !important;
+  opacity: 1 !important;
+}
+
+body.theme-light-surface div.diary-header-subtitle,
+body.theme-light-surface .diary-header-text:not(h2) {
+  color: #475569 !important; /* Subtitle slightly lighter but still very dark */
+  opacity: 0.8 !important;
+}
+
 /* --- LUMINOUS MASTER CONTRAST VAULT --- */
 
 /* Absolute Synchronization: All descendants of analytical bubbles MUST match the Cheer Banner color */
