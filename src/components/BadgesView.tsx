@@ -57,13 +57,7 @@ export const BadgesView: React.FC = () => {
     { id: 'sandstone', name: 'Sandstone', emoji: '🏜️', price: 0, colors: ['#F4E8D1', '#A67C52'] },
     { id: 'oracles-vision', name: 'Oracle\'s Vision', emoji: '🔮', price: 0, colors: ['#0D0B12', '#C084FC'] },
     { id: 'ember-forge', name: 'Ember Forge', emoji: '⚒️', price: 0, colors: ['#1B0B04', '#FF4500'] },
-    // Tropical Escape Collection 🏝️
-    { id: 'island-palm', name: 'Island Palm', emoji: '🌴', price: 0, colors: ['#F0FDF4', '#10B981'] },
-    { id: 'azure-tide', name: 'Azure Tide', emoji: '🌊', price: 0, colors: ['#F0F9FF', '#06B6D4'] },
-    { id: 'mango-salsa', name: 'Mango Salsa', emoji: '🥭', price: 0, colors: ['#FFF7ED', '#F97316'] },
-    { id: 'hibiscus-bloom', name: 'Hibiscus Bloom', emoji: '🌺', price: 0, colors: ['#FFF1F2', '#E11D48'] },
-    { id: 'blue-hawaiian', name: 'Blue Hawaiian', emoji: '🍹', price: 0, colors: ['#EFF6FF', '#3B82F6'] },
-    { id: 'surf-neon', name: 'Surf Neon', emoji: '🏄', price: 0, colors: ['#ECFEFF', '#D946EF'] },
+    // Tropical Escape Collection removed
   ];
 
   const handleSelectTheme = (t: any) => {
