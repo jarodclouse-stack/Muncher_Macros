@@ -196,7 +196,7 @@ const NavItem = ({ active, onClick, label, icon }: { active: boolean, onClick: (
       background: active ? 'color-mix(in srgb, var(--theme-accent) 40%, transparent)' : 'none',
       border: 'none', 
       borderRadius: '12px',
-      color: active ? 'var(--theme-accent, #00C9FF)' : 'var(--theme-text-dim, #8b8b9b)', 
+      color: active ? 'color-mix(in srgb, var(--theme-accent) 70%, var(--theme-text))' : 'var(--theme-text-dim, #8b8b9b)', 
       display: 'flex', 
       flexDirection: 'column', 
       alignItems: 'center', 
