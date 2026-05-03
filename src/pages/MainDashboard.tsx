@@ -6,15 +6,16 @@ import { ProgressView } from '../components/ProgressView';
 import { BadgesView } from '../components/BadgesView';
 import { PantryView } from '../components/PantryView';
 import { SettingsView } from '../components/SettingsView';
+import { ThemesView } from '../components/ThemesView';
 import { useDiary } from '../context/DiaryContext';
 import { getRewardBreakdown } from '../lib/reward-utils';
-import { LogOut, Activity, Flame, Utensils, Award, Plus, Settings, Gem, X, Info } from 'lucide-react';
+import { LogOut, Activity, Flame, Utensils, Award, Plus, Settings, Gem, X, Info, Palette } from 'lucide-react';
 import legacyLogo from '../assets/logo_legacy.png';
 
 export const MainDashboard: React.FC = () => {
   const { user, logout } = useAuth();
   const { localCache, isScannerActive } = useDiary();
-  const [activeTab, setActiveTab] = useState<'diary' | 'nutrition' | 'progress' | 'badges' | 'pantry'>('diary');
+  const [activeTab, setActiveTab] = useState<'diary' | 'nutrition' | 'progress' | 'badges' | 'pantry' | 'themes'>('diary');
   const [showRewardModal, setShowRewardModal] = useState(false);
   const [showSettingsModal, setShowSettingsModal] = useState(false);
   
@@ -30,7 +31,7 @@ export const MainDashboard: React.FC = () => {
           display: 'flex', 
           justifyContent: 'space-between', 
           alignItems: 'center', 
-          padding: 'calc(16px + env(safe-area-inset-top)) 20px 16px', 
+          padding: 'calc(8px + env(safe-area-inset-top)) 16px 8px', 
           background: 'var(--theme-panel, rgba(10, 30, 33, 0.72))', 
           borderBottom: '1px solid var(--theme-border, rgba(255,255,255,0.05))', 
           backdropFilter: 'blur(22px)', 
@@ -42,8 +43,8 @@ export const MainDashboard: React.FC = () => {
           <div style={{ display: 'flex', alignItems: 'center', gap: '12px', cursor: 'pointer' }} onClick={() => setShowSettingsModal(true)}>
             <div 
               style={{ 
-                width: '40px',
-                height: '40px',
+                width: '32px',
+                height: '32px',
                 borderRadius: '12px',
                 overflow: 'hidden',
                 boxShadow: '0 8px 16px rgba(0,0,0,0.3)',
@@ -56,15 +57,16 @@ export const MainDashboard: React.FC = () => {
               <img src={legacyLogo} alt="MM" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
             </div>
             <div>
-              <h1 style={{ fontSize: '15px', fontWeight: '900', margin: 0, display: 'flex', alignItems: 'center', gap: '8px', textTransform: 'uppercase', letterSpacing: '1px', textShadow: '0 0 10px rgba(0,201,255,0.2)' }}>
-                {activeTab === 'diary' && <Utensils size={18} color="var(--theme-accent)" />}
-                {activeTab === 'nutrition' && <Activity size={18} color="var(--theme-accent)" />}
-                {activeTab === 'pantry' && <Plus size={18} color="var(--theme-accent)" />}
-                {activeTab === 'progress' && <Flame size={18} color="var(--theme-accent)" />}
-                {activeTab === 'badges' && <Award size={18} color="var(--theme-accent)" />}
+              <h1 style={{ fontSize: '13px', fontWeight: '900', margin: 0, display: 'flex', alignItems: 'center', gap: '8px', textTransform: 'uppercase', letterSpacing: '1px', textShadow: '0 0 10px rgba(0,201,255,0.2)' }}>
+                {activeTab === 'diary' && <Utensils size={16} color="var(--theme-accent)" />}
+                {activeTab === 'nutrition' && <Activity size={16} color="var(--theme-accent)" />}
+                {activeTab === 'pantry' && <Plus size={16} color="var(--theme-accent)" />}
+                {activeTab === 'progress' && <Flame size={16} color="var(--theme-accent)" />}
+                {activeTab === 'badges' && <Award size={16} color="var(--theme-accent)" />}
+                {activeTab === 'themes' && <Palette size={16} color="var(--theme-accent)" />}
                 {activeTab === 'pantry' ? 'ADD FOOD' : activeTab.toUpperCase()}
               </h1>
-              <p style={{ fontSize: '11px', color: 'var(--theme-text-dim, #8b8b9b)', margin: '2px 0 0 0', fontWeight: '600', opacity: 0.8 }}>Macro Munchers • {user?.email?.split('@')[0] || 'Guest'}</p>
+              <p style={{ fontSize: '10px', color: 'var(--theme-text-dim, #8b8b9b)', margin: '2px 0 0 0', fontWeight: '600', opacity: 0.8 }}>Macro Munchers • {user?.email?.split('@')[0] || 'Guest'}</p>
             </div>
           </div>
           
@@ -73,6 +75,16 @@ export const MainDashboard: React.FC = () => {
             <div style={{ display: 'flex', borderRight: '1px solid var(--theme-border, rgba(255,255,255,0.1))', paddingRight: '10px', gap: '6px' }}>
               <RewardChip icon={<Flame size={14} color="#FF6B6B" />} value={streak} label="Strk" onClick={() => setShowRewardModal(true)} />
               <RewardChip icon={<Gem size={14} color="#FFD700" />} value={gems} label="Gems" onClick={() => setShowRewardModal(true)} />
+            </div>
+
+            {/* Badges and Themes Nav */}
+            <div style={{ display: 'flex', gap: '6px', borderRight: '1px solid var(--theme-border, rgba(255,255,255,0.1))', paddingRight: '10px', marginRight: '4px' }}>
+              <button onClick={() => setActiveTab('badges')} style={{ background: activeTab==='badges' ? 'var(--theme-accent-dim)' : 'transparent', border: 'none', color: activeTab==='badges' ? 'var(--theme-accent)' : 'var(--theme-text-dim)', padding: '6px', borderRadius: '8px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <Award size={16} />
+              </button>
+              <button onClick={() => setActiveTab('themes')} style={{ background: activeTab==='themes' ? 'var(--theme-accent-dim)' : 'transparent', border: 'none', color: activeTab==='themes' ? 'var(--theme-accent)' : 'var(--theme-text-dim)', padding: '6px', borderRadius: '8px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <Palette size={16} />
+              </button>
             </div>
 
             <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', minWidth: '32px' }}>
@@ -97,6 +109,7 @@ export const MainDashboard: React.FC = () => {
         {activeTab === 'nutrition' && <NutritionView />}
         {activeTab === 'progress' && <ProgressView />}
         {activeTab === 'badges' && <BadgesView />}
+        {activeTab === 'themes' && <ThemesView />}
         {activeTab === 'pantry' && <PantryView />}
       </main>
 
@@ -182,7 +195,6 @@ export const MainDashboard: React.FC = () => {
           <NavItem active={activeTab === 'nutrition'} onClick={() => setActiveTab('nutrition')} label="Nutrition" icon={<Activity size={18} />} />
           <NavItem active={activeTab === 'pantry'} onClick={() => setActiveTab('pantry')} label="Add Food" icon={<Plus size={18} />} />
           <NavItem active={activeTab === 'progress'} onClick={() => setActiveTab('progress')} label="Goals" icon={<Flame size={18} />} />
-          <NavItem active={activeTab === 'badges'} onClick={() => setActiveTab('badges')} label="Badges/Themes" icon={<Award size={18} />} />
         </nav>
       )}
 

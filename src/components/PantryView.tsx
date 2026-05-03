@@ -1102,8 +1102,8 @@ export const PantryView: React.FC = () => {
               setPantryMode('create');
               setCreateTab('basics');
             }}
-            style={{ width: '100%', padding: '16px', background: 'var(--theme-accent)', border: 'none', borderRadius: '16px', color: 'var(--theme-bg, #000)', fontWeight: '900', fontSize: '14px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', boxShadow: '0 8px 24px rgba(0,201,255,0.2)' }}>
-            <Plus size={20} /> CREATE NEW FOOD OR RECIPE
+            style={{ width: '100%', padding: '12px 16px', background: 'var(--theme-accent)', border: 'none', borderRadius: '16px', color: 'var(--theme-bg, #000)', fontWeight: '900', fontSize: '13px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', boxShadow: '0 8px 24px rgba(0,201,255,0.2)' }}>
+            <Plus size={16} /> CREATE NEW FOOD OR RECIPE
           </button>
 
           {/* Filters from Image 2 */}
