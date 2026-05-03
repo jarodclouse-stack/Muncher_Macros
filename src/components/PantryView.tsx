@@ -766,24 +766,24 @@ export const PantryView: React.FC = () => {
                  <EntryField label="Protein (g)" value={String(form.p || 0)} onChange={v => {
                    const p = parseFloat(v) || 0;
                    const nextForm = {...form, p};
-                   const smartCal = (nextForm.p * 4) + (nextForm.c * 4) + (nextForm.f * 9);
+                   const smartCal = ((nextForm.p || 0) * 4) + ((nextForm.c || 0) * 4) + ((nextForm.f || 0) * 9);
                    setForm({...nextForm, cal: Math.round(smartCal)});
                  }} placeholder="0" />
                  <EntryField label="Carbs (g)" value={String(form.c || 0)} onChange={v => {
                    const c = parseFloat(v) || 0;
                    const nextForm = {...form, c};
-                   const smartCal = (nextForm.p * 4) + (nextForm.c * 4) + (nextForm.f * 9);
+                   const smartCal = ((nextForm.p || 0) * 4) + ((nextForm.c || 0) * 4) + ((nextForm.f || 0) * 9);
                    setForm({...nextForm, cal: Math.round(smartCal)});
                  }} placeholder="0" />
                  <EntryField label="Fat (g)" value={String(form.f || 0)} onChange={v => {
                    const f = parseFloat(v) || 0;
                    const nextForm = {...form, f};
-                   const smartCal = (nextForm.p * 4) + (nextForm.c * 4) + (nextForm.f * 9);
+                   const smartCal = ((nextForm.p || 0) * 4) + ((nextForm.c || 0) * 4) + ((nextForm.f || 0) * 9);
                    setForm({...nextForm, cal: Math.round(smartCal)});
                  }} placeholder="0" />
                  <div style={{ position: 'relative' }}>
                     <EntryField label="Calories (Total)" value={String(form.cal || 0)} onChange={v => setForm({...form, cal: parseFloat(v) || 0})} placeholder="0" />
-                    <div style={{ position: 'absolute', top: '10px', right: '10px', fontSize: '8px', color: 'var(--theme-accent)', fontWeight: '900' }}>4-4-9 SMART</div>
+                    <div style={{ position: 'absolute', top: '10px', right: '10px', fontSize: '8px', color: 'var(--theme-accent)', fontWeight: '900' }}>P:4 C:4 F:9 SMART</div>
                  </div>
               </div>
 
