@@ -70,23 +70,23 @@ export const MainDashboard: React.FC = () => {
             </div>
           </div>
           
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginLeft: 'auto' }}>
-            {/* Rewards Section */}
-            <div style={{ display: 'flex', borderRight: '1px solid var(--theme-border, rgba(255,255,255,0.1))', paddingRight: '10px', gap: '6px' }}>
-              <RewardChip icon={<Flame size={14} color="#FF6B6B" />} value={streak} label="Strk" onClick={() => setShowRewardModal(true)} />
-              <RewardChip icon={<Gem size={14} color="#FFD700" />} value={gems} label="Gems" onClick={() => setShowRewardModal(true)} />
+          <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginLeft: 'auto' }}>
+            {/* Badges and Themes Nav */}
+            <div style={{ display: 'flex', gap: '4px', borderRight: '1px solid var(--theme-border, rgba(255,255,255,0.1))', paddingRight: '6px' }}>
+              <button onClick={() => setActiveTab('badges')} style={{ background: activeTab==='badges' ? 'var(--theme-accent-dim)' : 'var(--theme-panel, rgba(255,255,255,0.03))', border: activeTab==='badges' ? '1px solid var(--theme-accent)' : '1px solid var(--theme-border, rgba(255,255,255,0.05))', color: activeTab==='badges' ? 'var(--theme-accent)' : 'var(--theme-text)', padding: '6px 8px', borderRadius: '12px', cursor: 'pointer', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '2px', transition: 'all 0.2s', minWidth: '44px' }}>
+                <Award size={14} color={activeTab==='badges' ? 'var(--theme-accent)' : '#A5B4FC'} />
+                <span style={{ fontSize: '9px', fontWeight: '800', letterSpacing: '0.5px', textTransform: 'uppercase' }}>Badges</span>
+              </button>
+              <button onClick={() => setActiveTab('themes')} style={{ background: activeTab==='themes' ? 'var(--theme-accent-dim)' : 'var(--theme-panel, rgba(255,255,255,0.03))', border: activeTab==='themes' ? '1px solid var(--theme-accent)' : '1px solid var(--theme-border, rgba(255,255,255,0.05))', color: activeTab==='themes' ? 'var(--theme-accent)' : 'var(--theme-text)', padding: '6px 8px', borderRadius: '12px', cursor: 'pointer', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '2px', transition: 'all 0.2s', minWidth: '44px' }}>
+                <Palette size={14} color={activeTab==='themes' ? 'var(--theme-accent)' : '#E0AAFF'} />
+                <span style={{ fontSize: '9px', fontWeight: '800', letterSpacing: '0.5px', textTransform: 'uppercase' }}>Themes</span>
+              </button>
             </div>
 
-            {/* Badges and Themes Nav */}
-            <div style={{ display: 'flex', gap: '6px', borderRight: '1px solid var(--theme-border, rgba(255,255,255,0.1))', paddingRight: '10px', marginRight: '4px' }}>
-              <button onClick={() => setActiveTab('badges')} style={{ background: activeTab==='badges' ? 'var(--theme-accent-dim)' : 'var(--theme-panel, rgba(255,255,255,0.03))', border: activeTab==='badges' ? '1px solid var(--theme-accent)' : '1px solid var(--theme-border, rgba(255,255,255,0.05))', color: activeTab==='badges' ? 'var(--theme-accent)' : 'var(--theme-text)', padding: '6px 12px', borderRadius: '12px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', transition: 'all 0.2s' }}>
-                <Award size={14} color={activeTab==='badges' ? 'var(--theme-accent)' : '#A5B4FC'} />
-                <span style={{ fontSize: '11px', fontWeight: '800', letterSpacing: '0.5px', textTransform: 'uppercase' }}>Badges</span>
-              </button>
-              <button onClick={() => setActiveTab('themes')} style={{ background: activeTab==='themes' ? 'var(--theme-accent-dim)' : 'var(--theme-panel, rgba(255,255,255,0.03))', border: activeTab==='themes' ? '1px solid var(--theme-accent)' : '1px solid var(--theme-border, rgba(255,255,255,0.05))', color: activeTab==='themes' ? 'var(--theme-accent)' : 'var(--theme-text)', padding: '6px 12px', borderRadius: '12px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', transition: 'all 0.2s' }}>
-                <Palette size={14} color={activeTab==='themes' ? 'var(--theme-accent)' : '#E0AAFF'} />
-                <span style={{ fontSize: '11px', fontWeight: '800', letterSpacing: '0.5px', textTransform: 'uppercase' }}>Themes</span>
-              </button>
+            {/* Rewards Section */}
+            <div style={{ display: 'flex', borderRight: '1px solid var(--theme-border, rgba(255,255,255,0.1))', paddingRight: '6px', gap: '4px' }}>
+              <RewardChip icon={<Flame size={14} color="#FF6B6B" />} value={streak} label="Strk" onClick={() => setShowRewardModal(true)} />
+              <RewardChip icon={<Gem size={14} color="#FFD700" />} value={gems} label="Gems" onClick={() => setShowRewardModal(true)} />
             </div>
 
             <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', minWidth: '32px' }}>
@@ -189,14 +189,14 @@ export const MainDashboard: React.FC = () => {
           backdropFilter: 'blur(20px) saturate(180%)', 
           WebkitBackdropFilter: 'blur(20px) saturate(180%)',
           borderTop: '1px solid var(--theme-border, rgba(255,255,255,0.05))', 
-          padding: '6px 12px calc(env(safe-area-inset-bottom) + 6px) 12px', 
+          padding: '4px 8px calc(env(safe-area-inset-bottom) + 4px) 8px', 
           zIndex: 100,
-          gap: '4px'
+          gap: '2px'
         }}>
-          <NavItem active={activeTab === 'diary'} onClick={() => setActiveTab('diary')} label="Diary" icon={<Utensils size={18} />} />
-          <NavItem active={activeTab === 'nutrition'} onClick={() => setActiveTab('nutrition')} label="Nutrition" icon={<Activity size={18} />} />
-          <NavItem active={activeTab === 'pantry'} onClick={() => setActiveTab('pantry')} label="Add Food" icon={<Plus size={18} />} />
-          <NavItem active={activeTab === 'progress'} onClick={() => setActiveTab('progress')} label="Goals" icon={<Flame size={18} />} />
+          <NavItem active={activeTab === 'diary'} onClick={() => setActiveTab('diary')} label="Diary" icon={<Utensils size={16} />} />
+          <NavItem active={activeTab === 'nutrition'} onClick={() => setActiveTab('nutrition')} label="Nutrition" icon={<Activity size={16} />} />
+          <NavItem active={activeTab === 'pantry'} onClick={() => setActiveTab('pantry')} label="Add Food" icon={<Plus size={16} />} />
+          <NavItem active={activeTab === 'progress'} onClick={() => setActiveTab('progress')} label="Goals" icon={<Flame size={16} />} />
         </nav>
       )}
 
@@ -212,7 +212,7 @@ const NavItem = ({ active, onClick, label, icon }: { active: boolean, onClick: (
     style={{ 
       background: active ? 'var(--theme-accent-dim)' : 'none', 
       border: 'none', 
-      borderRadius: '16px',
+      borderRadius: '12px',
       color: active ? 'var(--theme-accent, #00C9FF)' : 'var(--theme-text-dim, #8b8b9b)', 
       display: 'flex', 
       flexDirection: 'column', 
@@ -222,7 +222,7 @@ const NavItem = ({ active, onClick, label, icon }: { active: boolean, onClick: (
       cursor: 'pointer', 
       transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)', 
       flex: 1,
-      padding: '8px 4px',
+      padding: '4px',
       outline: 'none',
       position: 'relative',
       WebkitTapHighlightColor: 'transparent'
@@ -239,15 +239,15 @@ const NavItem = ({ active, onClick, label, icon }: { active: boolean, onClick: (
         borderRadius: '2px'
       }} />
     )}
-    <div style={{ transform: active ? 'scale(1.2)' : 'scale(1)', transition: 'transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1)' }}>
+    <div style={{ transform: active ? 'scale(1.15)' : 'scale(1)', transition: 'transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1)' }}>
       {icon}
     </div>
-    <span style={{ fontSize: '9px', fontWeight: active ? '900' : '600', letterSpacing: '0.04em', textTransform: 'uppercase' }}>{label}</span>
+    <span style={{ fontSize: '8px', fontWeight: active ? '900' : '600', letterSpacing: '0.04em', textTransform: 'uppercase' }}>{label}</span>
   </button>
 );
 
 const RewardChip = ({ icon, value, label, onClick }: { icon: React.ReactNode, value: number, label: string, onClick: () => void }) => (
-  <div onClick={onClick} style={{ display: 'flex', alignItems: 'center', gap: '6px', padding: '6px 12px', background: 'var(--theme-panel, rgba(255,255,255,0.03))', border: '1px solid var(--theme-border, rgba(255,255,255,0.05))', borderRadius: '12px', cursor: 'pointer', transition: 'all 0.2s' }}
+  <div onClick={onClick} style={{ display: 'flex', alignItems: 'center', gap: '6px', padding: '6px 8px', background: 'var(--theme-panel, rgba(255,255,255,0.03))', border: '1px solid var(--theme-border, rgba(255,255,255,0.05))', borderRadius: '12px', cursor: 'pointer', transition: 'all 0.2s' }}
     onMouseEnter={(e: React.MouseEvent<HTMLDivElement>) => e.currentTarget.style.background = 'rgba(255,255,255,0.08)'}
     onMouseLeave={(e: React.MouseEvent<HTMLDivElement>) => e.currentTarget.style.background = 'rgba(255,255,255,0.03)'}>
     {icon}
