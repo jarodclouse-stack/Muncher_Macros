@@ -506,7 +506,9 @@ export const PantryView: React.FC = () => {
                 <button 
                   onClick={() => {
                     setForm({...form, name: "New Product", barcode: searchQuery});
-                    setActiveTab('manual');
+                    setActiveTab('saved');
+                    setPantryMode('create');
+                    setCreateTab('basics');
                   }}
                   style={{ 
                     width: '100%', padding: '14px', background: 'var(--theme-accent)', border: 'none', 
@@ -1364,7 +1366,9 @@ export const PantryView: React.FC = () => {
                     setConfiguringFood(null);
                     setIngResults([]);
                     setIngQuery('');
-                    setActiveTab('manual');
+                    setActiveTab('saved');
+                    setPantryMode('create');
+                    setCreateTab('recipe');
                   }}
                   style={{ width: '100%', padding: '16px', background: 'rgba(255,255,255,0.05)', border: '1px solid var(--theme-border)', borderRadius: '16px', color: 'var(--theme-text)', fontWeight: '800', fontSize: '15px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px' }}>
                   <Sparkles size={18} color="var(--theme-accent)" /> USE AS INGREDIENT

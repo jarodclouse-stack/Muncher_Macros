@@ -34,7 +34,7 @@ export const AddFoodModal: React.FC<AddFoodModalProps> = ({ meal, onClose }) => 
   
   const [aiStagedResults, setAiStagedResults] = useState<any[]>([]);
   const [isAiReviewing, setIsAiReviewing] = useState(false);
-  const abortControllerRef = useRef<AbortController | null>(null);
+
 
 
   
