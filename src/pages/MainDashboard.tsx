@@ -41,21 +41,6 @@ export const MainDashboard: React.FC = () => {
           zIndex: 10 
         }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '12px', cursor: 'pointer' }} onClick={() => setShowSettingsModal(true)}>
-            <div 
-              style={{ 
-                width: '32px',
-                height: '32px',
-                borderRadius: '12px',
-                overflow: 'hidden',
-                boxShadow: '0 8px 16px rgba(0,0,0,0.3)',
-                border: '1px solid rgba(255,255,255,0.15)',
-                transition: 'transform 0.2s'
-              }}
-              onMouseEnter={(e: React.MouseEvent<HTMLDivElement>) => e.currentTarget.style.transform = 'scale(1.1)'}
-              onMouseLeave={(e: React.MouseEvent<HTMLDivElement>) => e.currentTarget.style.transform = 'scale(1)'}
-            >
-              <img src={legacyLogo} alt="MM" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-            </div>
             <div>
               <h1 style={{ fontSize: '13px', fontWeight: '900', margin: 0, display: 'flex', alignItems: 'center', gap: '8px', textTransform: 'uppercase', letterSpacing: '1px', textShadow: '0 0 10px rgba(0,201,255,0.2)' }}>
                 {activeTab === 'diary' && <Utensils size={16} color="var(--theme-accent)" />}
@@ -72,14 +57,14 @@ export const MainDashboard: React.FC = () => {
           
           <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginLeft: 'auto' }}>
             {/* Badges and Themes Nav */}
-            <div style={{ display: 'flex', gap: '4px', borderRight: '1px solid var(--theme-border, rgba(255,255,255,0.1))', paddingRight: '6px' }}>
-              <button onClick={() => setActiveTab('badges')} style={{ background: activeTab==='badges' ? 'var(--theme-accent-dim)' : 'var(--theme-panel, rgba(255,255,255,0.03))', border: activeTab==='badges' ? '1px solid var(--theme-accent)' : '1px solid var(--theme-border, rgba(255,255,255,0.05))', color: activeTab==='badges' ? 'var(--theme-accent)' : 'var(--theme-text)', padding: '6px 8px', borderRadius: '12px', cursor: 'pointer', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '2px', transition: 'all 0.2s', minWidth: '44px' }}>
-                <Award size={14} color={activeTab==='badges' ? 'var(--theme-accent)' : '#A5B4FC'} />
-                <span style={{ fontSize: '9px', fontWeight: '800', letterSpacing: '0.5px', textTransform: 'uppercase' }}>Badges</span>
+            <div style={{ display: 'flex', gap: '2px', borderRight: '1px solid var(--theme-border, rgba(255,255,255,0.1))', paddingRight: '4px' }}>
+              <button onClick={() => setActiveTab('badges')} style={{ background: activeTab==='badges' ? 'var(--theme-accent-dim)' : 'var(--theme-panel, rgba(255,255,255,0.03))', border: activeTab==='badges' ? '1px solid var(--theme-accent)' : '1px solid var(--theme-border, rgba(255,255,255,0.05))', color: activeTab==='badges' ? 'var(--theme-accent)' : 'var(--theme-text)', padding: '4px 6px', borderRadius: '10px', cursor: 'pointer', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '2px', transition: 'all 0.2s', minWidth: '38px' }}>
+                <Award size={12} color={activeTab==='badges' ? 'var(--theme-accent)' : '#A5B4FC'} />
+                <span style={{ fontSize: '8px', fontWeight: '800', letterSpacing: '0.5px', textTransform: 'uppercase' }}>Badges</span>
               </button>
-              <button onClick={() => setActiveTab('themes')} style={{ background: activeTab==='themes' ? 'var(--theme-accent-dim)' : 'var(--theme-panel, rgba(255,255,255,0.03))', border: activeTab==='themes' ? '1px solid var(--theme-accent)' : '1px solid var(--theme-border, rgba(255,255,255,0.05))', color: activeTab==='themes' ? 'var(--theme-accent)' : 'var(--theme-text)', padding: '6px 8px', borderRadius: '12px', cursor: 'pointer', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '2px', transition: 'all 0.2s', minWidth: '44px' }}>
-                <Palette size={14} color={activeTab==='themes' ? 'var(--theme-accent)' : '#E0AAFF'} />
-                <span style={{ fontSize: '9px', fontWeight: '800', letterSpacing: '0.5px', textTransform: 'uppercase' }}>Themes</span>
+              <button onClick={() => setActiveTab('themes')} style={{ background: activeTab==='themes' ? 'var(--theme-accent-dim)' : 'var(--theme-panel, rgba(255,255,255,0.03))', border: activeTab==='themes' ? '1px solid var(--theme-accent)' : '1px solid var(--theme-border, rgba(255,255,255,0.05))', color: activeTab==='themes' ? 'var(--theme-accent)' : 'var(--theme-text)', padding: '4px 6px', borderRadius: '10px', cursor: 'pointer', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '2px', transition: 'all 0.2s', minWidth: '38px' }}>
+                <Palette size={12} color={activeTab==='themes' ? 'var(--theme-accent)' : '#E0AAFF'} />
+                <span style={{ fontSize: '8px', fontWeight: '800', letterSpacing: '0.5px', textTransform: 'uppercase' }}>Themes</span>
               </button>
             </div>
 
@@ -247,13 +232,13 @@ const NavItem = ({ active, onClick, label, icon }: { active: boolean, onClick: (
 );
 
 const RewardChip = ({ icon, value, label, onClick }: { icon: React.ReactNode, value: number, label: string, onClick: () => void }) => (
-  <div onClick={onClick} style={{ display: 'flex', alignItems: 'center', gap: '6px', padding: '6px 8px', background: 'var(--theme-panel, rgba(255,255,255,0.03))', border: '1px solid var(--theme-border, rgba(255,255,255,0.05))', borderRadius: '12px', cursor: 'pointer', transition: 'all 0.2s' }}
+  <div onClick={onClick} style={{ display: 'flex', alignItems: 'center', gap: '4px', padding: '4px 6px', background: 'var(--theme-panel, rgba(255,255,255,0.03))', border: '1px solid var(--theme-border, rgba(255,255,255,0.05))', borderRadius: '10px', cursor: 'pointer', transition: 'all 0.2s' }}
     onMouseEnter={(e: React.MouseEvent<HTMLDivElement>) => e.currentTarget.style.background = 'rgba(255,255,255,0.08)'}
     onMouseLeave={(e: React.MouseEvent<HTMLDivElement>) => e.currentTarget.style.background = 'rgba(255,255,255,0.03)'}>
     {icon}
     <div style={{ display: 'flex', flexDirection: 'column', lineHeight: 1 }}>
-      <span style={{ fontSize: '14px', fontWeight: '900', color: 'var(--theme-text, #fff)' }}>{value}</span>
-      <span style={{ fontSize: '9px', color: '#8b8b9b', textTransform: 'uppercase', letterSpacing: '0.5px' }}>{label}</span>
+      <span style={{ fontSize: '12px', fontWeight: '900', color: 'var(--theme-text, #fff)' }}>{value}</span>
+      <span style={{ fontSize: '8px', color: '#8b8b9b', textTransform: 'uppercase', letterSpacing: '0.5px' }}>{label}</span>
     </div>
   </div>
 );
