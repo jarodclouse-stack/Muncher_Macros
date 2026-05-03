@@ -3,7 +3,7 @@ import { useDiary } from '../context/DiaryContext';
 import { 
   Plus, Check, X, Search, Sparkles, ChevronDown, 
   Flame, Activity, Trash2, Loader2, BookmarkCheck,
-  Info, FileText
+  Info, FileText, Edit2
 } from 'lucide-react';
 import { ALL_MICRO_KEYS, MICRO_UNITS, SERVING_UNITS, MICRO_CATEGORIES } from '../lib/constants';
 import { getNutrientDescriptions } from '../lib/nutrient-info';

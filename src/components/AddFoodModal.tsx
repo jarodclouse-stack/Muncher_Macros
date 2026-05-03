@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState } from 'react';
 import ReactDOM from 'react-dom';
 import { useDiary } from '../context/DiaryContext';
 import { SERVING_UNITS } from '../lib/constants';
