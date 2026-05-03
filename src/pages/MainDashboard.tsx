@@ -10,7 +10,6 @@ import { ThemesView } from '../components/ThemesView';
 import { useDiary } from '../context/DiaryContext';
 import { getRewardBreakdown } from '../lib/reward-utils';
 import { LogOut, Activity, Flame, Utensils, Award, Plus, Settings, Gem, X, Info, Palette } from 'lucide-react';
-import legacyLogo from '../assets/logo_legacy.png';
 
 export const MainDashboard: React.FC = () => {
   const { user, logout } = useAuth();
