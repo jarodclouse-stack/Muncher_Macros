@@ -1,7 +1,7 @@
 import React from 'react';
 import { useDiary } from '../context/DiaryContext';
 import { getRewardBreakdown } from '../lib/reward-utils';
-import { Palette, Check } from 'lucide-react';
+import { Check } from 'lucide-react';
 import { useTheme, type ThemeName } from '../context/ThemeContext';
 
 export const ThemesView: React.FC = () => {
