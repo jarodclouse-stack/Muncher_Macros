@@ -102,8 +102,8 @@ export const AddFoodModal: React.FC<AddFoodModalProps> = ({ meal, onClose }) => 
 
 
 
-  const handleAISearch = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleAISearch = async (e?: React.SyntheticEvent) => {
+    if (e && e.preventDefault) e.preventDefault();
     if (!query) return;
     setSearching(true);
     setErrorMsg('');
@@ -136,8 +136,8 @@ export const AddFoodModal: React.FC<AddFoodModalProps> = ({ meal, onClose }) => 
     setSearching(false);
   };
 
-  const handleAIDescribe = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleAIDescribe = async (e?: React.SyntheticEvent) => {
+    if (e && e.preventDefault) e.preventDefault();
     if (!mealDesc) return;
     setSearching(true);
     setResults([]);
@@ -249,6 +249,10 @@ export const AddFoodModal: React.FC<AddFoodModalProps> = ({ meal, onClose }) => 
                       const val = e.target.value;
                       setQuery(val);
                       if (errorMsg) setErrorMsg('');
+                      
+                      if (val.endsWith(' ') && val.trim().length > 0) {
+                        handleAISearch();
+                      }
                       
                       if (val.trim()) {
                         const customFoods: Food[] = localCache.customFoods || [];
@@ -384,8 +388,13 @@ export const AddFoodModal: React.FC<AddFoodModalProps> = ({ meal, onClose }) => 
                     placeholder="Describe your whole meal here... (e.g. '3 scrambled eggs with spinach and a cup of black coffee')"
                     value={mealDesc}
                     onChange={(e) => {
-                      setMealDesc(e.target.value);
+                      const val = e.target.value;
+                      setMealDesc(val);
                       if (errorMsg) setErrorMsg('');
+                      
+                      if (val.endsWith(' ') && val.trim().length > 0) {
+                        handleAIDescribe();
+                      }
                     }}
                     style={{ 
                       width: '100%', 

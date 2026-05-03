@@ -84,7 +84,7 @@ const NutrientDetailRow = ({ label, value, unit, benefit }: { label: string, val
         <span style={{ fontSize: '13px', fontWeight: '900', color: 'var(--theme-accent)' }}>{value}<span style={{fontSize:'10px', opacity:0.8, marginLeft: '2px'}}>{unit}</span></span>
       </div>
       {showBenefit && benefit && (
-        <div style={{ marginTop: '10px', fontSize: '11px', color: 'var(--theme-text-dim)', fontStyle: 'italic', borderTop: '1px solid var(--theme-border)', paddingTop: '10px', fontWeight: '600', lineHeight: '1.4' }}>
+        <div style={{ marginTop: '10px', fontSize: '11px', color: '#FFF', fontStyle: 'italic', borderTop: '1px solid var(--theme-border)', paddingTop: '10px', fontWeight: '600', lineHeight: '1.4' }}>
            {typeof benefit === 'string' ? benefit : benefit.summary}
         </div>
       )}
@@ -202,8 +202,8 @@ export const PantryView: React.FC = () => {
     setIsSearching(false);
   };
 
-  const handleGlobalAISearch = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleGlobalAISearch = async (e?: React.SyntheticEvent) => {
+    if (e && e.preventDefault) e.preventDefault();
     if (!searchQuery) return;
     setIsSearching(true);
     try {
@@ -220,8 +220,8 @@ export const PantryView: React.FC = () => {
     setIsSearching(false);
   };
 
-  const handleGlobalAIDescribe = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleGlobalAIDescribe = async (e?: React.SyntheticEvent) => {
+    if (e && e.preventDefault) e.preventDefault();
     if (!searchQuery) return;
     setIsSearching(true);
     setSearchResults([]);
@@ -466,7 +466,15 @@ export const PantryView: React.FC = () => {
                       type="text" 
                       placeholder={innerGlobalSearchTab === 'search' ? "Search for foods, brands..." : "Explain food (AI search)..."}
                       value={searchQuery}
-                      onChange={(e) => setSearchQuery(e.target.value)}
+                      onChange={(e) => {
+                        const val = e.target.value;
+                        setSearchQuery(val);
+                        if (val.endsWith(' ') && val.trim().length > 0) {
+                          if (innerGlobalSearchTab === 'search') handleGlobalSearch();
+                          else if (innerGlobalSearchTab === 'ai-search') handleGlobalAISearch();
+                          else handleGlobalAIDescribe();
+                        }
+                      }}
                       style={{ width: '100%', background: 'var(--theme-input-bg)', border: '1px solid var(--theme-border)', borderRadius: 'var(--radius-md)', padding: '12px 12px 12px 40px', color: 'var(--theme-text)', fontSize: '14px', outline: 'none' }}
                     />
                     <div style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: 'var(--theme-text-dim)' }}>
