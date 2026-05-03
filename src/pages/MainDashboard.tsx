@@ -193,10 +193,10 @@ const NavItem = ({ active, onClick, label, icon }: { active: boolean, onClick: (
     type="button"
     onClick={onClick} 
     style={{ 
-      background: active ? 'color-mix(in srgb, var(--theme-accent) 40%, transparent)' : 'none',
+      background: active ? 'color-mix(in srgb, var(--theme-text) 75%, transparent)' : 'none',
       border: 'none', 
       borderRadius: '12px',
-      color: active ? 'color-mix(in srgb, var(--theme-accent) 70%, var(--theme-text))' : 'var(--theme-text-dim, #8b8b9b)', 
+      color: active ? 'var(--theme-panel, #000)' : 'var(--theme-text-dim, #8b8b9b)', 
       display: 'flex', 
       flexDirection: 'column', 
       alignItems: 'center', 

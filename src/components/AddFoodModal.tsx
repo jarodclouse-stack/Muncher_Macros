@@ -229,7 +229,20 @@ export const AddFoodModal: React.FC<AddFoodModalProps> = ({ meal, onClose }) => 
                 style={{ display: 'flex', gap: '8px' }}
               >
                 <div style={{ position: 'relative', flex: 1 }}>
+                  <style>
+                    {`
+                      .ai-search-input-black::placeholder {
+                        color: #000 !important;
+                        opacity: 0.8 !important;
+                      }
+                      body.theme-dark .ai-search-input-black::placeholder {
+                        color: #fff !important;
+                        opacity: 0.8 !important;
+                      }
+                    `}
+                  </style>
                   <input 
+                    className="ai-search-input-black"
                     placeholder="Search library or Ask AI (e.g. '1/2 cup of blueberries')"
                     value={query}
                     onChange={(e) => {
