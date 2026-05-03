@@ -1201,7 +1201,7 @@ export const PantryView: React.FC = () => {
             background: 'var(--theme-bg, #0a0d11)', 
             borderTop: '2px solid var(--theme-accent)', 
             borderRadius: '24px 24px 0 0', 
-            padding: '24px', 
+            padding: '24px 24px 120px 24px', 
             overflowY: 'auto' 
           }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '20px' }}>

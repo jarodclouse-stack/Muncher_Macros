@@ -683,7 +683,7 @@ export const AddFoodModal: React.FC<AddFoodModalProps> = ({ meal, onClose }) => 
       {/* Food Configuration Overlay */}
       {configuringFood && (
           <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.7)', backdropFilter: 'blur(40px)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 6000, padding: '20px' }}>
-            <div className="glass-card" style={{ width: '100%', maxWidth: '500px', background: 'rgba(10,30,33,0.92)', borderRadius: '32px', border: '1px solid rgba(255,255,255,0.15)', padding: '24px 24px 60px', maxHeight: '90vh', overflowY: 'auto', boxShadow: '0 20px 50px rgba(0,0,0,0.6)', backdropFilter: 'blur(25px)' }}>
+            <div className="glass-card" style={{ width: '100%', maxWidth: '500px', background: 'rgba(10,30,33,0.92)', borderRadius: '32px', border: '1px solid rgba(255,255,255,0.15)', padding: '24px 24px 120px', maxHeight: '90vh', overflowY: 'auto', boxShadow: '0 20px 50px rgba(0,0,0,0.6)', backdropFilter: 'blur(25px)' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '20px' }}>
                 <div>
                   <input 
