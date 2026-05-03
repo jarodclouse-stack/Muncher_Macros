@@ -41,13 +41,13 @@ export const MainDashboard: React.FC = () => {
         }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '12px', cursor: 'pointer' }} onClick={() => setShowSettingsModal(true)}>
             <div>
-              <h1 style={{ fontFamily: "'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Inter', sans-serif", fontSize: '12px', fontWeight: '800', margin: 0, display: 'flex', alignItems: 'center', gap: '6px', textTransform: 'uppercase', letterSpacing: '2px', textShadow: '0 0 10px rgba(0,201,255,0.2)' }}>
-                {activeTab === 'diary' && <Utensils size={14} color="var(--theme-accent)" />}
-                {activeTab === 'nutrition' && <Activity size={14} color="var(--theme-accent)" />}
-                {activeTab === 'pantry' && <Plus size={14} color="var(--theme-accent)" />}
-                {activeTab === 'progress' && <Flame size={14} color="var(--theme-accent)" />}
-                {activeTab === 'badges' && <Award size={14} color="var(--theme-accent)" />}
-                {activeTab === 'themes' && <Palette size={14} color="var(--theme-accent)" />}
+              <h1 style={{ fontFamily: "'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Inter', sans-serif", fontSize: '10px', fontWeight: '800', margin: 0, display: 'flex', alignItems: 'center', gap: '6px', textTransform: 'uppercase', letterSpacing: '2px', textShadow: '0 0 10px rgba(0,201,255,0.2)' }}>
+                {activeTab === 'diary' && <Utensils size={12} color="var(--theme-accent)" />}
+                {activeTab === 'nutrition' && <Activity size={12} color="var(--theme-accent)" />}
+                {activeTab === 'pantry' && <Plus size={12} color="var(--theme-accent)" />}
+                {activeTab === 'progress' && <Flame size={12} color="var(--theme-accent)" />}
+                {activeTab === 'badges' && <Award size={12} color="var(--theme-accent)" />}
+                {activeTab === 'themes' && <Palette size={12} color="var(--theme-accent)" />}
                 {user?.email?.split('@')[0] || 'Guest'}
               </h1>
             </div>
