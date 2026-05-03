@@ -728,17 +728,19 @@ export const PantryView: React.FC = () => {
             </div>
         )}
 
-      {activeTab === 'saved' && pantryMode === 'create' && (
+{activeTab === 'saved' && pantryMode === 'create' && (
         <div style={{ padding: '0 20px' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '16px' }}>
             <button onClick={() => setPantryMode('list')} style={{ background: 'var(--theme-panel-dim)', border: 'none', borderRadius: '50%', width: '36px', height: '36px', color: 'var(--theme-text)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><ChevronDown size={20} style={{ transform: 'rotate(90deg)' }} /></button>
-            <h2 style={{ fontSize: '18px', fontWeight: '800', margin: 0, color: 'var(--theme-text)' }}>{editingIndex !== null ? 'EDIT KITCHEN ITEM' : 'KITCHEN LAB'}</h2>
+            <div style={{ background: 'var(--theme-panel-dim)', padding: '6px 16px', borderRadius: '20px' }}>
+              <h2 style={{ fontSize: '18px', fontWeight: '800', margin: 0, color: 'var(--theme-text)' }}>{editingIndex !== null ? 'EDIT KITCHEN ITEM' : 'KITCHEN LAB'}</h2>
+            </div>
           </div>
 
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '8px', marginBottom: '16px' }}>
-            <button onClick={() => setCreateTab('basics')} style={{ padding: '10px', borderRadius: '12px', border: 'none', background: createTab === 'basics' ? 'var(--theme-accent-dim)' : 'var(--theme-panel-dim)', color: createTab === 'basics' ? 'var(--theme-accent)' : 'var(--theme-text-dim)', fontWeight: '800', fontSize: '10px', textTransform: 'uppercase', cursor: 'pointer', transition: 'all 0.2s' }}>Basics</button>
-            <button onClick={() => setCreateTab('micros')} style={{ padding: '10px', borderRadius: '12px', border: 'none', background: createTab === 'micros' ? 'var(--theme-accent-dim)' : 'var(--theme-panel-dim)', color: createTab === 'micros' ? 'var(--theme-accent)' : 'var(--theme-text-dim)', fontWeight: '800', fontSize: '10px', textTransform: 'uppercase', cursor: 'pointer', transition: 'all 0.2s' }}>Micros & Health</button>
-            <button onClick={() => setCreateTab('recipe')} style={{ padding: '10px', borderRadius: '12px', border: 'none', background: createTab === 'recipe' ? 'var(--theme-accent-dim)' : 'var(--theme-panel-dim)', color: createTab === 'recipe' ? 'var(--theme-accent)' : 'var(--theme-text-dim)', fontWeight: '800', fontSize: '10px', textTransform: 'uppercase', cursor: 'pointer', transition: 'all 0.2s' }}>Recipe Builder</button>
+            <button onClick={() => setCreateTab('basics')} style={{ padding: '10px', borderRadius: '12px', border: 'none', background: createTab === 'basics' ? 'var(--theme-accent-dim)' : 'var(--theme-panel-dim)', color: createTab === 'basics' ? 'var(--theme-accent)' : 'rgba(255,255,255,0.9)', fontWeight: '800', fontSize: '10px', textTransform: 'uppercase', cursor: 'pointer', transition: 'all 0.2s' }}>Basics</button>
+            <button onClick={() => setCreateTab('micros')} style={{ padding: '10px', borderRadius: '12px', border: 'none', background: createTab === 'micros' ? 'var(--theme-accent-dim)' : 'var(--theme-panel-dim)', color: createTab === 'micros' ? 'var(--theme-accent)' : 'rgba(255,255,255,0.9)', fontWeight: '800', fontSize: '10px', textTransform: 'uppercase', cursor: 'pointer', transition: 'all 0.2s' }}>Micros & Health</button>
+            <button onClick={() => setCreateTab('recipe')} style={{ padding: '10px', borderRadius: '12px', border: 'none', background: createTab === 'recipe' ? 'var(--theme-accent-dim)' : 'var(--theme-panel-dim)', color: createTab === 'recipe' ? 'var(--theme-accent)' : 'rgba(255,255,255,0.9)', fontWeight: '800', fontSize: '10px', textTransform: 'uppercase', cursor: 'pointer', transition: 'all 0.2s' }}>Recipe Builder</button>
           </div>
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-md)' }}>
