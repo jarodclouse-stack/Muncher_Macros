@@ -177,7 +177,7 @@ export const AddFoodModal: React.FC<AddFoodModalProps> = ({ meal, onClose }) => 
   return ReactDOM.createPortal(
     <div style={{ 
       position: 'fixed', 
-      inset: 0, 
+      top: 0, left: 0, right: 0, bottom: 'calc(72px + env(safe-area-inset-bottom))', 
       zIndex: 5000, 
       display: 'flex', 
       flexDirection: 'column', 
