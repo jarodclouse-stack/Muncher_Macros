@@ -731,9 +731,9 @@ export const PantryView: React.FC = () => {
 {activeTab === 'saved' && pantryMode === 'create' && (
         <div style={{ padding: '0 20px' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '16px' }}>
-            <button onClick={() => setPantryMode('list')} style={{ background: 'var(--theme-panel-dim)', border: 'none', borderRadius: '50%', width: '36px', height: '36px', color: 'var(--theme-text)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><ChevronDown size={20} style={{ transform: 'rotate(90deg)' }} /></button>
+            <button onClick={() => setPantryMode('list')} style={{ background: 'var(--theme-panel-dim)', border: 'none', borderRadius: '50%', width: '36px', height: '36px', color: 'rgba(255,255,255,0.9)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><ChevronDown size={20} style={{ transform: 'rotate(90deg)' }} /></button>
             <div style={{ background: 'var(--theme-panel-dim)', padding: '6px 16px', borderRadius: '20px' }}>
-              <h2 style={{ fontSize: '18px', fontWeight: '800', margin: 0, color: 'var(--theme-text)' }}>{editingIndex !== null ? 'EDIT KITCHEN ITEM' : 'KITCHEN LAB'}</h2>
+              <h2 style={{ fontSize: '18px', fontWeight: '800', margin: 0, color: 'rgba(255,255,255,0.9)' }}>{editingIndex !== null ? 'EDIT KITCHEN ITEM' : 'KITCHEN LAB'}</h2>
             </div>
           </div>
 
