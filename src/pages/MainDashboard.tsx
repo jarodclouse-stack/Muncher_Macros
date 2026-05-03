@@ -41,16 +41,15 @@ export const MainDashboard: React.FC = () => {
         }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '12px', cursor: 'pointer' }} onClick={() => setShowSettingsModal(true)}>
             <div>
-              <h1 style={{ fontSize: '13px', fontWeight: '900', margin: 0, display: 'flex', alignItems: 'center', gap: '8px', textTransform: 'uppercase', letterSpacing: '1px', textShadow: '0 0 10px rgba(0,201,255,0.2)' }}>
-                {activeTab === 'diary' && <Utensils size={16} color="var(--theme-accent)" />}
-                {activeTab === 'nutrition' && <Activity size={16} color="var(--theme-accent)" />}
-                {activeTab === 'pantry' && <Plus size={16} color="var(--theme-accent)" />}
-                {activeTab === 'progress' && <Flame size={16} color="var(--theme-accent)" />}
-                {activeTab === 'badges' && <Award size={16} color="var(--theme-accent)" />}
-                {activeTab === 'themes' && <Palette size={16} color="var(--theme-accent)" />}
-                {activeTab === 'pantry' ? 'ADD FOOD' : activeTab.toUpperCase()}
+              <h1 style={{ fontSize: '15px', fontWeight: '900', margin: 0, display: 'flex', alignItems: 'center', gap: '8px', textTransform: 'uppercase', letterSpacing: '1px', textShadow: '0 0 10px rgba(0,201,255,0.2)' }}>
+                {activeTab === 'diary' && <Utensils size={18} color="var(--theme-accent)" />}
+                {activeTab === 'nutrition' && <Activity size={18} color="var(--theme-accent)" />}
+                {activeTab === 'pantry' && <Plus size={18} color="var(--theme-accent)" />}
+                {activeTab === 'progress' && <Flame size={18} color="var(--theme-accent)" />}
+                {activeTab === 'badges' && <Award size={18} color="var(--theme-accent)" />}
+                {activeTab === 'themes' && <Palette size={18} color="var(--theme-accent)" />}
+                {user?.email?.split('@')[0] || 'Guest'}
               </h1>
-              <p style={{ fontSize: '10px', color: 'var(--theme-text-dim, #8b8b9b)', margin: '2px 0 0 0', fontWeight: '600', opacity: 0.8 }}>Macro Munchers • {user?.email?.split('@')[0] || 'Guest'}</p>
             </div>
           </div>
           
