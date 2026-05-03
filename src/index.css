@@ -1631,6 +1631,9 @@ nav.glass-nav{
     background: linear-gradient(180deg, rgba(255,255,255,0.92), rgba(245,249,247,0.98)) !important;
   }
 
+  body.theme-light-surface {
+    --theme-success: color-mix(in srgb, #92FE9D 60%, var(--theme-text)) !important;
+  }
 
   /* Dark-surface text contrast fix */
   .theme-light-surface .food-card,
