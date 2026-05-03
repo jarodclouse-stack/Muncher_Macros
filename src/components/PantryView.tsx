@@ -130,7 +130,9 @@ export const PantryView: React.FC = () => {
   const [openSection, setOpenSection] = useState<string | null>(null);
   const [editingIndex, setEditingIndex] = useState<number | null>(null);
   const [errorMsg, setErrorMsg] = useState('');
-  const [activeTab, setActiveTab] = useState<SearchTab | 'saved' | 'manual'>('saved');
+  const [activeTab, setActiveTab] = useState<SearchTab | 'saved'>('saved');
+  const [pantryMode, setPantryMode] = useState<'list' | 'create'>('list');
+  const [createTab, setCreateTab] = useState<'basics' | 'micros' | 'recipe'>('basics');
   
   const [sortBy] = useState<'recent' | 'name' | 'cal' | 'p'>('recent');
   const [filterType, setFilterType] = useState<'all' | 'fav' | 'high-p' | 'low-c' | 'recipe'>('all');
@@ -326,7 +328,7 @@ export const PantryView: React.FC = () => {
       <div 
         style={{ 
           display: 'grid', 
-          gridTemplateColumns: 'repeat(3, 1fr)',
+          gridTemplateColumns: 'repeat(2, 1fr)',
           gap: '8px', 
           marginBottom: '20px', 
           position: 'sticky', 
@@ -343,15 +345,10 @@ export const PantryView: React.FC = () => {
           style={{ padding: '12px 4px', borderRadius: '14px', border: 'none', color: activeTab === 'search' ? 'var(--theme-accent)' : 'var(--theme-text-dim)', fontWeight: '800', fontSize: '11px', textTransform: 'uppercase', cursor: 'pointer', textAlign: 'center' }}>
           Discover
         </button>
-        <button onClick={() => setActiveTab('manual')} 
-          className={`pantry-filter-chip ${activeTab === 'manual' ? 'active' : ''}`}
-          style={{ padding: '12px 4px', borderRadius: '14px', border: 'none', color: activeTab === 'manual' ? 'var(--theme-accent)' : 'var(--theme-text-dim)', fontWeight: '800', fontSize: '11px', textTransform: 'uppercase', cursor: 'pointer', textAlign: 'center' }}>
-          Kitchen
-        </button>
         <button onClick={() => setActiveTab('saved')} 
           className={`pantry-filter-chip ${activeTab === 'saved' ? 'active' : ''}`}
           style={{ padding: '12px 4px', borderRadius: '14px', border: 'none', color: activeTab === 'saved' ? 'var(--theme-accent)' : 'var(--theme-text-dim)', fontWeight: '800', fontSize: '11px', textTransform: 'uppercase', cursor: 'pointer', textAlign: 'center' }}>
-          Pantry
+          My Pantry
         </button>
       </div>
 
@@ -729,12 +726,23 @@ export const PantryView: React.FC = () => {
             </div>
         )}
 
-      {activeTab === 'manual' && (
-        <div style={{ padding: '20px 20px 0 20px' }}>
-          <div style={{ height: '20px' }} />
-          <h2 style={{ fontSize: '18px', fontWeight: '800', marginBottom: '20px', color: 'var(--theme-accent)' }}>KITCHEN LAB</h2>
+      {activeTab === 'saved' && pantryMode === 'create' && (
+        <div style={{ padding: '0 20px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '16px' }}>
+            <button onClick={() => setPantryMode('list')} style={{ background: 'var(--theme-panel-dim)', border: 'none', borderRadius: '50%', width: '36px', height: '36px', color: 'var(--theme-text)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><ChevronDown size={20} style={{ transform: 'rotate(90deg)' }} /></button>
+            <h2 style={{ fontSize: '18px', fontWeight: '800', margin: 0, color: 'var(--theme-text)' }}>{editingIndex !== null ? 'EDIT KITCHEN ITEM' : 'KITCHEN LAB'}</h2>
+          </div>
+
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '8px', marginBottom: '16px' }}>
+            <button onClick={() => setCreateTab('basics')} style={{ padding: '10px', borderRadius: '12px', border: 'none', background: createTab === 'basics' ? 'var(--theme-accent-dim)' : 'var(--theme-panel-dim)', color: createTab === 'basics' ? 'var(--theme-accent)' : 'var(--theme-text-dim)', fontWeight: '800', fontSize: '10px', textTransform: 'uppercase', cursor: 'pointer', transition: 'all 0.2s' }}>Basics</button>
+            <button onClick={() => setCreateTab('micros')} style={{ padding: '10px', borderRadius: '12px', border: 'none', background: createTab === 'micros' ? 'var(--theme-accent-dim)' : 'var(--theme-panel-dim)', color: createTab === 'micros' ? 'var(--theme-accent)' : 'var(--theme-text-dim)', fontWeight: '800', fontSize: '10px', textTransform: 'uppercase', cursor: 'pointer', transition: 'all 0.2s' }}>Micros & Health</button>
+            <button onClick={() => setCreateTab('recipe')} style={{ padding: '10px', borderRadius: '12px', border: 'none', background: createTab === 'recipe' ? 'var(--theme-accent-dim)' : 'var(--theme-panel-dim)', color: createTab === 'recipe' ? 'var(--theme-accent)' : 'var(--theme-text-dim)', fontWeight: '800', fontSize: '10px', textTransform: 'uppercase', cursor: 'pointer', transition: 'all 0.2s' }}>Recipe Builder</button>
+          </div>
+
           <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-md)' }}>
-            <EntryField label="Food Name" value={form.name} onChange={v => setForm({...form, name: v})} placeholder="e.g. Grilled Chicken" />
+            
+            <div style={{ display: createTab === 'basics' ? 'flex' : 'none', flexDirection: 'column', gap: 'var(--space-md)' }}>
+              <EntryField label="Food Name" value={form.name} onChange={v => setForm({...form, name: v})} placeholder="e.g. Grilled Chicken" />
             
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 'var(--space-sm)' }}>
               <EntryField label="Serving Amount" value={String(form.sQty || 100)} onChange={v => setForm({...form, sQty: parseFloat(v) || 0})} placeholder="100" />
@@ -827,8 +835,11 @@ export const PantryView: React.FC = () => {
               </div>
             )}
 
-            <div style={{ background: 'rgba(255,255,255,0.03)', borderRadius: '16px', padding: '16px', border: '1px solid var(--theme-border)' }}>
-              <label style={{ fontSize: '10px', fontWeight: '800', color: 'var(--theme-accent)', marginBottom: '8px', display: 'block' }}>ADD INGREDIENTS</label>
+            </div>
+
+            <div style={{ display: createTab === 'recipe' ? 'flex' : 'none', flexDirection: 'column', gap: 'var(--space-md)' }}>
+              <div style={{ background: 'rgba(255,255,255,0.03)', borderRadius: '16px', padding: '16px', border: '1px solid var(--theme-border)' }}>
+                <label style={{ fontSize: '10px', fontWeight: '800', color: 'var(--theme-accent)', marginBottom: '8px', display: 'block' }}>ADD INGREDIENTS</label>
               <form onSubmit={handleIngSearch} style={{ display: 'flex', gap: '8px', marginBottom: '8px' }}>
                 <input 
                   className="inp" placeholder="Search recipe ingredients..." 
@@ -968,6 +979,57 @@ export const PantryView: React.FC = () => {
                 ))}
               </div>
             </div>
+            </div>
+
+            <div style={{ display: createTab === 'micros' ? 'flex' : 'none', flexDirection: 'column', gap: 'var(--space-md)' }}>
+              {/* Collapsible Sections */}
+              <CollapsibleEntrySection 
+                title="Fats & Fiber" 
+                isOpen={openSection === 'fats' || true} 
+                onToggle={() => setOpenSection(openSection === 'fats' ? null : 'fats')}
+              >
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(130px, 1fr))', gap: '8px' }}>
+                  <EntryField label="Fiber (g)" value={String(form.fiber || 0)} onChange={v => setForm({...form, fiber: parseFloat(v) || 0})} />
+                  <EntryField label="Sugars (g)" value={String(form.sugars || 0)} onChange={v => setForm({...form, sugars: parseFloat(v) || 0})} />
+                  <EntryField label="Sat Fat (g)" value={String(form.sat || 0)} onChange={v => setForm({...form, sat: parseFloat(v) || 0})} />
+                  <EntryField label="Trans Fat (g)" value={String(form.trans || 0)} onChange={v => setForm({...form, trans: parseFloat(v) || 0})} />
+                  <EntryField label="Mono Fat (g)" value={String(form.mono || 0)} onChange={v => setForm({...form, mono: parseFloat(v) || 0})} />
+                  <EntryField label="Poly Fat (g)" value={String(form.poly || 0)} onChange={v => setForm({...form, poly: parseFloat(v) || 0})} />
+                  <EntryField label="Chol (mg)" value={String(form.chol || 0)} onChange={v => setForm({...form, chol: parseFloat(v) || 0})} />
+                  <EntryField label="Sodium (mg)" value={String(form.Sodium || 0)} onChange={v => setForm({...form, Sodium: parseFloat(v) || 0})} />
+                </div>
+              </CollapsibleEntrySection>
+
+              {MICRO_CATEGORIES.map(cat => (
+                <CollapsibleEntrySection 
+                  key={cat.cat}
+                  title={cat.cat} 
+                  isOpen={openSection === cat.cat || true} 
+                  onToggle={() => setOpenSection(openSection === cat.cat ? null : cat.cat)}
+                >
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(130px, 1fr))', gap: '8px' }}>
+                    {cat.keys.map(k => (
+                      <EntryField 
+                        key={k.k} 
+                        label={`${k.k} (${k.u})`} 
+                        value={String((form as any)[k.k] || 0)} 
+                        onChange={v => setForm({...form, [k.k]: parseFloat(v) || 0})} 
+                      />
+                    ))}
+                  </div>
+                </CollapsibleEntrySection>
+              ))}
+
+              <textarea 
+                placeholder="Ingredients List (Description)" 
+                style={{ width: '100%', background: 'var(--theme-input-bg)', border: '1px solid var(--theme-border)', borderRadius: '14px', padding: '14px', color: 'var(--theme-text)', fontSize: '13px', minHeight: '100px', outline: 'none' }}
+                value={form.ingredients}
+                onChange={e => setForm({...form, ingredients: e.target.value})}
+              />
+            </div>
+            
+            <hr style={{ border: 'none', borderTop: '1px solid var(--theme-border)', opacity: 0.3, margin: '8px 0' }} />
+
             <div style={{ display: 'flex', gap: '12px' }}>
               <button 
                 onClick={() => {
@@ -986,7 +1048,7 @@ export const PantryView: React.FC = () => {
                   });
                   if (editingIndex !== null) updateCustomFood(editingIndex, foodData);
                   else saveCustomFood(foodData);
-                  setActiveTab('saved');
+                  setPantryMode('list');
                   setEditingIndex(null);
                   setForm({
                     name:'', sQty: 100, sUnit: 'g', cal: 0, p: 0, c: 0, f: 0, fiber: 0, sugars: 0, 
@@ -1016,61 +1078,32 @@ export const PantryView: React.FC = () => {
                 Reset
               </button>
             </div>
-
-            <hr style={{ border: 'none', borderTop: '1px solid var(--theme-border)', opacity: 0.3, margin: '8px 0' }} />
-
-            {/* Collapsible Sections */}
-            <CollapsibleEntrySection 
-              title="Fats & Fiber" 
-              isOpen={openSection === 'fats'} 
-              onToggle={() => setOpenSection(openSection === 'fats' ? null : 'fats')}
-            >
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(130px, 1fr))', gap: '8px' }}>
-                <EntryField label="Fiber (g)" value={String(form.fiber || 0)} onChange={v => setForm({...form, fiber: parseFloat(v) || 0})} />
-                <EntryField label="Sugars (g)" value={String(form.sugars || 0)} onChange={v => setForm({...form, sugars: parseFloat(v) || 0})} />
-                <EntryField label="Sat Fat (g)" value={String(form.sat || 0)} onChange={v => setForm({...form, sat: parseFloat(v) || 0})} />
-                <EntryField label="Trans Fat (g)" value={String(form.trans || 0)} onChange={v => setForm({...form, trans: parseFloat(v) || 0})} />
-                <EntryField label="Mono Fat (g)" value={String(form.mono || 0)} onChange={v => setForm({...form, mono: parseFloat(v) || 0})} />
-                <EntryField label="Poly Fat (g)" value={String(form.poly || 0)} onChange={v => setForm({...form, poly: parseFloat(v) || 0})} />
-                <EntryField label="Chol (mg)" value={String(form.chol || 0)} onChange={v => setForm({...form, chol: parseFloat(v) || 0})} />
-                <EntryField label="Sodium (mg)" value={String(form.Sodium || 0)} onChange={v => setForm({...form, Sodium: parseFloat(v) || 0})} />
-              </div>
-            </CollapsibleEntrySection>
-
-            {MICRO_CATEGORIES.map(cat => (
-              <CollapsibleEntrySection 
-                key={cat.cat}
-                title={cat.cat} 
-                isOpen={openSection === cat.cat} 
-                onToggle={() => setOpenSection(openSection === cat.cat ? null : cat.cat)}
-              >
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(130px, 1fr))', gap: '8px' }}>
-                  {cat.keys.map(k => (
-                    <EntryField 
-                      key={k.k} 
-                      label={`${k.k} (${k.u})`} 
-                      value={String((form as any)[k.k] || 0)} 
-                      onChange={v => setForm({...form, [k.k]: parseFloat(v) || 0})} 
-                    />
-                  ))}
-                </div>
-              </CollapsibleEntrySection>
-            ))}
-
-            <textarea 
-              placeholder="Ingredients List (Description)" 
-              style={{ width: '100%', background: 'var(--theme-input-bg)', border: '1px solid var(--theme-border)', borderRadius: '14px', padding: '14px', color: 'var(--theme-text)', fontSize: '13px', minHeight: '100px', outline: 'none' }}
-              value={form.ingredients}
-              onChange={e => setForm({...form, ingredients: e.target.value})}
-            />
           </div>
         </div>
       )}
 
 
-      {activeTab === 'saved' && (
+      {activeTab === 'saved' && pantryMode === 'list' && (
         <div className="section" style={{ marginTop: '0', padding: '0 20px', display: 'flex', flexDirection: 'column', gap: '16px' }}>
           
+          <button 
+            onClick={() => {
+              setEditingIndex(null);
+              setForm({
+                name:'', sQty: 100, sUnit: 'g', cal: 0, p: 0, c: 0, f: 0, fiber: 0, sugars: 0, 
+                sat: 0, mono: 0, poly: 0, trans: 0, chol: 0, 
+                Sodium: 0, Potassium: 0, Calcium: 0, Magnesium: 0,
+                ...ALL_MICRO_KEYS.reduce((acc, k) => ({ ...acc, [k]: 0 }), {}),
+                ingredients:'', serving: '',
+                ingredientItems: []
+              });
+              setPantryMode('create');
+              setCreateTab('basics');
+            }}
+            style={{ width: '100%', padding: '16px', background: 'var(--theme-accent)', border: 'none', borderRadius: '16px', color: 'var(--theme-bg, #000)', fontWeight: '900', fontSize: '14px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', boxShadow: '0 8px 24px rgba(0,201,255,0.2)' }}>
+            <Plus size={20} /> CREATE NEW FOOD OR RECIPE
+          </button>
+
           {/* Filters from Image 2 */}
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '8px', marginBottom: '8px' }}>
             <PantryFilter label="All" active={filterType === 'all'} onClick={() => setFilterType('all')} />
@@ -1114,6 +1147,17 @@ export const PantryView: React.FC = () => {
                     <div style={{ fontSize: '11px', color: 'var(--theme-text-dim-on-panel)', marginTop: '2px' }}>{f.serving} • {f.cal} kcal • P:{f.p}g C:{f.c}g F:{f.f}g</div>
                   </div>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                    <button 
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setForm(f);
+                        setEditingIndex(originalIdx);
+                        setPantryMode('create');
+                        setCreateTab('basics');
+                      }}
+                      style={{ background: 'none', border: 'none', color: 'var(--theme-text-dim)', cursor: 'pointer', padding: '4px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                      <Edit2 size={16} />
+                    </button>
                     <button 
                       onClick={(e) => {
                         e.stopPropagation();

@@ -25,7 +25,7 @@ export const AddFoodModal: React.FC<AddFoodModalProps> = ({ meal, onClose }) => 
     stagingTray, addToTray, clearTray 
   } = useDiary();
   
-  const [activeTab, setActiveTab] = useState<SearchTab>('search');
+  const [activeTab, setActiveTab] = useState<SearchTab>('ai-search');
   
   const [query, setQuery] = useState('');
   const [results, setResults] = useState<Food[]>([]);
@@ -100,61 +100,7 @@ export const AddFoodModal: React.FC<AddFoodModalProps> = ({ meal, onClose }) => 
     }
   };
 
-  const handleStandardSearch = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!query) return;
-    
-    // Abort any existing search request
-    if (abortControllerRef.current) {
-      abortControllerRef.current.abort();
-    }
-    const controller = new AbortController();
-    abortControllerRef.current = controller;
 
-    setSearching(true);
-    setErrorMsg('');
-
-    // --- PANTRY FIRST LOGIC ---
-    const customFoods: Food[] = localCache.customFoods || [];
-    let localMatches = customFoods.filter(f => 
-      f.name.toLowerCase().includes(query.toLowerCase())
-    ).map((f, idx) => ({ ...f, isLocal: true, localIdx: idx }));
-    
-    if (highProteinOnly) {
-      localMatches = localMatches.filter(f => (Number(f.p) || 0) >= 20);
-    }
-
-    setResults(localMatches);
-
-    try {
-      const res = await fetch(`/api/food-search?q=${encodeURIComponent(query)}`, {
-        signal: controller.signal
-      });
-      if (res.ok) {
-        const body = await res.json();
-        let apiResults: Food[] = (body.foods || []).map((f: any) => ({ ...f, isLocal: false }));
-        
-        if (highProteinOnly) {
-          apiResults = apiResults.filter(f => (Number(f.p) || 0) >= 20);
-        }
-
-        setResults([...localMatches, ...apiResults]);
-      } else {
-        console.warn("Global results unavailable");
-      }
-    } catch (err: unknown) {
-      if ((err as Error).name === 'AbortError') return;
-      console.error("Search error:", err);
-      if (localMatches.length === 0) {
-        setErrorMsg("Global Search error. Please try again.");
-      }
-    } finally {
-      if (abortControllerRef.current === controller) {
-        setSearching(false);
-        abortControllerRef.current = null;
-      }
-    }
-  };
 
   const handleAISearch = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -273,23 +219,36 @@ export const AddFoodModal: React.FC<AddFoodModalProps> = ({ meal, onClose }) => 
         <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
           <div style={{ color: 'var(--theme-error)', fontSize: '12px', marginBottom: '8px', textAlign: 'center' }}>{errorMsg}</div>
           
-          {activeTab === 'search' || activeTab === 'ai-search' ? (
+          {activeTab === 'ai-search' ? (
             <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-md)' }}>
               <form 
                 onSubmit={(e) => {
                   e.preventDefault();
-                  if (activeTab === 'search') handleStandardSearch(e);
-                  else if (activeTab === 'ai-search') handleAISearch(e);
+                  handleAISearch(e);
                 }} 
                 style={{ display: 'flex', gap: '8px' }}
               >
                 <div style={{ position: 'relative', flex: 1 }}>
                   <input 
-                    placeholder={activeTab === 'search' ? "Search for foods, brands..." : "Describe food (e.g. '1/2 cup of blueberries')"}
+                    placeholder="Search library or Ask AI (e.g. '1/2 cup of blueberries')"
                     value={query}
                     onChange={(e) => {
-                      setQuery(e.target.value);
+                      const val = e.target.value;
+                      setQuery(val);
                       if (errorMsg) setErrorMsg('');
+                      
+                      if (val.trim()) {
+                        const customFoods: Food[] = localCache.customFoods || [];
+                        let localMatches = customFoods.filter(f => 
+                          f.name.toLowerCase().includes(val.toLowerCase())
+                        ).map((f, idx) => ({ ...f, isLocal: true, localIdx: idx }));
+                        if (highProteinOnly) {
+                          localMatches = localMatches.filter(f => (Number(f.p) || 0) >= 20);
+                        }
+                        setResults(localMatches);
+                      } else {
+                        setResults([]);
+                      }
                     }}
                     style={{ 
                       width: '100%', 
@@ -445,9 +404,9 @@ export const AddFoodModal: React.FC<AddFoodModalProps> = ({ meal, onClose }) => 
                     setQuery(String(displayQuery));
                     if (displayQuery) {
                       const dummyEvent = { preventDefault: () => {} } as React.FormEvent;
-                      handleStandardSearch(dummyEvent);
+                      handleAISearch(dummyEvent);
                     }
-                    setActiveTab('search');
+                    setActiveTab('ai-search');
                   }
                 }}
                 onScanError={(err) => setErrorMsg(err)}

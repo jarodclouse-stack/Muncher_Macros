@@ -90,7 +90,7 @@ export const MainDashboard: React.FC = () => {
       {/* Main Content Area */}
       <main className="app-container" style={{ 
         paddingTop: isScannerActive ? '0' : (activeTab === 'pantry' ? '0' : 'var(--space-xl)'), 
-        paddingBottom: isScannerActive ? '0' : 'calc(90px + env(safe-area-inset-bottom))',
+        paddingBottom: isScannerActive ? '0' : 'calc(72px + env(safe-area-inset-bottom))',
         background: 'transparent'
       }}>
         {activeTab === 'diary' && <DiaryView />}
@@ -174,15 +174,15 @@ export const MainDashboard: React.FC = () => {
           backdropFilter: 'blur(20px) saturate(180%)', 
           WebkitBackdropFilter: 'blur(20px) saturate(180%)',
           borderTop: '1px solid var(--theme-border, rgba(255,255,255,0.05))', 
-          padding: '8px 12px calc(env(safe-area-inset-bottom) + 8px) 12px', 
+          padding: '6px 12px calc(env(safe-area-inset-bottom) + 6px) 12px', 
           zIndex: 100,
           gap: '4px'
         }}>
-          <NavItem active={activeTab === 'diary'} onClick={() => setActiveTab('diary')} label="Diary" icon={<Utensils size={20} />} />
-          <NavItem active={activeTab === 'nutrition'} onClick={() => setActiveTab('nutrition')} label="Nutrition" icon={<Activity size={20} />} />
-          <NavItem active={activeTab === 'pantry'} onClick={() => setActiveTab('pantry')} label="Add Food" icon={<Plus size={20} />} />
-          <NavItem active={activeTab === 'progress'} onClick={() => setActiveTab('progress')} label="Goals" icon={<Flame size={20} />} />
-          <NavItem active={activeTab === 'badges'} onClick={() => setActiveTab('badges')} label="Badges/Themes" icon={<Award size={20} />} />
+          <NavItem active={activeTab === 'diary'} onClick={() => setActiveTab('diary')} label="Diary" icon={<Utensils size={18} />} />
+          <NavItem active={activeTab === 'nutrition'} onClick={() => setActiveTab('nutrition')} label="Nutrition" icon={<Activity size={18} />} />
+          <NavItem active={activeTab === 'pantry'} onClick={() => setActiveTab('pantry')} label="Add Food" icon={<Plus size={18} />} />
+          <NavItem active={activeTab === 'progress'} onClick={() => setActiveTab('progress')} label="Goals" icon={<Flame size={18} />} />
+          <NavItem active={activeTab === 'badges'} onClick={() => setActiveTab('badges')} label="Badges/Themes" icon={<Award size={18} />} />
         </nav>
       )}
 
@@ -204,11 +204,11 @@ const NavItem = ({ active, onClick, label, icon }: { active: boolean, onClick: (
       flexDirection: 'column', 
       alignItems: 'center', 
       justifyContent: 'center',
-      gap: '4px', 
+      gap: '2px', 
       cursor: 'pointer', 
       transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)', 
       flex: 1,
-      padding: '12px 4px',
+      padding: '8px 4px',
       outline: 'none',
       position: 'relative',
       WebkitTapHighlightColor: 'transparent'
@@ -216,7 +216,7 @@ const NavItem = ({ active, onClick, label, icon }: { active: boolean, onClick: (
     {active && (
       <div style={{ 
         position: 'absolute', 
-        top: '-8px', 
+        top: '-6px', 
         left: '20%', 
         right: '20%', 
         height: '2px', 
@@ -228,7 +228,7 @@ const NavItem = ({ active, onClick, label, icon }: { active: boolean, onClick: (
     <div style={{ transform: active ? 'scale(1.2)' : 'scale(1)', transition: 'transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1)' }}>
       {icon}
     </div>
-    <span style={{ fontSize: '10px', fontWeight: active ? '900' : '600', letterSpacing: '0.04em', textTransform: 'uppercase' }}>{label}</span>
+    <span style={{ fontSize: '9px', fontWeight: active ? '900' : '600', letterSpacing: '0.04em', textTransform: 'uppercase' }}>{label}</span>
   </button>
 );
 

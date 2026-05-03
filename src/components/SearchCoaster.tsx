@@ -69,7 +69,7 @@ export const SearchCoaster: React.FC<SearchCoasterProps> = ({ activeTab, onTabCh
         position: 'relative',
         zIndex: 1,
         display: 'grid',
-        gridTemplateColumns: 'repeat(4, 1fr)',
+        gridTemplateColumns: 'repeat(3, 1fr)',
         gap: '6px',
         ...style 
       }}>
@@ -95,12 +95,6 @@ export const SearchCoaster: React.FC<SearchCoasterProps> = ({ activeTab, onTabCh
           onClick={() => onTabChange('ai-search')} 
           icon={<Search size={18} />} 
           label="AI Search" 
-        />
-        <TabBtn 
-          active={activeTab === 'search'} 
-          onClick={() => onTabChange('search')} 
-          icon={<Search size={18} />} 
-          label="General Search" 
         />
       </div>
     </div>
