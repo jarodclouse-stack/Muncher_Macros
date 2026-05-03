@@ -61,23 +61,23 @@ const MacroPill = ({ label, val, unit, color }: { label: string, val: string | n
 const NutrientDetailRow = ({ label, value, unit, benefit }: { label: string, value: string | number, unit: string, benefit?: any }) => {
   const [showBenefit, setShowBenefit] = useState(false);
   return (
-    <div style={{ padding: '10px 14px', background: 'var(--theme-panel-dim)', borderRadius: '16px', border: '1px solid var(--theme-border)', marginBottom: '8px' }}>
+    <div style={{ padding: '6px 12px', background: 'var(--theme-panel-dim)', borderRadius: '12px', border: '1px solid var(--theme-border)', marginBottom: '6px' }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
           <span style={{ 
-            fontSize: '11px', 
+            fontSize: '10px', 
             fontWeight: '900', 
             color: 'var(--theme-text)', 
             background: 'var(--theme-panel)', 
-            padding: '4px 12px', 
+            padding: '3px 10px', 
             borderRadius: '20px',
             textTransform: 'uppercase',
             letterSpacing: '0.5px',
             border: '1px solid var(--theme-border)'
           }}>{label}</span>
           {benefit && (
-            <button onClick={() => setShowBenefit(!showBenefit)} style={{ background: 'none', border: 'none', color: showBenefit ? 'var(--theme-accent)' : 'var(--theme-text-dim)', cursor: 'pointer', padding: 4 }}>
-              <Info size={14} />
+            <button onClick={() => setShowBenefit(!showBenefit)} style={{ background: 'none', border: 'none', color: showBenefit ? 'var(--theme-accent)' : 'var(--theme-text-dim)', cursor: 'pointer', padding: 2 }}>
+              <Info size={12} />
             </button>
           )}
         </div>
