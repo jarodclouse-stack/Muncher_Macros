@@ -79,11 +79,13 @@ export const MainDashboard: React.FC = () => {
 
             {/* Badges and Themes Nav */}
             <div style={{ display: 'flex', gap: '6px', borderRight: '1px solid var(--theme-border, rgba(255,255,255,0.1))', paddingRight: '10px', marginRight: '4px' }}>
-              <button onClick={() => setActiveTab('badges')} style={{ background: activeTab==='badges' ? 'var(--theme-accent-dim)' : 'transparent', border: 'none', color: activeTab==='badges' ? 'var(--theme-accent)' : 'var(--theme-text-dim)', padding: '6px', borderRadius: '8px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                <Award size={16} />
+              <button onClick={() => setActiveTab('badges')} style={{ background: activeTab==='badges' ? 'var(--theme-accent-dim)' : 'var(--theme-panel, rgba(255,255,255,0.03))', border: activeTab==='badges' ? '1px solid var(--theme-accent)' : '1px solid var(--theme-border, rgba(255,255,255,0.05))', color: activeTab==='badges' ? 'var(--theme-accent)' : 'var(--theme-text)', padding: '6px 12px', borderRadius: '12px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', transition: 'all 0.2s' }}>
+                <Award size={14} color={activeTab==='badges' ? 'var(--theme-accent)' : '#A5B4FC'} />
+                <span style={{ fontSize: '11px', fontWeight: '800', letterSpacing: '0.5px', textTransform: 'uppercase' }}>Badges</span>
               </button>
-              <button onClick={() => setActiveTab('themes')} style={{ background: activeTab==='themes' ? 'var(--theme-accent-dim)' : 'transparent', border: 'none', color: activeTab==='themes' ? 'var(--theme-accent)' : 'var(--theme-text-dim)', padding: '6px', borderRadius: '8px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                <Palette size={16} />
+              <button onClick={() => setActiveTab('themes')} style={{ background: activeTab==='themes' ? 'var(--theme-accent-dim)' : 'var(--theme-panel, rgba(255,255,255,0.03))', border: activeTab==='themes' ? '1px solid var(--theme-accent)' : '1px solid var(--theme-border, rgba(255,255,255,0.05))', color: activeTab==='themes' ? 'var(--theme-accent)' : 'var(--theme-text)', padding: '6px 12px', borderRadius: '12px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', transition: 'all 0.2s' }}>
+                <Palette size={14} color={activeTab==='themes' ? 'var(--theme-accent)' : '#E0AAFF'} />
+                <span style={{ fontSize: '11px', fontWeight: '800', letterSpacing: '0.5px', textTransform: 'uppercase' }}>Themes</span>
               </button>
             </div>
 
