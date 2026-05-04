@@ -130,7 +130,7 @@ export const PantryView: React.FC = () => {
   const [openSection, setOpenSection] = useState<string | null>(null);
   const [editingIndex, setEditingIndex] = useState<number | null>(null);
   const [errorMsg, setErrorMsg] = useState('');
-  const [activeTab, setActiveTab] = useState<SearchTab | 'saved'>('saved');
+  const [activeTab, setActiveTab] = useState<SearchTab | 'saved'>('search');
   const [pantryMode, setPantryMode] = useState<'list' | 'create'>('list');
   const [createTab, setCreateTab] = useState<'basics' | 'micros' | 'recipe'>('basics');
   
