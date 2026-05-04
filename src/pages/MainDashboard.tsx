@@ -54,16 +54,18 @@ export const MainDashboard: React.FC = () => {
           <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginLeft: 'auto' }}>
             {/* The Vault Nav */}
             <div style={{ display: 'flex', borderRight: '1px solid var(--theme-border, rgba(255,255,255,0.1))', paddingRight: '6px' }}>
-              <button onClick={() => setActiveTab('vault')} style={{ background: activeTab==='vault' ? 'var(--theme-accent-dim)' : 'var(--theme-panel, rgba(255,255,255,0.03))', border: activeTab==='vault' ? '1px solid var(--theme-accent)' : '1px solid var(--theme-border, rgba(255,255,255,0.05))', color: activeTab==='vault' ? 'var(--theme-accent)' : 'var(--theme-text)', padding: '4px 8px', borderRadius: '8px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '4px', transition: 'all 0.2s', height: '100%' }}>
-                <Sparkles size={12} color={activeTab==='vault' ? 'var(--theme-accent)' : '#A5B4FC'} />
-                <span style={{ fontSize: '9px', fontWeight: '800', letterSpacing: '0.5px', textTransform: 'uppercase' }}>The Vault</span>
+              <button onClick={() => setActiveTab('vault')} style={{ background: activeTab==='vault' ? 'var(--theme-accent-dim)' : 'var(--theme-panel, rgba(255,255,255,0.03))', border: activeTab==='vault' ? '1px solid var(--theme-accent)' : '1px solid var(--theme-border, rgba(255,255,255,0.05))', color: activeTab==='vault' ? 'var(--theme-accent)' : 'var(--theme-text)', padding: '4px 6px', borderRadius: '8px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '4px', transition: 'all 0.2s', height: '100%' }}>
+                <Sparkles size={10} color={activeTab==='vault' ? 'var(--theme-accent)' : '#A5B4FC'} />
+                <span style={{ fontSize: '8px', fontWeight: '800', letterSpacing: '0.5px', textTransform: 'uppercase' }}>The Vault</span>
               </button>
             </div>
 
-            {/* Rewards Section */}
+            {/* Prestige Section (Merged Streak & Gems) */}
             <div style={{ display: 'flex', borderRight: '1px solid var(--theme-border, rgba(255,255,255,0.1))', paddingRight: '6px', gap: '4px' }}>
-              <RewardChip icon={<Flame size={12} color="#FF6B6B" />} value={streak} label="Strk" onClick={() => setShowRewardModal(true)} />
-              <RewardChip icon={<Gem size={12} color="#FFD700" />} value={gems} label="Gems" onClick={() => setShowRewardModal(true)} />
+              <button onClick={() => setShowRewardModal(true)} style={{ background: showRewardModal ? 'var(--theme-accent-dim)' : 'var(--theme-panel, rgba(255,255,255,0.03))', border: showRewardModal ? '1px solid var(--theme-accent)' : '1px solid var(--theme-border, rgba(255,255,255,0.05))', color: showRewardModal ? 'var(--theme-accent)' : 'var(--theme-text)', padding: '4px 6px', borderRadius: '8px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '4px', transition: 'all 0.2s', height: '100%' }}>
+                <Award size={10} color={showRewardModal ? 'var(--theme-accent)' : '#FFD700'} />
+                <span style={{ fontSize: '8px', fontWeight: '800', letterSpacing: '0.5px', textTransform: 'uppercase' }}>Prestige</span>
+              </button>
             </div>
 
             <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', minWidth: '32px' }}>
@@ -220,16 +222,4 @@ const NavItem = ({ active, onClick, label, icon }: { active: boolean, onClick: (
     </div>
     <span style={{ fontSize: '8px', fontWeight: active ? '900' : '600', letterSpacing: '0.04em', textTransform: 'uppercase' }}>{label}</span>
   </button>
-);
-
-const RewardChip = ({ icon, value, label, onClick }: { icon: React.ReactNode, value: number, label: string, onClick: () => void }) => (
-  <div onClick={onClick} style={{ display: 'flex', alignItems: 'center', gap: '3px', padding: '3px 5px', background: 'var(--theme-panel, rgba(255,255,255,0.03))', border: '1px solid var(--theme-border, rgba(255,255,255,0.05))', borderRadius: '8px', cursor: 'pointer', transition: 'all 0.2s' }}
-    onMouseEnter={(e: React.MouseEvent<HTMLDivElement>) => e.currentTarget.style.background = 'rgba(255,255,255,0.08)'}
-    onMouseLeave={(e: React.MouseEvent<HTMLDivElement>) => e.currentTarget.style.background = 'rgba(255,255,255,0.03)'}>
-    {icon}
-    <div style={{ display: 'flex', flexDirection: 'column', lineHeight: 1 }}>
-      <span style={{ fontSize: '10px', fontWeight: '900', color: 'var(--theme-text, #fff)' }}>{value}</span>
-      <span style={{ fontSize: '7px', color: '#8b8b9b', textTransform: 'uppercase', letterSpacing: '0.5px' }}>{label}</span>
-    </div>
-  </div>
 );
