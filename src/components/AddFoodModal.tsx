@@ -403,7 +403,7 @@ export const AddFoodModal: React.FC<AddFoodModalProps> = ({ meal, onClose }) => 
                       border: '1px solid rgba(255,255,255,0.1)', 
                       borderRadius: '20px', 
                       padding: '20px', 
-                      color: 'var(--theme-text)', 
+                      color: '#FFF', 
                       outline: 'none', 
                       fontSize: '15px', 
                       lineHeight: '1.6',
@@ -455,7 +455,7 @@ export const AddFoodModal: React.FC<AddFoodModalProps> = ({ meal, onClose }) => 
                   
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', marginBottom: '20px' }}>
                     {aiStagedResults.map((f, i) => (
-                      <div key={i} style={{ background: 'rgba(0,0,0,0.3)', padding: '16px', borderRadius: '18px', border: '1px solid rgba(255,255,255,0.08)' }}>
+                      <div key={i} style={{ background: 'rgba(0,0,0,0.3)', padding: '16px', borderRadius: '18px', border: '1px solid rgba(255,255,255,0.08)', '--theme-text': '#FFF', '--theme-text-dim': 'rgba(255,255,255,0.6)' } as React.CSSProperties}>
                         <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '10px' }}>
                           <div style={{ fontWeight: '800', fontSize: '14px', color: 'var(--theme-accent)' }}>{f.name}</div>
                           <div style={{ display: 'flex', gap: '8px' }}>
