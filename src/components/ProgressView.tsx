@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
+import ReactDOM from 'react-dom';
 import { useDiary } from '../context/DiaryContext';
 import { ACTIVITY_LEVELS, MICRO_CATEGORIES } from '../lib/constants';
 import { computeGoals } from '../lib/goals/compute';
-import { Flame, Activity, Save, Scale, Droplet, User, PieChart, Info, Check, Edit2 } from 'lucide-react';
+import { Flame, Activity, Save, Scale, Droplet, User, PieChart, Info, Check, Edit2, X } from 'lucide-react';
 import { WeightHistoryChart } from './WeightHistoryChart';
 
-export const ProgressView: React.FC = () => {
+export const ProgressView: React.FC<{ onClose?: () => void }> = ({ onClose }) => {
   const { localCache, updateGoals, updateDayData, currentDate } = useDiary();
   const goals = localCache.goals || {};
   const currentDayData = localCache[currentDate] || {};
@@ -138,8 +139,52 @@ export const ProgressView: React.FC = () => {
   const calAdj = computed.targetCal - computed.tdee;
   const currentAct = ACTIVITY_LEVELS.find((a: any) => a.id === activityId) || ACTIVITY_LEVELS[2];
 
-  return (
-    <div className="section" style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-lg)' }}>
+  return ReactDOM.createPortal(
+    <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.85)', backdropFilter: 'blur(12px)', zIndex: 3000, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '20px' }}>
+      <div 
+        style={{ 
+          background: 'var(--theme-bg, var(--theme-panel, #0a1e21))', 
+          border: '1px solid var(--theme-border, rgba(255,255,255,0.1))', 
+          borderRadius: '28px', 
+          width: '100%', 
+          maxWidth: '800px', 
+          maxHeight: '85vh', 
+          overflow: 'hidden', 
+          display: 'flex', 
+          flexDirection: 'column', 
+          boxShadow: '0 25px 50px -12px rgba(0,0,0,0.5)',
+          animation: 'modalSlideUp 0.3s cubic-bezier(0.34, 1.56, 0.64, 1)'
+        }} 
+        onClick={e => e.stopPropagation()}
+      >
+        {/* Modal Header */}
+        <div style={{ padding: '24px 32px', borderBottom: '1px solid var(--theme-border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: 'var(--theme-panel, rgba(0,0,0,0.2))' }}>
+           <h2 style={{ fontSize: '20px', fontWeight: '800', margin: 0, display: 'flex', alignItems: 'center', gap: '10px', color: 'var(--theme-text)' }}>
+             <Flame size={22} color="var(--theme-accent)" /> Goals & Progress
+           </h2>
+           {onClose && (
+             <button 
+               onClick={onClose} 
+               style={{ 
+                 background: 'var(--theme-panel-dim, rgba(255,255,255,0.05))', 
+                 border: '1px solid var(--theme-border)', 
+                 color: 'var(--theme-text)', 
+                 cursor: 'pointer', 
+                 padding: '8px', 
+                 borderRadius: '12px', 
+                 display: 'flex', 
+                 alignItems: 'center', 
+                 justifyContent: 'center',
+                 transition: 'all 0.2s' 
+               }} 
+             >
+               <X size={20} />
+             </button>
+           )}
+        </div>
+
+        {/* Modal Content - Scrollable */}
+        <div style={{ flex: 1, overflowY: 'auto', padding: '32px', display: 'flex', flexDirection: 'column', gap: 'var(--space-lg)' }}>
       
       <div style={{ padding: 'var(--space-md)', background: 'var(--theme-accent-dim, rgba(0, 201, 255, 0.1))', color: 'var(--theme-accent)', borderRadius: 'var(--radius-md)', fontSize: '13px', display: 'flex', gap: 'var(--space-sm)', alignItems: 'flex-start', border: '1px solid var(--theme-border)' }}>
         <Info size={16} style={{ flexShrink: 0, marginTop: '2px' }} />
@@ -536,8 +581,16 @@ export const ProgressView: React.FC = () => {
         .theme-light-surface .weight-goal-card .lbl {
           color: var(--theme-text-dim) !important;
         }
+
+        @keyframes modalSlideUp {
+          from { transform: translateY(20px); opacity: 0; }
+          to { transform: translateY(0); opacity: 1; }
+        }
       `}</style>
-    </div>
+        </div>
+      </div>
+    </div>,
+    document.body
   );
 };
 

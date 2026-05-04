@@ -8,7 +8,7 @@ import { SettingsView } from '../components/SettingsView';
 import { VaultView } from '../components/VaultView';
 import { useDiary } from '../context/DiaryContext';
 import { getRewardBreakdown } from '../lib/reward-utils';
-import { LogOut, Activity, Flame, Utensils, Award, Plus, Settings, Gem, X, Info, Sparkles } from 'lucide-react';
+import { LogOut, Activity, Flame, Utensils, Award, Plus, Settings, X, Info, Sparkles } from 'lucide-react';
 
 export const MainDashboard: React.FC = () => {
   const { user, logout } = useAuth();
@@ -16,10 +16,9 @@ export const MainDashboard: React.FC = () => {
   const [activeTab, setActiveTab] = useState<'diary' | 'nutrition' | 'progress' | 'vault' | 'pantry'>('diary');
   const [showRewardModal, setShowRewardModal] = useState(false);
   const [showSettingsModal, setShowSettingsModal] = useState(false);
+  const [showProgressModal, setShowProgressModal] = useState(false);
   
   const rewards = getRewardBreakdown(localCache);
-  const streak = rewards.streak;
-  const gems = rewards.totalGems;
 
   return (
     <div style={{ background: 'transparent', minHeight: '100vh', width: '100%', display: 'flex', flexDirection: 'column', color: 'var(--theme-text, #f1f1f1)', fontFamily: 'Inter, sans-serif' }}>
@@ -88,7 +87,6 @@ export const MainDashboard: React.FC = () => {
       }}>
         {activeTab === 'diary' && <DiaryView />}
         {activeTab === 'nutrition' && <NutritionView />}
-        {activeTab === 'progress' && <ProgressView />}
         {activeTab === 'vault' && <VaultView />}
         {activeTab === 'pantry' && <PantryView />}
       </main>
@@ -153,6 +151,7 @@ export const MainDashboard: React.FC = () => {
         </div>
       )}
       {showSettingsModal && <SettingsView onClose={() => setShowSettingsModal(false)} />}
+      {showProgressModal && <ProgressView onClose={() => setShowProgressModal(false)} />}
 
       {/* Bottom Navigation */}
       {!isScannerActive && (
@@ -171,10 +170,10 @@ export const MainDashboard: React.FC = () => {
           zIndex: 100,
           gap: '2px'
         }}>
-          <NavItem active={activeTab === 'diary'} onClick={() => setActiveTab('diary')} label="Diary" icon={<Utensils size={16} />} />
-          <NavItem active={activeTab === 'nutrition'} onClick={() => setActiveTab('nutrition')} label="Nutrition" icon={<Activity size={16} />} />
-          <NavItem active={activeTab === 'pantry'} onClick={() => setActiveTab('pantry')} label="Add Food" icon={<Plus size={16} />} />
-          <NavItem active={activeTab === 'progress'} onClick={() => setActiveTab('progress')} label="Goals" icon={<Flame size={16} />} />
+          <NavItem active={activeTab === 'diary' && !showProgressModal} onClick={() => { setActiveTab('diary'); setShowProgressModal(false); }} label="Diary" icon={<Utensils size={16} />} />
+          <NavItem active={activeTab === 'nutrition' && !showProgressModal} onClick={() => { setActiveTab('nutrition'); setShowProgressModal(false); }} label="Nutrition" icon={<Activity size={16} />} />
+          <NavItem active={activeTab === 'pantry' && !showProgressModal} onClick={() => { setActiveTab('pantry'); setShowProgressModal(false); }} label="Add Food" icon={<Plus size={16} />} />
+          <NavItem active={showProgressModal} onClick={() => setShowProgressModal(true)} label="Goals" icon={<Flame size={16} />} />
         </nav>
       )}
 
