@@ -369,6 +369,7 @@ export const PantryView: React.FC = () => {
                     setAiStagedResults([{ ...result, stagedQty: '1', stagedUnit: 'serving' }]);
                     setIsAiReviewing(true);
                   } else {
+                    setInnerGlobalSearchTab('search');
                     setSearchQuery(String(result));
                     const dummyEvent = { preventDefault: () => {} } as React.FormEvent;
                     handleGlobalSearch(dummyEvent);

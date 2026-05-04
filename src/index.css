@@ -1814,6 +1814,16 @@ body.theme-light-surface .diary-header-text:not(h2) {
   opacity: 0.8 !important;
 }
 
+/* Explicitly force white text for inputs in ALL dark themes */
+body:not(.theme-light-surface) .inp,
+body:not(.theme-light-surface) .search-input {
+  color: #FFFFFF !important;
+}
+body:not(.theme-light-surface) .inp::placeholder,
+body:not(.theme-light-surface) .search-input::placeholder {
+  color: rgba(255, 255, 255, 0.5) !important;
+}
+
 /* --- LUMINOUS MASTER CONTRAST VAULT --- */
 
 /* Absolute Synchronization: All descendants of analytical bubbles MUST match the Cheer Banner color */

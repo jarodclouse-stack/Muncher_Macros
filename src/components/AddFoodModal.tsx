@@ -250,10 +250,6 @@ export const AddFoodModal: React.FC<AddFoodModalProps> = ({ meal, onClose }) => 
                       setQuery(val);
                       if (errorMsg) setErrorMsg('');
                       
-                      if (val.endsWith(' ') && val.trim().length > 0) {
-                        handleAISearch();
-                      }
-                      
                       if (val.trim()) {
                         const customFoods: Food[] = localCache.customFoods || [];
                         let localMatches = customFoods.filter(f => 
@@ -391,10 +387,6 @@ export const AddFoodModal: React.FC<AddFoodModalProps> = ({ meal, onClose }) => 
                       const val = e.target.value;
                       setMealDesc(val);
                       if (errorMsg) setErrorMsg('');
-                      
-                      if (val.endsWith(' ') && val.trim().length > 0) {
-                        handleAIDescribe();
-                      }
                     }}
                     style={{ 
                       width: '100%', 
