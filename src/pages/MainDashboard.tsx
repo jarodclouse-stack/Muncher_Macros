@@ -3,18 +3,17 @@ import { useAuth } from '../context/AuthContext';
 import { DiaryView } from '../components/DiaryView';
 import { NutritionView } from '../components/NutritionView';
 import { ProgressView } from '../components/ProgressView';
-import { BadgesView } from '../components/BadgesView';
 import { PantryView } from '../components/PantryView';
 import { SettingsView } from '../components/SettingsView';
-import { ThemesView } from '../components/ThemesView';
+import { VaultView } from '../components/VaultView';
 import { useDiary } from '../context/DiaryContext';
 import { getRewardBreakdown } from '../lib/reward-utils';
-import { LogOut, Activity, Flame, Utensils, Award, Plus, Settings, Gem, X, Info, Palette } from 'lucide-react';
+import { LogOut, Activity, Flame, Utensils, Award, Plus, Settings, Gem, X, Info, Palette, Sparkles } from 'lucide-react';
 
 export const MainDashboard: React.FC = () => {
   const { user, logout } = useAuth();
   const { localCache, isScannerActive } = useDiary();
-  const [activeTab, setActiveTab] = useState<'diary' | 'nutrition' | 'progress' | 'badges' | 'pantry' | 'themes'>('diary');
+  const [activeTab, setActiveTab] = useState<'diary' | 'nutrition' | 'progress' | 'vault' | 'pantry'>('diary');
   const [showRewardModal, setShowRewardModal] = useState(false);
   const [showSettingsModal, setShowSettingsModal] = useState(false);
   
@@ -46,23 +45,18 @@ export const MainDashboard: React.FC = () => {
                 {activeTab === 'nutrition' && <Activity size={12} color="var(--theme-accent)" />}
                 {activeTab === 'pantry' && <Plus size={12} color="var(--theme-accent)" />}
                 {activeTab === 'progress' && <Flame size={12} color="var(--theme-accent)" />}
-                {activeTab === 'badges' && <Award size={12} color="var(--theme-accent)" />}
-                {activeTab === 'themes' && <Palette size={12} color="var(--theme-accent)" />}
+                {activeTab === 'vault' && <Sparkles size={12} color="var(--theme-accent)" />}
                 {user?.email?.split('@')[0] || 'Guest'}
               </h1>
             </div>
           </div>
           
           <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginLeft: 'auto' }}>
-            {/* Badges and Themes Nav */}
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', borderRight: '1px solid var(--theme-border, rgba(255,255,255,0.1))', paddingRight: '6px' }}>
-              <button onClick={() => setActiveTab('badges')} style={{ background: activeTab==='badges' ? 'var(--theme-accent-dim)' : 'var(--theme-panel, rgba(255,255,255,0.03))', border: activeTab==='badges' ? '1px solid var(--theme-accent)' : '1px solid var(--theme-border, rgba(255,255,255,0.05))', color: activeTab==='badges' ? 'var(--theme-accent)' : 'var(--theme-text)', padding: '2px 6px', borderRadius: '6px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '4px', transition: 'all 0.2s', width: '100%' }}>
-                <Award size={10} color={activeTab==='badges' ? 'var(--theme-accent)' : '#A5B4FC'} />
-                <span style={{ fontSize: '7px', fontWeight: '800', letterSpacing: '0.5px', textTransform: 'uppercase' }}>Badges</span>
-              </button>
-              <button onClick={() => setActiveTab('themes')} style={{ background: activeTab==='themes' ? 'var(--theme-accent-dim)' : 'var(--theme-panel, rgba(255,255,255,0.03))', border: activeTab==='themes' ? '1px solid var(--theme-accent)' : '1px solid var(--theme-border, rgba(255,255,255,0.05))', color: activeTab==='themes' ? 'var(--theme-accent)' : 'var(--theme-text)', padding: '2px 6px', borderRadius: '6px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '4px', transition: 'all 0.2s', width: '100%' }}>
-                <Palette size={10} color={activeTab==='themes' ? 'var(--theme-accent)' : '#E0AAFF'} />
-                <span style={{ fontSize: '7px', fontWeight: '800', letterSpacing: '0.5px', textTransform: 'uppercase' }}>Themes</span>
+            {/* The Vault Nav */}
+            <div style={{ display: 'flex', borderRight: '1px solid var(--theme-border, rgba(255,255,255,0.1))', paddingRight: '6px' }}>
+              <button onClick={() => setActiveTab('vault')} style={{ background: activeTab==='vault' ? 'var(--theme-accent-dim)' : 'var(--theme-panel, rgba(255,255,255,0.03))', border: activeTab==='vault' ? '1px solid var(--theme-accent)' : '1px solid var(--theme-border, rgba(255,255,255,0.05))', color: activeTab==='vault' ? 'var(--theme-accent)' : 'var(--theme-text)', padding: '4px 8px', borderRadius: '8px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '4px', transition: 'all 0.2s', height: '100%' }}>
+                <Sparkles size={12} color={activeTab==='vault' ? 'var(--theme-accent)' : '#A5B4FC'} />
+                <span style={{ fontSize: '9px', fontWeight: '800', letterSpacing: '0.5px', textTransform: 'uppercase' }}>The Vault</span>
               </button>
             </div>
 
@@ -87,14 +81,13 @@ export const MainDashboard: React.FC = () => {
       {/* Main Content Area */}
       <main className="app-container" style={{ 
         paddingTop: isScannerActive ? '0' : (activeTab === 'pantry' ? '0' : 'var(--space-xl)'), 
-        paddingBottom: isScannerActive ? '0' : 'calc(58px + env(safe-area-inset-bottom))',
+        paddingBottom: isScannerActive ? '0' : 'calc(58px + max(0px, env(safe-area-inset-bottom) - 15px))',
         background: 'transparent'
       }}>
         {activeTab === 'diary' && <DiaryView />}
         {activeTab === 'nutrition' && <NutritionView />}
         {activeTab === 'progress' && <ProgressView />}
-        {activeTab === 'badges' && <BadgesView />}
-        {activeTab === 'themes' && <ThemesView />}
+        {activeTab === 'vault' && <VaultView />}
         {activeTab === 'pantry' && <PantryView />}
       </main>
 
@@ -172,7 +165,7 @@ export const MainDashboard: React.FC = () => {
           backdropFilter: 'blur(20px) saturate(180%)', 
           WebkitBackdropFilter: 'blur(20px) saturate(180%)',
           borderTop: '1px solid var(--theme-border, rgba(255,255,255,0.05))', 
-          padding: '2px 8px calc(env(safe-area-inset-bottom) + 2px) 8px', 
+          padding: '2px 8px max(2px, env(safe-area-inset-bottom) - 15px) 8px', 
           zIndex: 100,
           gap: '2px'
         }}>
