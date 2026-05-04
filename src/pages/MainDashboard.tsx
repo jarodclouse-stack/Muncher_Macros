@@ -55,12 +55,12 @@ export const MainDashboard: React.FC = () => {
           
           <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginLeft: 'auto' }}>
             {/* Badges and Themes Nav */}
-            <div style={{ display: 'flex', gap: '2px', borderRight: '1px solid var(--theme-border, rgba(255,255,255,0.1))', paddingRight: '4px' }}>
-              <button onClick={() => setActiveTab('badges')} style={{ background: activeTab==='badges' ? 'var(--theme-accent-dim)' : 'var(--theme-panel, rgba(255,255,255,0.03))', border: activeTab==='badges' ? '1px solid var(--theme-accent)' : '1px solid var(--theme-border, rgba(255,255,255,0.05))', color: activeTab==='badges' ? 'var(--theme-accent)' : 'var(--theme-text)', padding: '3px 4px', borderRadius: '8px', cursor: 'pointer', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '1px', transition: 'all 0.2s', minWidth: '34px' }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', borderRight: '1px solid var(--theme-border, rgba(255,255,255,0.1))', paddingRight: '6px' }}>
+              <button onClick={() => setActiveTab('badges')} style={{ background: activeTab==='badges' ? 'var(--theme-accent-dim)' : 'var(--theme-panel, rgba(255,255,255,0.03))', border: activeTab==='badges' ? '1px solid var(--theme-accent)' : '1px solid var(--theme-border, rgba(255,255,255,0.05))', color: activeTab==='badges' ? 'var(--theme-accent)' : 'var(--theme-text)', padding: '2px 6px', borderRadius: '6px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '4px', transition: 'all 0.2s', width: '100%' }}>
                 <Award size={10} color={activeTab==='badges' ? 'var(--theme-accent)' : '#A5B4FC'} />
                 <span style={{ fontSize: '7px', fontWeight: '800', letterSpacing: '0.5px', textTransform: 'uppercase' }}>Badges</span>
               </button>
-              <button onClick={() => setActiveTab('themes')} style={{ background: activeTab==='themes' ? 'var(--theme-accent-dim)' : 'var(--theme-panel, rgba(255,255,255,0.03))', border: activeTab==='themes' ? '1px solid var(--theme-accent)' : '1px solid var(--theme-border, rgba(255,255,255,0.05))', color: activeTab==='themes' ? 'var(--theme-accent)' : 'var(--theme-text)', padding: '3px 4px', borderRadius: '8px', cursor: 'pointer', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '1px', transition: 'all 0.2s', minWidth: '34px' }}>
+              <button onClick={() => setActiveTab('themes')} style={{ background: activeTab==='themes' ? 'var(--theme-accent-dim)' : 'var(--theme-panel, rgba(255,255,255,0.03))', border: activeTab==='themes' ? '1px solid var(--theme-accent)' : '1px solid var(--theme-border, rgba(255,255,255,0.05))', color: activeTab==='themes' ? 'var(--theme-accent)' : 'var(--theme-text)', padding: '2px 6px', borderRadius: '6px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '4px', transition: 'all 0.2s', width: '100%' }}>
                 <Palette size={10} color={activeTab==='themes' ? 'var(--theme-accent)' : '#E0AAFF'} />
                 <span style={{ fontSize: '7px', fontWeight: '800', letterSpacing: '0.5px', textTransform: 'uppercase' }}>Themes</span>
               </button>
@@ -87,7 +87,7 @@ export const MainDashboard: React.FC = () => {
       {/* Main Content Area */}
       <main className="app-container" style={{ 
         paddingTop: isScannerActive ? '0' : (activeTab === 'pantry' ? '0' : 'var(--space-xl)'), 
-        paddingBottom: isScannerActive ? '0' : 'calc(72px + env(safe-area-inset-bottom))',
+        paddingBottom: isScannerActive ? '0' : 'calc(58px + env(safe-area-inset-bottom))',
         background: 'transparent'
       }}>
         {activeTab === 'diary' && <DiaryView />}
@@ -172,7 +172,7 @@ export const MainDashboard: React.FC = () => {
           backdropFilter: 'blur(20px) saturate(180%)', 
           WebkitBackdropFilter: 'blur(20px) saturate(180%)',
           borderTop: '1px solid var(--theme-border, rgba(255,255,255,0.05))', 
-          padding: '4px 8px calc(env(safe-area-inset-bottom) + 4px) 8px', 
+          padding: '2px 8px calc(env(safe-area-inset-bottom) + 2px) 8px', 
           zIndex: 100,
           gap: '2px'
         }}>
@@ -205,7 +205,7 @@ const NavItem = ({ active, onClick, label, icon }: { active: boolean, onClick: (
       cursor: 'pointer', 
       transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)', 
       flex: 1,
-      padding: '4px',
+      padding: '2px',
       outline: 'none',
       position: 'relative',
       WebkitTapHighlightColor: 'transparent'
