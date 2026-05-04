@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useDiary } from '../context/DiaryContext';
 import { ACTIVITY_LEVELS, MICRO_CATEGORIES } from '../lib/constants';
 import { computeGoals } from '../lib/goals/compute';
-import { Flame, Activity, Save, Scale, Droplet, User, PieChart, Info, Check } from 'lucide-react';
+import { Flame, Activity, Save, Scale, Droplet, User, PieChart, Info, Check, Edit2 } from 'lucide-react';
 import { WeightHistoryChart } from './WeightHistoryChart';
 
 export const ProgressView: React.FC = () => {
@@ -351,7 +351,7 @@ export const ProgressView: React.FC = () => {
                 <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 'var(--space-xs)' }}>
                   <label className="lbl" style={{ color: 'var(--theme-error)' }}>Protein % (Locked by Diet)</label>
                   <input type="number" className="inp" value={macroP} disabled style={{ borderLeft: '3px solid var(--theme-error)', opacity: 0.6 }} />
-                  <input type="range" min="0" max="100" value={macroP} disabled style={{ accentColor: 'var(--theme-error)', opacity: 0.6 }} />
+                  <input type="range" min="0" max="100" value={macroP} disabled className="custom-range" style={{ '--thumb-color': 'var(--theme-error)', background: `linear-gradient(to right, var(--theme-error) ${macroP}%, rgba(255,255,255,0.1) ${macroP}%)`, opacity: 0.6 } as React.CSSProperties} />
                 </div>
                 <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 'var(--space-xs)' }}>
                   <label className="lbl">Carbs % (Dynamic)</label>
@@ -367,7 +367,7 @@ export const ProgressView: React.FC = () => {
                       let c = Number(e.target.value);
                       setMacroC(c);
                       setMacroF(100 - macroP - c);
-                  }} style={{ accentColor: 'var(--theme-accent)' }} />
+                  }} className="custom-range" style={{ '--thumb-color': 'var(--theme-accent)', background: `linear-gradient(to right, var(--theme-accent) ${100 - macroP > 0 ? (macroC / (100 - macroP)) * 100 : 0}%, rgba(255,255,255,0.1) ${100 - macroP > 0 ? (macroC / (100 - macroP)) * 100 : 0}%)` } as React.CSSProperties} />
                 </div>
                 <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 'var(--space-xs)' }}>
                   <label className="lbl">Fat % (Dynamic)</label>
@@ -383,7 +383,7 @@ export const ProgressView: React.FC = () => {
                       let f = Number(e.target.value);
                       setMacroF(f);
                       setMacroC(100 - macroP - f);
-                  }} style={{ accentColor: 'var(--theme-warning)' }} />
+                  }} className="custom-range" style={{ '--thumb-color': 'var(--theme-warning)', background: `linear-gradient(to right, var(--theme-warning) ${100 - macroP > 0 ? (macroF / (100 - macroP)) * 100 : 0}%, rgba(255,255,255,0.1) ${100 - macroP > 0 ? (macroF / (100 - macroP)) * 100 : 0}%)` } as React.CSSProperties} />
                 </div>
               </div>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
@@ -402,7 +402,7 @@ export const ProgressView: React.FC = () => {
                 <div style={{ flex: 2, display: 'flex', flexDirection: 'column', gap: 'var(--space-xs)' }}>
                   <label className="lbl">Target (fl oz)</label>
                   <input type="number" className="inp" value={waterGoal} onChange={e => setWaterGoal(Number(e.target.value))} />
-                  <input type="range" min="0" max="250" step="5" value={waterGoal} onChange={e => setWaterGoal(Number(e.target.value))} style={{ accentColor: 'var(--theme-accent)' }} />
+                  <input type="range" min="0" max="250" step="5" value={waterGoal} onChange={e => setWaterGoal(Number(e.target.value))} className="custom-range" style={{ '--thumb-color': 'var(--theme-accent)', background: `linear-gradient(to right, var(--theme-accent) ${Math.min(100, (waterGoal / 250) * 100)}%, rgba(255,255,255,0.1) ${Math.min(100, (waterGoal / 250) * 100)}%)` } as React.CSSProperties} />
                 </div>
                 <div style={{ flex: 1 }}>
                   <button onClick={handleSaveWaterOnly} className="btn" style={{ width: '100%', marginTop: '0', background: 'var(--theme-accent)', color: 'var(--theme-bg, #000)' }}>
@@ -454,14 +454,36 @@ export const ProgressView: React.FC = () => {
                         </div>
                       ) : (
                         <span 
-                          style={{ fontWeight: '600', cursor: 'pointer', borderBottom: '1px dashed var(--theme-border)', paddingBottom: '2px', color: 'var(--theme-text)' }}
+                          style={{ 
+                            fontWeight: '700', 
+                            cursor: 'pointer', 
+                            background: 'var(--theme-panel-dim)',
+                            border: '1px solid var(--theme-border)',
+                            padding: '4px 8px',
+                            borderRadius: '6px',
+                            color: 'var(--theme-text)',
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '6px',
+                            transition: 'all 0.2s',
+                            boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
+                          }}
                           onClick={() => {
                             setEditingMicro(nutrient.k);
                             setCustomMicroValue(String(computed.computedMicros[nutrient.k]));
                           }}
                           title="Click to override target"
+                          onMouseEnter={(e) => {
+                            e.currentTarget.style.background = 'var(--theme-accent-dim)';
+                            e.currentTarget.style.borderColor = 'var(--theme-accent)';
+                          }}
+                          onMouseLeave={(e) => {
+                            e.currentTarget.style.background = 'var(--theme-panel-dim)';
+                            e.currentTarget.style.borderColor = 'var(--theme-border)';
+                          }}
                         >
                           {(computed.computedMicros as any)[nutrient.k]} {nutrient.u}
+                          <Edit2 size={10} color="var(--theme-text-dim)" />
                         </span>
                       )}
                     </div>
@@ -483,6 +505,27 @@ export const ProgressView: React.FC = () => {
         .btn { display: flex; align-items: center; justify-content: center; gap: 8px; background: var(--theme-panel-dim, rgba(255,255,255,0.1)); color: var(--theme-text); border: none; padding: 12px; border-radius: 10px; font-weight: 600; cursor: pointer; transition: background 0.2s; margin-top: 8px; font-family: inherit; }
         .btn:hover:not(:disabled) { background: var(--theme-panel, rgba(255,255,255,0.2)); }
         .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+        .custom-range {
+          -webkit-appearance: none;
+          appearance: none;
+          width: 100%;
+          height: 6px;
+          border-radius: 3px;
+          outline: none;
+          transition: background 0.2s;
+        }
+        .custom-range::-webkit-slider-thumb {
+          -webkit-appearance: none;
+          appearance: none;
+          width: 16px;
+          height: 16px;
+          border-radius: 50%;
+          background: var(--thumb-color, #FFF);
+          cursor: pointer;
+          box-shadow: 0 0 5px rgba(0,0,0,0.5);
+          border: 2px solid var(--theme-bg);
+        }
 
         /* Light Theme Overrides for Weight Goal section */
         .theme-light-surface .weight-goal-card .card-header,
