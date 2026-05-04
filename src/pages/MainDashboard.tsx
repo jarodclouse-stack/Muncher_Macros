@@ -8,7 +8,7 @@ import { SettingsView } from '../components/SettingsView';
 import { VaultView } from '../components/VaultView';
 import { useDiary } from '../context/DiaryContext';
 import { getRewardBreakdown } from '../lib/reward-utils';
-import { LogOut, Activity, Flame, Utensils, Award, Plus, Settings, Gem, X, Info, Palette, Sparkles } from 'lucide-react';
+import { LogOut, Activity, Flame, Utensils, Award, Plus, Settings, Gem, X, Info, Sparkles } from 'lucide-react';
 
 export const MainDashboard: React.FC = () => {
   const { user, logout } = useAuth();
