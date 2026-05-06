@@ -78,7 +78,7 @@ export const NutritionFactsDisplay: React.FC<NutritionFactsDisplayProps> = ({ fo
   };
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', background: 'var(--theme-panel-dim)', padding: '20px', borderRadius: '24px', border: '1px solid var(--theme-border)' }}>
+    <div className="nutrition-facts-display" style={{ display: 'flex', flexDirection: 'column', background: 'var(--theme-panel-dim)', padding: '20px', borderRadius: '24px', border: '1px solid var(--theme-border)' }}>
       <div style={{ fontSize: '10px', fontWeight: '900', color: 'var(--theme-accent)', marginBottom: '16px', letterSpacing: '2px', textTransform: 'uppercase', textAlign: 'center' }}>
         {onEdit ? 'EDIT SCAN DATA (TOTAL CONTROL)' : 'Nutrition Intelligence Profile'}
       </div>

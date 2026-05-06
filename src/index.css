@@ -1830,11 +1830,24 @@ body.theme-light-surface .info-btn.active {
   color: #FFFFFF !important;
 }
 
-body.theme-light-surface .micro-bubble {
-  color: #FFFFFF !important;
-  background: var(--theme-text) !important;
+body.theme-light-surface .nutrition-facts-display {
+  background: #1e293b !important; /* Deep dark slate to contrast white text */
+  border-color: #334155 !important;
 }
-body.theme-light-surface .micro-input {
+
+body.theme-light-surface .nutrition-facts-display,
+body.theme-light-surface .nutrition-facts-display * {
+  color: #FFFFFF !important;
+}
+
+body.theme-light-surface .nutrition-facts-display .micro-bubble {
+  background: rgba(255, 255, 255, 0.15) !important;
+  border-color: rgba(255, 255, 255, 0.2) !important;
+}
+
+body.theme-light-surface .nutrition-facts-display .micro-input {
+  background: rgba(0, 0, 0, 0.4) !important;
+  border-color: rgba(255, 255, 255, 0.15) !important;
   color: #FFFFFF !important;
 }
 
