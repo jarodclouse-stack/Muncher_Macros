@@ -1802,8 +1802,15 @@ body.theme-light-surface .inp::placeholder {
 }
 
 /* Force Progress page inputs to be white text on ALL themes */
-#page-progress .inp {
+#page-progress .inp,
+#page-progress .inp:focus,
+#page-progress .inp:active,
+#page-progress .inp:-webkit-autofill,
+#page-progress .inp:-webkit-autofill:hover,
+#page-progress .inp:-webkit-autofill:focus,
+#page-progress .inp:-webkit-autofill:active {
   color: #FFFFFF !important;
+  -webkit-text-fill-color: #FFFFFF !important;
 }
 
 /* AddFoodModal Info Button & NutritionFactsDisplay Bubbles */
@@ -1845,10 +1852,17 @@ body.theme-light-surface .info-btn.active {
   border-color: rgba(255, 255, 255, 0.2) !important;
 }
 
-.nutrition-facts-display .micro-input {
+.nutrition-facts-display .micro-input,
+.nutrition-facts-display .micro-input:focus,
+.nutrition-facts-display .micro-input:active,
+.nutrition-facts-display .micro-input:-webkit-autofill,
+.nutrition-facts-display .micro-input:-webkit-autofill:hover,
+.nutrition-facts-display .micro-input:-webkit-autofill:focus,
+.nutrition-facts-display .micro-input:-webkit-autofill:active {
   background: rgba(0, 0, 0, 0.4) !important;
   border-color: rgba(255, 255, 255, 0.15) !important;
   color: #FFFFFF !important;
+  -webkit-text-fill-color: #FFFFFF !important;
 }
 
 /* DIARY HEADER DARKENING FOR LIGHT THEMES */
