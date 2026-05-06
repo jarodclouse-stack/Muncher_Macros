@@ -32,7 +32,7 @@ export const AddFoodModal: React.FC<AddFoodModalProps> = ({ meal, onClose }) => 
   const [searching, setSearching] = useState<boolean>(false);
   const [errorMsg, setErrorMsg] = useState('');
   
-  const [aiStagedResults, setAiStagedResults] = useState<any[]>([]);
+  const [aiStagedResults, setAiStagedResults] = useState<(Food & { stagedQty?: string; stagedUnit?: string; showNutrientIntel?: boolean })[]>([]);
   const [isAiReviewing, setIsAiReviewing] = useState(false);
 
 
@@ -314,7 +314,7 @@ export const AddFoodModal: React.FC<AddFoodModalProps> = ({ meal, onClose }) => 
                       key={i} 
                       food={f} 
                       onClick={() => handleAddFoodClick(f)}
-                      localIdx={(f as any).localIdx}
+                      localIdx={(f as Food & { localIdx?: number }).localIdx}
                       onDelete={(idx) => {
                         deleteCustomFood(idx);
                         setResults(prev => prev.filter((_, itemIdx) => itemIdx !== i));
@@ -478,8 +478,8 @@ export const AddFoodModal: React.FC<AddFoodModalProps> = ({ meal, onClose }) => 
                         {/* Nutritional Breakdown Inline - Distinguishing Bubble */}
                         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '6px', marginBottom: '12px', background: 'var(--theme-panel-dim)', border: '1px solid var(--theme-border)', padding: '10px', borderRadius: '16px' }}>
                           {(() => {
-                            const currentQty = parseFloat(f.stagedQty) || 0;
-                            const mult = computeMultiplier(f.serving || '100g', f.stagedUnit, currentQty);
+                            const currentQty = parseFloat(f.stagedQty || '') || 0;
+                            const mult = computeMultiplier(f.serving || '100g', f.stagedUnit || '', currentQty);
                             return (
                               <>
                                 <div style={{ textAlign: 'center' }}><div style={{ fontSize: '9px', color: 'var(--theme-text-dim, rgba(255,255,255,0.4))', fontWeight: '700' }}>KCAL</div><div style={{ fontSize: '12px', fontWeight: '900', color: 'var(--theme-text)' }}>{Math.round((Number(f.cal) || 0) * mult)}</div></div>
@@ -617,7 +617,7 @@ export const AddFoodModal: React.FC<AddFoodModalProps> = ({ meal, onClose }) => 
                             return scaleLegacyFoodByAmount(f, mult);
                           })
                         };
-                        saveCustomFood(mealData as any);
+                        saveCustomFood(mealData as unknown as Food);
                         alert("Meal template saved to Kitchen!");
                         setIsAiReviewing(false);
                         setAiStagedResults([]);
@@ -847,7 +847,7 @@ export const AddFoodModal: React.FC<AddFoodModalProps> = ({ meal, onClose }) => 
 
 export default AddFoodModal;
 
-const SearchResultItem = React.memo(({ food, onClick, localIdx, onDelete }: { food: any, onClick: () => void, localIdx?: number, onDelete: (idx: number) => void }) => (
+const SearchResultItem = React.memo(({ food, onClick, localIdx, onDelete }: { food: Food & { isLocal?: boolean, brand?: string }, onClick: () => void, localIdx?: number, onDelete: (idx: number) => void }) => (
   <div 
     onClick={onClick} 
     className="glass-card"
@@ -891,7 +891,7 @@ const SearchResultItem = React.memo(({ food, onClick, localIdx, onDelete }: { fo
   </div>
 ));
 
-const QuickMacro = ({ label, val, unit, color }: any) => (
+const QuickMacro = ({ label, val, unit, color }: { label: string; val: number | string; unit: string; color?: string }) => (
   <div className="glass-card" style={{ padding: 'var(--space-sm) var(--space-xs)', textAlign: 'center' }}>
     <div style={{ fontSize: '9px', color: 'var(--theme-text-on-panel)', opacity: 0.6, fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '4px' }}>{label}</div>
     <div style={{ fontSize: '15px', color: color || 'var(--theme-text-on-panel)', fontWeight: '900' }}>{val}<span style={{ fontSize: '10px', color: 'var(--theme-text-on-panel)', opacity: 0.7, fontWeight: '600', marginLeft: '1px' }}>{unit}</span></div>

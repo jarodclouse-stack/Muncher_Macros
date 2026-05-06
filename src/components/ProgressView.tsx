@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
-import ReactDOM from 'react-dom';
+
 import { useDiary } from '../context/DiaryContext';
 import { ACTIVITY_LEVELS, MICRO_CATEGORIES } from '../lib/constants';
 import { computeGoals } from '../lib/goals/compute';
-import { Flame, Activity, Save, Scale, Droplet, User, PieChart, Info, Check, Edit2, X } from 'lucide-react';
+import { Flame, Activity, Save, Scale, Droplet, User, PieChart, Info, Check, Edit2 } from 'lucide-react';
 import { WeightHistoryChart } from './WeightHistoryChart';
 
-export const ProgressView: React.FC<{ onClose?: () => void }> = ({ onClose }) => {
+export const ProgressView: React.FC = () => {
   const { localCache, updateGoals, updateDayData, currentDate } = useDiary();
   const goals = localCache.goals || {};
   const currentDayData = localCache[currentDate] || {};
@@ -25,13 +25,15 @@ export const ProgressView: React.FC<{ onClose?: () => void }> = ({ onClose }) =>
   
   const [goalType, setGoalType] = useState(goals.goalType || 'maintain');
   const [goalRate, setGoalRate] = useState(goals.rate?.toString() || '0.5');
+  const [targetWeight, setTargetWeight] = useState(goals.targetWeight?.toString() || '165');
   
   // Auto-convert all body stats when units change
   React.useEffect(() => {
     const unitWeight = localCache.settings?.units?.weight || 'lb';
     const unitHeight = localCache.settings?.units?.height || 'in';
-    const lastUnitWeight = (window as any).__lastUnitWeight;
-    const lastUnitHeight = (window as any).__lastUnitHeight;
+    const win = window as unknown as Record<string, string>;
+    const lastUnitWeight = win.__lastUnitWeight;
+    const lastUnitHeight = win.__lastUnitHeight;
 
     if (lastUnitWeight && lastUnitWeight !== unitWeight) {
         // Convert weight-based fields
@@ -63,16 +65,15 @@ export const ProgressView: React.FC<{ onClose?: () => void }> = ({ onClose }) =>
         });
     }
 
-    (window as any).__lastUnitWeight = unitWeight;
-    (window as any).__lastUnitHeight = unitHeight;
+    win.__lastUnitWeight = unitWeight;
+    win.__lastUnitHeight = unitHeight;
   }, [localCache.settings?.units?.weight, localCache.settings?.units?.height]);
 
-  const [targetWeight, setTargetWeight] = useState(goals.targetWeight?.toString() || '165');
 
   const [activityId, setActivityId] = useState(goals.activityId || 'moderate');
   const [proteinLevelId, setProteinLevelId] = useState(goals.proteinLevelId || 'custom');
   
-  const [customRatioLb, setCustomRatioLb] = useState(goals.customRatioLb || (ACTIVITY_LEVELS.find((a: any) => a.id === 'moderate')?.ratioKg || 1.5) * 0.453592);
+  const [customRatioLb, setCustomRatioLb] = useState(goals.customRatioLb || (ACTIVITY_LEVELS.find((a: { id: string; ratioKg: number }) => a.id === 'moderate')?.ratioKg || 1.5) * 0.453592);
 
   const unitWeight = localCache.settings?.units?.weight || 'lb';
   const unitHeight = localCache.settings?.units?.height || 'in';
@@ -137,54 +138,10 @@ export const ProgressView: React.FC<{ onClose?: () => void }> = ({ onClose }) =>
 
 
   const calAdj = computed.targetCal - computed.tdee;
-  const currentAct = ACTIVITY_LEVELS.find((a: any) => a.id === activityId) || ACTIVITY_LEVELS[2];
+  const currentAct = ACTIVITY_LEVELS.find((a: { id: string; desc?: string; tdee?: number }) => a.id === activityId) || ACTIVITY_LEVELS[2];
 
-  return ReactDOM.createPortal(
-    <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.85)', backdropFilter: 'blur(12px)', zIndex: 3000, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '20px' }}>
-      <div 
-        style={{ 
-          background: 'var(--theme-bg, var(--theme-panel, #0a1e21))', 
-          border: '1px solid var(--theme-border, rgba(255,255,255,0.1))', 
-          borderRadius: '28px', 
-          width: '100%', 
-          maxWidth: '800px', 
-          maxHeight: '85vh', 
-          overflow: 'hidden', 
-          display: 'flex', 
-          flexDirection: 'column', 
-          boxShadow: '0 25px 50px -12px rgba(0,0,0,0.5)',
-          animation: 'modalSlideUp 0.3s cubic-bezier(0.34, 1.56, 0.64, 1)'
-        }} 
-        onClick={e => e.stopPropagation()}
-      >
-        {/* Modal Header */}
-        <div style={{ padding: '24px 32px', borderBottom: '1px solid var(--theme-border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: 'var(--theme-panel, rgba(0,0,0,0.2))' }}>
-           <h2 style={{ fontSize: '20px', fontWeight: '800', margin: 0, display: 'flex', alignItems: 'center', gap: '10px', color: 'var(--theme-text)' }}>
-             <Flame size={22} color="var(--theme-accent)" /> Goals & Progress
-           </h2>
-           {onClose && (
-             <button 
-               onClick={onClose} 
-               style={{ 
-                 background: 'var(--theme-panel-dim, rgba(255,255,255,0.05))', 
-                 border: '1px solid var(--theme-border)', 
-                 color: 'var(--theme-text)', 
-                 cursor: 'pointer', 
-                 padding: '8px', 
-                 borderRadius: '12px', 
-                 display: 'flex', 
-                 alignItems: 'center', 
-                 justifyContent: 'center',
-                 transition: 'all 0.2s' 
-               }} 
-             >
-               <X size={20} />
-             </button>
-           )}
-        </div>
-
-        {/* Modal Content - Scrollable */}
-        <div style={{ flex: 1, overflowY: 'auto', padding: '32px', display: 'flex', flexDirection: 'column', gap: 'var(--space-lg)' }}>
+  return (
+    <div className="section" style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-lg)' }}>
       
       <div style={{ padding: 'var(--space-md)', background: 'var(--theme-accent-dim, rgba(0, 201, 255, 0.1))', color: 'var(--theme-accent)', borderRadius: 'var(--radius-md)', fontSize: '13px', display: 'flex', gap: 'var(--space-sm)', alignItems: 'flex-start', border: '1px solid var(--theme-border)' }}>
         <Info size={16} style={{ flexShrink: 0, marginTop: '2px' }} />
@@ -195,9 +152,9 @@ export const ProgressView: React.FC<{ onClose?: () => void }> = ({ onClose }) =>
       <WeightHistoryChart localCache={localCache} targetWeight={Number(targetWeight)} />
 
       {/* 4. Progress to Goal Visualization */}
-      <div className="section" style={{ background: 'var(--theme-panel)', border: '1px solid var(--theme-border)', borderRadius: 'var(--radius-lg)', padding: 'var(--space-xl)', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
+      <div className="glass-card" style={{ background: 'var(--theme-panel)', border: '1px solid var(--theme-border)', borderRadius: 'var(--radius-lg)', padding: 'var(--space-lg)', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '16px', fontWeight: '700', marginBottom: 'var(--space-lg)', color: 'var(--theme-text)' }}><Activity size={18} color="var(--theme-success, #92FE9D)" /> Progress to Goal Visualization</div>
-        <div style={{ textAlign: 'center', marginBottom: 'var(--space-xl)', padding: '0 var(--space-xl)' }}>
+        <div style={{ textAlign: 'center', marginBottom: 'var(--space-lg)', padding: '0 var(--space-md)' }}>
           <div style={{ fontSize: '48px', fontWeight: '900', color: 'var(--theme-text)', lineHeight: 1 }}>
             {Math.abs(parseFloat(weightLb.toString()) - parseFloat(targetWeight.toString())).toFixed(1)}
           </div>
@@ -224,7 +181,7 @@ export const ProgressView: React.FC<{ onClose?: () => void }> = ({ onClose }) =>
       </div>
 
       {/* 5. Weight Tools (Manual Entry) */}
-      <div className="section" id="weight-logging" style={{ background: 'var(--theme-panel)', border: '1px solid var(--theme-border)', borderRadius: 'var(--radius-lg)', padding: 'var(--space-xl)', boxShadow: '0 8px 30px rgba(0,0,0,0.15)' }}>
+      <div className="glass-card" id="weight-logging" style={{ padding: 'var(--space-lg)', boxShadow: '0 8px 30px rgba(0,0,0,0.15)' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '18px', fontWeight: '900', marginBottom: 'var(--space-lg)', color: 'var(--theme-accent)', textTransform: 'uppercase', letterSpacing: '1px' }}><Scale size={20} color="var(--theme-accent)" /> Weight Record & History</div>
         <form onSubmit={handleSaveDailyWeight} style={{ display: 'flex', gap: 'var(--space-md)', flexWrap: 'wrap', alignItems: 'flex-end' }}>
           <div style={{ flex: 1, minWidth: '120px' }}>
@@ -240,13 +197,13 @@ export const ProgressView: React.FC<{ onClose?: () => void }> = ({ onClose }) =>
         <div style={{ fontSize: '12px', color: 'var(--theme-accent)', marginTop: '16px', fontWeight: '700', background: 'var(--theme-accent-dim)', padding: '10px', borderRadius: '8px', border: '1px solid var(--theme-accent-dim)' }}>💡 Tip: Logging weight for today updates your body stats & TDEE app-wide. Historical logs update your chart only.</div>
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '20px' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: 'var(--space-md)' }}>
 
         {/* 4. Body Stats & Goal Configuration */}
-        <div className="section" style={{ gridColumn: '1 / -1', background: 'var(--theme-panel)', border: '1px solid var(--theme-border)', borderRadius: 'var(--radius-lg)', padding: 'var(--space-xl)' }}>
+        <div className="glass-card" style={{ gridColumn: '1 / -1', padding: 'var(--space-lg)' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '16px', fontWeight: '700', marginBottom: 'var(--space-lg)', color: 'var(--theme-text)' }}><User size={18} color="var(--theme-accent, #00C9FF)" /> Body Stats & TDEE Configuration</div>
           
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: 'var(--space-xl)' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: 'var(--space-lg)' }}>
             <form onSubmit={handleSaveBodyAndGoal} style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-md)' }}>
               <div style={{ fontWeight: '600', color: 'var(--theme-text)', borderBottom: '1px solid var(--theme-border)', paddingBottom: 'var(--space-xs)' }}>Your physical details</div>
               <div style={{ display: 'flex', gap: 'var(--space-sm)' }}>
@@ -312,13 +269,13 @@ export const ProgressView: React.FC<{ onClose?: () => void }> = ({ onClose }) =>
         </div>
 
         {/* 3. Activity Level */}
-        <div className="section" style={{ background: 'var(--theme-panel)', border: '1px solid var(--theme-border)', borderRadius: 'var(--radius-lg)', padding: 'var(--space-xl)' }}>
+        <div className="glass-card" style={{ background: 'var(--theme-panel)', border: '1px solid var(--theme-border)', borderRadius: 'var(--radius-lg)', padding: 'var(--space-lg)' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '16px', fontWeight: '700', marginBottom: 'var(--space-lg)', color: 'var(--theme-text)' }}><Activity size={18} color="var(--theme-warning, #FCC419)" /> Activity & Protein Target</div>
           <form onSubmit={handleSaveActivity} style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-md)' }}>
             <div>
               <label className="lbl">Activity Level</label>
               <select className="inp" value={activityId} onChange={e => setActivityId(e.target.value)}>
-                {ACTIVITY_LEVELS.map((a: any) => (
+                {ACTIVITY_LEVELS.map((a: { id: string; label: string; tdee: number }) => (
                   <option key={a.id} value={a.id}>{a.label} (×{a.tdee} PAL)</option>
                 ))}
               </select>
@@ -327,7 +284,7 @@ export const ProgressView: React.FC<{ onClose?: () => void }> = ({ onClose }) =>
             <div>
               <label className="lbl">Protein Target Level</label>
               <select className="inp" value={proteinLevelId} onChange={e => setProteinLevelId(e.target.value)}>
-                {ACTIVITY_LEVELS.map((a: any) => (
+                {ACTIVITY_LEVELS.map((a: { id: string; label: string; ratioKg: number }) => (
                   <option key={`p-${a.id}`} value={a.id}>{a.label} ({isMetric ? Math.round(a.ratioKg * 100)/100 : Math.round(a.ratioKg * 0.453592 * 100)/100}g / {unitWeight})</option>
                 ))}
                 <option value="custom">Custom target</option>
@@ -347,7 +304,7 @@ export const ProgressView: React.FC<{ onClose?: () => void }> = ({ onClose }) =>
         </div>
 
         {/* 4. Calorie Breakdown Visual */}
-        <div className="section" style={{ gridColumn: '1 / -1', background: 'var(--theme-panel)', border: '1px solid var(--theme-border)', borderRadius: 'var(--radius-lg)', padding: 'var(--space-xl)' }}>
+        <div className="glass-card" style={{ gridColumn: '1 / -1', padding: 'var(--space-lg)' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '16px', fontWeight: '700', marginBottom: 'var(--space-lg)', color: 'var(--theme-text)' }}><Flame size={18} color="var(--theme-error, #FF6B6B)" /> TDEE Calculator Breakdown</div>
           
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: 'var(--space-md)', alignItems: 'center', marginTop: 'var(--space-md)' }}>
@@ -380,9 +337,9 @@ export const ProgressView: React.FC<{ onClose?: () => void }> = ({ onClose }) =>
         </div>
 
         {/* 5. Macro Split & Water Goal */}
-        <div className="section" style={{ gridColumn: '1 / -1', background: 'var(--theme-panel)', border: '1px solid var(--theme-border)', borderRadius: 'var(--radius-lg)', padding: 'var(--space-xl)' }}>
+        <div className="glass-card" style={{ gridColumn: '1 / -1', padding: 'var(--space-lg)' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '16px', fontWeight: '700', marginBottom: 'var(--space-lg)', color: 'var(--theme-text)' }}><PieChart size={18} color="var(--theme-accent, #B197FC)" /> Macro Split & Daily Fluids</div>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: 'var(--space-xl)', marginTop: 'var(--space-md)' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: 'var(--space-lg)', marginTop: 'var(--space-md)' }}>
             
             <div>
               <div style={{ marginBottom: 'var(--space-md)', fontSize: '13px', color: 'var(--theme-text-dim)' }}>Customize your calorie ratio. Must equal exactly 100%.</div>
@@ -409,7 +366,7 @@ export const ProgressView: React.FC<{ onClose?: () => void }> = ({ onClose }) =>
                       setMacroF(max - c);
                   }} style={{ borderLeft: '3px solid var(--theme-accent)' }} />
                   <input type="range" min="0" max={100 - macroP} value={macroC} onChange={e => {
-                      let c = Number(e.target.value);
+                      const c = Number(e.target.value);
                       setMacroC(c);
                       setMacroF(100 - macroP - c);
                   }} className="custom-range" style={{ '--thumb-color': 'var(--theme-accent)', background: `linear-gradient(to right, var(--theme-accent) ${100 - macroP > 0 ? (macroC / (100 - macroP)) * 100 : 0}%, rgba(255,255,255,0.1) ${100 - macroP > 0 ? (macroC / (100 - macroP)) * 100 : 0}%)` } as React.CSSProperties} />
@@ -425,7 +382,7 @@ export const ProgressView: React.FC<{ onClose?: () => void }> = ({ onClose }) =>
                       setMacroC(max - f);
                   }} style={{ borderLeft: '3px solid var(--theme-warning)' }} />
                   <input type="range" min="0" max={100 - macroP} value={macroF} onChange={e => {
-                      let f = Number(e.target.value);
+                      const f = Number(e.target.value);
                       setMacroF(f);
                       setMacroC(100 - macroP - f);
                   }} className="custom-range" style={{ '--thumb-color': 'var(--theme-warning)', background: `linear-gradient(to right, var(--theme-warning) ${100 - macroP > 0 ? (macroF / (100 - macroP)) * 100 : 0}%, rgba(255,255,255,0.1) ${100 - macroP > 0 ? (macroF / (100 - macroP)) * 100 : 0}%)` } as React.CSSProperties} />
@@ -463,7 +420,7 @@ export const ProgressView: React.FC<{ onClose?: () => void }> = ({ onClose }) =>
 
 
         {/* 7. Micro Nutrients Targets */}
-        <div className="section" style={{ gridColumn: '1 / -1', background: 'var(--theme-panel)', border: '1px solid var(--theme-border)', borderRadius: 'var(--radius-lg)', padding: 'var(--space-xl)' }}>
+        <div className="glass-card" style={{ gridColumn: '1 / -1', padding: 'var(--space-lg)' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 'var(--space-lg)', flexWrap: 'wrap', gap: 'var(--space-md)' }}>
              <div style={{ fontSize: '13px', color: 'var(--theme-text-dim)' }}>Based on your stats and activity level, here are your daily targets:</div>
              <button 
@@ -472,11 +429,11 @@ export const ProgressView: React.FC<{ onClose?: () => void }> = ({ onClose }) =>
                RESET ALL TO DEFAULTS
              </button>
           </div>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 'var(--space-lg)' }}>
-            {MICRO_CATEGORIES.map((cat: any, i: number) => (
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))', gap: 'var(--space-md)' }}>
+            {MICRO_CATEGORIES.map((cat: { cat: string; keys: any[] }, i: number) => (
               <div key={i}>
                 <div style={{ fontWeight: '700', fontSize: '12px', color: 'var(--theme-accent)', textTransform: 'uppercase', marginBottom: '12px', letterSpacing: '0.05em' }}>{cat.cat}</div>
-                {cat.keys.map((nutrient: any) => {
+                {cat.keys.map((nutrient: { k: string; u: string; exercise_sensitive?: boolean; rda_m: number; rda_f: number }) => {
                   const isEnhanced = nutrient.exercise_sensitive && computed.computedMicros[nutrient.k] > (sex === 'f' || sex === 'female' ? nutrient.rda_f : nutrient.rda_m);
                   return (
                     <div key={nutrient.k} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '8px 0', borderBottom: '1px solid var(--theme-border)', fontSize: '13px' }}>
@@ -527,7 +484,7 @@ export const ProgressView: React.FC<{ onClose?: () => void }> = ({ onClose }) =>
                             e.currentTarget.style.borderColor = 'var(--theme-border)';
                           }}
                         >
-                          {(computed.computedMicros as any)[nutrient.k]} {nutrient.u}
+                          {(computed.computedMicros as Record<string, number>)[nutrient.k]} {nutrient.u}
                           <Edit2 size={10} color="var(--theme-text-dim)" />
                         </span>
                       )}
@@ -587,10 +544,7 @@ export const ProgressView: React.FC<{ onClose?: () => void }> = ({ onClose }) =>
           to { transform: translateY(0); opacity: 1; }
         }
       `}</style>
-        </div>
-      </div>
-    </div>,
-    document.body
+    </div>
   );
 };
 

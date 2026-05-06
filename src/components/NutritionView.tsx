@@ -7,6 +7,7 @@ import { DEFICIENCY_INFO, NUTRIENT_BENEFITS } from '../lib/nutrient-info';
 import { Doughnut } from 'react-chartjs-2';
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js';
 import { Info } from 'lucide-react';
+import type { Food } from '../types/food';
 
 ChartJS.register(ArcElement, Tooltip, Legend);
 
@@ -18,12 +19,13 @@ export const NutritionView: React.FC = () => {
   const totals = useMemo(() => {
     const dayData = localCache[currentDate] || {};
     const foodLog = dayData.foodLog || [];
-    return sumFoods(foodLog.map((l: any) => l.f));
+    return sumFoods(foodLog.map((l: { f: Food }) => l.f));
   }, [localCache, currentDate]);
 
   const [expandedMicro, setExpandedMicro] = useState<string | null>(null);
 
   const resolvedColors = useMemo(() => {
+    void localCache.theme;
     if (typeof window === 'undefined') return { protein: '#ff4b4b', carbs: '#00c9ff', fat: '#fcc419' };
     const style = getComputedStyle(document.documentElement);
     return {
@@ -96,27 +98,27 @@ export const NutritionView: React.FC = () => {
                   </div>
                   
                   {label === 'Protein' && expandedMicro === 'Protein' && (
-                    <div className="glass-card" style={{ marginTop: 'var(--space-md)', padding: 'var(--space-md)', borderLeft: '3px solid var(--theme-error)', marginBottom: 'var(--space-sm)' }}>
-                      <div style={{ marginBottom: '16px' }}>
-                        <div style={{ fontWeight: '900', color: 'color-mix(in srgb, var(--theme-success), white 70%)', marginBottom: '8px', fontSize: '11px', textTransform: 'uppercase', letterSpacing: '1px' }}>
-                          ✨ Performance Benefits
+                      <div className="glass-card" style={{ marginTop: 'var(--space-md)', padding: 'var(--space-md)', borderLeft: '3px solid var(--theme-error)', marginBottom: 'var(--space-sm)' }}>
+                        <div style={{ marginBottom: '16px' }}>
+                          <div style={{ fontWeight: '900', color: 'color-mix(in srgb, var(--theme-success), white 70%)', marginBottom: '8px', fontSize: '11px', textTransform: 'uppercase', letterSpacing: '1px' }}>
+                            ✨ Performance Benefits
+                          </div>
+                          <div style={{ lineHeight: '1.5', color: 'color-mix(in srgb, var(--theme-accent), white 85%)' }}>{(NUTRIENT_BENEFITS as Record<string, { summary?: string, points?: string[] }>).Protein?.summary || 'The building block of all human tissue.'}</div>
+                          {(NUTRIENT_BENEFITS as Record<string, { summary?: string, points?: string[] }>).Protein?.points && (
+                            <ul style={{ paddingLeft: '18px', margin: '8px 0 0 0', color: 'color-mix(in srgb, var(--theme-accent), white 80%)', display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                              {(NUTRIENT_BENEFITS as Record<string, { summary?: string, points?: string[] }>).Protein.points!.map((p: string, i: number) => <li key={i}>{p}</li>)}
+                            </ul>
+                          )}
                         </div>
-                        <div style={{ lineHeight: '1.5', color: 'color-mix(in srgb, var(--theme-accent), white 85%)' }}>{(NUTRIENT_BENEFITS as any).Protein?.summary || 'The building block of all human tissue.'}</div>
-                        {(NUTRIENT_BENEFITS as any).Protein?.points && (
-                          <ul style={{ paddingLeft: '18px', margin: '8px 0 0 0', color: 'color-mix(in srgb, var(--theme-accent), white 80%)', display: 'flex', flexDirection: 'column', gap: '4px' }}>
-                            {(NUTRIENT_BENEFITS as any).Protein.points.map((p: string, i: number) => <li key={i}>{p}</li>)}
-                          </ul>
+                        {(DEFICIENCY_INFO as Record<string, { desc?: string }>).Protein && (
+                          <div style={{ borderTop: '1px solid var(--theme-border)', paddingTop: '12px' }}>
+                            <div style={{ fontWeight: '900', color: 'color-mix(in srgb, var(--theme-warning), white 70%)', marginBottom: '8px', fontSize: '11px', textTransform: 'uppercase', letterSpacing: '1px' }}>
+                              ⚠️ Deficiency Risks
+                            </div>
+                            <div style={{ lineHeight: '1.5', color: 'color-mix(in srgb, var(--theme-accent), white 85%)', fontWeight: '600' }}>{(DEFICIENCY_INFO as Record<string, { desc?: string }>).Protein.desc}</div>
+                          </div>
                         )}
                       </div>
-                      {(DEFICIENCY_INFO as any).Protein && (
-                        <div style={{ borderTop: '1px solid var(--theme-border)', paddingTop: '12px' }}>
-                          <div style={{ fontWeight: '900', color: 'color-mix(in srgb, var(--theme-warning), white 70%)', marginBottom: '8px', fontSize: '11px', textTransform: 'uppercase', letterSpacing: '1px' }}>
-                            ⚠️ Deficiency Risks
-                          </div>
-                          <div style={{ lineHeight: '1.5', color: 'color-mix(in srgb, var(--theme-accent), white 85%)', fontWeight: '600' }}>{(DEFICIENCY_INFO as any).Protein.desc}</div>
-                        </div>
-                      )}
-                    </div>
                   )}
                   
                   {label === 'Fat' && (
@@ -148,7 +150,7 @@ export const NutritionView: React.FC = () => {
                                 <div style={{ fontWeight: '800', color: 'color-mix(in srgb, var(--theme-success), white 70%)', marginBottom: '6px', fontSize: '12px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
                                   ✨ Metabolic Benefits
                                 </div>
-                                <div style={{ lineHeight: '1.5', color: 'color-mix(in srgb, var(--theme-accent), white 85%)' }}>{(info as any).summary || 'Essential profile for balanced nutrition.'}</div>
+                                <div style={{ lineHeight: '1.5', color: 'color-mix(in srgb, var(--theme-accent), white 85%)' }}>{(info as { summary?: string }).summary || 'Essential profile for balanced nutrition.'}</div>
                               </div>
 
                               {/* Deficiency Section */}
@@ -200,7 +202,7 @@ export const NutritionView: React.FC = () => {
                                 <div style={{ fontWeight: '800', color: 'color-mix(in srgb, var(--theme-success), white 70%)', marginBottom: '6px', fontSize: '12px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
                                   ✨ Performance Benefits
                                 </div>
-                                <div style={{ lineHeight: '1.5', color: 'color-mix(in srgb, var(--theme-accent), white 85%)' }}>{(info as any).summary || 'Vital fuel source for metabolic energy.'}</div>
+                                <div style={{ lineHeight: '1.5', color: 'color-mix(in srgb, var(--theme-accent), white 85%)' }}>{(info as { summary?: string }).summary || 'Vital fuel source for metabolic energy.'}</div>
                               </div>
 
                               {/* Deficiency Section */}
@@ -235,11 +237,11 @@ export const NutritionView: React.FC = () => {
       <div className="card" style={{ padding: 'var(--space-xl)' }}>
         <h2 style={{ fontSize: '18px', fontWeight: '800', marginBottom: 'var(--space-lg)', color: 'var(--theme-text-on-panel)' }}>Micronutrients</h2>
         <div style={{ display: 'grid', gap: 'var(--space-lg)' }}>
-          {MICRO_CATEGORIES.map((cat: any) => (
+          {MICRO_CATEGORIES.map((cat: { cat: string; keys: { k: string; u: string }[] }) => (
             <div key={cat.cat}>
               <h3 style={{ fontSize: '12px', color: 'var(--theme-accent)', marginBottom: '16px', textTransform: 'uppercase', letterSpacing: '1px', fontWeight: '900' }}>{cat.cat}</h3>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-                {cat.keys.map((nutrient: any) => {
+                {cat.keys.map((nutrient: { k: string; u: string }) => {
                   const label = nutrient.k;
                   const unit = nutrient.u;
                   const val = totals[label.toLowerCase()] || totals[label] || 0;

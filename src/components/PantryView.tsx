@@ -58,7 +58,7 @@ const MacroPill = ({ label, val, unit, color }: { label: string, val: string | n
   </div>
 );
 
-const NutrientDetailRow = ({ label, value, unit, benefit }: { label: string, value: string | number, unit: string, benefit?: any }) => {
+const NutrientDetailRow = ({ label, value, unit, benefit }: { label: string, value: string | number, unit: string, benefit?: string | { summary?: string } }) => {
   const [showBenefit, setShowBenefit] = useState(false);
   return (
     <div style={{ padding: '6px 12px', background: 'var(--theme-panel-dim)', borderRadius: '12px', border: '1px solid var(--theme-border)', marginBottom: '6px' }}>
@@ -141,34 +141,6 @@ export const PantryView: React.FC = () => {
   const [isSearching, setIsSearching] = useState(false);
   const [searchResults, setSearchResults] = useState<Food[]>([]);
   const [innerGlobalSearchTab, setInnerGlobalSearchTab] = useState<SearchTab>('search');
-
-  // Performance: Debounce for both searches
-  React.useEffect(() => {
-    const timer = setTimeout(() => {
-      if (ingQuery.length > 2) handleIngSearch(undefined, ingQuery);
-    }, 500);
-    return () => clearTimeout(timer);
-  }, [ingQuery]);
-
-  React.useEffect(() => {
-    const timer = setTimeout(() => {
-      if (innerGlobalSearchTab === 'describe') return;
-      if (searchQuery.length > 2) handleGlobalSearch();
-    }, 500);
-    return () => clearTimeout(timer);
-  }, [searchQuery, innerGlobalSearchTab]);
-
-  const [aiStagedResults, setAiStagedResults] = useState<Food[]>([]);
-  const [isAiReviewing, setIsAiReviewing] = useState(false);
-  const [isPantryPickerOpen, setIsPantryPickerOpen] = useState(false);
-  
-  const customFoods: Food[] = localCache.customFoods || [];
-  
-  const [configuringFood, setConfiguringFood] = useState<Food | null>(null);
-  const [editName, setEditName] = useState('');
-  const [servingQty, setServingQty] = useState('1');
-  const [servingUnit, setServingUnit] = useState('serving');
-  const [showFullNutrition, setShowFullNutrition] = useState(false);
 
   const clearSearchState = () => {
     setSearchResults([]);
@@ -281,10 +253,40 @@ export const PantryView: React.FC = () => {
     });
 
     const newForm = { ...form, ingredientItems: items };
-    Object.keys(totals).forEach(k => { (newForm as any)[k] = totals[k as keyof typeof totals] ? totals[k as keyof typeof totals].toFixed(1) : ''; });
+    Object.keys(totals).forEach(k => { (newForm as unknown as Record<string, string>)[k] = totals[k as keyof typeof totals] ? totals[k as keyof typeof totals].toFixed(1) : ''; });
     setForm(newForm);
     setPairingSuggestions(getPairingSuggestions(items));
   };
+
+  // Performance: Debounce for both searches
+  React.useEffect(() => {
+    const timer = setTimeout(() => {
+      if (ingQuery.length > 2) handleIngSearch(undefined, ingQuery);
+    }, 500);
+    return () => clearTimeout(timer);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [ingQuery]);
+
+  React.useEffect(() => {
+    const timer = setTimeout(() => {
+      if (innerGlobalSearchTab === 'describe') return;
+      if (searchQuery.length > 2) handleGlobalSearch();
+    }, 500);
+    return () => clearTimeout(timer);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchQuery, innerGlobalSearchTab]);
+
+  const [aiStagedResults, setAiStagedResults] = useState<Food[]>([]);
+  const [isAiReviewing, setIsAiReviewing] = useState(false);
+  const [isPantryPickerOpen, setIsPantryPickerOpen] = useState(false);
+  
+  const customFoods: Food[] = localCache.customFoods || [];
+  
+  const [configuringFood, setConfiguringFood] = useState<Food | null>(null);
+  const [editName, setEditName] = useState('');
+  const [servingQty, setServingQty] = useState('1');
+  const [servingUnit, setServingUnit] = useState('serving');
+  const [showFullNutrition, setShowFullNutrition] = useState(false);
 
   const handleAddPreviewClick = (food: Food) => {
     setConfiguringFood(food);
@@ -984,7 +986,7 @@ export const PantryView: React.FC = () => {
                       {SERVING_UNITS.map(u => <option key={u.v} value={u.v}>{u.v}</option>)}
                     </select>
                     <button onClick={() => {
-                        const newItems = (form.ingredientItems || []).filter((_: any, idx: number) => idx !== i);
+                        const newItems = (form.ingredientItems || []).filter((_: RecipeItem, idx: number) => idx !== i);
                         calculateRecipeTotals(newItems);
                       }} 
                       style={{ background: 'none', border: 'none', color: 'rgba(255,107,107,0.7)', cursor: 'pointer' }}><Trash2 size={14} /></button>
@@ -1025,7 +1027,7 @@ export const PantryView: React.FC = () => {
                       <EntryField 
                         key={k.k} 
                         label={`${k.k} (${k.u})`} 
-                        value={String((form as any)[k.k] || 0)} 
+                        value={String((form as unknown as Record<string, unknown>)[k.k] || 0)} 
                         onChange={v => setForm({...form, [k.k]: parseFloat(v) || 0})} 
                       />
                     ))}
@@ -1054,7 +1056,7 @@ export const PantryView: React.FC = () => {
                   };
                   const keys = ['cal', 'p', 'c', 'f', 'fiber', 'sugars', 'sat', 'mono', 'poly', 'trans', 'chol', 'Sodium', 'Potassium', 'Calcium', 'Magnesium', ...ALL_MICRO_KEYS];
                   keys.forEach(k => {
-                    const fd = foodData as any;
+                    const fd = foodData as unknown as Record<string, unknown>;
                     if (fd[k] !== undefined && fd[k] !== '') {
                       fd[k] = Number(fd[k]);
                     }
@@ -1129,7 +1131,7 @@ export const PantryView: React.FC = () => {
             .filter((f: Food) => {
               if (filterType === 'fav') return f.favorite;
               if (filterType === 'high-p') return (f.p * 4) / (f.cal || 1) > 0.3;
-              if (filterType === 'recipe') return (f.ingredientItems?.length || 0) > 0 || (f as any).type === 'recipe';
+              if (filterType === 'recipe') return (f.ingredientItems?.length || 0) > 0 || (f as Food & { type?: string }).type === 'recipe';
               return true;
             })
             .sort((a: Food, b: Food) => {
