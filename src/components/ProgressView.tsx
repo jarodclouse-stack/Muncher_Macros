@@ -141,7 +141,7 @@ export const ProgressView: React.FC = () => {
   const currentAct = ACTIVITY_LEVELS.find((a: { id: string; desc?: string; tdee?: number }) => a.id === activityId) || ACTIVITY_LEVELS[2];
 
   return (
-    <div className="section" style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-lg)' }}>
+    <div id="page-progress" className="section" style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-lg)' }}>
       
       <div style={{ padding: 'var(--space-md)', background: 'var(--theme-accent-dim, rgba(0, 201, 255, 0.1))', color: 'var(--theme-accent)', borderRadius: 'var(--radius-md)', fontSize: '13px', display: 'flex', gap: 'var(--space-sm)', alignItems: 'flex-start', border: '1px solid var(--theme-border)' }}>
         <Info size={16} style={{ flexShrink: 0, marginTop: '2px' }} />

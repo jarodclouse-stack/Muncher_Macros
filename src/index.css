@@ -1801,6 +1801,11 @@ body.theme-light-surface .inp::placeholder {
   color: var(--theme-placeholder) !important;
 }
 
+/* Force Progress page inputs to be white text on light themes */
+body.theme-light-surface #page-progress .inp {
+  color: #FFFFFF !important;
+}
+
 /* DIARY HEADER DARKENING FOR LIGHT THEMES */
 body.theme-light-surface .diary-header-text {
   color: #1e293b !important; /* Deep dark slate */
