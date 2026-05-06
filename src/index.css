@@ -1801,8 +1801,8 @@ body.theme-light-surface .inp::placeholder {
   color: var(--theme-placeholder) !important;
 }
 
-/* Force Progress page inputs to be white text on light themes */
-body.theme-light-surface #page-progress .inp {
+/* Force Progress page inputs to be white text on ALL themes */
+#page-progress .inp {
   color: #FFFFFF !important;
 }
 
@@ -1830,22 +1830,22 @@ body.theme-light-surface .info-btn.active {
   color: #FFFFFF !important;
 }
 
-body.theme-light-surface .nutrition-facts-display {
+.nutrition-facts-display {
   background: #1e293b !important; /* Deep dark slate to contrast white text */
   border-color: #334155 !important;
 }
 
-body.theme-light-surface .nutrition-facts-display,
-body.theme-light-surface .nutrition-facts-display * {
+.nutrition-facts-display,
+.nutrition-facts-display * {
   color: #FFFFFF !important;
 }
 
-body.theme-light-surface .nutrition-facts-display .micro-bubble {
+.nutrition-facts-display .micro-bubble {
   background: rgba(255, 255, 255, 0.15) !important;
   border-color: rgba(255, 255, 255, 0.2) !important;
 }
 
-body.theme-light-surface .nutrition-facts-display .micro-input {
+.nutrition-facts-display .micro-input {
   background: rgba(0, 0, 0, 0.4) !important;
   border-color: rgba(255, 255, 255, 0.15) !important;
   color: #FFFFFF !important;
