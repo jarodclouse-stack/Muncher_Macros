@@ -430,7 +430,7 @@ export const ProgressView: React.FC = () => {
              </button>
           </div>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))', gap: 'var(--space-md)' }}>
-            {MICRO_CATEGORIES.map((cat: { cat: string; keys: any[] }, i: number) => (
+            {MICRO_CATEGORIES.map((cat: { cat: string; keys: Array<{k: string; u: string; exercise_sensitive?: boolean; rda_m: number; rda_f: number}> }, i: number) => (
               <div key={i}>
                 <div style={{ fontWeight: '700', fontSize: '12px', color: 'var(--theme-accent)', textTransform: 'uppercase', marginBottom: '12px', letterSpacing: '0.05em' }}>{cat.cat}</div>
                 {cat.keys.map((nutrient: { k: string; u: string; exercise_sensitive?: boolean; rda_m: number; rda_f: number }) => {

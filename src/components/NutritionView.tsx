@@ -286,12 +286,12 @@ export const NutritionView: React.FC = () => {
                           
                           {/* Benefits Section */}
                           <div style={{ marginBottom: '16px' }}>
-                             <div style={{ fontWeight: '800', color: '#FFFFFF', marginBottom: '6px', fontSize: '12px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                             <div style={{ fontWeight: '800', color: 'color-mix(in srgb, var(--theme-success), white 70%)', marginBottom: '6px', fontSize: '12px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
                                ✨ Clinical Benefits
                              </div>
-                             <div style={{ marginBottom: '10px', lineHeight: '1.5', color: '#FFFFFF' }}>{benefitsInfo?.summary || 'Vital biological support for systemic homeostatis.'}</div>
+                             <div style={{ marginBottom: '10px', lineHeight: '1.5', color: 'color-mix(in srgb, var(--theme-accent), white 85%)' }}>{benefitsInfo?.summary || 'Vital biological support for systemic homeostatis.'}</div>
                              {benefitsInfo?.points && (
-                               <ul style={{ paddingLeft: '18px', margin: '0', color: '#FFFFFF', display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                               <ul style={{ paddingLeft: '18px', margin: '0', color: 'color-mix(in srgb, var(--theme-accent), white 80%)', display: 'flex', flexDirection: 'column', gap: '4px' }}>
                                  {benefitsInfo.points.map((p: string, i: number) => <li key={i}>{p}</li>)}
                                </ul>
                              )}
@@ -300,12 +300,12 @@ export const NutritionView: React.FC = () => {
                           {/* Deficiency Section */}
                           {defInfo && (
                             <div style={{ borderTop: '1px solid var(--theme-border, rgba(255,255,255,0.05))', paddingTop: '12px' }}>
-                               <div style={{ fontWeight: '800', color: '#FFFFFF', marginBottom: '6px', fontSize: '12px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                               <div style={{ fontWeight: '800', color: 'color-mix(in srgb, var(--theme-warning), white 70%)', marginBottom: '6px', fontSize: '12px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
                                  ⚠️ Deficiency Risks
                                </div>
-                               <div style={{ lineHeight: '1.5', color: '#FFFFFF' }}>{defInfo.desc}</div>
+                               <div style={{ lineHeight: '1.5', color: 'color-mix(in srgb, var(--theme-accent), white 85%)' }}>{defInfo.desc}</div>
                                {defInfo.sources && (
-                                 <div style={{ marginTop: '8px', fontSize: '11px', color: '#FFFFFF', fontStyle: 'italic' }}>
+                                 <div style={{ marginTop: '8px', fontSize: '11px', color: 'color-mix(in srgb, var(--theme-accent), white 80%)', fontStyle: 'italic' }}>
                                    Best Sources: {defInfo.sources}
                                  </div>
                                )}
