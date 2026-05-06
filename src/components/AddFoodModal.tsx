@@ -458,13 +458,7 @@ export const AddFoodModal: React.FC<AddFoodModalProps> = ({ meal, onClose }) => 
                                 next[i] = { ...f, showNutrientIntel: !f.showNutrientIntel };
                                 setAiStagedResults(next);
                               }}
-                              style={{ 
-                                background: f.showNutrientIntel ? 'rgba(0, 201, 255, 0.15)' : 'rgba(255,255,255,0.05)', 
-                                border: '1px solid',
-                                borderColor: f.showNutrientIntel ? 'var(--theme-accent)' : 'rgba(255,255,255,0.1)',
-                                color: f.showNutrientIntel ? 'var(--theme-accent)' : 'rgba(255,255,255,0.5)', 
-                                borderRadius: '8px', padding: '4px 8px', fontSize: '10px', fontWeight: '800', cursor: 'pointer', transition: 'all 0.2s', display: 'flex', alignItems: 'center', gap: '4px'
-                              }}>
+                              className={`info-btn ${f.showNutrientIntel ? 'active' : ''}`}>
                               <Info size={12} /> {f.showNutrientIntel ? 'HIDE' : 'INFO'}
                             </button>
                             <button onClick={() => {

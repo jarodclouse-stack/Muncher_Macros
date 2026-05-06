@@ -29,7 +29,7 @@ export const NutritionFactsDisplay: React.FC<NutritionFactsDisplayProps> = ({ fo
           borderBottom: '1px solid var(--theme-border-dim, rgba(255,255,255,0.05))' 
         }}
       >
-        <span style={{ 
+        <span className="micro-bubble" style={{ 
           fontSize: '10px', 
           fontWeight: '900', 
           color: 'var(--theme-accent)',
@@ -48,6 +48,7 @@ export const NutritionFactsDisplay: React.FC<NutritionFactsDisplayProps> = ({ fo
         {onEdit ? (
           <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
             <input 
+              className="inp micro-input"
               type="number"
               step="any"
               value={rawVal}

@@ -1806,6 +1806,38 @@ body.theme-light-surface #page-progress .inp {
   color: #FFFFFF !important;
 }
 
+/* AddFoodModal Info Button & NutritionFactsDisplay Bubbles */
+.info-btn {
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.1);
+  color: rgba(255,255,255,0.5);
+  border-radius: 8px; padding: 4px 8px; font-size: 10px; font-weight: 800; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; gap: 4px;
+}
+.info-btn.active {
+  background: rgba(0, 201, 255, 0.15);
+  border-color: var(--theme-accent);
+  color: var(--theme-accent);
+}
+
+body.theme-light-surface .info-btn {
+  background: rgba(0,0,0,0.05);
+  border-color: rgba(0,0,0,0.1);
+  color: var(--theme-text-dim);
+}
+body.theme-light-surface .info-btn.active {
+  background: var(--theme-accent);
+  border-color: var(--theme-accent);
+  color: #FFFFFF !important;
+}
+
+body.theme-light-surface .micro-bubble {
+  color: #FFFFFF !important;
+  background: var(--theme-text) !important;
+}
+body.theme-light-surface .micro-input {
+  color: #FFFFFF !important;
+}
+
 /* DIARY HEADER DARKENING FOR LIGHT THEMES */
 body.theme-light-surface .diary-header-text {
   color: #1e293b !important; /* Deep dark slate */
