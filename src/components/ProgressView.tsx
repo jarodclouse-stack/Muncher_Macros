@@ -233,7 +233,7 @@ export const ProgressView: React.FC = () => {
               <div style={{ display: 'flex', gap: 'var(--space-sm)' }}>
                 <div style={{ flex: 1 }}>
                   <label className="lbl">Goal Weight (Target)</label>
-                  <input type="number" step="0.1" className="inp" value={targetWeight} onChange={e => setTargetWeight(cleanNumInput(e.target.value))} style={{ color: 'var(--theme-accent)' }} />
+                  <input type="number" step="0.1" className="inp" value={targetWeight} onChange={e => setTargetWeight(cleanNumInput(e.target.value))} />
                 </div>
               </div>
 
@@ -502,7 +502,7 @@ export const ProgressView: React.FC = () => {
         .card { background: var(--theme-panel, rgba(255,255,255,0.02)); border: 1px solid var(--theme-border, rgba(255,255,255,0.05)); border-radius: 20px; padding: 24px; }
         .card-header { display: flex; align-items: center; gap: 8px; font-size: 16px; font-weight: 700; margin-bottom: 20px; color: var(--theme-text); }
         .lbl { font-size: 12px; color: var(--theme-text-dim, #8b8b9b); margin-bottom: 6px; display: block; font-weight: 500; }
-        .inp { width: 100%; box-sizing: border-box; background: var(--theme-input-bg, rgba(0,0,0,0.4)); border: 1px solid var(--theme-border, rgba(255,255,255,0.1)); padding: 10px 14px; border-radius: 10px; color: var(--theme-text); outline: none; transition: border-color 0.2s; font-family: inherit; }
+        .inp { width: 100%; box-sizing: border-box; background: var(--theme-input-bg, rgba(0,0,0,0.4)); border: 1px solid var(--theme-border, rgba(255,255,255,0.1)); padding: 10px 14px; border-radius: 10px; color: #FFFFFF !important; -webkit-text-fill-color: #FFFFFF !important; outline: none; transition: border-color 0.2s; font-family: inherit; }
         .inp:focus { border-color: var(--theme-accent, #00C9FF); }
         .btn { display: flex; align-items: center; justify-content: center; gap: 8px; background: var(--theme-panel-dim, rgba(255,255,255,0.1)); color: var(--theme-text); border: none; padding: 12px; border-radius: 10px; font-weight: 600; cursor: pointer; transition: background 0.2s; margin-top: 8px; font-family: inherit; }
         .btn:hover:not(:disabled) { background: var(--theme-panel, rgba(255,255,255,0.2)); }
@@ -530,9 +530,7 @@ export const ProgressView: React.FC = () => {
         }
 
         /* Light Theme Overrides for Weight Goal section */
-        .theme-light-surface .weight-goal-card .card-header,
-        .theme-light-surface .weight-goal-card .lbl,
-        .theme-light-surface .weight-goal-card .inp {
+        .theme-light-surface .weight-goal-card .card-header {
           color: var(--theme-text) !important;
         }
         .theme-light-surface .weight-goal-card .lbl {
