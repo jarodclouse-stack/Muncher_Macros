@@ -1813,6 +1813,23 @@ body.theme-light-surface .inp::placeholder {
   -webkit-text-fill-color: #FFFFFF !important;
 }
 
+/* Force Progress page headers and labels to match the dark theme (light text) */
+#page-progress .card,
+#page-progress .weight-goal-card,
+#page-progress .activity-card {
+  background: #1e293b !important;
+  border-color: #334155 !important;
+}
+#page-progress .card-header,
+#page-progress .dd-section {
+  color: #FFFFFF !important;
+}
+#page-progress .lbl,
+#page-progress .text-dim,
+#page-progress .ac-desc {
+  color: rgba(255, 255, 255, 0.6) !important;
+}
+
 /* AddFoodModal Info Button & NutritionFactsDisplay Bubbles */
 .info-btn {
   background: rgba(255,255,255,0.05);
