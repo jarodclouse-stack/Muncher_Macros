@@ -2206,6 +2206,41 @@ body.theme-light-surface .glass-card textarea,
 body.theme-light-surface .force-white-placeholder {
   color: #FFFFFF !important;
 }
+/* Force ALL text inside glass-cards to be white/light on light themes.
+   Glass-cards always have dark semi-transparent backgrounds. */
+body.theme-light-surface .glass-card,
+body.theme-light-surface .glass-card div,
+body.theme-light-surface .glass-card span,
+body.theme-light-surface .glass-card button,
+body.theme-light-surface .glass-card label,
+body.theme-light-surface .glass-card p,
+body.theme-light-surface .glass-card h3,
+body.theme-light-surface .glass-card code {
+  color: #FFFFFF !important;
+}
+body.theme-light-surface .glass-card button {
+  border-color: rgba(255, 255, 255, 0.15) !important;
+}
+/* Dim text inside glass-cards (labels like KCAL, P, C, F) */
+body.theme-light-surface .glass-card div[style*="var(--theme-text-dim)"] {
+  color: rgba(255, 255, 255, 0.6) !important;
+}
+/* Keep accent-colored text visible inside glass cards */
+body.theme-light-surface .glass-card div[style*="var(--theme-accent)"],
+body.theme-light-surface .glass-card button[style*="var(--theme-accent)"] {
+  color: var(--theme-accent) !important;
+}
+body.theme-light-surface .glass-card div[style*="var(--theme-error)"] {
+  color: var(--theme-error) !important;
+}
+body.theme-light-surface .glass-card div[style*="var(--theme-warning)"] {
+  color: var(--theme-warning) !important;
+}
+/* Glass-card inner card separators should be white-alpha */
+body.theme-light-surface .glass-card div[style*="var(--theme-panel-dim)"],
+body.theme-light-surface .glass-card div[style*="var(--theme-border)"] {
+  border-color: rgba(255, 255, 255, 0.1) !important;
+}
 
 /* Force no arrows on select menus */
 body.theme-light-surface select {
