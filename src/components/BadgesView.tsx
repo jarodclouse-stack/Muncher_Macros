@@ -52,13 +52,26 @@ export const BadgesView: React.FC = () => {
                 </h3>
               </div>
 
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(140px, 1fr))', gap: 'var(--space-md)' }}>
+              <div 
+                className="hide-scrollbar"
+                style={{ 
+                  display: 'flex', 
+                  overflowX: 'auto', 
+                  gap: 'var(--space-md)',
+                  paddingBottom: 'var(--space-xs)',
+                  scrollSnapType: 'x mandatory',
+                  WebkitOverflowScrolling: 'touch'
+                }}
+              >
                 {tierBadges.map(badge => {
                   const isEarned = currentStreak >= badge.day;
                   return (
                     <div 
                       key={badge.title}
                       style={{ 
+                        flex: '0 0 auto',
+                        width: '140px',
+                        scrollSnapAlign: 'start',
                         background: isEarned ? 'var(--theme-panel)' : 'var(--theme-panel-dim)',
                         border: isEarned ? `1px solid ${badge.color}44` : '1px dashed var(--theme-border)',
                         borderRadius: 'var(--radius-lg)',

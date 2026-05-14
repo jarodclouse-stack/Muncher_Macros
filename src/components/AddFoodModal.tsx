@@ -109,13 +109,14 @@ export const AddFoodModal: React.FC<AddFoodModalProps> = ({ meal, onClose }) => 
     setSearching(true);
     setErrorMsg('');
     try {
-      const isBarcode = /^\\d{6,}$/.test(cleanQuery);
+      const strippedQuery = cleanQuery.replace(/[\\s-]/g, '');
+      const isBarcode = /^\\d{6,}$/.test(strippedQuery);
       const endpoint = isBarcode ? '/api/off-search' : '/api/ai-lookup';
       
       const res = await fetch(endpoint, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ query: cleanQuery })
+        body: JSON.stringify({ query: isBarcode ? strippedQuery : cleanQuery })
       });
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
       const body = await res.json();
@@ -361,7 +362,7 @@ export const AddFoodModal: React.FC<AddFoodModalProps> = ({ meal, onClose }) => 
                       <h3 style={{ margin: 0, fontSize: '15px', fontWeight: '900', color: 'var(--theme-text)', textTransform: 'uppercase', letterSpacing: '1.5px' }}>
                         Analyze Meal Intelligence
                       </h3>
-                      <div style={{ fontSize: '10px', color: 'var(--theme-text-dim)', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.5px', marginTop: '2px' }}>AI-Powered Complex Parsing</div>
+                      <div style={{ fontSize: '10px', color: 'color-mix(in srgb, var(--theme-accent) 70%, white)', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.5px', marginTop: '2px' }}>AI-Powered Complex Parsing</div>
                     </div>
                   </div>
 

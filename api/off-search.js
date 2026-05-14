@@ -33,21 +33,22 @@ module.exports = async function handler(req, res) {
   const query = (body.query || '').trim();
   if (!query) return res.status(400).json({ error: 'Missing query' });
 
-  const isBarcode = /^\\d+$/.test(query);
+  const strippedQuery = query.replace(/[\\s-]/g, '');
+  const isBarcode = /^\\d+$/.test(strippedQuery);
 
   let productsToProcess = [];
 
   try {
     if (isBarcode) {
       // Direct barcode lookup
-      let offRes = await fetch(`https://world.openfoodfacts.org/api/v0/product/${query}.json`, {
+      let offRes = await fetch(`https://world.openfoodfacts.org/api/v0/product/${strippedQuery}.json`, {
         headers: { 'User-Agent': 'MuncherMacros/1.0' }
       });
       let data = await offRes.json();
       
       // If not found and it's a 12 digit UPC, OFF often stores them as 13 digit EANs with a leading zero
-      if (data.status === 0 && query.length === 12) {
-        offRes = await fetch(`https://world.openfoodfacts.org/api/v0/product/0${query}.json`, {
+      if (data.status === 0 && strippedQuery.length === 12) {
+        offRes = await fetch(`https://world.openfoodfacts.org/api/v0/product/0${strippedQuery}.json`, {
           headers: { 'User-Agent': 'MuncherMacros/1.0' }
         });
         data = await offRes.json();

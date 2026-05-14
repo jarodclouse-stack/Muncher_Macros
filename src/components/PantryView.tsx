@@ -408,7 +408,7 @@ export const PantryView: React.FC = () => {
                         <h3 style={{ margin: 0, fontSize: '15px', fontWeight: '900', color: '#FFFFFF', textTransform: 'uppercase', letterSpacing: '1.5px' }}>
                         Analyze Meal Intelligence
                       </h3>
-                      <div style={{ fontSize: '10px', color: 'var(--theme-text-dim-on-panel)', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.5px', marginTop: '2px' }}>AI-Powered Complex Parsing</div>
+                      <div style={{ fontSize: '10px', color: 'color-mix(in srgb, var(--theme-accent) 70%, white)', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.5px', marginTop: '2px' }}>AI-Powered Complex Parsing</div>
                     </div>
                   </div>
 
@@ -469,15 +469,7 @@ export const PantryView: React.FC = () => {
                       type="text" 
                       placeholder={innerGlobalSearchTab === 'search' ? "Search for foods, brands..." : "Explain food (AI search)..."}
                       value={searchQuery}
-                      onChange={(e) => {
-                        const val = e.target.value;
-                        setSearchQuery(val);
-                        if (val.endsWith(' ') && val.trim().length > 0) {
-                          if (innerGlobalSearchTab === 'search') handleGlobalSearch();
-                          else if (innerGlobalSearchTab === 'ai-search') handleGlobalAISearch();
-                          else handleGlobalAIDescribe();
-                        }
-                      }}
+                      onChange={(e) => setSearchQuery(e.target.value)}
                       style={{ width: '100%', background: 'var(--theme-input-bg)', border: '1px solid var(--theme-border)', borderRadius: 'var(--radius-md)', padding: '12px 12px 12px 40px', color: 'var(--theme-text)', fontSize: '14px', outline: 'none' }}
                     />
                     <div style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: 'var(--theme-text-dim)' }}>
@@ -513,25 +505,7 @@ export const PantryView: React.FC = () => {
           {!isSearching && searchQuery && searchResults.length === 0 && !isAiReviewing && (
             <div className="glass-card" style={{ textAlign: 'center', padding: 'var(--space-xl)', marginTop: 'var(--space-md)', borderStyle: 'dashed' }}>
               <div style={{ color: 'var(--theme-text-dim)', fontSize: '12px', fontWeight: '900', marginBottom: '16px', letterSpacing: '1px' }}>NO FOODS FOUND IN DATABASE</div>
-              {/^\d+$/.test(searchQuery) && searchQuery.length >= 8 ? (
-                <button 
-                  onClick={() => {
-                    setForm({...form, name: "New Product", barcode: searchQuery});
-                    setActiveTab('saved');
-                    setPantryMode('create');
-                    setCreateTab('basics');
-                  }}
-                  style={{ 
-                    width: '100%', padding: '14px', background: 'var(--theme-accent)', border: 'none', 
-                    borderRadius: '16px', color: 'var(--theme-bg)', fontWeight: '900', fontSize: '12px',
-                    display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px'
-                  }}
-                >
-                  <Plus size={18} /> CREATE FOOD WITH THIS BARCODE
-                </button>
-              ) : (
-                <div style={{ fontSize: '11px', color: 'var(--theme-text-dim)', fontWeight: '600' }}>Try a broader search or add it manually in the Kitchen Lab</div>
-              )}
+              <div style={{ fontSize: '11px', color: 'var(--theme-text-dim)', fontWeight: '600' }}>Try a broader search or add it manually in the Kitchen Lab</div>
             </div>
           )}
           
