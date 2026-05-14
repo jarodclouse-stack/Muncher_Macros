@@ -589,6 +589,7 @@ export const PantryView: React.FC = () => {
                           boxSizing: 'border-box',
                           border: f._src === 'off' || innerGlobalSearchTab === 'scan' ? '2px solid var(--theme-accent)' : '1px solid rgba(255,255,255,0.08)',
                           boxShadow: f._src === 'off' || innerGlobalSearchTab === 'scan' ? '0 0 15px var(--theme-accent-dim)' : 'none',
+                          '--theme-text': '#FFF', 
                           '--theme-text-dim': 'rgba(255,255,255,0.6)',
                           '--theme-panel-dim': 'rgba(255,255,255,0.05)',
                           '--theme-border': 'rgba(255,255,255,0.1)',
