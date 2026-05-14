@@ -86,14 +86,25 @@ export const BarcodeScanner: React.FC<BarcodeScannerProps> = ({
     setError(null);
     if (fileInputRef.current) {
       fileInputRef.current.setAttribute('capture', 'environment');
+      fileInputRef.current.setAttribute('accept', 'image/*');
       fileInputRef.current.click();
     }
   };
 
-  const triggerUpload = () => {
+  const triggerGallery = () => {
     setError(null);
     if (fileInputRef.current) {
       fileInputRef.current.removeAttribute('capture');
+      fileInputRef.current.setAttribute('accept', 'image/*');
+      fileInputRef.current.click();
+    }
+  };
+
+  const triggerFiles = () => {
+    setError(null);
+    if (fileInputRef.current) {
+      fileInputRef.current.removeAttribute('capture');
+      fileInputRef.current.removeAttribute('accept'); // Often prompts file system on mobile
       fileInputRef.current.click();
     }
   };
@@ -143,35 +154,50 @@ export const BarcodeScanner: React.FC<BarcodeScannerProps> = ({
             <div style={{ textAlign: 'center', marginBottom: 'var(--space-xs)' }}>
                <div style={{ fontSize: '10px', fontWeight: '900', color: 'var(--theme-accent)', textTransform: 'uppercase', letterSpacing: '2px' }}>SOURCE FOR {scanType.toUpperCase()}</div>
             </div>
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 'var(--space-md)', width: '100%' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: 'var(--space-md)', width: '100%' }}>
               <button 
                 onClick={triggerCamera}
                 className="card source-btn"
                 style={{
-                  display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
-                  gap: 'var(--space-md)', padding: 'var(--space-xl) var(--space-md)', cursor: 'pointer', transition: 'all var(--transition-smooth)',
-                  color: '#fff'
+                  display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-start',
+                  gap: 'var(--space-lg)', padding: 'var(--space-md) var(--space-xl)', cursor: 'pointer', transition: 'all var(--transition-smooth)',
+                  color: '#fff', border: '1px solid var(--theme-border)'
                 }}
               >
-                <div style={{ background: 'var(--theme-accent-dim)', padding: 'var(--space-md)', borderRadius: '50%', marginBottom: '4px' }}>
-                  <Camera size={28} color="var(--theme-accent)" />
+                <div style={{ background: 'var(--theme-accent-dim)', padding: '12px', borderRadius: '50%' }}>
+                  <Camera size={24} color="var(--theme-accent)" />
                 </div>
-                <span style={{ fontSize: '12px', fontWeight: '900', textTransform: 'uppercase', letterSpacing: '1px' }}>Take Photo</span>
+                <span style={{ fontSize: '13px', fontWeight: '900', textTransform: 'uppercase', letterSpacing: '1px' }}>Take Photo</span>
               </button>
 
               <button 
-                onClick={triggerUpload}
+                onClick={triggerGallery}
                 className="glass-card source-btn"
                 style={{
-                  display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
-                  gap: 'var(--space-md)', padding: 'var(--space-xl) var(--space-md)', cursor: 'pointer', transition: 'all var(--transition-smooth)',
-                  color: '#fff'
+                  display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-start',
+                  gap: 'var(--space-lg)', padding: 'var(--space-md) var(--space-xl)', cursor: 'pointer', transition: 'all var(--transition-smooth)',
+                  color: '#fff', border: '1px solid var(--theme-border)'
                 }}
               >
-                <div style={{ background: 'rgba(255,255,255,0.05)', padding: 'var(--space-md)', borderRadius: '50%', marginBottom: '4px' }}>
-                  <Plus size={28} color="var(--theme-accent)" />
+                <div style={{ background: 'rgba(255,255,255,0.05)', padding: '12px', borderRadius: '50%' }}>
+                  <Plus size={24} color="var(--theme-accent)" />
                 </div>
-                <span style={{ fontSize: '12px', fontWeight: '900', textTransform: 'uppercase', letterSpacing: '1px' }}>Upload Image</span>
+                <span style={{ fontSize: '13px', fontWeight: '900', textTransform: 'uppercase', letterSpacing: '1px' }}>Photo Library</span>
+              </button>
+
+              <button 
+                onClick={triggerFiles}
+                className="glass-card source-btn"
+                style={{
+                  display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-start',
+                  gap: 'var(--space-lg)', padding: 'var(--space-md) var(--space-xl)', cursor: 'pointer', transition: 'all var(--transition-smooth)',
+                  color: '#fff', border: '1px solid var(--theme-border)'
+                }}
+              >
+                <div style={{ background: 'rgba(255,255,255,0.05)', padding: '12px', borderRadius: '50%' }}>
+                  <FileText size={24} color="var(--theme-accent)" />
+                </div>
+                <span style={{ fontSize: '13px', fontWeight: '900', textTransform: 'uppercase', letterSpacing: '1px' }}>Choose File</span>
               </button>
             </div>
             
