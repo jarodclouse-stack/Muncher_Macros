@@ -93,8 +93,8 @@ export const MainDashboard: React.FC = () => {
 
       {showRewardModal && (
         <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.6)', backdropFilter: 'blur(10px)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000, padding: '20px' }}>
-            <div style={{ background: 'var(--theme-bg, rgba(26, 29, 35, 0.8))', border: '1px solid var(--theme-border, rgba(255,255,255,0.15))', borderRadius: '24px', width: '100%', maxWidth: '400px', padding: '24px', position: 'relative', boxShadow: '0 20px 48px rgba(0,0,0,0.5)', backdropFilter: 'blur(20px)', WebkitBackdropFilter: 'blur(20px)' }}>
-                <button onClick={() => setShowRewardModal(false)} style={{ position: 'absolute', top: '16px', right: '16px', background: 'rgba(0,0,0,0.2)', border: 'none', color: 'var(--theme-text)', borderRadius: '50%', width: '30px', height: '30px', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}>
+            <div className="reward-modal" style={{ background: 'var(--theme-bg, rgba(26, 29, 35, 0.8))', border: '1px solid var(--theme-border, rgba(255,255,255,0.15))', borderRadius: '24px', width: '100%', maxWidth: '400px', padding: '24px', position: 'relative', boxShadow: '0 20px 48px rgba(0,0,0,0.5)', backdropFilter: 'blur(20px)', WebkitBackdropFilter: 'blur(20px)' }}>
+                <button onClick={() => setShowRewardModal(false)} className="reward-close-btn" style={{ position: 'absolute', top: '16px', right: '16px', background: 'var(--theme-panel-dim, rgba(0,0,0,0.2))', border: '1px solid var(--theme-border, rgba(255,255,255,0.1))', color: 'var(--theme-text)', borderRadius: '50%', width: '30px', height: '30px', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}>
                     <X size={18} />
                 </button>
                 
@@ -102,49 +102,49 @@ export const MainDashboard: React.FC = () => {
                     <div style={{ background: 'rgba(255,215,0,0.15)', padding: '12px', borderRadius: '16px' }}>
                         <Award color="#FFD700" size={24} />
                     </div>
-                    <h2 style={{ fontSize: '20px', fontWeight: '800', margin: 0, color: 'var(--theme-text)' }}>🎉 Reward Earnings</h2>
+                    <h2 className="reward-title" style={{ fontSize: '20px', fontWeight: '800', margin: 0, color: 'var(--theme-text)' }}>🎉 Reward Earnings</h2>
                 </div>
 
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginBottom: '24px' }}>
-                    <div style={{ background: 'rgba(255,255,255,0.05)', padding: '16px', borderRadius: '16px', border: '1px solid rgba(255,255,255,0.1)' }}>
-                        <div style={{ fontSize: '11px', color: 'var(--theme-text-dim)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Current Streak</div>
+                    <div className="reward-stat-box" style={{ background: 'var(--theme-panel-dim, rgba(255,255,255,0.05))', padding: '16px', borderRadius: '16px', border: '1px solid var(--theme-border, rgba(255,255,255,0.1))' }}>
+                        <div className="reward-label" style={{ fontSize: '11px', color: 'var(--theme-text-dim)', textTransform: 'uppercase', letterSpacing: '0.5px', fontWeight: '700' }}>Current Streak</div>
                         <div style={{ fontSize: '24px', fontWeight: '900', color: '#FF6B6B', marginTop: '4px' }}>{rewards.streak} <span style={{ fontSize: '12px', fontWeight: '500' }}>days</span></div>
                     </div>
-                    <div style={{ background: 'rgba(255,255,255,0.05)', padding: '16px', borderRadius: '16px', border: '1px solid rgba(255,255,255,0.1)' }}>
-                        <div style={{ fontSize: '11px', color: 'var(--theme-text-dim)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Total Gems</div>
+                    <div className="reward-stat-box" style={{ background: 'var(--theme-panel-dim, rgba(255,255,255,0.05))', padding: '16px', borderRadius: '16px', border: '1px solid var(--theme-border, rgba(255,255,255,0.1))' }}>
+                        <div className="reward-label" style={{ fontSize: '11px', color: 'var(--theme-text-dim)', textTransform: 'uppercase', letterSpacing: '0.5px', fontWeight: '700' }}>Total Gems</div>
                         <div style={{ fontSize: '24px', fontWeight: '900', color: '#FFD700', marginTop: '4px' }}>{rewards.totalGems}</div>
                     </div>
                 </div>
 
-                <div style={{ background: 'var(--theme-accent-dim)', border: '1px solid var(--theme-border)', borderRadius: '16px', padding: '16px', marginBottom: '20px' }}>
+                <div className="reward-info-card" style={{ background: 'var(--theme-accent-dim)', border: '1px solid var(--theme-border)', borderRadius: '16px', padding: '16px', marginBottom: '20px' }}>
                     <div style={{ display: 'flex', gap: '8px', marginBottom: '8px' }}>
                         <Info size={16} color="var(--theme-accent)" style={{ flexShrink: 0 }} />
-                        <div style={{ fontSize: '13px', fontWeight: '700', color: 'var(--theme-accent)' }}>Weekly Multiplier</div>
+                        <div className="reward-info-title" style={{ fontSize: '13px', fontWeight: '700', color: 'var(--theme-accent)' }}>Weekly Multiplier</div>
                     </div>
-                    <p style={{ fontSize: '12px', color: 'var(--theme-text)', opacity: 0.8, margin: 0, lineHeight: '1.5' }}>
+                    <p className="reward-info-body" style={{ fontSize: '12px', color: 'var(--theme-text)', opacity: 0.8, margin: 0, lineHeight: '1.5' }}>
                         Every 7 days, your consistency earns a massive bonus:
                         <br/><br/>
-                        <code style={{ background: 'rgba(0,0,0,0.3)', padding: '4px 8px', borderRadius: '4px', fontSize: '11px' }}>
+                        <code className="reward-code" style={{ background: 'rgba(0,0,0,0.3)', padding: '4px 8px', borderRadius: '4px', fontSize: '11px' }}>
                             (Weeks Streak × Current Days) = Bonus Gems
                         </code>
                     </p>
                 </div>
 
-                <div style={{ borderTop: '1px solid rgba(255,255,255,0.1)', paddingTop: '16px' }}>
+                <div style={{ borderTop: '1px solid var(--theme-border, rgba(255,255,255,0.1))', paddingTop: '16px' }}>
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
-                        <span style={{ fontSize: '13px', color: 'var(--theme-text-dim)' }}>Next Milestone:</span>
+                        <span className="reward-label" style={{ fontSize: '13px', color: 'var(--theme-text-dim)' }}>Next Milestone:</span>
                         <span style={{ fontSize: '13px', fontWeight: '700', color: 'var(--theme-text)' }}>Day {rewards.nextMilestoneStreak}</span>
                     </div>
-                    <div style={{ height: '10px', background: 'rgba(255,255,255,0.08)', borderRadius: '10px', overflow: 'hidden', marginBottom: '12px', border: '1px solid rgba(255,255,255,0.1)' }}>
+                    <div className="reward-progress-track" style={{ height: '10px', background: 'var(--theme-panel-dim, rgba(255,255,255,0.08))', borderRadius: '10px', overflow: 'hidden', marginBottom: '12px', border: '1px solid var(--theme-border, rgba(255,255,255,0.1))' }}>
                         <div style={{ width: `${(rewards.streak % 7) / 7 * 100}%`, height: '100%', background: 'linear-gradient(90deg, var(--theme-accent), #92FE9D)', borderRadius: '10px' }} />
                     </div>
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                        <span style={{ fontSize: '11px', color: 'var(--theme-text-dim)' }}>Estimated Bonus:</span>
-                        <span style={{ fontSize: '14px', fontWeight: '900', color: '#92FE9D' }}>+{rewards.potentialBonus} Gems</span>
+                        <span className="reward-label" style={{ fontSize: '11px', color: 'var(--theme-text-dim)' }}>Estimated Bonus:</span>
+                        <span className="reward-gems-value" style={{ fontSize: '14px', fontWeight: '900', color: '#92FE9D' }}>+{rewards.potentialBonus} Gems</span>
                     </div>
                 </div>
 
-                <button onClick={() => setShowRewardModal(false)} style={{ width: '100%', marginTop: '24px', padding: '12px', background: 'var(--theme-panel, rgba(255,255,255,0.05))', border: 'none', borderRadius: '12px', color: 'var(--theme-text)', fontWeight: '700', cursor: 'pointer', transition: 'background 0.2s' }} onMouseEnter={(e: React.MouseEvent<HTMLButtonElement>) => e.currentTarget.style.background = 'rgba(255,255,255,0.1)'} onMouseLeave={(e: React.MouseEvent<HTMLButtonElement>) => e.currentTarget.style.background = 'var(--theme-panel, rgba(255,255,255,0.05))'}>
+                <button onClick={() => setShowRewardModal(false)} className="reward-dismiss-btn" style={{ width: '100%', marginTop: '24px', padding: '12px', background: 'var(--theme-panel-dim, rgba(255,255,255,0.05))', border: '1px solid var(--theme-border, rgba(255,255,255,0.1))', borderRadius: '12px', color: 'var(--theme-text)', fontWeight: '700', cursor: 'pointer', transition: 'background 0.2s' }}>
                     Got it! 🏆
                 </button>
             </div>

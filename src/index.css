@@ -1843,6 +1843,58 @@ body.theme-light-surface .portion-edit-modal > div:nth-child(2) > div:last-child
   color: color-mix(in srgb, var(--theme-text-dim) 45%, white) !important;
 }
 
+/* ===== REWARD MODAL — Light Theme Contrast Fixes ===== */
+/* On light themes the modal background is semi-transparent over dark backdrop = grayish.
+   All text/cards need darkened colors for readability. */
+body.theme-light-surface .reward-modal {
+  background: color-mix(in srgb, var(--theme-panel-base) 92%, black) !important;
+}
+body.theme-light-surface .reward-title {
+  color: color-mix(in srgb, var(--theme-text) 35%, black) !important;
+}
+body.theme-light-surface .reward-close-btn {
+  background: rgba(0, 0, 0, 0.08) !important;
+  border-color: rgba(0, 0, 0, 0.15) !important;
+  color: color-mix(in srgb, var(--theme-text) 50%, black) !important;
+}
+body.theme-light-surface .reward-stat-box {
+  background: rgba(0, 0, 0, 0.04) !important;
+  border-color: rgba(0, 0, 0, 0.1) !important;
+}
+body.theme-light-surface .reward-label {
+  color: color-mix(in srgb, var(--theme-text) 55%, black) !important;
+}
+body.theme-light-surface .reward-info-card {
+  background: color-mix(in srgb, var(--theme-accent-dim) 70%, rgba(0,0,0,0.08)) !important;
+  border-color: color-mix(in srgb, var(--theme-accent) 30%, transparent) !important;
+}
+body.theme-light-surface .reward-info-title {
+  color: color-mix(in srgb, var(--theme-accent) 60%, black) !important;
+}
+body.theme-light-surface .reward-info-body {
+  color: color-mix(in srgb, var(--theme-text) 45%, black) !important;
+  opacity: 1 !important;
+}
+body.theme-light-surface .reward-code {
+  background: rgba(0, 0, 0, 0.08) !important;
+  color: color-mix(in srgb, var(--theme-text) 50%, black) !important;
+}
+body.theme-light-surface .reward-gems-value {
+  color: color-mix(in srgb, var(--theme-accent) 65%, black) !important;
+}
+body.theme-light-surface .reward-progress-track {
+  background: rgba(0, 0, 0, 0.06) !important;
+  border-color: rgba(0, 0, 0, 0.1) !important;
+}
+body.theme-light-surface .reward-dismiss-btn {
+  background: rgba(0, 0, 0, 0.05) !important;
+  border-color: rgba(0, 0, 0, 0.12) !important;
+  color: color-mix(in srgb, var(--theme-text) 45%, black) !important;
+}
+body.theme-light-surface .reward-dismiss-btn:hover {
+  background: rgba(0, 0, 0, 0.1) !important;
+}
+
 /* Force Progress page inputs to be white text on ALL themes */
 #page-progress .inp,
 #page-progress .inp:focus,
