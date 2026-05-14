@@ -1806,41 +1806,41 @@ body.theme-light-surface .inp::placeholder {
   color: var(--theme-success, #92FE9D);
 }
 
-/* Light themes: lighten all text inside the portion modal (grayish panel backdrop) */
+/* Light themes: darken all text inside the portion modal for contrast against gray backdrop */
 body.theme-light-surface .portion-edit-modal {
-  color: color-mix(in srgb, var(--theme-text) 45%, white) !important;
+  color: color-mix(in srgb, var(--theme-text) 50%, black) !important;
 }
 body.theme-light-surface .portion-edit-modal h2 {
-  color: color-mix(in srgb, var(--theme-text) 45%, white) !important;
+  color: color-mix(in srgb, var(--theme-text) 35%, black) !important;
 }
 body.theme-light-surface .portion-edit-modal h2 svg {
-  color: color-mix(in srgb, var(--theme-accent) 50%, white) !important;
+  color: color-mix(in srgb, var(--theme-accent) 45%, black) !important;
 }
 body.theme-light-surface .portion-edit-modal label {
-  color: color-mix(in srgb, var(--theme-text-dim) 45%, white) !important;
+  color: color-mix(in srgb, var(--theme-text) 50%, black) !important;
 }
 body.theme-light-surface .portion-edit-modal .portion-result-value {
-  color: color-mix(in srgb, var(--theme-text) 40%, white) !important;
+  color: color-mix(in srgb, var(--theme-text) 35%, black) !important;
 }
 body.theme-light-surface .portion-edit-modal .portion-result-box {
   background: rgba(0, 0, 0, 0.06) !important;
-  border-color: rgba(255, 255, 255, 0.15) !important;
+  border-color: rgba(0, 0, 0, 0.12) !important;
 }
 body.theme-light-surface .portion-edit-modal .portion-result-box div:first-child {
-  color: color-mix(in srgb, var(--theme-text) 45%, white) !important;
-  opacity: 0.85 !important;
+  color: color-mix(in srgb, var(--theme-text) 50%, black) !important;
+  opacity: 1 !important;
 }
 /* Keep input/select text dark on their white backgrounds */
 body.theme-light-surface .portion-edit-modal .mm-input,
 body.theme-light-surface .portion-edit-modal .mm-select {
   color: var(--theme-text) !important;
 }
-/* Lighten food name and serving text inside the info card */
+/* Darken food name and serving text inside the info card */
 body.theme-light-surface .portion-edit-modal > div:nth-child(2) > div:first-child {
-  color: color-mix(in srgb, var(--theme-accent) 50%, white) !important;
+  color: color-mix(in srgb, var(--theme-accent) 45%, black) !important;
 }
 body.theme-light-surface .portion-edit-modal > div:nth-child(2) > div:last-child {
-  color: color-mix(in srgb, var(--theme-text-dim) 45%, white) !important;
+  color: color-mix(in srgb, var(--theme-text) 50%, black) !important;
 }
 
 /* ===== REWARD MODAL — Light Theme Contrast Fixes ===== */
