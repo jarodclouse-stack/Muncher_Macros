@@ -450,6 +450,7 @@ export const PantryView: React.FC = () => {
                   </button>
 
                   <textarea 
+                    className="force-white-placeholder"
                     placeholder="Describe your whole meal here... (e.g. '3 scrambled eggs with spinach and a cup of black coffee')"
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
@@ -680,6 +681,7 @@ export const PantryView: React.FC = () => {
                         {f.ingredients !== undefined && (
                           <div style={{ marginTop: '10px', animation: 'slideDown 0.2s ease-out' }}>
                             <textarea 
+                              className="force-white-placeholder"
                               placeholder="Type ingredients here... (e.g. Water, Sugar, Salt)"
                               value={f.ingredients || ''}
                               onChange={(e) => {

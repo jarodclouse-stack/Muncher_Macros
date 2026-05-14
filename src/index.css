@@ -2007,6 +2007,12 @@ body.theme-light-surface textarea::placeholder {
   opacity: 0.9 !important; /* Force hint text to be as dark as possible */
 }
 
+.force-white-placeholder::placeholder,
+body.theme-light-surface .force-white-placeholder::placeholder {
+  color: rgba(255, 255, 255, 0.7) !important;
+  opacity: 1 !important;
+}
+
 body.theme-light-surface input,
 body.theme-light-surface select,
 body.theme-light-surface textarea {

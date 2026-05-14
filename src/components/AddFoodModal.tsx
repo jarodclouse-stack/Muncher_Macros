@@ -392,6 +392,7 @@ export const AddFoodModal: React.FC<AddFoodModalProps> = ({ meal, onClose }) => 
                   </button>
 
                   <textarea 
+                    className="force-white-placeholder"
                     placeholder="Describe your whole meal here... (e.g. '3 scrambled eggs with spinach and a cup of black coffee')"
                     value={mealDesc}
                     onChange={(e) => {
@@ -596,6 +597,7 @@ export const AddFoodModal: React.FC<AddFoodModalProps> = ({ meal, onClose }) => 
                         {f.ingredients !== undefined && (
                           <div style={{ marginTop: '10px', animation: 'slideDown 0.2s ease-out' }}>
                             <textarea 
+                              className="force-white-placeholder"
                               placeholder="Type ingredients here... (e.g. Water, Sugar, Salt)"
                               value={f.ingredients || ''}
                               onChange={(e) => {
