@@ -720,7 +720,7 @@ export const PantryView: React.FC = () => {
                                 next[i] = { ...f, ingredients: e.target.value };
                                 setAiStagedResults(next);
                               }}
-                              style={{ width: '100%', height: '60px', background: 'rgba(0,0,0,0.06)', border: '1px solid var(--theme-border)', borderRadius: '12px', color: 'var(--theme-text)', fontSize: '13px', padding: '12px', paddingRight: '44px', outline: 'none', fontWeight: '600', resize: 'none' }}
+                              style={{ width: '100%', height: '60px', background: 'rgba(0,0,0,0.4)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '12px', color: 'var(--theme-text)', fontSize: '13px', padding: '12px', paddingRight: '44px', outline: 'none', fontWeight: '600', resize: 'none' }}
                             />
                             <input 
                               type="file" 
