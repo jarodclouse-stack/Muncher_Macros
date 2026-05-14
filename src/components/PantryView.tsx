@@ -1352,19 +1352,21 @@ export const PantryView: React.FC = () => {
                   <div style={{ flex: 1 }}>
                     <label style={{ fontSize: '11px', fontWeight: '800', color: '#8b8b9b', display: 'block', marginBottom: '6px' }}>AMOUNT</label>
                     <input 
+                      className="config-input"
                       type="number" 
                       inputMode="decimal"
                       value={servingQty}
                       onChange={(e) => setServingQty(e.target.value)}
-                      style={{ width: '100%', background: 'var(--theme-panel, rgba(0,0,0,0.2))', border: '1px solid var(--theme-border)', borderRadius: '12px', padding: '12px', color: '#fff', outline: 'none' }}
+                      style={{ width: '100%', background: 'var(--theme-panel, rgba(0,0,0,0.2))', border: '1px solid var(--theme-border)', borderRadius: '12px', padding: '12px', outline: 'none' }}
                     />
                   </div>
                   <div style={{ flex: 2 }}>
                     <label style={{ fontSize: '11px', fontWeight: '800', color: '#8b8b9b', display: 'block', marginBottom: '6px' }}>UNIT</label>
                     <select 
+                      className="config-input"
                       value={servingUnit}
                       onChange={(e) => setServingUnit(e.target.value)}
-                      style={{ width: '100%', background: 'var(--theme-panel, rgba(0,0,0,0.2))', border: '1px solid var(--theme-border)', borderRadius: '12px', padding: '12px', color: '#fff', outline: 'none' }}>
+                      style={{ width: '100%', background: 'var(--theme-panel, rgba(0,0,0,0.2))', border: '1px solid var(--theme-border)', borderRadius: '12px', padding: '12px', outline: 'none' }}>
                       {SERVING_UNITS.map(u => <option key={u.v} value={u.v}>{u.v}</option>)}
                     </select>
                   </div>
