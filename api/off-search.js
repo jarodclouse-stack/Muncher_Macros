@@ -75,10 +75,8 @@ module.exports = async function handler(req, res) {
       productsToProcess = data.products || [];
     }
 
-    // Filter server-side to English only, return top 20
-    const filtered = productsToProcess
-      .filter(isEnglish)
-      .slice(0, 20);
+    // Filter server-side to English only (unless barcode match), return top 20
+    const filtered = (isBarcode ? productsToProcess : productsToProcess.filter(isEnglish)).slice(0, 20);
 
     const foods = filtered.map(p => {
       const n = p.nutriments || {};

@@ -39,11 +39,13 @@ export const NutritionView: React.FC = () => {
     const isEmpty = totals.protein === 0 && totals.carbs === 0 && totals.fat === 0;
     
     if (isEmpty) {
+      const rootStyle = getComputedStyle(document.documentElement);
+      const placeholderColor = rootStyle.getPropertyValue('--theme-panel-dim').trim() || 'rgba(0,0,0,0.1)';
       return {
         labels: ['Empty'],
         datasets: [{
           data: [1],
-          backgroundColor: ['var(--theme-panel-dim)'],
+          backgroundColor: [placeholderColor],
           borderWidth: 0
         }]
       };

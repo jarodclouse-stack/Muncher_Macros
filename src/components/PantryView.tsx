@@ -148,18 +148,23 @@ export const PantryView: React.FC = () => {
     setErrorMsg('');
   };
 
-  const handleGlobalSearch = async (e?: React.FormEvent) => {
+  const handleGlobalSearch = async (e?: React.FormEvent, forcedQuery?: string) => {
     if (e) e.preventDefault();
-    if (!searchQuery) return;
+    const q = forcedQuery !== undefined ? forcedQuery : searchQuery;
+    if (!q) return;
     setIsSearching(true);
     setErrorMsg('');
     
     const localMatches = customFoods.filter((f: Food) => 
-      f.name.toLowerCase().includes(searchQuery.toLowerCase())
+      f.name.toLowerCase().includes(q.toLowerCase())
     ).map((f: Food) => ({ ...f, isLocal: true }));
 
     try {
-      const res = await fetch(`/api/food-search?q=${encodeURIComponent(searchQuery)}`);
+      const res = await fetch('/api/off-search', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ query: q })
+      });
       if (res.ok) {
         const body = await res.json();
         const globalRes = (body.foods || body.results || []).map(normalizeFoodResult);
@@ -230,7 +235,11 @@ export const PantryView: React.FC = () => {
     setIsIngSearching(true);
     const localMatches = customFoods.filter((f: Food) => f.name.toLowerCase().includes(q.toLowerCase())).map((f: Food) => ({ ...f, isLocal: true }));
     try {
-      const res = await fetch(`/api/food-search?q=${encodeURIComponent(q)}`);
+      const res = await fetch('/api/off-search', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ query: q })
+      });
       if (res.ok) {
         const body = await res.json();
         const globalRes = (body.foods || body.results || []).map(normalizeFoodResult);
@@ -373,10 +382,11 @@ export const PantryView: React.FC = () => {
                     setAiStagedResults([{ ...result, stagedQty: '1', stagedUnit: 'serving' }]);
                     setIsAiReviewing(true);
                   } else {
+                    const displayQuery = String(result);
                     setInnerGlobalSearchTab('search');
-                    setSearchQuery(String(result));
+                    setSearchQuery(displayQuery);
                     const dummyEvent = { preventDefault: () => {} } as React.FormEvent;
-                    handleGlobalSearch(dummyEvent);
+                    handleGlobalSearch(dummyEvent, displayQuery);
                   }
                 }}
                 onScanError={(err) => setErrorMsg(err)}

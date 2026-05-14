@@ -102,9 +102,9 @@ export const AddFoodModal: React.FC<AddFoodModalProps> = ({ meal, onClose }) => 
 
 
 
-  const handleAISearch = async (e?: React.SyntheticEvent) => {
+  const handleAISearch = async (e?: React.SyntheticEvent, forcedQuery?: string) => {
     if (e && e.preventDefault) e.preventDefault();
-    const cleanQuery = query.trim();
+    const cleanQuery = (forcedQuery !== undefined ? forcedQuery : query).trim();
     if (!cleanQuery) return;
     setSearching(true);
     setErrorMsg('');
@@ -430,7 +430,7 @@ export const AddFoodModal: React.FC<AddFoodModalProps> = ({ meal, onClose }) => 
                     setQuery(String(displayQuery));
                     if (displayQuery) {
                       const dummyEvent = { preventDefault: () => {} } as React.FormEvent;
-                      handleAISearch(dummyEvent);
+                      handleAISearch(dummyEvent, String(displayQuery));
                     }
                     setActiveTab('ai-search');
                   }
