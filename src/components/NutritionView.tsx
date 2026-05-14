@@ -98,7 +98,7 @@ export const NutritionView: React.FC = () => {
                   </div>
                   
                   {label === 'Protein' && expandedMicro === 'Protein' && (
-                      <div className="glass-card" style={{ marginTop: 'var(--space-md)', padding: 'var(--space-md)', borderLeft: '3px solid var(--theme-error)', marginBottom: 'var(--space-sm)' }}>
+                      <div className="glass-card" style={{ background: 'rgba(0, 0, 0, 0.85)', marginTop: 'var(--space-md)', padding: 'var(--space-md)', borderLeft: '3px solid var(--theme-error)', marginBottom: 'var(--space-sm)' }}>
                         <div style={{ marginBottom: '16px' }}>
                           <div style={{ fontWeight: '900', color: 'color-mix(in srgb, var(--theme-success), white 70%)', marginBottom: '8px', fontSize: '11px', textTransform: 'uppercase', letterSpacing: '1px' }}>
                             ✨ Performance Benefits
@@ -143,7 +143,7 @@ export const NutritionView: React.FC = () => {
                           </div>
 
                           {isExpanded && info && (
-                            <div className="glass" style={{ marginTop: 'var(--space-md)', padding: 'var(--space-md)', borderLeft: `2px solid ${sub.c}`, marginBottom: 'var(--space-sm)' }}>
+                            <div className="glass" style={{ background: 'rgba(0, 0, 0, 0.85)', marginTop: 'var(--space-md)', padding: 'var(--space-md)', borderLeft: `2px solid ${sub.c}`, marginBottom: 'var(--space-sm)' }}>
                               
                               {/* Benefits Section */}
                               <div style={{ marginBottom: '16px' }}>
@@ -195,7 +195,7 @@ export const NutritionView: React.FC = () => {
                           </div>
 
                           {isExpanded && info && (
-                            <div className="glass" style={{ marginTop: 'var(--space-md)', padding: 'var(--space-md)', borderLeft: `2px solid ${sub.c}`, marginBottom: 'var(--space-sm)' }}>
+                            <div className="glass" style={{ background: 'rgba(0, 0, 0, 0.85)', marginTop: 'var(--space-md)', padding: 'var(--space-md)', borderLeft: `2px solid ${sub.c}`, marginBottom: 'var(--space-sm)' }}>
                               
                               {/* Benefits Section */}
                               <div style={{ marginBottom: '16px' }}>
@@ -282,7 +282,7 @@ export const NutritionView: React.FC = () => {
                       </div>
                       
                       {isExpanded && info && (
-                        <div className="glass" style={{ marginTop: 'var(--space-md)', padding: 'var(--space-md)', borderLeft: '2px solid var(--theme-accent, #00C9FF)', marginBottom: 'var(--space-sm)' }}>
+                        <div className="glass" style={{ background: 'rgba(0, 0, 0, 0.85)', marginTop: 'var(--space-md)', padding: 'var(--space-md)', borderLeft: '2px solid var(--theme-accent, #00C9FF)', marginBottom: 'var(--space-sm)' }}>
                           
                           {/* Benefits Section */}
                           <div style={{ marginBottom: '16px' }}>
