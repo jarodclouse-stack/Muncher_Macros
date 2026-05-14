@@ -104,14 +104,18 @@ export const AddFoodModal: React.FC<AddFoodModalProps> = ({ meal, onClose }) => 
 
   const handleAISearch = async (e?: React.SyntheticEvent) => {
     if (e && e.preventDefault) e.preventDefault();
-    if (!query) return;
+    const cleanQuery = query.trim();
+    if (!cleanQuery) return;
     setSearching(true);
     setErrorMsg('');
     try {
-      const res = await fetch('/api/ai-lookup', {
+      const isBarcode = /^\\d{6,}$/.test(cleanQuery);
+      const endpoint = isBarcode ? '/api/off-search' : '/api/ai-lookup';
+      
+      const res = await fetch(endpoint, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ query })
+        body: JSON.stringify({ query: cleanQuery })
       });
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
       const body = await res.json();
@@ -263,6 +267,12 @@ export const AddFoodModal: React.FC<AddFoodModalProps> = ({ meal, onClose }) => 
                         setResults([]);
                       }
                     }}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter') {
+                        e.preventDefault();
+                        handleAISearch(e);
+                      }
+                    }}
                     style={{ 
                       width: '100%', 
                       padding: 'var(--space-md) var(--space-md) var(--space-md) 44px', 
@@ -276,9 +286,9 @@ export const AddFoodModal: React.FC<AddFoodModalProps> = ({ meal, onClose }) => 
                       boxShadow: 'inset 0 2px 4px rgba(0,0,0,0.05)'
                     }}
                   />
-                  <div style={{ position: 'absolute', left: '16px', top: '50%', transform: 'translateY(-50%)', color: 'var(--theme-accent)' }}>
+                  <button type="submit" disabled={searching} style={{ position: 'absolute', left: '16px', top: '50%', transform: 'translateY(-50%)', color: 'var(--theme-accent)', background: 'transparent', border: 'none', cursor: 'pointer', padding: 0, display: 'flex', alignItems: 'center' }}>
                     {searching ? <Loader2 className="spin" size={20} /> : <Search size={20} />}
-                  </div>
+                  </button>
                   
                   {/* High-Fidelity Loading Progress Bar */}
                   {searching && (

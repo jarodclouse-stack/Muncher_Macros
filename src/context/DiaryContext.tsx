@@ -79,7 +79,7 @@ export const DiaryProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         const { data, error } = await supabase.from('user_data').select('data').eq('user_id', user.id).single();
         if (error && error.code !== 'PGRST116') throw error;
         
-        let loaded = data?.data || {};
+        const loaded = data?.data || {};
         
         // Structure Validator for Legacy Data
         if (!loaded.settings) {

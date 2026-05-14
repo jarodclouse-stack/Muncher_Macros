@@ -89,7 +89,7 @@ export const NutritionView: React.FC = () => {
                     style={{ display: 'flex', justifyContent: 'space-between', fontSize: '12px', cursor: label === 'Protein' ? 'pointer' : 'default' }}
                   >
                     <span style={{ fontWeight: '600', display: 'flex', alignItems: 'center', gap: '4px', color: 'var(--theme-text-on-panel)' }}>
-                      {label} {label === 'Protein' && <Info size={10} color="var(--theme-text-dim-on-panel)" />}
+                      {label} {label === 'Protein' && <Info size={10} color="var(--theme-text-on-panel)" />}
                     </span>
                     <span style={{ color: 'var(--theme-text-dim-on-panel)', fontWeight: '800' }}>{Math.round(val)} <span style={{ fontSize: '10px' }}>/ {Math.round(goal)}g</span></span>
                   </div>
@@ -103,9 +103,9 @@ export const NutritionView: React.FC = () => {
                           <div style={{ fontWeight: '900', color: 'color-mix(in srgb, var(--theme-success), white 70%)', marginBottom: '8px', fontSize: '11px', textTransform: 'uppercase', letterSpacing: '1px' }}>
                             ✨ Performance Benefits
                           </div>
-                          <div style={{ lineHeight: '1.5', color: 'color-mix(in srgb, var(--theme-accent), white 85%)' }}>{(NUTRIENT_BENEFITS as Record<string, { summary?: string, points?: string[] }>).Protein?.summary || 'The building block of all human tissue.'}</div>
+                          <div style={{ lineHeight: '1.5', color: '#FFFFFF' }}>{(NUTRIENT_BENEFITS as Record<string, { summary?: string, points?: string[] }>).Protein?.summary || 'The building block of all human tissue.'}</div>
                           {(NUTRIENT_BENEFITS as Record<string, { summary?: string, points?: string[] }>).Protein?.points && (
-                            <ul style={{ paddingLeft: '18px', margin: '8px 0 0 0', color: 'color-mix(in srgb, var(--theme-accent), white 80%)', display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                            <ul style={{ paddingLeft: '18px', margin: '8px 0 0 0', color: '#FFFFFF', display: 'flex', flexDirection: 'column', gap: '4px' }}>
                               {(NUTRIENT_BENEFITS as Record<string, { summary?: string, points?: string[] }>).Protein.points!.map((p: string, i: number) => <li key={i}>{p}</li>)}
                             </ul>
                           )}
@@ -115,7 +115,7 @@ export const NutritionView: React.FC = () => {
                             <div style={{ fontWeight: '900', color: 'color-mix(in srgb, var(--theme-warning), white 70%)', marginBottom: '8px', fontSize: '11px', textTransform: 'uppercase', letterSpacing: '1px' }}>
                               ⚠️ Deficiency Risks
                             </div>
-                            <div style={{ lineHeight: '1.5', color: 'color-mix(in srgb, var(--theme-accent), white 85%)', fontWeight: '600' }}>{(DEFICIENCY_INFO as Record<string, { desc?: string }>).Protein.desc}</div>
+                            <div style={{ lineHeight: '1.5', color: '#FFFFFF', fontWeight: '600' }}>{(DEFICIENCY_INFO as Record<string, { desc?: string }>).Protein.desc}</div>
                           </div>
                         )}
                       </div>
@@ -135,7 +135,7 @@ export const NutritionView: React.FC = () => {
                         return (
                         <div key={sub.k} className={isExpanded ? "glass-card" : ""} style={{ padding: isExpanded ? 'var(--space-md)' : '0', transition: 'all var(--transition-smooth)', margin: isExpanded ? '0 -16px var(--space-xs)' : '0' }}>
                           <div onClick={() => info && setExpandedMicro(isExpanded ? null : sub.k)} style={{ display: 'flex', justifyContent: 'space-between', fontSize: '10px', cursor: info ? 'pointer' : 'default' }}>
-                            <span style={{ color: 'var(--theme-text-dim-on-panel)', display: 'flex', alignItems: 'center', gap: '4px', fontWeight: '900', textTransform: 'uppercase', letterSpacing: '0.5px' }}>{sub.k} {info && <Info size={10} color="var(--theme-text-dim-on-panel)" />}</span>
+                            <span style={{ color: 'var(--theme-text-dim-on-panel)', display: 'flex', alignItems: 'center', gap: '4px', fontWeight: '900', textTransform: 'uppercase', letterSpacing: '0.5px' }}>{sub.k} {info && <Info size={10} color="var(--theme-text-on-panel)" />}</span>
                             <span style={{ color: 'var(--theme-text-dim-on-panel)', fontWeight: '900' }}>{Math.round(sub.v * 10)/10}g</span>
                           </div>
                           <div style={{ height: '3px', background: 'var(--theme-panel)', borderRadius: '2px', marginTop: '4px', border: '1px solid var(--theme-border)' }}>
@@ -150,7 +150,7 @@ export const NutritionView: React.FC = () => {
                                 <div style={{ fontWeight: '800', color: 'color-mix(in srgb, var(--theme-success), white 70%)', marginBottom: '6px', fontSize: '12px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
                                   ✨ Metabolic Benefits
                                 </div>
-                                <div style={{ lineHeight: '1.5', color: 'color-mix(in srgb, var(--theme-accent), white 85%)' }}>{(info as { summary?: string }).summary || 'Essential profile for balanced nutrition.'}</div>
+                                <div style={{ lineHeight: '1.5', color: '#FFFFFF' }}>{(info as { summary?: string }).summary || 'Essential profile for balanced nutrition.'}</div>
                               </div>
 
                               {/* Deficiency Section */}
@@ -159,9 +159,9 @@ export const NutritionView: React.FC = () => {
                                   <div style={{ fontWeight: '800', color: 'color-mix(in srgb, var(--theme-warning), white 70%)', marginBottom: '6px', fontSize: '12px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
                                     ⚠️ Deficiency Risks
                                   </div>
-                                  <div style={{ lineHeight: '1.5', color: 'color-mix(in srgb, var(--theme-accent), white 85%)' }}>{defInfo.desc}</div>
+                                  <div style={{ lineHeight: '1.5', color: '#FFFFFF' }}>{defInfo.desc}</div>
                                   {defInfo.sources && (
-                                    <div style={{ marginTop: '8px', fontSize: '11px', color: 'color-mix(in srgb, var(--theme-accent), white 80%)', fontStyle: 'italic' }}>
+                                    <div style={{ marginTop: '8px', fontSize: '11px', color: '#FFFFFF', fontStyle: 'italic' }}>
                                       Best Sources: {defInfo.sources}
                                     </div>
                                   )}
@@ -187,7 +187,7 @@ export const NutritionView: React.FC = () => {
                         return (
                         <div key={sub.k} className={isExpanded ? "glass-card" : ""} style={{ padding: isExpanded ? 'var(--space-md)' : '0', transition: 'all var(--transition-smooth)', margin: isExpanded ? '0 -16px var(--space-xs)' : '0' }}>
                           <div onClick={() => info && setExpandedMicro(isExpanded ? null : sub.k)} style={{ display: 'flex', justifyContent: 'space-between', fontSize: '10px', cursor: info ? 'pointer' : 'default' }}>
-                            <span style={{ color: 'var(--theme-text-dim-on-panel)', display: 'flex', alignItems: 'center', gap: '4px', fontWeight: '900', textTransform: 'uppercase', letterSpacing: '0.5px' }}>{sub.k} {info && <Info size={10} color="var(--theme-text-dim-on-panel)" />}</span>
+                            <span style={{ color: 'var(--theme-text-dim-on-panel)', display: 'flex', alignItems: 'center', gap: '4px', fontWeight: '900', textTransform: 'uppercase', letterSpacing: '0.5px' }}>{sub.k} {info && <Info size={10} color="var(--theme-text-on-panel)" />}</span>
                             <span style={{ color: 'var(--theme-text-dim-on-panel)', fontWeight: '900' }}>{Math.round(sub.v * 10)/10}g</span>
                           </div>
                           <div style={{ height: '3px', background: 'var(--theme-panel)', borderRadius: '2px', marginTop: '4px', border: '1px solid var(--theme-border)' }}>
@@ -202,7 +202,7 @@ export const NutritionView: React.FC = () => {
                                 <div style={{ fontWeight: '800', color: 'color-mix(in srgb, var(--theme-success), white 70%)', marginBottom: '6px', fontSize: '12px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
                                   ✨ Performance Benefits
                                 </div>
-                                <div style={{ lineHeight: '1.5', color: 'color-mix(in srgb, var(--theme-accent), white 85%)' }}>{(info as { summary?: string }).summary || 'Vital fuel source for metabolic energy.'}</div>
+                                <div style={{ lineHeight: '1.5', color: '#FFFFFF' }}>{(info as { summary?: string }).summary || 'Vital fuel source for metabolic energy.'}</div>
                               </div>
 
                               {/* Deficiency Section */}
@@ -211,9 +211,9 @@ export const NutritionView: React.FC = () => {
                                   <div style={{ fontWeight: '800', color: 'color-mix(in srgb, var(--theme-warning), white 70%)', marginBottom: '6px', fontSize: '12px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
                                     ⚠️ Deficiency Risks
                                   </div>
-                                  <div style={{ lineHeight: '1.5', color: 'color-mix(in srgb, var(--theme-accent), white 85%)' }}>{defInfo.desc}</div>
+                                  <div style={{ lineHeight: '1.5', color: '#FFFFFF' }}>{defInfo.desc}</div>
                                   {defInfo.sources && (
-                                    <div style={{ marginTop: '8px', fontSize: '11px', color: 'color-mix(in srgb, var(--theme-accent), white 80%)', fontStyle: 'italic' }}>
+                                    <div style={{ marginTop: '8px', fontSize: '11px', color: '#FFFFFF', fontStyle: 'italic' }}>
                                       Best Sources: {defInfo.sources}
                                     </div>
                                   )}
@@ -273,7 +273,7 @@ export const NutritionView: React.FC = () => {
                           border: '1px solid var(--theme-border)',
                           boxShadow: '0 2px 8px rgba(0,0,0,0.05)'
                         }}>
-                          {label} {info && <Info size={10} color="inherit" />}
+                          {label} {info && <Info size={10} color="var(--theme-text-on-panel)" />}
                         </div>
                         <div style={{ height: '6px', background: 'var(--theme-panel-dim)', borderRadius: '4px', position: 'relative', border: '1px solid var(--theme-border)' }}>
                           <div style={{ width: `${pct}%`, height: '100%', background: 'var(--theme-accent)', borderRadius: '4px', boxShadow: pct >= 100 ? '0 0 12px var(--theme-accent)' : 'none' }} />

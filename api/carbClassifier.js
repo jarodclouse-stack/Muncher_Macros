@@ -86,29 +86,6 @@ function extractCarbData(food) {
   return { carbs, sugars, fiber };
 }
 
-async function classifyFood(query) {
-  const foods = await searchFood(query);
-  if (foods.length === 0) return { error: 'No foods found for that search term.' };
-
-  const food = foods[0];
-  const nutrientData = extractCarbData(food);
-  const classification = classifyCarbs({
-    name: food.description,
-    carbs: nutrientData.carbs,
-    sugar: nutrientData.sugars,
-    fiber: nutrientData.fiber
-  });
-
-  return {
-    foodName: food.description,
-    nutrients: nutrientData,
-    classification: classification.label,
-    split: {
-      simpleCarbs: classification.simpleCarbs,
-      complexCarbs: classification.complexCarbs
-    }
-  };
-}
 
 export async function classifyFood(query) {
   const foods = await searchFood(query);

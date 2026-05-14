@@ -54,7 +54,33 @@ module.exports = async function handler(req, res) {
       .filter(isEnglish)
       .slice(0, 20);
 
-    return res.status(200).json({ ...data, products: filtered });
+    const foods = filtered.map(p => {
+      const n = p.nutriments || {};
+      const cal = n['energy-kcal_100g'] || (n['energy-kcal_value'] || 0);
+      const prot = n['proteins_100g'] || 0;
+      const carb = n['carbohydrates_100g'] || 0;
+      const fat = n['fat_100g'] || 0;
+      const fb = n['fiber_100g'] || 0;
+      const sugars = n['sugars_100g'] || 0;
+      const sat = n['saturated-fat_100g'] || 0;
+
+      return {
+        name: (p.brands ? p.brands + ' ' : '') + (p.product_name_en || p.product_name || 'Unknown Item'),
+        serving: '100g',
+        sQty: 100,
+        sUnit: 'g',
+        cal: Math.round(cal),
+        p: Math.round(prot * 10) / 10,
+        c: Math.round(carb * 10) / 10,
+        f: Math.round(fat * 10) / 10,
+        fb: Math.round(fb * 10) / 10,
+        sugars: Math.round(sugars * 10) / 10,
+        sat: Math.round(sat * 10) / 10,
+        _src: 'off'
+      };
+    });
+
+    return res.status(200).json({ foods });
 
   } catch (err) {
     return res.status(500).json({ error: err.message });
