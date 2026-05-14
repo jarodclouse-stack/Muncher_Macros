@@ -2121,6 +2121,10 @@ body.theme-light-surface .weekly-report-card {
   border-color: rgba(255, 255, 255, 0.1) !important;
 }
 
+body.theme-light-surface .weekly-report-card .this-week-title {
+  color: #FFFFFF !important;
+}
+
 /* Luminous Breath Animation: For premium 'fading and contrasting' UI feel */
 @keyframes luminous-breath {
   0% { 

@@ -400,10 +400,10 @@ const WeeklyReport = ({ localCache, currentDate, targetCal }: any) => {
 
   return (
     <div className="glass-card weekly-report-card luminous-breath" style={{ marginBottom: '24px', overflow: 'hidden' }}>
-      <div onClick={() => setIsOpen(!isOpen)} style={{ padding: '16px 20px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer', background: isOpen ? 'var(--theme-panel-dim, rgba(255,255,255,0.03))' : 'transparent' }}>
+      <div onClick={() => setIsOpen(!isOpen)} style={{ padding: '16px 20px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer', background: isOpen ? 'rgba(255,255,255,0.05)' : 'transparent' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
           <Activity size={18} color="var(--theme-accent, #00C9FF)" />
-          <span style={{ fontSize: '15px', fontWeight: '800', color: 'var(--theme-text-on-panel)' }}>This Week</span>
+          <span className="this-week-title" style={{ fontSize: '15px', fontWeight: '800', color: 'var(--theme-text-on-panel)' }}>This Week</span>
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
           {!isOpen && <span style={{ fontSize: '11px', color: consistencyColor, fontWeight: '700', textTransform: 'uppercase' }}>{stdDev} σ Consistency</span>}
