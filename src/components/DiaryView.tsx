@@ -2,11 +2,12 @@ import React, { useState, useMemo } from 'react';
 import { useDiary } from '../context/DiaryContext';
 import { sumFoods } from '../lib/food/serving-converter';
 import { computeGoals } from '../lib/goals/compute';
-import { Utensils, Trash2, Sparkles, Droplets, Minus, Plus, Info, ChevronLeft, ChevronRight, ChevronDown, ChevronUp, Scale, Activity } from 'lucide-react';
-import { MEALS, ALL_MICRO_KEYS, MICRO_UNITS } from '../lib/constants';
-import { NUTRIENT_BENEFITS } from '../lib/nutrient-info';
+import { Utensils, Trash2, Sparkles, Droplets, Minus, Plus, ChevronLeft, ChevronRight, ChevronDown, ChevronUp, Scale, Activity } from 'lucide-react';
+import { MEALS } from '../lib/constants';
+
 import { AddFoodModal } from './AddFoodModal';
 import { PortionEditModal } from './PortionEditModal';
+import { NutritionFactsDisplay } from './NutritionFactsDisplay';
 
 
 
@@ -205,60 +206,6 @@ export const DiaryView: React.FC = () => {
   );
 };
 
-const NutrientDetailRow = ({ label, value, unit, benefit }: any) => {
-  const [showBenefit, setShowBenefit] = useState(false);
-  
-  return (
-    <div className="glass-card" style={{ 
-      padding: 'var(--space-sm) var(--space-md)', 
-      display: 'flex',
-      justifyContent: 'space-between',
-      alignItems: 'center'
-    }}>
-      <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-        <span style={{ 
-          fontWeight: '900', 
-          fontSize: '11px', 
-          color: 'var(--theme-text-on-panel)', 
-          textTransform: 'uppercase', 
-          letterSpacing: '0.5px',
-          background: 'var(--theme-panel)',
-          padding: '4px 10px',
-          borderRadius: '12px',
-          border: '1px solid var(--theme-border)'
-        }}>
-          {label}
-        </span>
-        {benefit && (
-          <button 
-            onClick={() => setShowBenefit(!showBenefit)} 
-            style={{ background: 'none', border: 'none', color: showBenefit ? 'var(--theme-accent)' : 'var(--theme-text-dim)', cursor: 'pointer', display: 'flex', alignItems: 'center', padding: '4px' }}>
-            <Info size={14} />
-          </button>
-        )}
-      </div>
-        <span style={{ fontWeight: '900', fontSize: '13px', color: '#FFFFFF' }}>{value}<span style={{fontSize: '10px', opacity: 0.8, marginLeft: '2px'}}> {unit}</span></span>
-      
-      {showBenefit && benefit && (
-        <div style={{ marginTop: '10px', paddingTop: '10px', borderTop: '1px solid var(--theme-border, rgba(255,255,255,0.05))' }}>
-          <div style={{ fontSize: '11px', color: 'var(--theme-text-dim, #8b8b9b)', lineHeight: '1.4', fontStyle: 'italic', marginBottom: '8px' }}>
-            {benefit.summary}
-          </div>
-          {benefit.points && benefit.points.length > 0 && (
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
-              {benefit.points.map((p: string, pi: number) => (
-                <div key={pi} style={{ display: 'flex', gap: '6px', fontSize: '10px', color: 'var(--theme-text-dim, #c0c0d0)', lineHeight: '1.3' }}>
-                  <span style={{ color: 'var(--theme-accent, #00C9FF)' }}>•</span>
-                  <span>{p}</span>
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
-      )}
-    </div>
-  );
-};
 
 const DiaryEntryItem = ({ log, onRemove, onEditPortion, onMove }: any) => {
   const [isOpen, setIsOpen] = useState(false);
@@ -318,35 +265,7 @@ const DiaryEntryItem = ({ log, onRemove, onEditPortion, onMove }: any) => {
       
       {isOpen && (
         <div className="glass" style={{ margin: 'var(--space-xs) var(--space-md) var(--space-md) var(--space-md)', padding: 'var(--space-lg)' }}>
-          <div style={{ fontSize: '10px', fontWeight: '800', color: 'var(--theme-accent, #00C9FF)', letterSpacing: '1px', marginBottom: '12px', textTransform: 'uppercase' }}>Nutrition Intelligence</div>
-          
-          {/* Main Macros */}
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '12px', marginBottom: '20px' }}>
-            <NutrientMiniCard label="Protein" value={f.p} unit="g" color="var(--theme-error)" />
-            <NutrientMiniCard label="Carbs" value={f.c} unit="g" color="var(--theme-accent)" />
-            <NutrientMiniCard label="Fat" value={f.f} unit="g" color="var(--theme-warning)" />
-          </div>
-
-          {/* Micro Intelligence List */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-            {['Protein', 'Complex Carbs', 'Simple (Sugars)', 'Saturated', 'Monounsaturated', 'Polyunsaturated', ...ALL_MICRO_KEYS].map(k => {
-               const val = f[k];
-               if (val !== undefined && val !== 0) {
-                 const benefit = (NUTRIENT_BENEFITS as any)[k];
-                 const unit = (MICRO_UNITS as any)[k] || 'g';
-                 return (
-                   <NutrientDetailRow 
-                    key={k}
-                    label={k}
-                    value={val}
-                    unit={unit}
-                    benefit={benefit}
-                   />
-                 );
-               }
-               return null;
-            })}
-          </div>
+          <NutritionFactsDisplay food={f} multiplier={1} />
 
           {/* Move to another meal */}
           <div style={{ marginTop: '20px', paddingTop: '16px', borderTop: '1px solid var(--theme-border, rgba(255,255,255,0.05))' }}>
@@ -398,12 +317,6 @@ const DiaryEntryItem = ({ log, onRemove, onEditPortion, onMove }: any) => {
   );
 };
 
-const NutrientMiniCard = ({ label, value, unit, color }: any) => (
-  <div className="glass-card" style={{ textAlign: 'center', padding: 'var(--space-sm)' }}>
-    <div style={{ fontSize: '9px', color: 'var(--theme-text-dim-on-panel)', textTransform: 'uppercase', marginBottom: '4px', fontWeight: '900', letterSpacing: '0.5px' }}>{label}</div>
-    <div style={{ fontWeight: '900', color: color, fontSize: '16px' }}>{value || 0}<span style={{ fontSize: '10px', marginLeft: '1px', opacity: 0.8 }}>{unit}</span></div>
-  </div>
-);
 
 const MacroCard = ({ label, value, total, color, icon }: any) => {
   const pct = Math.min(100, (value / (total || 1)) * 100);
