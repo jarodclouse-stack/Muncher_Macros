@@ -235,20 +235,24 @@ const DiaryEntryItem = ({ log, onRemove, onEditPortion, onMove }: any) => {
             <div style={{ fontWeight: '800', color: 'var(--theme-accent)', fontSize: '15px' }}>{f.name}</div>
             {f.brand && <div style={{ fontSize: '10px', color: 'var(--theme-text-dim)', opacity: 0.6 }}>• {f.brand}</div>}
           </div>
-          <div style={{ display: 'flex', gap: '8px', alignItems: 'center', marginTop: '6px', flexWrap: 'wrap' }}>
-            <div style={{ fontSize: '11px', color: 'var(--theme-text)', fontWeight: '700', display: 'flex', alignItems: 'center', gap: '4px' }}>
+          <div style={{ display: 'flex', gap: '10px', alignItems: 'center', marginTop: '8px', flexWrap: 'wrap' }}>
+            <div style={{ fontSize: '11px', color: 'var(--theme-text)', fontWeight: '700', display: 'flex', alignItems: 'center', gap: '6px' }}>
               {f.serving}
               <button 
                 onClick={(e) => { e.stopPropagation(); onEditPortion(); }} 
-                style={{ background: 'var(--theme-panel-dim)', border: '1px solid var(--theme-border)', color: 'var(--theme-accent)', cursor: 'pointer', display: 'flex', alignItems: 'center', padding: '2px 6px', borderRadius: '6px', marginLeft: '2px' }}
+                style={{ background: 'var(--theme-panel-dim)', border: '1px solid var(--theme-border)', color: 'var(--theme-accent)', cursor: 'pointer', display: 'flex', alignItems: 'center', padding: '4px 8px', borderRadius: '8px', marginLeft: '4px', boxShadow: '0 2px 5px rgba(0,0,0,0.2)' }}
               >
-                <Scale size={12} />
+                <Scale size={14} />
               </button>
             </div>
-            <div style={{ width: '1px', height: '10px', background: 'rgba(255,255,255,0.1)' }} />
-            <div style={{ fontSize: '11px', color: 'var(--theme-accent)', fontWeight: '700' }}>{Math.round(f.calories || f.cal || 0)} kcal</div>
-            <div style={{ width: '1px', height: '10px', background: 'rgba(255,255,255,0.1)' }} />
-            <div style={{ fontSize: '10px', color: 'var(--theme-text-dim)', fontWeight: '600' }}>P:{f.p}g C:{f.c}g F:{f.f}g</div>
+            <div style={{ width: '1px', height: '12px', background: 'rgba(255,255,255,0.1)' }} />
+            <div style={{ fontSize: '12px', color: 'var(--theme-accent)', fontWeight: '800' }}>{Math.round(f.calories || f.cal || 0)} kcal</div>
+            <div style={{ width: '1px', height: '12px', background: 'rgba(255,255,255,0.1)' }} />
+            <div style={{ display: 'flex', gap: '8px', fontSize: '11px', color: 'var(--theme-text-dim)', fontWeight: '700' }}>
+               <span><span style={{ color: 'var(--theme-error)' }}>P:</span>{f.p}g</span>
+               <span><span style={{ color: 'var(--theme-accent)' }}>C:</span>{f.c}g</span>
+               <span><span style={{ color: 'var(--theme-warning)' }}>F:</span>{f.f}g</span>
+            </div>
           </div>
         </div>
         
