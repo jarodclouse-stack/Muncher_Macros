@@ -82,9 +82,9 @@ export const PortionEditModal: React.FC<PortionEditModalProps> = ({ meal, idx, o
             </div>
           </div>
 
-          <div style={{ textAlign: 'center', padding: '16px', background: 'var(--theme-accent-dim, rgba(0,201,255,0.05))', borderRadius: '12px', border: '1px solid var(--theme-accent-dim, rgba(0,201,255,0.1))' }}>
-            <div style={{ fontSize: '12px', color: 'var(--theme-text-dim, #8b8b9b)', marginBottom: '4px' }}>Resulting Calories</div>
-            <div style={{ fontSize: '24px', fontWeight: '800', color: 'var(--theme-success, #92FE9D)' }}>{previewCals} <span style={{ fontSize: '14px', fontWeight: 'normal' }}>kcal</span></div>
+          <div className="portion-result-box" style={{ textAlign: 'center', padding: '16px', background: 'var(--theme-accent-dim, rgba(0,201,255,0.05))', borderRadius: '12px', border: '1px solid var(--theme-accent-dim, rgba(0,201,255,0.1))' }}>
+            <div style={{ fontSize: '12px', color: 'var(--theme-text, #8b8b9b)', opacity: 0.7, marginBottom: '4px', fontWeight: '600' }}>Resulting Calories</div>
+            <div className="portion-result-value" style={{ fontSize: '24px', fontWeight: '800' }}>{previewCals} <span style={{ fontSize: '14px', fontWeight: 'normal' }}>kcal</span></div>
           </div>
 
           <button type="submit" style={{ width: '100%', padding: '16px', background: 'var(--theme-accent, #00C9FF)', color: 'var(--theme-bg, #000)', borderRadius: '16px', border: 'none', fontWeight: '900', fontSize: '16px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', boxShadow: '0 8px 24px rgba(0,201,255,0.2)' }}>

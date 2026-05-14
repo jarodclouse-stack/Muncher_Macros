@@ -1801,6 +1801,20 @@ body.theme-light-surface .inp::placeholder {
   color: var(--theme-placeholder) !important;
 }
 
+/* Portion Result Calorie Display — default (dark themes): vibrant green */
+.portion-result-value {
+  color: var(--theme-success, #92FE9D);
+}
+
+/* Light themes: override to dark contrasting text */
+body.theme-light-surface .portion-result-value {
+  color: var(--theme-text, #333) !important;
+}
+body.theme-light-surface .portion-result-box {
+  background: rgba(0, 0, 0, 0.06) !important;
+  border-color: var(--theme-border) !important;
+}
+
 /* Force Progress page inputs to be white text on ALL themes */
 #page-progress .inp,
 #page-progress .inp:focus,
