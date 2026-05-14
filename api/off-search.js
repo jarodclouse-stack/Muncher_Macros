@@ -33,24 +33,49 @@ module.exports = async function handler(req, res) {
   const query = (body.query || '').trim();
   if (!query) return res.status(400).json({ error: 'Missing query' });
 
-  // Request English-only results from OFF
-  const offUrl = 'https://world.openfoodfacts.org/cgi/search.pl'
-    + '?search_terms=' + encodeURIComponent(query)
-    + '&search_simple=1&action=process&json=1&page_size=50'
-    + '&lc=en&cc=us'
-    + '&fields=product_name,product_name_en,serving_size,serving_quantity,'
-    + 'serving_quantity_unit,serving_size_unit,nutriments,brands,lang';
+  const isBarcode = /^\\d+$/.test(query);
+
+  let productsToProcess = [];
 
   try {
-    const offRes = await fetch(offUrl, {
-      headers: { 'User-Agent': 'MuncherMacros/1.0 (contact@example.com)' }
-    });
-    if (!offRes.ok) return res.status(offRes.status).json({ error: 'OFF error ' + offRes.status });
+    if (isBarcode) {
+      // Direct barcode lookup
+      let offRes = await fetch(`https://world.openfoodfacts.org/api/v0/product/${query}.json`, {
+        headers: { 'User-Agent': 'MuncherMacros/1.0' }
+      });
+      let data = await offRes.json();
+      
+      // If not found and it's a 12 digit UPC, OFF often stores them as 13 digit EANs with a leading zero
+      if (data.status === 0 && query.length === 12) {
+        offRes = await fetch(`https://world.openfoodfacts.org/api/v0/product/0${query}.json`, {
+          headers: { 'User-Agent': 'MuncherMacros/1.0' }
+        });
+        data = await offRes.json();
+      }
 
-    const data = await offRes.json();
+      if (data.status === 1 && data.product) {
+        productsToProcess = [data.product];
+      }
+    } else {
+      // Text search
+      const offUrl = 'https://world.openfoodfacts.org/cgi/search.pl'
+        + '?search_terms=' + encodeURIComponent(query)
+        + '&search_simple=1&action=process&json=1&page_size=50'
+        + '&lc=en&cc=us'
+        + '&fields=product_name,product_name_en,serving_size,serving_quantity,'
+        + 'serving_quantity_unit,serving_size_unit,nutriments,brands,lang';
+
+      const offRes = await fetch(offUrl, {
+        headers: { 'User-Agent': 'MuncherMacros/1.0' }
+      });
+      if (!offRes.ok) return res.status(offRes.status).json({ error: 'OFF error ' + offRes.status });
+      
+      const data = await offRes.json();
+      productsToProcess = data.products || [];
+    }
 
     // Filter server-side to English only, return top 20
-    const filtered = (data.products || [])
+    const filtered = productsToProcess
       .filter(isEnglish)
       .slice(0, 20);
 
