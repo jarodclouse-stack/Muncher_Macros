@@ -459,7 +459,12 @@ export const AddFoodModal: React.FC<AddFoodModalProps> = ({ meal, onClose }) => 
                   
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', marginBottom: '20px' }}>
                     {aiStagedResults.map((f, i) => (
-                      <div key={i} style={{ background: 'rgba(0,0,0,0.3)', padding: '16px', borderRadius: '18px', border: '1px solid rgba(255,255,255,0.08)', '--theme-text': '#FFF', '--theme-text-dim': 'rgba(255,255,255,0.6)' } as React.CSSProperties}>
+                      <div key={i} style={{ 
+                        background: 'rgba(0,0,0,0.3)', padding: '16px', borderRadius: '18px', 
+                        border: f._src === 'off' || activeTab === 'scan' ? '2px solid var(--theme-accent)' : '1px solid rgba(255,255,255,0.08)', 
+                        boxShadow: f._src === 'off' || activeTab === 'scan' ? '0 0 15px var(--theme-accent-dim)' : 'none',
+                        '--theme-text': '#FFF', '--theme-text-dim': 'rgba(255,255,255,0.6)' 
+                      } as React.CSSProperties}>
                         <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '10px' }}>
                           <div style={{ fontWeight: '800', fontSize: '14px', color: 'var(--theme-accent)' }}>{f.name}</div>
                           <div style={{ display: 'flex', gap: '8px' }}>
@@ -570,9 +575,34 @@ export const AddFoodModal: React.FC<AddFoodModalProps> = ({ meal, onClose }) => 
                             }}
                             style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', padding: '10px', background: 'var(--theme-panel-dim)', border: '1px solid var(--theme-border)', borderRadius: '12px', color: 'var(--theme-text)', fontSize: '11px', fontWeight: '900', cursor: 'pointer' }}
                           >
-                            <Info size={12} color="var(--theme-accent)" /> TWEAK INGREDIENT
+                            <Info size={12} color="var(--theme-accent)" /> TWEAK
+                          </button>
+                          <button 
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              const next = [...aiStagedResults];
+                              next[i] = { ...f, ingredients: f.ingredients !== undefined ? undefined : (f.ingredients || '') };
+                              setAiStagedResults(next);
+                            }}
+                            style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', padding: '10px', background: 'var(--theme-panel-dim)', border: f.ingredients !== undefined ? '1px solid var(--theme-accent)' : '1px solid var(--theme-border)', borderRadius: '12px', color: 'var(--theme-text)', fontSize: '11px', fontWeight: '900', cursor: 'pointer' }}
+                          >
+                            <Info size={12} color="var(--theme-accent)" /> {f.ingredients !== undefined ? 'HIDE INGREDIENTS' : 'INGREDIENTS'}
                           </button>
                         </div>
+                        {f.ingredients !== undefined && (
+                          <div style={{ marginTop: '10px', animation: 'slideDown 0.2s ease-out' }}>
+                            <textarea 
+                              placeholder="Type ingredients here... (e.g. Water, Sugar, Salt)"
+                              value={f.ingredients || ''}
+                              onChange={(e) => {
+                                const next = [...aiStagedResults];
+                                next[i] = { ...f, ingredients: e.target.value };
+                                setAiStagedResults(next);
+                              }}
+                              style={{ width: '100%', height: '60px', background: 'rgba(0,0,0,0.06)', border: '1px solid var(--theme-border)', borderRadius: '12px', color: 'var(--theme-text)', fontSize: '13px', padding: '12px', outline: 'none', fontWeight: '600', resize: 'none' }}
+                            />
+                          </div>
+                        )}
                       </div>
                     ))}
                     

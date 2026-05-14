@@ -541,7 +541,9 @@ export const PantryView: React.FC = () => {
                         <div key={i} className="glass-card" style={{ 
                           padding: 'var(--space-md)', 
                           width: '100%',
-                          boxSizing: 'border-box'
+                          boxSizing: 'border-box',
+                          border: f._src === 'off' || innerGlobalSearchTab === 'scan' ? '2px solid var(--theme-accent)' : '1px solid rgba(255,255,255,0.08)',
+                          boxShadow: f._src === 'off' || innerGlobalSearchTab === 'scan' ? '0 0 15px var(--theme-accent-dim)' : 'none'
                         }}>
                           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px', gap: '10px', flexWrap: 'wrap' }}>
                             <input 
@@ -647,9 +649,34 @@ export const PantryView: React.FC = () => {
                             }}
                             style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', padding: '10px', background: 'rgba(255,255,255,0.03)', border: '1px solid var(--theme-border)', borderRadius: '12px', color: 'var(--theme-text)', fontSize: '11px', fontWeight: '900', cursor: 'pointer' }}
                           >
-                            <Info size={12} color="var(--theme-accent)" /> TWEAK INGREDIENT
+                            <Info size={12} color="var(--theme-accent)" /> TWEAK
+                          </button>
+                          <button 
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              const next = [...aiStagedResults];
+                              next[i] = { ...f, ingredients: f.ingredients !== undefined ? undefined : (f.ingredients || '') };
+                              setAiStagedResults(next);
+                            }}
+                            style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', padding: '10px', background: 'rgba(255,255,255,0.03)', border: f.ingredients !== undefined ? '1px solid var(--theme-accent)' : '1px solid var(--theme-border)', borderRadius: '12px', color: 'var(--theme-text)', fontSize: '11px', fontWeight: '900', cursor: 'pointer' }}
+                          >
+                            <Info size={12} color="var(--theme-accent)" /> {f.ingredients !== undefined ? 'HIDE INGREDIENTS' : 'INGREDIENTS'}
                           </button>
                         </div>
+                        {f.ingredients !== undefined && (
+                          <div style={{ marginTop: '10px', animation: 'slideDown 0.2s ease-out' }}>
+                            <textarea 
+                              placeholder="Type ingredients here... (e.g. Water, Sugar, Salt)"
+                              value={f.ingredients || ''}
+                              onChange={(e) => {
+                                const next = [...aiStagedResults];
+                                next[i] = { ...f, ingredients: e.target.value };
+                                setAiStagedResults(next);
+                              }}
+                              style={{ width: '100%', height: '60px', background: 'rgba(0,0,0,0.06)', border: '1px solid var(--theme-border)', borderRadius: '12px', color: 'var(--theme-text)', fontSize: '13px', padding: '12px', outline: 'none', fontWeight: '600', resize: 'none' }}
+                            />
+                          </div>
+                        )}
                       </div>
                     );
                   })}
