@@ -2491,3 +2491,36 @@ body .luminous-absolute-white * {
   color: #FFFFFF !important;
   opacity: 1 !important;
 }
+
+/* ====== ISOLATED FIX FOR AI REVIEW DETECTED MEAL ====== */
+/* The user requested that the text inside the "Review Detected Meal" bubbles 
+   must be purely white, identical to the AI Meal Intelligence feature. 
+   We target only this specific card so we do not break Vault or other features. */
+body.theme-light-surface .ai-staged-food-card,
+body.theme-light-surface .ai-staged-food-card div,
+body.theme-light-surface .ai-staged-food-card span,
+body.theme-light-surface .ai-staged-food-card button,
+body.theme-light-surface .ai-staged-food-card label,
+body.theme-light-surface .ai-staged-food-card p,
+body.theme-light-surface .ai-staged-food-card h3,
+body.theme-light-surface .ai-staged-food-card code,
+body.theme-light-surface .ai-staged-food-card input,
+body.theme-light-surface .ai-staged-food-card select,
+body.theme-light-surface .ai-staged-food-card textarea {
+  color: #FFFFFF !important;
+}
+
+body.theme-light-surface .ai-staged-food-card div[style*="var(--theme-text-dim)"] {
+  color: rgba(255, 255, 255, 0.7) !important;
+}
+
+body.theme-light-surface .ai-staged-food-card div[style*="var(--theme-accent)"],
+body.theme-light-surface .ai-staged-food-card button[style*="var(--theme-accent)"] {
+  color: var(--theme-accent) !important;
+}
+body.theme-light-surface .ai-staged-food-card div[style*="var(--theme-error)"] {
+  color: var(--theme-error) !important;
+}
+body.theme-light-surface .ai-staged-food-card div[style*="var(--theme-warning)"] {
+  color: var(--theme-warning) !important;
+}

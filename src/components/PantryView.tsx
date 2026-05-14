@@ -583,7 +583,7 @@ export const PantryView: React.FC = () => {
                       const multiplier = computeMultiplier(f.serving || '100g', f.stagedUnit || 'serving', parseFloat(String(f.stagedQty)) || 1);
                       
                       return (
-                        <div key={i} className="glass-card" style={{ 
+                        <div key={i} className="glass-card ai-staged-food-card" style={{ 
                           padding: 'var(--space-md)', 
                           width: '100%',
                           boxSizing: 'border-box',
