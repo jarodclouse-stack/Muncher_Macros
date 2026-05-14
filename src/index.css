@@ -2507,11 +2507,11 @@ body.theme-light-surface .ai-staged-food-card code,
 body.theme-light-surface .ai-staged-food-card input,
 body.theme-light-surface .ai-staged-food-card select,
 body.theme-light-surface .ai-staged-food-card textarea {
-  color: #FFFFFF !important;
+  color: color-mix(in srgb, var(--theme-text) 35%, white) !important;
 }
 
 body.theme-light-surface .ai-staged-food-card div[style*="var(--theme-text-dim)"] {
-  color: rgba(255, 255, 255, 0.7) !important;
+  color: color-mix(in srgb, var(--theme-text) 20%, white) !important;
 }
 
 body.theme-light-surface .ai-staged-food-card div[style*="var(--theme-accent)"],
