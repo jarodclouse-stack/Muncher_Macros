@@ -141,11 +141,13 @@ export const PantryView: React.FC = () => {
   const [isSearching, setIsSearching] = useState(false);
   const [searchResults, setSearchResults] = useState<Food[]>([]);
   const [innerGlobalSearchTab, setInnerGlobalSearchTab] = useState<SearchTab>('search');
+  const [hasSearched, setHasSearched] = useState(false);
 
   const clearSearchState = () => {
     setSearchResults([]);
     setSearchQuery('');
     setErrorMsg('');
+    setHasSearched(false);
   };
 
   const handleGlobalSearch = async (e?: React.FormEvent, forcedQuery?: string) => {
@@ -177,6 +179,7 @@ export const PantryView: React.FC = () => {
       setSearchResults(localMatches.slice(0, 50));
     }
     setIsSearching(false);
+    setHasSearched(true);
   };
 
   const handleGlobalAISearch = async (e?: React.SyntheticEvent) => {
@@ -196,6 +199,7 @@ export const PantryView: React.FC = () => {
       setErrorMsg("AI Lookup failed.");
     }
     setIsSearching(false);
+    setHasSearched(true);
   };
 
   const handleGlobalAIDescribe = async (e?: React.SyntheticEvent) => {
@@ -555,7 +559,7 @@ export const PantryView: React.FC = () => {
             </div>
           )}
 
-          {!isSearching && searchQuery && searchResults.length === 0 && !isAiReviewing && (
+          {!isSearching && hasSearched && searchQuery && searchResults.length === 0 && !isAiReviewing && (
             <div className="glass-card" style={{ textAlign: 'center', padding: 'var(--space-xl)', marginTop: 'var(--space-md)', borderStyle: 'dashed' }}>
               <div style={{ color: 'var(--theme-text-dim)', fontSize: '12px', fontWeight: '900', marginBottom: '16px', letterSpacing: '1px' }}>NO FOODS FOUND IN DATABASE</div>
               <div style={{ fontSize: '11px', color: 'var(--theme-text-dim)', fontWeight: '600' }}>Try a broader search or add it manually in the Kitchen Lab</div>
