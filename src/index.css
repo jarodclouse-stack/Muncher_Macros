@@ -2199,10 +2199,18 @@ body.theme-light-surface .force-white-placeholder::placeholder {
   opacity: 1 !important;
 }
 
-body.theme-light-surface input,
-body.theme-light-surface select,
-body.theme-light-surface textarea {
+body.theme-light-surface input:not(.force-white-placeholder):not(.glass-card input),
+body.theme-light-surface select:not(.glass-card select),
+body.theme-light-surface textarea:not(.force-white-placeholder) {
   color: var(--theme-text) !important;
+}
+
+/* Force white text on all inputs/textareas inside glass cards (dark backgrounds) */
+body.theme-light-surface .glass-card input,
+body.theme-light-surface .glass-card select,
+body.theme-light-surface .glass-card textarea,
+body.theme-light-surface .force-white-placeholder {
+  color: #FFFFFF !important;
 }
 
 /* Force no arrows on select menus */

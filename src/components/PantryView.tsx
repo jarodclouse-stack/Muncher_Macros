@@ -492,7 +492,7 @@ export const PantryView: React.FC = () => {
                       border: '1px solid rgba(255,255,255,0.15)', 
                       borderRadius: '20px', 
                       padding: '20px', 
-                      color: 'var(--theme-text)', 
+                      color: '#FFF', 
                       outline: 'none', 
                       fontSize: '15px', 
                       lineHeight: '1.6',
