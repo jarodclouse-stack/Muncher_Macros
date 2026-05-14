@@ -150,87 +150,7 @@ export const PantryView: React.FC = () => {
     setHasSearched(false);
   };
 
-  const handleGlobalSearch = async (e?: React.FormEvent, forcedQuery?: string) => {
-    if (e) e.preventDefault();
-    const q = forcedQuery !== undefined ? forcedQuery : searchQuery;
-    if (!q) return;
-    setIsSearching(true);
-    setErrorMsg('');
-    
-    const localMatches = customFoods.filter((f: Food) => 
-      f.name.toLowerCase().includes(q.toLowerCase())
-    ).map((f: Food) => ({ ...f, isLocal: true }));
 
-    try {
-      const res = await fetch('/api/off-search', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ query: q })
-      });
-      if (res.ok) {
-        const body = await res.json();
-        const globalRes = (body.foods || body.results || []).map(normalizeFoodResult);
-        // Cap results at 50 for performance
-        setSearchResults([...localMatches, ...globalRes].slice(0, 50));
-      } else {
-        setSearchResults(localMatches.slice(0, 50));
-      }
-    } catch {
-      setSearchResults(localMatches.slice(0, 50));
-    }
-    setIsSearching(false);
-    setHasSearched(true);
-  };
-
-  const handleGlobalAISearch = async (e?: React.SyntheticEvent) => {
-    if (e && e.preventDefault) e.preventDefault();
-    if (!searchQuery) return;
-    setIsSearching(true);
-    try {
-      const res = await fetch('/api/ai-lookup', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ query: searchQuery })
-      });
-      const body = await res.json();
-      const detected = (body.foods || []) as Food[];
-      setSearchResults(detected.map(normalizeFoodResult));
-    } catch {
-      setErrorMsg("AI Lookup failed.");
-    }
-    setIsSearching(false);
-    setHasSearched(true);
-  };
-
-  const handleGlobalAIDescribe = async (e?: React.SyntheticEvent) => {
-    if (e && e.preventDefault) e.preventDefault();
-    if (!searchQuery) return;
-    setIsSearching(true);
-    setSearchResults([]);
-    setAiStagedResults([]);
-    try {
-      const res = await fetch('/api/ai-describe', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ description: searchQuery })
-      });
-      const body = await res.json();
-      const detected = (body.foods || []) as Food[];
-      setAiStagedResults(detected.map((f: Food) => {
-        const norm = normalizeFoodResult(f);
-        return { 
-          ...norm, 
-          stagedQty: f.stagedQty || f.sQty?.toString() || '1', 
-          stagedUnit: f.stagedUnit || f.sUnit || 'piece',
-          showNutrientIntel: false
-        };
-      }));
-      setIsAiReviewing(true);
-    } catch {
-      setErrorMsg("AI Describe failed.");
-    }
-    setIsSearching(false);
-  };
 
   const handleIngSearch = async (e?: React.FormEvent, forcedQuery?: string) => {
     if (e) e.preventDefault();
@@ -327,6 +247,88 @@ export const PantryView: React.FC = () => {
   const [isPantryPickerOpen, setIsPantryPickerOpen] = useState(false);
   
   const customFoods: Food[] = localCache.customFoods || [];
+
+  const handleGlobalSearch = async (e?: React.FormEvent, forcedQuery?: string) => {
+    if (e) e.preventDefault();
+    const q = forcedQuery !== undefined ? forcedQuery : searchQuery;
+    if (!q) return;
+    setIsSearching(true);
+    setErrorMsg('');
+    
+    const localMatches = customFoods.filter((f: Food) => 
+      f.name.toLowerCase().includes(q.toLowerCase())
+    ).map((f: Food) => ({ ...f, isLocal: true }));
+
+    try {
+      const res = await fetch('/api/off-search', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ query: q })
+      });
+      if (res.ok) {
+        const body = await res.json();
+        const globalRes = (body.foods || body.results || []).map(normalizeFoodResult);
+        // Cap results at 50 for performance
+        setSearchResults([...localMatches, ...globalRes].slice(0, 50));
+      } else {
+        setSearchResults(localMatches.slice(0, 50));
+      }
+    } catch {
+      setSearchResults(localMatches.slice(0, 50));
+    }
+    setIsSearching(false);
+    setHasSearched(true);
+  };
+
+  const handleGlobalAISearch = async (e?: React.SyntheticEvent) => {
+    if (e && e.preventDefault) e.preventDefault();
+    if (!searchQuery) return;
+    setIsSearching(true);
+    try {
+      const res = await fetch('/api/ai-lookup', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ query: searchQuery })
+      });
+      const body = await res.json();
+      const detected = (body.foods || []) as Food[];
+      setSearchResults(detected.map(normalizeFoodResult));
+    } catch {
+      setErrorMsg("AI Lookup failed.");
+    }
+    setIsSearching(false);
+    setHasSearched(true);
+  };
+
+  const handleGlobalAIDescribe = async (e?: React.SyntheticEvent) => {
+    if (e && e.preventDefault) e.preventDefault();
+    if (!searchQuery) return;
+    setIsSearching(true);
+    setSearchResults([]);
+    setAiStagedResults([]);
+    try {
+      const res = await fetch('/api/ai-describe', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ description: searchQuery })
+      });
+      const body = await res.json();
+      const detected = (body.foods || []) as Food[];
+      setAiStagedResults(detected.map((f: Food) => {
+        const norm = normalizeFoodResult(f);
+        return { 
+          ...norm, 
+          stagedQty: f.stagedQty || f.sQty?.toString() || '1', 
+          stagedUnit: f.stagedUnit || f.sUnit || 'piece',
+          showNutrientIntel: false
+        };
+      }));
+      setIsAiReviewing(true);
+    } catch {
+      setErrorMsg("AI Describe failed.");
+    }
+    setIsSearching(false);
+  };
   
   const [configuringFood, setConfiguringFood] = useState<Food | null>(null);
   const [editName, setEditName] = useState('');

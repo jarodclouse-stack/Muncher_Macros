@@ -299,12 +299,7 @@ export const AddFoodModal: React.FC<AddFoodModalProps> = ({ meal, onClose }) => 
                         setResults([]);
                       }
                     }}
-                    onKeyDown={(e) => {
-                      if (e.key === 'Enter') {
-                        e.preventDefault();
-                        handleAISearch(e);
-                      }
-                    }}
+
                     style={{ 
                       width: '100%', 
                       padding: 'var(--space-md) var(--space-md) var(--space-md) 44px', 
