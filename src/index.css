@@ -1806,28 +1806,28 @@ body.theme-light-surface .inp::placeholder {
   color: var(--theme-success, #92FE9D);
 }
 
-/* Light themes: darken all text inside the portion modal for contrast against gray backdrop */
+/* Light themes: slightly darken text inside the portion modal for contrast against gray backdrop */
 body.theme-light-surface .portion-edit-modal {
-  color: color-mix(in srgb, var(--theme-text) 50%, black) !important;
+  color: color-mix(in srgb, var(--theme-text) 80%, black) !important;
 }
 body.theme-light-surface .portion-edit-modal h2 {
-  color: color-mix(in srgb, var(--theme-text) 35%, black) !important;
+  color: color-mix(in srgb, var(--theme-text) 70%, black) !important;
 }
 body.theme-light-surface .portion-edit-modal h2 svg {
-  color: color-mix(in srgb, var(--theme-accent) 45%, black) !important;
+  color: color-mix(in srgb, var(--theme-accent) 75%, black) !important;
 }
 body.theme-light-surface .portion-edit-modal label {
-  color: color-mix(in srgb, var(--theme-text) 50%, black) !important;
+  color: color-mix(in srgb, var(--theme-text) 80%, black) !important;
 }
 body.theme-light-surface .portion-edit-modal .portion-result-value {
-  color: color-mix(in srgb, var(--theme-text) 35%, black) !important;
+  color: color-mix(in srgb, var(--theme-text) 70%, black) !important;
 }
 body.theme-light-surface .portion-edit-modal .portion-result-box {
-  background: rgba(0, 0, 0, 0.06) !important;
-  border-color: rgba(0, 0, 0, 0.12) !important;
+  background: rgba(0, 0, 0, 0.03) !important;
+  border-color: rgba(0, 0, 0, 0.08) !important;
 }
 body.theme-light-surface .portion-edit-modal .portion-result-box div:first-child {
-  color: color-mix(in srgb, var(--theme-text) 50%, black) !important;
+  color: color-mix(in srgb, var(--theme-text) 80%, black) !important;
   opacity: 1 !important;
 }
 /* Keep input/select text dark on their white backgrounds */
@@ -1835,156 +1835,150 @@ body.theme-light-surface .portion-edit-modal .mm-input,
 body.theme-light-surface .portion-edit-modal .mm-select {
   color: var(--theme-text) !important;
 }
-/* Darken food name and serving text inside the info card */
+/* Slightly darken food name and serving text inside the info card */
 body.theme-light-surface .portion-edit-modal > div:nth-child(2) > div:first-child {
-  color: color-mix(in srgb, var(--theme-accent) 45%, black) !important;
+  color: color-mix(in srgb, var(--theme-accent) 75%, black) !important;
 }
 body.theme-light-surface .portion-edit-modal > div:nth-child(2) > div:last-child {
-  color: color-mix(in srgb, var(--theme-text) 50%, black) !important;
+  color: color-mix(in srgb, var(--theme-text) 80%, black) !important;
 }
 
 /* ===== REWARD MODAL — Light Theme Contrast Fixes ===== */
-/* On light themes the modal background is semi-transparent over dark backdrop = grayish.
-   All text/cards need darkened colors for readability. */
+/* Slightly darken text for readability without making it too heavy. */
 body.theme-light-surface .reward-modal {
-  background: color-mix(in srgb, var(--theme-panel-base) 92%, black) !important;
+  background: color-mix(in srgb, var(--theme-panel-base) 95%, black) !important;
 }
 body.theme-light-surface .reward-title {
-  color: color-mix(in srgb, var(--theme-text) 35%, black) !important;
+  color: color-mix(in srgb, var(--theme-text) 70%, black) !important;
 }
 body.theme-light-surface .reward-close-btn {
-  background: rgba(0, 0, 0, 0.08) !important;
-  border-color: rgba(0, 0, 0, 0.15) !important;
-  color: color-mix(in srgb, var(--theme-text) 50%, black) !important;
+  background: rgba(0, 0, 0, 0.05) !important;
+  border-color: rgba(0, 0, 0, 0.08) !important;
+  color: color-mix(in srgb, var(--theme-text) 80%, black) !important;
 }
 body.theme-light-surface .reward-stat-box {
-  background: rgba(0, 0, 0, 0.04) !important;
-  border-color: rgba(0, 0, 0, 0.1) !important;
+  background: rgba(0, 0, 0, 0.025) !important;
+  border-color: rgba(0, 0, 0, 0.06) !important;
 }
 body.theme-light-surface .reward-label {
-  color: color-mix(in srgb, var(--theme-text) 55%, black) !important;
+  color: color-mix(in srgb, var(--theme-text) 80%, black) !important;
 }
 body.theme-light-surface .reward-info-card {
-  background: color-mix(in srgb, var(--theme-accent-dim) 70%, rgba(0,0,0,0.08)) !important;
-  border-color: color-mix(in srgb, var(--theme-accent) 30%, transparent) !important;
+  background: color-mix(in srgb, var(--theme-accent-dim) 80%, rgba(0,0,0,0.04)) !important;
+  border-color: color-mix(in srgb, var(--theme-accent) 40%, transparent) !important;
 }
 body.theme-light-surface .reward-info-title {
-  color: color-mix(in srgb, var(--theme-accent) 60%, black) !important;
+  color: color-mix(in srgb, var(--theme-accent) 75%, black) !important;
 }
 body.theme-light-surface .reward-info-body {
-  color: color-mix(in srgb, var(--theme-text) 45%, black) !important;
+  color: color-mix(in srgb, var(--theme-text) 75%, black) !important;
   opacity: 1 !important;
 }
 body.theme-light-surface .reward-code {
-  background: rgba(0, 0, 0, 0.08) !important;
-  color: color-mix(in srgb, var(--theme-text) 50%, black) !important;
+  background: rgba(0, 0, 0, 0.05) !important;
+  color: color-mix(in srgb, var(--theme-text) 80%, black) !important;
 }
 body.theme-light-surface .reward-gems-value {
-  color: color-mix(in srgb, var(--theme-accent) 65%, black) !important;
+  color: color-mix(in srgb, var(--theme-accent) 80%, black) !important;
 }
 body.theme-light-surface .reward-progress-track {
-  background: rgba(0, 0, 0, 0.06) !important;
-  border-color: rgba(0, 0, 0, 0.1) !important;
+  background: rgba(0, 0, 0, 0.04) !important;
+  border-color: rgba(0, 0, 0, 0.06) !important;
 }
 body.theme-light-surface .reward-dismiss-btn {
-  background: rgba(0, 0, 0, 0.05) !important;
-  border-color: rgba(0, 0, 0, 0.12) !important;
-  color: color-mix(in srgb, var(--theme-text) 45%, black) !important;
+  background: rgba(0, 0, 0, 0.03) !important;
+  border-color: rgba(0, 0, 0, 0.08) !important;
+  color: color-mix(in srgb, var(--theme-text) 75%, black) !important;
 }
 body.theme-light-surface .reward-dismiss-btn:hover {
-  background: rgba(0, 0, 0, 0.1) !important;
+  background: rgba(0, 0, 0, 0.06) !important;
 }
 
 /* ===== GLOBAL LIGHT-THEME UI SYSTEM ===== */
-/* These rules fix ALL modals, cards, toggles, and buttons across the entire app
-   on light themes where dark-theme-only rgba(255,255,255,x) patterns wash out. */
-
-/* --- Global: Make all rgba(255,255,255) backgrounds visible on light themes --- */
-body.theme-light-surface [style*="rgba(255,255,255,0.0"],
-body.theme-light-surface [style*="rgba(255,255,255,0.1"] {
-  /* Handled per-element below for specificity */
-}
+/* Subtle overrides so dark-theme-only rgba(255,255,255,x) patterns become
+   gently visible on light themes without looking too heavy. */
 
 /* --- Notification/Settings Toggle Switches --- */
 body.theme-light-surface div[style*="rgba(255,255,255,0.1)"][style*="border-radius: 12px"][style*="width: 42px"] {
-  background: rgba(0, 0, 0, 0.12) !important;
+  background: rgba(0, 0, 0, 0.08) !important;
 }
 
 /* --- Section/Card panels inside modals --- */
 body.theme-light-surface .section[style*="var(--theme-panel)"] {
-  background: rgba(0, 0, 0, 0.03) !important;
-  border-color: rgba(0, 0, 0, 0.1) !important;
+  background: rgba(0, 0, 0, 0.02) !important;
+  border-color: rgba(0, 0, 0, 0.06) !important;
 }
 
 /* --- Theme picker cards: unselected borders --- */
 body.theme-light-surface div[style*="rgba(255,255,255,0.05)"][style*="border-radius"] {
-  border-color: rgba(0, 0, 0, 0.1) !important;
+  border-color: rgba(0, 0, 0, 0.06) !important;
 }
 
 /* --- Color swatch borders in theme picker --- */
 body.theme-light-surface div[style*="rgba(255,255,255,0.15)"][style*="overflow: hidden"] {
-  border-color: rgba(0, 0, 0, 0.15) !important;
+  border-color: rgba(0, 0, 0, 0.1) !important;
 }
 
 /* --- Tab/Pill segmented controls (VaultView, AddFoodModal) --- */
 body.theme-light-surface div[style*="rgba(255,255,255,0.03)"][style*="padding: 4px"] {
-  background: rgba(0, 0, 0, 0.04) !important;
+  background: rgba(0, 0, 0, 0.025) !important;
 }
 
 /* --- All buttons with faint white backgrounds --- */
 body.theme-light-surface button[style*="rgba(255,255,255,0.05)"] {
-  background: rgba(0, 0, 0, 0.05) !important;
-  border-color: rgba(0, 0, 0, 0.1) !important;
+  background: rgba(0, 0, 0, 0.03) !important;
+  border-color: rgba(0, 0, 0, 0.06) !important;
 }
 
 /* --- All divs using faint white backgrounds (stat boxes, cards, panels) --- */
 body.theme-light-surface div[style*="background: rgba(255,255,255,0.05)"],
 body.theme-light-surface div[style*="background: rgba(255,255,255,0.03)"],
 body.theme-light-surface div[style*="background: rgba(255,255,255,0.02)"] {
-  background: rgba(0, 0, 0, 0.04) !important;
+  background: rgba(0, 0, 0, 0.025) !important;
 }
 
 /* --- All faint white borders converted to visible dark borders --- */
 body.theme-light-surface div[style*="border: 1px solid rgba(255,255,255,0.1)"],
 body.theme-light-surface div[style*="border: 1px solid rgba(255,255,255,0.05)"] {
-  border-color: rgba(0, 0, 0, 0.1) !important;
+  border-color: rgba(0, 0, 0, 0.06) !important;
 }
 
 /* --- Separator lines (borderTop/borderLeft using white alpha) --- */
 body.theme-light-surface div[style*="border-top: 1px solid rgba(255,255,255"],
 body.theme-light-surface div[style*="border-left: 1px solid rgba(255,255,255"] {
-  border-color: rgba(0, 0, 0, 0.1) !important;
+  border-color: rgba(0, 0, 0, 0.06) !important;
 }
 
 /* --- Code blocks in modals --- */
 body.theme-light-surface code[style*="rgba(0,0,0,0.3)"] {
-  background: rgba(0, 0, 0, 0.08) !important;
+  background: rgba(0, 0, 0, 0.05) !important;
   color: var(--theme-text) !important;
 }
 
 /* --- Light green success text (#92FE9D) is invisible on light themes --- */
 body.theme-light-surface span[style*="color: #92FE9D"],
 body.theme-light-surface span[style*="color: rgb(146, 254, 157)"] {
-  color: color-mix(in srgb, var(--theme-accent) 65%, black) !important;
+  color: color-mix(in srgb, var(--theme-accent) 80%, black) !important;
 }
 
 /* --- Progress bar tracks --- */
 body.theme-light-surface div[style*="rgba(255,255,255,0.08)"][style*="border-radius: 10px"] {
-  background: rgba(0, 0, 0, 0.08) !important;
-  border-color: rgba(0, 0, 0, 0.12) !important;
+  background: rgba(0, 0, 0, 0.05) !important;
+  border-color: rgba(0, 0, 0, 0.08) !important;
 }
 
 /* --- Close/dismiss buttons on modals --- */
 body.theme-light-surface button[style*="rgba(0,0,0,0.2)"][style*="border-radius: 50%"] {
-  background: rgba(0, 0, 0, 0.08) !important;
-  border: 1px solid rgba(0, 0, 0, 0.15) !important;
+  background: rgba(0, 0, 0, 0.05) !important;
+  border: 1px solid rgba(0, 0, 0, 0.08) !important;
 }
 
 /* --- Macro bubbles and small info badges --- */
 body.theme-light-surface div[style*="rgba(255,255,255,0.02)"][style*="border-radius"] {
-  background: rgba(0, 0, 0, 0.03) !important;
-  border-color: rgba(0, 0, 0, 0.08) !important;
+  background: rgba(0, 0, 0, 0.02) !important;
+  border-color: rgba(0, 0, 0, 0.05) !important;
 }
+
 
 
 /* Force Progress page inputs to be white text on ALL themes */
