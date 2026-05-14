@@ -162,7 +162,7 @@ export const PantryView: React.FC = () => {
       const res = await fetch(`/api/food-search?q=${encodeURIComponent(searchQuery)}`);
       if (res.ok) {
         const body = await res.json();
-        const globalRes = body.foods || body.results || [];
+        const globalRes = (body.foods || body.results || []).map(normalizeFoodResult);
         // Cap results at 50 for performance
         setSearchResults([...localMatches, ...globalRes].slice(0, 50));
       } else {
@@ -185,7 +185,8 @@ export const PantryView: React.FC = () => {
         body: JSON.stringify({ query: searchQuery })
       });
       const body = await res.json();
-      setSearchResults(body.foods || []);
+      const detected = (body.foods || []) as Food[];
+      setSearchResults(detected.map(normalizeFoodResult));
     } catch {
       setErrorMsg("AI Lookup failed.");
     }
@@ -232,7 +233,8 @@ export const PantryView: React.FC = () => {
       const res = await fetch(`/api/food-search?q=${encodeURIComponent(q)}`);
       if (res.ok) {
         const body = await res.json();
-        const combined = [...localMatches, ...(body.foods || body.results || [])];
+        const globalRes = (body.foods || body.results || []).map(normalizeFoodResult);
+        const combined = [...localMatches, ...globalRes];
         setIngResults(combined.slice(0, 30)); // Capped for ingredient dropdown performance
       } else setIngResults(localMatches.slice(0, 30));
     } catch { setIngResults(localMatches.slice(0, 30)); }

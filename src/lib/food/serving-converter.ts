@@ -124,7 +124,7 @@ export function scaleLegacyFoodByAmount(food: any, amount: number | string): any
     }
   });
 
-  return scaled;
+  return enforceCalorieConsistency(scaled);
 }
 
 export function sumFoods(foodEntries: any[]): any {

@@ -422,7 +422,8 @@ export const AddFoodModal: React.FC<AddFoodModalProps> = ({ meal, onClose }) => 
               <BarcodeScanner 
                 onScanSuccess={(result) => {
                   if (typeof result === 'object' && result !== null) {
-                    setAiStagedResults([{ ...result, stagedQty: '1', stagedUnit: 'serving', showNutrientIntel: false }]);
+                    const norm = normalizeFoodResult(result);
+                    setAiStagedResults([{ ...norm, stagedQty: '1', stagedUnit: 'serving', showNutrientIntel: false }]);
                     setIsAiReviewing(true);
                   } else {
                     const displayQuery = typeof result === 'string' ? result : (result?.name || '');

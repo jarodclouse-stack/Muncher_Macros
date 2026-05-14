@@ -35,17 +35,30 @@ export const NutritionView: React.FC = () => {
     };
   }, [localCache.theme]);
 
-  const macroData = useMemo(() => ({
-    labels: ['Protein', 'Carbs', 'Fat'],
-    datasets: [
-      {
+  const macroData = useMemo(() => {
+    const isEmpty = totals.protein === 0 && totals.carbs === 0 && totals.fat === 0;
+    
+    if (isEmpty) {
+      return {
+        labels: ['Empty'],
+        datasets: [{
+          data: [1],
+          backgroundColor: ['var(--theme-panel-dim)'],
+          borderWidth: 0
+        }]
+      };
+    }
+
+    return {
+      labels: ['Protein', 'Carbs', 'Fat'],
+      datasets: [{
         data: [totals.protein, totals.carbs, totals.fat],
         backgroundColor: [resolvedColors.protein, resolvedColors.carbs, resolvedColors.fat],
         borderWidth: 0,
         hoverOffset: 4
-      }
-    ]
-  }), [totals, resolvedColors]);
+      }]
+    };
+  }, [totals, resolvedColors]);
 
   const macroOptions = {
     cutout: '80%',
