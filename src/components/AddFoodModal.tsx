@@ -886,15 +886,20 @@ export default AddFoodModal;
 const SearchResultItem = React.memo(({ food, onClick, localIdx, onDelete }: { food: Food & { isLocal?: boolean, brand?: string }, onClick: () => void, localIdx?: number, onDelete: (idx: number) => void }) => (
   <div 
     onClick={onClick} 
-    className="glass-card"
     style={{ 
-      padding: 'var(--space-md)', 
+      background: 'rgba(0,0,0,0.3)', 
+      padding: '16px', 
+      borderRadius: '18px',
+      border: '1px solid rgba(255,255,255,0.08)',
+      borderLeft: food.isLocal ? '4px solid var(--theme-success)' : '4px solid var(--theme-accent)', 
+      '--theme-text': '#FFF', 
+      '--theme-text-dim': 'rgba(255,255,255,0.6)',
       cursor: 'pointer', 
       transition: 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)',
       display: 'flex', 
       justifyContent: 'space-between', 
       alignItems: 'center'
-    }}>
+    } as React.CSSProperties}>
     <div style={{ flex: 1 }}>
       <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
         <div style={{ fontWeight: '800', color: 'var(--theme-accent)', fontSize: '15px' }}>{food.name}</div>

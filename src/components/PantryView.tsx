@@ -500,7 +500,16 @@ export const PantryView: React.FC = () => {
           {searchResults.length > 0 && !isAiReviewing && (
             <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-xs)', marginTop: 'var(--space-md)', maxHeight: '400px', overflowY: 'auto', paddingRight: '4px' }}>
               {searchResults.map((f: Food, i) => (
-                <div key={i} onClick={() => handleAddPreviewClick(f)} className="glass-card" style={{ padding: 'var(--space-sm) var(--space-md)', cursor: 'pointer', borderLeft: f.isLocal ? '4px solid var(--theme-success)' : '4px solid var(--theme-accent)', transition: 'transform 0.2s', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <div key={i} onClick={() => handleAddPreviewClick(f)} style={{ 
+                  background: 'rgba(0,0,0,0.3)', 
+                  padding: '16px', 
+                  borderRadius: '18px',
+                  border: '1px solid rgba(255,255,255,0.08)',
+                  borderLeft: f.isLocal ? '4px solid var(--theme-success)' : '4px solid var(--theme-accent)', 
+                  '--theme-text': '#FFF', 
+                  '--theme-text-dim': 'rgba(255,255,255,0.6)',
+                  cursor: 'pointer', transition: 'transform 0.2s', display: 'flex', justifyContent: 'space-between', alignItems: 'center' 
+                } as React.CSSProperties}>
                   <div style={{ flex: 1 }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                       <div style={{ fontWeight: '900', fontSize: '14px', color: 'var(--theme-text)' }}>{f.name}</div>
