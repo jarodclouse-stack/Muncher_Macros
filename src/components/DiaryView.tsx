@@ -223,46 +223,57 @@ const DiaryEntryItem = ({ log, onRemove, onEditPortion, onMove }: any) => {
           borderLeft: '4px solid var(--theme-accent)', 
           '--theme-text': '#FFF', 
           '--theme-text-dim': 'rgba(255,255,255,0.6)',
-          display: 'flex', 
-          justifyContent: 'space-between', 
-          alignItems: 'center',
+          '--theme-panel-dim': 'rgba(255,255,255,0.05)',
+          '--theme-border': 'rgba(255,255,255,0.1)',
           cursor: 'pointer', 
           transition: 'transform 0.2s'
         } as React.CSSProperties}
       >
-        <div style={{ flex: 1 }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+        {/* Top Row: Name + Actions */}
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flex: 1 }}>
             <div style={{ fontWeight: '800', color: 'var(--theme-accent)', fontSize: '15px' }}>{f.name}</div>
             {f.brand && <div style={{ fontSize: '10px', color: 'var(--theme-text-dim)', opacity: 0.6 }}>• {f.brand}</div>}
           </div>
-          <div style={{ display: 'flex', gap: '10px', alignItems: 'center', marginTop: '8px', flexWrap: 'wrap' }}>
-            <div style={{ fontSize: '11px', color: 'var(--theme-text)', fontWeight: '700', display: 'flex', alignItems: 'center', gap: '6px' }}>
-              {f.serving}
-              <button 
-                onClick={(e) => { e.stopPropagation(); onEditPortion(); }} 
-                style={{ background: 'var(--theme-panel-dim)', border: '1px solid var(--theme-border)', color: 'var(--theme-accent)', cursor: 'pointer', display: 'flex', alignItems: 'center', padding: '4px 8px', borderRadius: '8px', marginLeft: '4px', boxShadow: '0 2px 5px rgba(0,0,0,0.2)' }}
-              >
-                <Scale size={14} />
-              </button>
-            </div>
-            <div style={{ width: '1px', height: '12px', background: 'rgba(255,255,255,0.1)' }} />
-            <div style={{ fontSize: '12px', color: 'var(--theme-accent)', fontWeight: '800' }}>{Math.round(f.calories || f.cal || 0)} kcal</div>
-            <div style={{ width: '1px', height: '12px', background: 'rgba(255,255,255,0.1)' }} />
-            <div style={{ display: 'flex', gap: '8px', fontSize: '11px', color: 'var(--theme-text-dim)', fontWeight: '700' }}>
-               <span><span style={{ color: 'var(--theme-error)' }}>P:</span>{f.p}g</span>
-               <span><span style={{ color: 'var(--theme-accent)' }}>C:</span>{f.c}g</span>
-               <span><span style={{ color: 'var(--theme-warning)' }}>F:</span>{f.f}g</span>
-            </div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            {isOpen ? <ChevronUp size={18} color="var(--theme-text-dim)" /> : <ChevronDown size={18} color="var(--theme-text-dim)" />}
+            <button 
+              onClick={(e) => { e.stopPropagation(); onRemove(); }} 
+              style={{ background: 'rgba(255,107,107,0.1)', border: 'none', color: '#FF6B6B', cursor: 'pointer', padding: '8px', borderRadius: '10px' }}
+            >
+              <Trash2 size={16} />
+            </button>
           </div>
         </div>
-        
-        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-          {isOpen ? <ChevronUp size={20} color="var(--theme-text-dim)" /> : <ChevronDown size={20} color="var(--theme-text-dim)" />}
+
+        {/* Macro Breakdown Grid — matches AddFoodModal staging card */}
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '6px', marginBottom: '12px', background: 'var(--theme-panel-dim)', border: '1px solid var(--theme-border)', padding: '10px', borderRadius: '16px' }}>
+          <div style={{ textAlign: 'center' }}>
+            <div style={{ fontSize: '9px', color: 'rgba(255,255,255,0.4)', fontWeight: '700' }}>KCAL</div>
+            <div style={{ fontSize: '14px', fontWeight: '900', color: 'var(--theme-text)' }}>{Math.round(f.calories || f.cal || 0)}</div>
+          </div>
+          <div style={{ textAlign: 'center' }}>
+            <div style={{ fontSize: '9px', color: 'rgba(255,255,255,0.4)', fontWeight: '700' }}>P</div>
+            <div style={{ fontSize: '14px', fontWeight: '900', color: 'var(--theme-error)' }}>{Number(f.p || 0).toFixed(1)}g</div>
+          </div>
+          <div style={{ textAlign: 'center' }}>
+            <div style={{ fontSize: '9px', color: 'rgba(255,255,255,0.4)', fontWeight: '700' }}>C</div>
+            <div style={{ fontSize: '14px', fontWeight: '900', color: 'var(--theme-accent)' }}>{Number(f.c || 0).toFixed(1)}g</div>
+          </div>
+          <div style={{ textAlign: 'center' }}>
+            <div style={{ fontSize: '9px', color: 'rgba(255,255,255,0.4)', fontWeight: '700' }}>F</div>
+            <div style={{ fontSize: '14px', fontWeight: '900', color: 'var(--theme-warning)' }}>{Number(f.f || 0).toFixed(1)}g</div>
+          </div>
+        </div>
+
+        {/* Serving + Portion Button */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+          <div style={{ fontSize: '12px', color: 'var(--theme-text)', fontWeight: '700' }}>{f.serving}</div>
           <button 
-            onClick={(e) => { e.stopPropagation(); onRemove(); }} 
-            style={{ background: 'rgba(255,107,107,0.1)', border: 'none', color: '#FF6B6B', cursor: 'pointer', padding: '8px', borderRadius: '10px' }}
+            onClick={(e) => { e.stopPropagation(); onEditPortion(); }} 
+            style={{ background: 'var(--theme-panel-dim)', border: '1px solid var(--theme-border)', color: 'var(--theme-accent)', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '4px', padding: '8px 14px', borderRadius: '12px', boxShadow: '0 2px 8px rgba(0,0,0,0.3)', fontSize: '11px', fontWeight: '800' }}
           >
-            <Trash2 size={16} />
+            <Scale size={16} /> ADJUST
           </button>
         </div>
       </div>
