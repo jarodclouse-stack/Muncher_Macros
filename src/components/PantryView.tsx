@@ -552,8 +552,13 @@ export const PantryView: React.FC = () => {
                           width: '100%',
                           boxSizing: 'border-box',
                           border: f._src === 'off' || innerGlobalSearchTab === 'scan' ? '2px solid var(--theme-accent)' : '1px solid rgba(255,255,255,0.08)',
-                          boxShadow: f._src === 'off' || innerGlobalSearchTab === 'scan' ? '0 0 15px var(--theme-accent-dim)' : 'none'
-                        }}>
+                          boxShadow: f._src === 'off' || innerGlobalSearchTab === 'scan' ? '0 0 15px var(--theme-accent-dim)' : 'none',
+                          '--theme-text': '#FFF', 
+                          '--theme-text-dim': 'rgba(255,255,255,0.6)',
+                          '--theme-panel-dim': 'rgba(255,255,255,0.05)',
+                          '--theme-border': 'rgba(255,255,255,0.1)',
+                          '--theme-input-bg': 'rgba(255,255,255,0.03)'
+                        } as React.CSSProperties}>
                           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px', gap: '10px', flexWrap: 'wrap' }}>
                             <input 
                               value={f.name} 
