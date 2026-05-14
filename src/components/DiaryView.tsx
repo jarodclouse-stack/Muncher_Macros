@@ -3,7 +3,7 @@ import { useDiary } from '../context/DiaryContext';
 import { sumFoods } from '../lib/food/serving-converter';
 import { computeGoals } from '../lib/goals/compute';
 import { Utensils, Trash2, Sparkles, Droplets, Minus, Plus, ChevronLeft, ChevronRight, ChevronDown, ChevronUp, Scale, Activity } from 'lucide-react';
-import { MEALS } from '../lib/constants';
+import { MEALS, ALL_MICRO_KEYS, MICRO_UNITS } from '../lib/constants';
 
 import { AddFoodModal } from './AddFoodModal';
 import { PortionEditModal } from './PortionEditModal';
@@ -353,6 +353,19 @@ const MacroCard = ({ label, value, total, color, icon }: any) => {
 
 const WeeklyReport = ({ localCache, currentDate, targetCal }: any) => {
   const [isOpen, setIsOpen] = useState(false);
+  const [showAllNutrients, setShowAllNutrients] = useState(false);
+
+  const initialNutrients = [
+    { k: 'Sodium', u: 'mg' },
+    { k: 'Potassium', u: 'mg' },
+    { k: 'Magnesium', u: 'mg' },
+    { k: 'Zinc', u: 'mg' },
+    { k: 'Vitamin C', u: 'mg' },
+    { k: 'Iron', u: 'mg' }
+  ];
+
+  const allNutrients = ALL_MICRO_KEYS.map(key => ({ k: key, u: MICRO_UNITS[key] || '' }));
+  const visibleNutrients = showAllNutrients ? allNutrients : initialNutrients;
   
   const days = useMemo(() => {
     const d = [];
@@ -454,24 +467,26 @@ const WeeklyReport = ({ localCache, currentDate, targetCal }: any) => {
 
           {/* New Weekly Nutrient Aggregates Section */}
           <div style={{ background: 'var(--theme-panel, rgba(255,255,255,0.02))', padding: '16px', borderRadius: '16px', border: '1px solid var(--theme-border, rgba(255,255,255,0.05))', marginBottom: '24px' }}>
-            <div style={{ fontSize: '10px', color: 'var(--theme-text-dim, #8b8b9b)', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '12px' }}>7-Day Nutrient Averages</div>
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '12px' }}>
-              {[
-                { k: 'Sodium', u: 'mg' },
-                { k: 'Potassium', u: 'mg' },
-                { k: 'Magnesium', u: 'mg' },
-                { k: 'Zinc', u: 'mg' },
-                { k: 'Vitamin C', u: 'mg' },
-                { k: 'Iron', u: 'mg' }
-              ].map(n => {
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
+              <div style={{ fontSize: '10px', color: 'var(--theme-text-dim, #8b8b9b)', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.05em' }}>7-Day Nutrient Averages</div>
+              <button 
+                onClick={() => setShowAllNutrients(!showAllNutrients)}
+                style={{ background: 'rgba(255,255,255,0.05)', border: 'none', color: 'var(--theme-accent)', fontSize: '9px', fontWeight: '800', padding: '4px 8px', borderRadius: '6px', cursor: 'pointer', textTransform: 'uppercase' }}
+              >
+                {showAllNutrients ? 'Show Less' : 'Show All'}
+              </button>
+            </div>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '12px 8px' }}>
+              {visibleNutrients.map(n => {
                 const total = loggedDays.reduce((sum, d) => {
                   const dayLog = localCache[d.dateKey]?.foodLog || [];
                   return sum + dayLog.reduce((acc: number, log: any) => acc + (log.f[n.k.toLowerCase()] || log.f[n.k] || 0), 0);
                 }, 0);
                 const avg = Math.round(total / loggedDays.length);
+                if (avg === 0 && !showAllNutrients) return null;
                 return (
                   <div key={n.k} style={{ textAlign: 'center' }}>
-                    <div style={{ fontSize: '9px', color: 'var(--theme-text-dim-on-panel)', marginBottom: '2px' }}>{n.k}</div>
+                    <div style={{ fontSize: '9px', color: 'var(--theme-text-dim-on-panel)', marginBottom: '2px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{n.k}</div>
                     <div style={{ fontSize: '12px', fontWeight: '800', color: 'var(--theme-text-on-panel)' }}>{avg}{n.u}</div>
                   </div>
                 );
@@ -502,7 +517,7 @@ const WeeklyReport = ({ localCache, currentDate, targetCal }: any) => {
 const WeeklyMacro = ({ label, val, color }: any) => (
   <div style={{ background: 'rgba(255,255,255,0.03)', padding: '10px 4px', borderRadius: '12px', textAlign: 'center', border: '1px solid rgba(255,255,255,0.05)' }}>
     <div style={{ fontSize: '9px', color: color, fontWeight: '800', marginBottom: '4px', textTransform: 'uppercase' }}>{label}</div>
-    <div style={{ fontSize: '14px', fontWeight: '900', color: 'var(--theme-text-on-panel)' }}>{Math.round(val)}g</div>
+    <div style={{ fontSize: '14px', fontWeight: '900', color: color }}>{Math.round(val)}g</div>
   </div>
 );
 
