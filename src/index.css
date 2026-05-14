@@ -1895,6 +1895,98 @@ body.theme-light-surface .reward-dismiss-btn:hover {
   background: rgba(0, 0, 0, 0.1) !important;
 }
 
+/* ===== GLOBAL LIGHT-THEME UI SYSTEM ===== */
+/* These rules fix ALL modals, cards, toggles, and buttons across the entire app
+   on light themes where dark-theme-only rgba(255,255,255,x) patterns wash out. */
+
+/* --- Global: Make all rgba(255,255,255) backgrounds visible on light themes --- */
+body.theme-light-surface [style*="rgba(255,255,255,0.0"],
+body.theme-light-surface [style*="rgba(255,255,255,0.1"] {
+  /* Handled per-element below for specificity */
+}
+
+/* --- Notification/Settings Toggle Switches --- */
+body.theme-light-surface div[style*="rgba(255,255,255,0.1)"][style*="border-radius: 12px"][style*="width: 42px"] {
+  background: rgba(0, 0, 0, 0.12) !important;
+}
+
+/* --- Section/Card panels inside modals --- */
+body.theme-light-surface .section[style*="var(--theme-panel)"] {
+  background: rgba(0, 0, 0, 0.03) !important;
+  border-color: rgba(0, 0, 0, 0.1) !important;
+}
+
+/* --- Theme picker cards: unselected borders --- */
+body.theme-light-surface div[style*="rgba(255,255,255,0.05)"][style*="border-radius"] {
+  border-color: rgba(0, 0, 0, 0.1) !important;
+}
+
+/* --- Color swatch borders in theme picker --- */
+body.theme-light-surface div[style*="rgba(255,255,255,0.15)"][style*="overflow: hidden"] {
+  border-color: rgba(0, 0, 0, 0.15) !important;
+}
+
+/* --- Tab/Pill segmented controls (VaultView, AddFoodModal) --- */
+body.theme-light-surface div[style*="rgba(255,255,255,0.03)"][style*="padding: 4px"] {
+  background: rgba(0, 0, 0, 0.04) !important;
+}
+
+/* --- All buttons with faint white backgrounds --- */
+body.theme-light-surface button[style*="rgba(255,255,255,0.05)"] {
+  background: rgba(0, 0, 0, 0.05) !important;
+  border-color: rgba(0, 0, 0, 0.1) !important;
+}
+
+/* --- All divs using faint white backgrounds (stat boxes, cards, panels) --- */
+body.theme-light-surface div[style*="background: rgba(255,255,255,0.05)"],
+body.theme-light-surface div[style*="background: rgba(255,255,255,0.03)"],
+body.theme-light-surface div[style*="background: rgba(255,255,255,0.02)"] {
+  background: rgba(0, 0, 0, 0.04) !important;
+}
+
+/* --- All faint white borders converted to visible dark borders --- */
+body.theme-light-surface div[style*="border: 1px solid rgba(255,255,255,0.1)"],
+body.theme-light-surface div[style*="border: 1px solid rgba(255,255,255,0.05)"] {
+  border-color: rgba(0, 0, 0, 0.1) !important;
+}
+
+/* --- Separator lines (borderTop/borderLeft using white alpha) --- */
+body.theme-light-surface div[style*="border-top: 1px solid rgba(255,255,255"],
+body.theme-light-surface div[style*="border-left: 1px solid rgba(255,255,255"] {
+  border-color: rgba(0, 0, 0, 0.1) !important;
+}
+
+/* --- Code blocks in modals --- */
+body.theme-light-surface code[style*="rgba(0,0,0,0.3)"] {
+  background: rgba(0, 0, 0, 0.08) !important;
+  color: var(--theme-text) !important;
+}
+
+/* --- Light green success text (#92FE9D) is invisible on light themes --- */
+body.theme-light-surface span[style*="color: #92FE9D"],
+body.theme-light-surface span[style*="color: rgb(146, 254, 157)"] {
+  color: color-mix(in srgb, var(--theme-accent) 65%, black) !important;
+}
+
+/* --- Progress bar tracks --- */
+body.theme-light-surface div[style*="rgba(255,255,255,0.08)"][style*="border-radius: 10px"] {
+  background: rgba(0, 0, 0, 0.08) !important;
+  border-color: rgba(0, 0, 0, 0.12) !important;
+}
+
+/* --- Close/dismiss buttons on modals --- */
+body.theme-light-surface button[style*="rgba(0,0,0,0.2)"][style*="border-radius: 50%"] {
+  background: rgba(0, 0, 0, 0.08) !important;
+  border: 1px solid rgba(0, 0, 0, 0.15) !important;
+}
+
+/* --- Macro bubbles and small info badges --- */
+body.theme-light-surface div[style*="rgba(255,255,255,0.02)"][style*="border-radius"] {
+  background: rgba(0, 0, 0, 0.03) !important;
+  border-color: rgba(0, 0, 0, 0.08) !important;
+}
+
+
 /* Force Progress page inputs to be white text on ALL themes */
 #page-progress .inp,
 #page-progress .inp:focus,
