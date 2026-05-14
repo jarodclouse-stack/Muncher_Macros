@@ -3,7 +3,7 @@ import { useDiary } from '../context/DiaryContext';
 import { 
   Plus, Check, X, Search, Sparkles, ChevronDown, 
   Flame, Activity, Trash2, Loader2, BookmarkCheck,
-  Info, FileText, Edit2
+  Info, FileText, Edit2, Camera
 } from 'lucide-react';
 import { ALL_MICRO_KEYS, MICRO_UNITS, SERVING_UNITS, MICRO_CATEGORIES } from '../lib/constants';
 import { getNutrientDescriptions } from '../lib/nutrient-info';
@@ -289,6 +289,37 @@ export const PantryView: React.FC = () => {
 
   const [aiStagedResults, setAiStagedResults] = useState<Food[]>([]);
   const [isAiReviewing, setIsAiReviewing] = useState(false);
+  
+  const [scanningIngredients, setScanningIngredients] = useState<number | null>(null);
+
+  const handleIngredientScan = async (e: React.ChangeEvent<HTMLInputElement>, index: number) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    
+    setScanningIngredients(index);
+    try {
+      const reader = new FileReader();
+      reader.onloadend = async () => {
+        const base64 = (reader.result as string).split(',')[1];
+        const res = await fetch('/api/ai-ingredients', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ base64, mediaType: file.type })
+        });
+        const data = await res.json();
+        if (data.ingredients) {
+          const next = [...aiStagedResults];
+          next[index] = { ...next[index], ingredients: data.ingredients };
+          setAiStagedResults(next);
+        }
+        setScanningIngredients(null);
+      };
+      reader.readAsDataURL(file);
+    } catch (err) {
+      console.error(err);
+      setScanningIngredients(null);
+    }
+  };
   const [isPantryPickerOpen, setIsPantryPickerOpen] = useState(false);
   
   const customFoods: Food[] = localCache.customFoods || [];
@@ -679,7 +710,7 @@ export const PantryView: React.FC = () => {
                           </button>
                         </div>
                         {f.ingredients !== undefined && (
-                          <div style={{ marginTop: '10px', animation: 'slideDown 0.2s ease-out' }}>
+                          <div style={{ marginTop: '10px', animation: 'slideDown 0.2s ease-out', position: 'relative' }}>
                             <textarea 
                               className="force-white-placeholder"
                               placeholder="Type ingredients here... (e.g. Water, Sugar, Salt)"
@@ -689,8 +720,27 @@ export const PantryView: React.FC = () => {
                                 next[i] = { ...f, ingredients: e.target.value };
                                 setAiStagedResults(next);
                               }}
-                              style={{ width: '100%', height: '60px', background: 'rgba(0,0,0,0.06)', border: '1px solid var(--theme-border)', borderRadius: '12px', color: 'var(--theme-text)', fontSize: '13px', padding: '12px', outline: 'none', fontWeight: '600', resize: 'none' }}
+                              style={{ width: '100%', height: '60px', background: 'rgba(0,0,0,0.06)', border: '1px solid var(--theme-border)', borderRadius: '12px', color: 'var(--theme-text)', fontSize: '13px', padding: '12px', paddingRight: '44px', outline: 'none', fontWeight: '600', resize: 'none' }}
                             />
+                            <input 
+                              type="file" 
+                              accept="image/*" 
+                              capture="environment" 
+                              id={`pantry-ing-cam-${i}`}
+                              style={{ display: 'none' }}
+                              onChange={(e) => handleIngredientScan(e, i)}
+                            />
+                            <label 
+                              htmlFor={`pantry-ing-cam-${i}`}
+                              style={{ 
+                                position: 'absolute', right: '10px', bottom: '10px', 
+                                background: 'var(--theme-accent)', color: '#000', 
+                                padding: '6px', borderRadius: '8px', cursor: 'pointer',
+                                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                                opacity: scanningIngredients === i ? 0.5 : 1
+                              }}>
+                              {scanningIngredients === i ? <Loader2 size={16} className="spin" /> : <Camera size={16} />}
+                            </label>
                           </div>
                         )}
                       </div>

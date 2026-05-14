@@ -6,7 +6,7 @@ import type { Food } from '../types/food';
 import { computeMultiplier, scaleLegacyFoodByAmount, sumFoods, normalizeFoodResult } from '../lib/food/serving-converter';
 import { 
   Search, Sparkles, Plus, Check, 
-  X, Loader2, Info, FileText, Trash2
+  X, Loader2, Info, FileText, Trash2, Camera
 } from 'lucide-react';
 import { BarcodeScanner } from './BarcodeScanner';
 import { SearchCoaster, type SearchTab } from './SearchCoaster';
@@ -31,6 +31,37 @@ export const AddFoodModal: React.FC<AddFoodModalProps> = ({ meal, onClose }) => 
   const [results, setResults] = useState<Food[]>([]);
   const [searching, setSearching] = useState<boolean>(false);
   const [errorMsg, setErrorMsg] = useState('');
+  
+  const [scanningIngredients, setScanningIngredients] = useState<number | null>(null);
+
+  const handleIngredientScan = async (e: React.ChangeEvent<HTMLInputElement>, index: number) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    
+    setScanningIngredients(index);
+    try {
+      const reader = new FileReader();
+      reader.onloadend = async () => {
+        const base64 = (reader.result as string).split(',')[1];
+        const res = await fetch('/api/ai-ingredients', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ base64, mediaType: file.type })
+        });
+        const data = await res.json();
+        if (data.ingredients) {
+          const next = [...aiStagedResults];
+          next[index] = { ...next[index], ingredients: data.ingredients };
+          setAiStagedResults(next);
+        }
+        setScanningIngredients(null);
+      };
+      reader.readAsDataURL(file);
+    } catch (err) {
+      console.error(err);
+      setScanningIngredients(null);
+    }
+  };
   
   const [aiStagedResults, setAiStagedResults] = useState<(Food & { stagedQty?: string; stagedUnit?: string; showNutrientIntel?: boolean })[]>([]);
   const [isAiReviewing, setIsAiReviewing] = useState(false);
@@ -595,7 +626,7 @@ export const AddFoodModal: React.FC<AddFoodModalProps> = ({ meal, onClose }) => 
                           </button>
                         </div>
                         {f.ingredients !== undefined && (
-                          <div style={{ marginTop: '10px', animation: 'slideDown 0.2s ease-out' }}>
+                          <div style={{ marginTop: '10px', animation: 'slideDown 0.2s ease-out', position: 'relative' }}>
                             <textarea 
                               className="force-white-placeholder"
                               placeholder="Type ingredients here... (e.g. Water, Sugar, Salt)"
@@ -605,8 +636,27 @@ export const AddFoodModal: React.FC<AddFoodModalProps> = ({ meal, onClose }) => 
                                 next[i] = { ...f, ingredients: e.target.value };
                                 setAiStagedResults(next);
                               }}
-                              style={{ width: '100%', height: '60px', background: 'rgba(0,0,0,0.06)', border: '1px solid var(--theme-border)', borderRadius: '12px', color: 'var(--theme-text)', fontSize: '13px', padding: '12px', outline: 'none', fontWeight: '600', resize: 'none' }}
+                              style={{ width: '100%', height: '60px', background: 'rgba(0,0,0,0.06)', border: '1px solid var(--theme-border)', borderRadius: '12px', color: 'var(--theme-text)', fontSize: '13px', padding: '12px', paddingRight: '44px', outline: 'none', fontWeight: '600', resize: 'none' }}
                             />
+                            <input 
+                              type="file" 
+                              accept="image/*" 
+                              capture="environment" 
+                              id={`ing-cam-${i}`}
+                              style={{ display: 'none' }}
+                              onChange={(e) => handleIngredientScan(e, i)}
+                            />
+                            <label 
+                              htmlFor={`ing-cam-${i}`}
+                              style={{ 
+                                position: 'absolute', right: '10px', bottom: '10px', 
+                                background: 'var(--theme-accent)', color: '#000', 
+                                padding: '6px', borderRadius: '8px', cursor: 'pointer',
+                                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                                opacity: scanningIngredients === i ? 0.5 : 1
+                              }}>
+                              {scanningIngredients === i ? <Loader2 size={16} className="spin" /> : <Camera size={16} />}
+                            </label>
                           </div>
                         )}
                       </div>
