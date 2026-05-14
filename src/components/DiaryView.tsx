@@ -483,7 +483,11 @@ const WeeklyReport = ({ localCache, currentDate, targetCal }: any) => {
                   return sum + dayLog.reduce((acc: number, log: any) => acc + (log.f[n.k.toLowerCase()] || log.f[n.k] || 0), 0);
                 }, 0);
                 const avg = Math.round(total / loggedDays.length);
-                if (avg === 0 && !showAllNutrients) return null;
+                
+                // Only hide non-essential nutrients that are 0 when expanded
+                const isInitial = initialNutrients.some(init => init.k === n.k);
+                if (avg === 0 && !isInitial) return null;
+
                 return (
                   <div key={n.k} style={{ textAlign: 'center' }}>
                     <div style={{ fontSize: '9px', color: 'var(--theme-text-dim-on-panel)', marginBottom: '2px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{n.k}</div>
