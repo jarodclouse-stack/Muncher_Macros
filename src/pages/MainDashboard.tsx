@@ -36,7 +36,7 @@ export const MainDashboard: React.FC = () => {
           top: 0, 
           zIndex: 10 
         }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '12px', cursor: 'pointer' }} onClick={() => setShowSettingsModal(true)}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
             <div>
               <h1 style={{ fontFamily: "'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Inter', sans-serif", fontSize: '10px', fontWeight: '800', margin: 0, display: 'flex', alignItems: 'center', gap: '6px', textTransform: 'uppercase', letterSpacing: '2px', textShadow: '0 0 10px rgba(0,201,255,0.2)' }}>
                 {activeTab === 'diary' && <Utensils size={12} color="var(--theme-accent)" />}
