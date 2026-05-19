@@ -23,8 +23,7 @@ export const MainDashboard: React.FC = () => {
   return (
     <div style={{ background: 'transparent', minHeight: '100vh', width: '100%', display: 'flex', flexDirection: 'column', color: 'var(--theme-text, #f1f1f1)', fontFamily: 'Inter, sans-serif' }}>
       {/* Topbar */}
-      {true && (
-        <header style={{ 
+      <header style={{ 
           display: 'flex', 
           justifyContent: 'space-between', 
           alignItems: 'center', 
@@ -76,7 +75,6 @@ export const MainDashboard: React.FC = () => {
             </div>
           </div>
         </header>
-      )}
 
       {/* Main Content Area */}
       <main className="app-container" style={{ 
