@@ -33,8 +33,8 @@ module.exports = async function handler(req, res) {
   const query = (body.query || '').trim();
   if (!query) return res.status(400).json({ error: 'Missing query' });
 
-  const strippedQuery = query.replace(/[\\s-]/g, '');
-  const isBarcode = /^\\d+$/.test(strippedQuery);
+  const strippedQuery = query.replace(/[\s-]/g, '');
+  const isBarcode = /^\d+$/.test(strippedQuery);
 
   let productsToProcess = [];
 

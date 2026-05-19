@@ -30,3 +30,28 @@ dist-ssr
 .env.development.local
 .env.test.local
 .env.production.local
+
+# === Boost OS (managed by boostmyagent CLI) ===
+/AGENTS.md
+/.agents/skills/.boostmyagent-install.json
+/.agents/memory/
+/.agents/references/
+/.agents/skills/audit/
+/.agents/skills/cost/
+/.agents/skills/design/
+/.agents/skills/explain/
+/.agents/skills/forget/
+/.agents/skills/health/
+/.agents/skills/new/
+/.agents/skills/next/
+/.agents/skills/os/
+/.agents/skills/preflight/
+/.agents/skills/recall/
+/.agents/skills/remember/
+/.agents/skills/security/
+/.agents/skills/spawn/
+/.agents/skills/sync/
+/.agents/skills/uninstall/
+/.agents/skills/update/
+/.agents/skills/vibe/
+# === End Boost OS ===

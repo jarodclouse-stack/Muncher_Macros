@@ -1,9 +1,10 @@
 import https from 'https';
 
-// THE SYNC: Using the specific aliases verified in ai-describe.js
 const MODELS = [
-  'claude-sonnet-4-6',           // Primary (3.5 Sonnet alias)
-  'claude-haiku-4-5-20251001',   // ✅ FIXED: was 20241001
+  'claude-sonnet-4-6',
+  'claude-haiku-4-5-20251001',
+  'claude-haiku-4-5-20241022',
+  'claude-haiku-4-5-20241001',
 ];
 
 async function anthropicRequest(prompt, apiKey, modelIndex = 0) {

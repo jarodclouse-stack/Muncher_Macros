@@ -28,7 +28,9 @@ function extractJSON(text) {
 
 const MODELS = [
   'claude-sonnet-4-6',
+  'claude-haiku-4-5-20251001',
   'claude-haiku-4-5-20241022',
+  'claude-haiku-4-5-20241001',
 ];
 
 import https from 'https';

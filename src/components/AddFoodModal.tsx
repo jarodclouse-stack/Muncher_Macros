@@ -140,8 +140,8 @@ export const AddFoodModal: React.FC<AddFoodModalProps> = ({ meal, onClose }) => 
     setSearching(true);
     setErrorMsg('');
     try {
-      const strippedQuery = cleanQuery.replace(/[\\s-]/g, '');
-      const isBarcode = /^\\d{6,}$/.test(strippedQuery);
+      const strippedQuery = cleanQuery.replace(/[\s-]/g, '');
+      const isBarcode = /^\d{6,}$/.test(strippedQuery);
       const endpoint = isBarcode ? '/api/off-search' : '/api/ai-lookup';
       
       const res = await fetch(endpoint, {
@@ -153,7 +153,11 @@ export const AddFoodModal: React.FC<AddFoodModalProps> = ({ meal, onClose }) => 
       const body = await res.json();
       const detected = body.foods || [];
       if (detected.length === 0) {
-        setErrorMsg("No AI results found. Try being more specific.");
+        if (isBarcode) {
+          setErrorMsg(`Barcode "${strippedQuery}" was decoded successfully but could not be found in our database or Open Food Facts. Please try searching by name or enter nutrients manually.`);
+        } else {
+          setErrorMsg("No AI results found. Try being more specific.");
+        }
       } else {
         setAiStagedResults(detected.map((f: Food) => {
           const norm = normalizeFoodResult(f);
