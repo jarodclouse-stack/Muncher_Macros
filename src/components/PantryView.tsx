@@ -143,6 +143,9 @@ export const PantryView: React.FC = () => {
   const [innerGlobalSearchTab, setInnerGlobalSearchTab] = useState<SearchTab>('search');
   const [hasSearched, setHasSearched] = useState(false);
 
+  const searchCache = React.useRef<Record<string, Food[]>>({});
+  const aiSearchCache = React.useRef<Record<string, Food[]>>({});
+
   const clearSearchState = () => {
     setSearchResults([]);
     setSearchQuery('');
@@ -150,14 +153,24 @@ export const PantryView: React.FC = () => {
     setHasSearched(false);
   };
 
-
-
   const handleIngSearch = async (e?: React.FormEvent, forcedQuery?: string) => {
     if (e) e.preventDefault();
-    const q = forcedQuery || ingQuery;
+    const q = (forcedQuery || ingQuery).trim();
     if (!q) return;
     setIsIngSearching(true);
     const localMatches = customFoods.filter((f: Food) => f.name.toLowerCase().includes(q.toLowerCase())).map((f: Food) => ({ ...f, isLocal: true }));
+    
+    // 1. Immediately render local matches synchronously
+    setIngResults(localMatches.slice(0, 30));
+
+    // 2. Check in-memory query cache
+    if (searchCache.current[q.toLowerCase()]) {
+      const cached = searchCache.current[q.toLowerCase()];
+      setIngResults([...localMatches, ...cached].slice(0, 30));
+      setIsIngSearching(false);
+      return;
+    }
+
     try {
       const res = await fetch('/api/off-search', {
         method: 'POST',
@@ -167,10 +180,16 @@ export const PantryView: React.FC = () => {
       if (res.ok) {
         const body = await res.json();
         const globalRes = (body.foods || body.results || []).map(normalizeFoodResult);
+        
+        // Cache the global results
+        searchCache.current[q.toLowerCase()] = globalRes;
+        
         const combined = [...localMatches, ...globalRes];
-        setIngResults(combined.slice(0, 30)); // Capped for ingredient dropdown performance
-      } else setIngResults(localMatches.slice(0, 30));
-    } catch { setIngResults(localMatches.slice(0, 30)); }
+        setIngResults(combined.slice(0, 30));
+      }
+    } catch {
+      // Keep displaying the immediate local matches
+    }
     setIsIngSearching(false);
   };
 
@@ -250,7 +269,7 @@ export const PantryView: React.FC = () => {
 
   const handleGlobalSearch = async (e?: React.FormEvent, forcedQuery?: string) => {
     if (e) e.preventDefault();
-    const q = forcedQuery !== undefined ? forcedQuery : searchQuery;
+    const q = (forcedQuery !== undefined ? forcedQuery : searchQuery).trim();
     if (!q) return;
     setIsSearching(true);
     setErrorMsg('');
@@ -258,6 +277,18 @@ export const PantryView: React.FC = () => {
     const localMatches = customFoods.filter((f: Food) => 
       f.name.toLowerCase().includes(q.toLowerCase())
     ).map((f: Food) => ({ ...f, isLocal: true }));
+
+    // 1. Immediately render local custom matches so the UI updates instantaneously!
+    setSearchResults(localMatches.slice(0, 50));
+    setHasSearched(true);
+
+    // 2. Check if we already have the global query in our in-memory cache
+    if (searchCache.current[q.toLowerCase()]) {
+      const cachedGlobal = searchCache.current[q.toLowerCase()];
+      setSearchResults([...localMatches, ...cachedGlobal].slice(0, 50));
+      setIsSearching(false);
+      return;
+    }
 
     try {
       const res = await fetch('/api/off-search', {
@@ -268,7 +299,10 @@ export const PantryView: React.FC = () => {
       if (res.ok) {
         const body = await res.json();
         const globalRes = (body.foods || body.results || []).map(normalizeFoodResult);
-        // Cap results at 50 for performance
+        
+        // Cache the global results for this query
+        searchCache.current[q.toLowerCase()] = globalRes;
+        
         setSearchResults([...localMatches, ...globalRes].slice(0, 50));
       } else {
         setSearchResults(localMatches.slice(0, 50));
@@ -277,27 +311,53 @@ export const PantryView: React.FC = () => {
       setSearchResults(localMatches.slice(0, 50));
     }
     setIsSearching(false);
-    setHasSearched(true);
   };
 
   const handleGlobalAISearch = async (e?: React.SyntheticEvent) => {
     if (e && e.preventDefault) e.preventDefault();
-    if (!searchQuery) return;
+    const q = searchQuery.trim();
+    if (!q) return;
     setIsSearching(true);
+    setErrorMsg('');
+
+    const localMatches = customFoods.filter((f: Food) => 
+      f.name.toLowerCase().includes(q.toLowerCase())
+    ).map((f: Food) => ({ ...f, isLocal: true }));
+
+    // 1. Instantly display local custom matches
+    setSearchResults(localMatches.slice(0, 50));
+    setHasSearched(true);
+
+    // 2. Check if query is in cache
+    if (aiSearchCache.current[q.toLowerCase()]) {
+      const cachedAi = aiSearchCache.current[q.toLowerCase()];
+      setSearchResults([...localMatches, ...cachedAi].slice(0, 50));
+      setIsSearching(false);
+      return;
+    }
+
     try {
       const res = await fetch('/api/ai-lookup', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ query: searchQuery })
+        body: JSON.stringify({ query: q })
       });
-      const body = await res.json();
-      const detected = (body.foods || []) as Food[];
-      setSearchResults(detected.map(normalizeFoodResult));
+      if (res.ok) {
+        const body = await res.json();
+        const detected = (body.foods || []) as Food[];
+        const normalized = detected.map(normalizeFoodResult);
+        
+        // Cache the AI results
+        aiSearchCache.current[q.toLowerCase()] = normalized;
+        
+        setSearchResults([...localMatches, ...normalized].slice(0, 50));
+      } else {
+        setErrorMsg("AI Lookup failed.");
+      }
     } catch {
       setErrorMsg("AI Lookup failed.");
     }
     setIsSearching(false);
-    setHasSearched(true);
   };
 
   const handleGlobalAIDescribe = async (e?: React.SyntheticEvent) => {

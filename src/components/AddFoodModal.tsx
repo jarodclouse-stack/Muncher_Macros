@@ -31,6 +31,9 @@ export const AddFoodModal: React.FC<AddFoodModalProps> = ({ meal, onClose }) => 
   const [results, setResults] = useState<Food[]>([]);
   const [searching, setSearching] = useState<boolean>(false);
   const [errorMsg, setErrorMsg] = useState('');
+
+  const barcodeCache = React.useRef<Record<string, Food[]>>({});
+  const aiSearchCache = React.useRef<Record<string, Food[]>>({});
   
   const [scanningIngredients, setScanningIngredients] = useState<number | null>(null);
 
@@ -65,6 +68,7 @@ export const AddFoodModal: React.FC<AddFoodModalProps> = ({ meal, onClose }) => 
   
   const [aiStagedResults, setAiStagedResults] = useState<(Food & { stagedQty?: string; stagedUnit?: string; showNutrientIntel?: boolean })[]>([]);
   const [isAiReviewing, setIsAiReviewing] = useState(false);
+
 
 
 
@@ -143,6 +147,24 @@ export const AddFoodModal: React.FC<AddFoodModalProps> = ({ meal, onClose }) => 
       const strippedQuery = cleanQuery.replace(/[\s-]/g, '');
       const isBarcode = /^\d{6,}$/.test(strippedQuery);
       const endpoint = isBarcode ? '/api/off-search' : '/api/ai-lookup';
+      const cacheKey = isBarcode ? strippedQuery : cleanQuery.toLowerCase();
+      const activeCache = isBarcode ? barcodeCache.current : aiSearchCache.current;
+
+      // Check cache first
+      if (activeCache[cacheKey]) {
+        const detected = activeCache[cacheKey];
+        setAiStagedResults(detected.map((f: Food) => {
+          const norm = normalizeFoodResult(f);
+          return { 
+            ...norm, 
+            stagedQty: norm.sQty?.toString() || '1', 
+            stagedUnit: norm.sUnit || 'serving' 
+          };
+        }));
+        setIsAiReviewing(true);
+        setSearching(false);
+        return;
+      }
       
       const res = await fetch(endpoint, {
         method: 'POST',
@@ -159,6 +181,8 @@ export const AddFoodModal: React.FC<AddFoodModalProps> = ({ meal, onClose }) => 
           setErrorMsg("No AI results found. Try being more specific.");
         }
       } else {
+        // Cache the successful lookup results
+        activeCache[cacheKey] = detected;
         setAiStagedResults(detected.map((f: Food) => {
           const norm = normalizeFoodResult(f);
           return { 
