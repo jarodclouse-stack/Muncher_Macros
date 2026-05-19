@@ -50,9 +50,10 @@ export const LoginScreen: React.FC = () => {
         
         {/* Legacy Logo Header */}
         <div style={{ textAlign: 'center', marginBottom: '24px' }}>
-          <div style={{ width: '110px', height: '110px', margin: '0 auto 16px', borderRadius: '24px', overflow: 'hidden', boxShadow: '0 4px 20px rgba(0,0,0,0.4)', border: '2px solid rgba(255,255,255,0.1)' }}>
-            <img src={legacyLogo} alt="Macro Munchers" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+          <div style={{ width: '110px', height: '110px', margin: '0 auto 16px', borderRadius: '24px', overflow: 'hidden', boxShadow: '0 8px 32px rgba(0,0,0,0.4)', border: '2px solid rgba(255,255,255,0.15)', background: '#ffffff', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '8px' }}>
+            <img src={legacyLogo} alt="Macro Munchers" style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
           </div>
+
           <h1 style={{ fontSize: '24px', fontWeight: '800', margin: '0 0 4px 0', background: 'linear-gradient(90deg, #fff 0%, #a0a0b0 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>Macro Munchers</h1>
           <p style={{ color: '#8b8b9b', fontSize: '13px', margin: 0 }}>Sign in to continue</p>
         </div>

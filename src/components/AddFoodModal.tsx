@@ -565,19 +565,8 @@ export const AddFoodModal: React.FC<AddFoodModalProps> = ({ meal, onClose }) => 
                     }}
                   />
                   <button 
-                    type="button" 
+                    type="submit" 
                     disabled={searching}
-                    onClick={(e) => {
-                      e.preventDefault();
-                      const customFoods: Food[] = localCache.customFoods || [];
-                      let localMatches = customFoods.map((f, idx) => ({ ...f, isLocal: true, localIdx: idx }));
-                      if (highProteinOnly) {
-                        localMatches = localMatches.filter(f => (Number(f.p) || 0) >= 20);
-                      }
-                      setResults(localMatches);
-                      setQuery('');
-                      setErrorMsg('');
-                    }}
                     style={{ 
                       position: 'absolute', 
                       left: '16px', 

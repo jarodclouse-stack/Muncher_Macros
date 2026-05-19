@@ -663,7 +663,7 @@ export const PantryView: React.FC = () => {
                       fontSize: innerGlobalSearchTab === 'search' ? '14px' : '13px',
                       textTransform: 'lowercase'
                     }}>
-                    {isSearching ? <Loader2 className="spin" size={20} /> : (innerGlobalSearchTab === 'search' ? <Search size={20} /> : 'pantry')}
+                    {isSearching ? <Loader2 className="spin" size={20} /> : <Search size={20} />}
                   </button>
                 </form>
             </div>
