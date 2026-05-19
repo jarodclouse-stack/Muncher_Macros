@@ -1633,6 +1633,9 @@ nav.glass-nav{
 
   body.theme-light-surface {
     --theme-success: color-mix(in srgb, #92FE9D 60%, var(--theme-text)) !important;
+    --theme-panel: rgba(255, 255, 255, 0.82) !important;
+    --theme-panel-base: rgba(255, 255, 255, 0.9) !important;
+    --theme-panel-dim: rgba(255, 255, 255, 0.6) !important;
   }
 
   /* Dark-surface text contrast fix */
