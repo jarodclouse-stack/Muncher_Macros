@@ -22,7 +22,7 @@ export const MainDashboard: React.FC = () => {
   return (
     <div style={{ background: 'transparent', minHeight: '100vh', width: '100%', display: 'flex', flexDirection: 'column', color: 'var(--theme-text, #f1f1f1)', fontFamily: 'Inter, sans-serif' }}>
       {/* Topbar */}
-      {!isScannerActive && (
+      {true && (
         <header style={{ 
           display: 'flex', 
           justifyContent: 'space-between', 
@@ -80,7 +80,7 @@ export const MainDashboard: React.FC = () => {
 
       {/* Main Content Area */}
       <main className="app-container" style={{ 
-        paddingTop: isScannerActive ? '0' : (activeTab === 'pantry' ? '0' : 'var(--space-xl)'), 
+        paddingTop: activeTab === 'pantry' ? '0' : 'var(--space-xl)', 
         paddingBottom: isScannerActive ? '0' : 'calc(58px + max(0px, env(safe-area-inset-bottom) - 15px))',
         background: 'transparent'
       }}>
