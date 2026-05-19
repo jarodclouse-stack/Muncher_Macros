@@ -1633,9 +1633,11 @@ nav.glass-nav{
 
   body.theme-light-surface {
     --theme-success: color-mix(in srgb, #92FE9D 60%, var(--theme-text)) !important;
-    --theme-panel: rgba(255, 255, 255, 0.82) !important;
-    --theme-panel-base: rgba(255, 255, 255, 0.9) !important;
-    --theme-panel-dim: rgba(255, 255, 255, 0.6) !important;
+    --theme-panel: color-mix(in srgb, var(--theme-text) 5%, rgba(255, 255, 255, 0.95)) !important;
+    --theme-panel-base: color-mix(in srgb, var(--theme-text) 7%, rgba(255, 255, 255, 0.97)) !important;
+    --theme-panel-dim: color-mix(in srgb, var(--theme-text) 3%, rgba(255, 255, 255, 0.90)) !important;
+    --theme-border: color-mix(in srgb, var(--theme-text) 22%, transparent) !important;
+    --theme-input-bg: color-mix(in srgb, var(--theme-text) 2%, rgba(255, 255, 255, 0.98)) !important;
   }
 
   /* Dark-surface text contrast fix */
