@@ -638,7 +638,7 @@ export const PantryView: React.FC = () => {
                   <div style={{ position: 'relative', flex: 1 }}>
                     <input 
                       type="text" 
-                      placeholder={innerGlobalSearchTab === 'search' ? "Search for foods, brands..." : "Explain food (AI search)..."}
+                      placeholder={innerGlobalSearchTab === 'search' ? "Search for foods, brands..." : "explain food"}
                       value={searchQuery}
                       onChange={(e) => { setSearchQuery(e.target.value); setHasSearched(false); }}
                       style={{ width: '100%', background: 'var(--theme-input-bg)', border: '1px solid var(--theme-border)', borderRadius: 'var(--radius-md)', padding: '12px 12px 12px 40px', color: 'var(--theme-text)', fontSize: '14px', outline: 'none' }}
@@ -649,8 +649,21 @@ export const PantryView: React.FC = () => {
                   </div>
                   <button 
                     type="submit"
-                    style={{ padding: '12px var(--space-lg)', background: 'var(--theme-accent)', border: 'none', borderRadius: 'var(--radius-md)', color: 'var(--theme-bg)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                    {isSearching ? <Loader2 className="spin" size={20} /> : (innerGlobalSearchTab === 'search' ? <Search size={20} /> : <Sparkles size={20} />)}
+                    style={{ 
+                      padding: innerGlobalSearchTab === 'search' ? '12px var(--space-lg)' : '12px 24px', 
+                      background: 'var(--theme-accent)', 
+                      border: 'none', 
+                      borderRadius: 'var(--radius-md)', 
+                      color: 'var(--theme-bg)', 
+                      cursor: 'pointer', 
+                      display: 'flex', 
+                      alignItems: 'center', 
+                      justifyContent: 'center',
+                      fontWeight: '900',
+                      fontSize: innerGlobalSearchTab === 'search' ? '14px' : '13px',
+                      textTransform: 'lowercase'
+                    }}>
+                    {isSearching ? <Loader2 className="spin" size={20} /> : (innerGlobalSearchTab === 'search' ? <Search size={20} /> : 'pantry')}
                   </button>
                 </form>
             </div>

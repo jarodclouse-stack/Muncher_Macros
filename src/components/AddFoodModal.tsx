@@ -530,7 +530,7 @@ export const AddFoodModal: React.FC<AddFoodModalProps> = ({ meal, onClose }) => 
                   </style>
                   <input 
                     className="ai-search-input-black"
-                    placeholder="Search foods or Ask AI (e.g. '1/2 cup of blueberries')"
+                    placeholder="explain food"
                     value={query}
                     onChange={(e) => {
                       const val = e.target.value;
@@ -564,9 +564,9 @@ export const AddFoodModal: React.FC<AddFoodModalProps> = ({ meal, onClose }) => 
                       boxShadow: 'inset 0 2px 4px rgba(0,0,0,0.05)'
                     }}
                   />
-                  <button type="submit" disabled={searching} style={{ position: 'absolute', left: '16px', top: '50%', transform: 'translateY(-50%)', color: 'var(--theme-accent)', background: 'transparent', border: 'none', cursor: 'pointer', padding: 0, display: 'flex', alignItems: 'center' }}>
-                    {searching ? <Loader2 className="spin" size={20} /> : <Search size={20} />}
-                  </button>
+                  <div style={{ position: 'absolute', left: '16px', top: '50%', transform: 'translateY(-50%)', color: 'var(--theme-accent)', display: 'flex', alignItems: 'center' }}>
+                    <Search size={20} />
+                  </div>
                   
                   {/* High-Fidelity Loading Progress Bar */}
                   {searching && (
@@ -592,6 +592,28 @@ export const AddFoodModal: React.FC<AddFoodModalProps> = ({ meal, onClose }) => 
                     </div>
                   )}
                 </div>
+
+                <button 
+                  type="submit" 
+                  disabled={searching} 
+                  style={{ 
+                    padding: '0 24px', 
+                    background: 'var(--theme-accent)', 
+                    border: 'none', 
+                    borderRadius: '18px', 
+                    color: 'var(--theme-bg)', 
+                    fontWeight: '900', 
+                    fontSize: '13px', 
+                    textTransform: 'lowercase', 
+                    cursor: 'pointer', 
+                    display: 'flex', 
+                    alignItems: 'center', 
+                    justifyContent: 'center',
+                    minHeight: '52px'
+                  }}
+                >
+                  {searching ? <Loader2 className="spin" size={20} /> : 'pantry'}
+                </button>
               </form>
 
               {/* High Protein Filter Toggle */}
