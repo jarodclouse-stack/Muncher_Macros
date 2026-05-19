@@ -75,7 +75,7 @@ export const AddFoodModal: React.FC<AddFoodModalProps> = ({ meal, onClose }) => 
   
   const [mealDesc, setMealDesc] = useState('');
   const [targetMeal, setTargetMeal] = useState(meal);
-  const [highProteinOnly] = useState(false);
+  const [highProteinOnly, setHighProteinOnly] = useState(false);
   const [configuringFood, setConfiguringFood] = useState<Food | null>(null);
   const [editName, setEditName] = useState('');
   const [saveToPantry, setSaveToPantry] = useState(false);
@@ -250,7 +250,6 @@ export const AddFoodModal: React.FC<AddFoodModalProps> = ({ meal, onClose }) => 
       background: 'var(--theme-bg)', 
       overflowY: 'auto' 
     }}>
-      <div style={{ position: 'fixed', bottom: '10px', right: '10px', fontSize: '9px', color: 'var(--theme-text-dim)', opacity: 0.2, pointerEvents: 'none', zIndex: 9999 }}>v2.7-GLASSMORPHIC</div>
       
       {/* Header */}
       <div style={{ width: '100%', maxWidth: '600px', padding: '24px 20px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
@@ -279,7 +278,7 @@ export const AddFoodModal: React.FC<AddFoodModalProps> = ({ meal, onClose }) => 
           }} 
         />
 
-        {/* SYNC TEST v2.5 */}
+
         <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
           <div style={{ color: 'var(--theme-error)', fontSize: '12px', marginBottom: '8px', textAlign: 'center' }}>{errorMsg}</div>
           
@@ -371,6 +370,43 @@ export const AddFoodModal: React.FC<AddFoodModalProps> = ({ meal, onClose }) => 
                 </div>
               </form>
 
+              {/* High Protein Filter Toggle */}
+              <div style={{ display: 'flex', justifyContent: 'flex-start', padding: '0 4px', marginTop: '-4px', marginBottom: '4px' }}>
+                <button
+                  type="button"
+                  onClick={() => {
+                    const nextVal = !highProteinOnly;
+                    setHighProteinOnly(nextVal);
+                    if (query.trim()) {
+                      const customFoods: Food[] = localCache.customFoods || [];
+                      let localMatches = customFoods.filter(f => 
+                        f.name.toLowerCase().includes(query.toLowerCase())
+                      ).map((f, idx) => ({ ...f, isLocal: true, localIdx: idx }));
+                      if (nextVal) {
+                        localMatches = localMatches.filter(f => (Number(f.p) || 0) >= 20);
+                      }
+                      setResults(localMatches);
+                    }
+                  }}
+                  style={{
+                    background: highProteinOnly ? 'rgba(146, 254, 157, 0.12)' : 'var(--theme-panel-dim, rgba(255,255,255,0.04))',
+                    border: highProteinOnly ? '1px solid var(--theme-success, #92FE9D)' : '1px solid var(--theme-border, rgba(255,255,255,0.08))',
+                    borderRadius: '12px',
+                    padding: '6px 12px',
+                    color: highProteinOnly ? 'var(--theme-success, #92FE9D)' : 'var(--theme-text-dim)',
+                    fontSize: '11px',
+                    fontWeight: '800',
+                    cursor: 'pointer',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '6px',
+                    transition: 'all 0.2s ease'
+                  }}
+                >
+                  <Sparkles size={12} color={highProteinOnly ? 'var(--theme-success)' : 'var(--theme-text-dim)'} />
+                  HIGH PROTEIN ONLY (≥20g)
+                </button>
+              </div>
 
               {results.length > 0 && !isAiReviewing && (
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-xs)', maxHeight: '400px', overflowY: 'auto', paddingRight: '4px' }}>
@@ -506,7 +542,6 @@ export const AddFoodModal: React.FC<AddFoodModalProps> = ({ meal, onClose }) => 
                     <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                       <Sparkles size={18} color="var(--theme-accent)" />
                       <span style={{ fontSize: '15px', fontWeight: '800' }}>REVIEW DETECTED MEAL</span>
-                      <span style={{ fontSize: '9px', color: 'var(--theme-text-dim)', opacity: 0.5, background: 'var(--theme-panel-dim)', padding: '2px 6px', borderRadius: '6px' }}>v2.2-QTY-FORCE</span>
                     </div>
                     </div>
                     <button onClick={() => { setIsAiReviewing(false); setAiStagedResults([]); }} style={{ background: 'var(--theme-panel-dim)', border: '1px solid var(--theme-border)', color: 'var(--theme-text-dim)', borderRadius: '12px', padding: '6px 12px', cursor: 'pointer', fontSize: '11px', fontWeight: '800' }}>DISMISS</button>
