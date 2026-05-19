@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import ReactDOM from 'react-dom';
 import { useDiary } from '../context/DiaryContext';
 import { SERVING_UNITS } from '../lib/constants';
@@ -35,7 +35,9 @@ export const AddFoodModal: React.FC<AddFoodModalProps> = ({ meal, onClose }) => 
   const barcodeCache = React.useRef<Record<string, Food[]>>({});
   const aiSearchCache = React.useRef<Record<string, Food[]>>({});
   const searchCache = React.useRef<Record<string, Food[]>>({});
-  
+
+
+
   const [scanningIngredients, setScanningIngredients] = useState<number | null>(null);
 
   const handleIngredientScan = async (e: React.ChangeEvent<HTMLInputElement>, index: number) => {
@@ -84,6 +86,18 @@ export const AddFoodModal: React.FC<AddFoodModalProps> = ({ meal, onClose }) => 
   const [servingQty, setServingQty] = useState('1');
   const [servingUnit, setServingUnit] = useState('serving');
   const [notification, setNotification] = useState<string | null>(null);
+
+  // Auto-load pantry foods when Search tab is active (or pantry changes)
+  useEffect(() => {
+    if (activeTab === 'search' && !query.trim()) {
+      const customFoods: Food[] = localCache.customFoods || [];
+      let pantryItems = customFoods.map((f, idx) => ({ ...f, isLocal: true, localIdx: idx }));
+      if (highProteinOnly) {
+        pantryItems = pantryItems.filter(f => (Number(f.p) || 0) >= 20);
+      }
+      setResults(pantryItems);
+    }
+  }, [activeTab, localCache.customFoods, highProteinOnly]);
 
   const showNotification = (msg: string) => {
     setNotification(msg);
@@ -387,27 +401,28 @@ export const AddFoodModal: React.FC<AddFoodModalProps> = ({ meal, onClose }) => 
                   </style>
                   <input 
                     className="ai-search-input-black"
-                    placeholder="Search foods by name or brand..."
+                    placeholder="Filter pantry or search new foods..."
                     value={query}
                     onChange={(e) => {
                       const val = e.target.value;
                       setQuery(val);
                       if (errorMsg) setErrorMsg('');
                       
+                      const customFoods: Food[] = localCache.customFoods || [];
+                      let pantryItems = customFoods.map((f, idx) => ({ ...f, isLocal: true, localIdx: idx }));
+                      if (highProteinOnly) {
+                        pantryItems = pantryItems.filter(f => (Number(f.p) || 0) >= 20);
+                      }
                       if (val.trim()) {
-                        const customFoods: Food[] = localCache.customFoods || [];
-                        let localMatches = customFoods.filter(f => 
+                        // Filter pantry by query
+                        setResults(pantryItems.filter(f =>
                           f.name.toLowerCase().includes(val.toLowerCase())
-                        ).map((f, idx) => ({ ...f, isLocal: true, localIdx: idx }));
-                        if (highProteinOnly) {
-                          localMatches = localMatches.filter(f => (Number(f.p) || 0) >= 20);
-                        }
-                        setResults(localMatches);
+                        ));
                       } else {
-                        setResults([]);
+                        // Empty query → show all pantry foods
+                        setResults(pantryItems);
                       }
                     }}
-
                     style={{ 
                       width: '100%', 
                       padding: 'var(--space-md) var(--space-md) var(--space-md) 44px', 
@@ -458,15 +473,15 @@ export const AddFoodModal: React.FC<AddFoodModalProps> = ({ meal, onClose }) => 
                   onClick={() => {
                     const nextVal = !highProteinOnly;
                     setHighProteinOnly(nextVal);
+                    const customFoods: Food[] = localCache.customFoods || [];
+                    let pantryItems = customFoods.map((f, idx) => ({ ...f, isLocal: true, localIdx: idx }));
+                    if (nextVal) {
+                      pantryItems = pantryItems.filter(f => (Number(f.p) || 0) >= 20);
+                    }
                     if (query.trim()) {
-                      const customFoods: Food[] = localCache.customFoods || [];
-                      let localMatches = customFoods.filter(f => 
-                        f.name.toLowerCase().includes(query.toLowerCase())
-                      ).map((f, idx) => ({ ...f, isLocal: true, localIdx: idx }));
-                      if (nextVal) {
-                        localMatches = localMatches.filter(f => (Number(f.p) || 0) >= 20);
-                      }
-                      setResults(localMatches);
+                      setResults(pantryItems.filter(f => f.name.toLowerCase().includes(query.toLowerCase())));
+                    } else {
+                      setResults(pantryItems);
                     }
                   }}
                   style={{
@@ -488,6 +503,37 @@ export const AddFoodModal: React.FC<AddFoodModalProps> = ({ meal, onClose }) => 
                   HIGH PROTEIN ONLY (≥20g)
                 </button>
               </div>
+
+              {/* Pantry Section Header */}
+              {!isAiReviewing && (
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '0 2px' }}>
+                  <div style={{ fontSize: '10px', fontWeight: '900', color: 'var(--theme-accent)', textTransform: 'uppercase', letterSpacing: '2px' }}>
+                    🥡 MY PANTRY
+                  </div>
+                  <div style={{ flex: 1, height: '1px', background: 'rgba(255,255,255,0.06)' }} />
+                  <div style={{ fontSize: '10px', color: 'var(--theme-text-dim)', fontWeight: '700' }}>
+                    {results.filter(f => (f as any).isLocal).length} saved
+                  </div>
+                </div>
+              )}
+
+              {!isAiReviewing && results.length === 0 && (
+                <div style={{ 
+                  textAlign: 'center', 
+                  padding: '32px 20px',
+                  color: 'var(--theme-text-dim)',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: 'center',
+                  gap: '10px'
+                }}>
+                  <div style={{ fontSize: '32px' }}>🥡</div>
+                  <div style={{ fontSize: '13px', fontWeight: '800', color: 'var(--theme-text)' }}>Your pantry is empty</div>
+                  <div style={{ fontSize: '11px', lineHeight: '1.5', maxWidth: '220px' }}>
+                    Save foods from the <span style={{ color: 'var(--theme-accent)', fontWeight: '800' }}>Ask AI</span> or <span style={{ color: 'var(--theme-accent)', fontWeight: '800' }}>Scan</span> tabs to build your pantry. Tap the search icon to look up new foods.
+                  </div>
+                </div>
+              )}
 
               {results.length > 0 && !isAiReviewing && (
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-xs)', maxHeight: '400px', overflowY: 'auto', paddingRight: '4px' }}>
