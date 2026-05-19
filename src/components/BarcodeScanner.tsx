@@ -1,5 +1,5 @@
 import React, { useRef, useState } from 'react';
-import { Loader2, AlertCircle, ArrowRight, FileText, Barcode, Search } from 'lucide-react';
+import { Loader2, AlertCircle, ArrowRight, FileText, Barcode, Search, Clipboard } from 'lucide-react';
 import { useDiary } from '../context/DiaryContext';
 import { scanBarcode, extractBarcodeDigits, scanNutritionLabel } from '../lib/vision/scanner-logic';
 import { ImageCropperModal } from './ImageCropperModal';
@@ -92,6 +92,21 @@ export const BarcodeScanner: React.FC<BarcodeScannerProps> = ({
     }
   };
 
+  const handlePasteClipboard = async () => {
+    try {
+      const text = await navigator.clipboard.readText();
+      const cleanDigits = text.replace(/[^\d]/g, '');
+      if (cleanDigits.length >= 5) {
+        setManualCode(cleanDigits);
+        setError(null);
+      } else {
+        setError("Clipboard did not contain a valid barcode (must be at least 5 digits).");
+      }
+    } catch (err) {
+      setError("Unable to read clipboard automatically. Please long-press and paste into the input box instead!");
+    }
+  };
+
   const handleManualSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (manualCode.length >= 5) {
@@ -128,6 +143,48 @@ export const BarcodeScanner: React.FC<BarcodeScannerProps> = ({
               onClick={() => { setScanType('barcode'); triggerNativePicker(); }} 
             />
           </div>
+
+          <div style={{ display: 'flex', alignItems: 'center', gap: '12px', margin: '16px 0 8px 0' }}>
+            <div style={{ flex: 1, height: '1px', background: 'rgba(255,255,255,0.1)' }}></div>
+            <div style={{ fontSize: '10px', fontWeight: '800', color: 'var(--theme-text-dim)', textTransform: 'uppercase', letterSpacing: '1px' }}>Or Enter Barcode Manually</div>
+            <div style={{ flex: 1, height: '1px', background: 'rgba(255,255,255,0.1)' }}></div>
+          </div>
+
+          {error && (
+            <div style={{ padding: '10px 14px', borderRadius: '12px', background: 'rgba(255,107,107,0.1)', border: '1px solid rgba(255,107,107,0.2)', color: '#FF6B6B', fontSize: '11px', fontWeight: '600', display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <AlertCircle size={14} /> {error}
+            </div>
+          )}
+
+          <form onSubmit={handleManualSubmit} style={{ display: 'flex', gap: '8px', width: '100%' }}>
+            <div style={{ flex: 1, position: 'relative', display: 'flex', alignItems: 'center' }}>
+              <input 
+                type="text" placeholder="Enter barcode number..."
+                value={manualCode}
+                onChange={e => setManualCode(e.target.value.replace(/\D/g, ''))}
+                style={{ width: '100%', padding: '14px 75px 14px 14px', background: 'var(--theme-input-bg)', border: '1px solid var(--theme-border)', borderRadius: '16px', color: 'var(--theme-text)', fontSize: '13px', fontWeight: '600', outline: 'none' }}
+              />
+              <button 
+                type="button"
+                onClick={handlePasteClipboard}
+                style={{ position: 'absolute', right: '12px', padding: '6px 10px', background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '10px', color: 'var(--theme-accent)', fontSize: '9px', fontWeight: '950', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '4px', textTransform: 'uppercase' }}
+              >
+                <Clipboard size={10} /> Paste
+              </button>
+            </div>
+            <button 
+              type="submit" 
+              disabled={manualCode.length < 5}
+              style={{ 
+                padding: '12px 20px', background: manualCode.length >= 5 ? 'var(--theme-accent)' : 'var(--theme-panel-dim)', 
+                borderRadius: '16px', border: 'none', color: '#000',
+                transition: 'all 0.2s', cursor: manualCode.length >= 5 ? 'pointer' : 'not-allowed',
+                opacity: manualCode.length >= 5 ? 1 : 0.5
+              }}
+            >
+              <ArrowRight size={22} strokeWidth={3} />
+            </button>
+          </form>
         </div>
       )}
 
@@ -171,14 +228,20 @@ export const BarcodeScanner: React.FC<BarcodeScannerProps> = ({
             {scanType !== 'nutrition' && (
               <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
                 <form onSubmit={handleManualSubmit} style={{ display: 'flex', gap: '8px', marginTop: '4px' }}>
-                  <div style={{ flex: 1, position: 'relative' }}>
+                  <div style={{ flex: 1, position: 'relative', display: 'flex', alignItems: 'center' }}>
                     <input 
                       type="text" placeholder="Enter barcode manually..."
                       value={manualCode}
                       onChange={e => setManualCode(e.target.value.replace(/\D/g, ''))}
-                      style={{ width: '100%', padding: '14px', background: 'var(--theme-input-bg)', border: '1px solid var(--theme-border)', borderRadius: '16px', color: 'var(--theme-text)', fontSize: '14px', outline: 'none' }}
+                      style={{ width: '100%', padding: '14px 75px 14px 14px', background: 'var(--theme-input-bg)', border: '1px solid var(--theme-border)', borderRadius: '16px', color: 'var(--theme-text)', fontSize: '13px', fontWeight: '600', outline: 'none' }}
                     />
-                    <Barcode size={16} style={{ position: 'absolute', right: '14px', top: '50%', transform: 'translateY(-50%)', opacity: 0.3 }} />
+                    <button 
+                      type="button"
+                      onClick={handlePasteClipboard}
+                      style={{ position: 'absolute', right: '12px', padding: '6px 10px', background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '10px', color: 'var(--theme-accent)', fontSize: '9px', fontWeight: '950', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '4px', textTransform: 'uppercase' }}
+                    >
+                      <Clipboard size={10} /> Paste
+                    </button>
                   </div>
                   <button 
                     type="submit" 
@@ -232,6 +295,7 @@ export const BarcodeScanner: React.FC<BarcodeScannerProps> = ({
       {status === 'cropping' && pendingImage && (
         <ImageCropperModal 
           image={pendingImage}
+          scanType={scanType}
           onCropComplete={processImage}
           onCancel={() => {
             setStatus('idle');

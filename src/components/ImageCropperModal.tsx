@@ -6,15 +6,16 @@ interface ImageCropperModalProps {
   image: string;
   onCropComplete: (croppedImage: Blob) => void;
   onCancel: () => void;
+  scanType?: 'nutrition' | 'barcode' | null;
 }
 
-export const ImageCropperModal: React.FC<ImageCropperModalProps> = ({ image, onCropComplete, onCancel }) => {
+export const ImageCropperModal: React.FC<ImageCropperModalProps> = ({ image, onCropComplete, onCancel, scanType }) => {
   const [crop, setCrop] = useState({ x: 0, y: 0 });
   const [zoom, setZoom] = useState(1);
   const [croppedAreaPixels, setCroppedAreaPixels] = useState<Area | null>(null);
-  const [cropSize, setCropSize] = useState({ width: 250, height: 250 });
+  const [cropSize, setCropSize] = useState({ width: 300, height: 100 });
 
-  const [aspect, setAspect] = useState<number | undefined>(1);
+  const [aspect, setAspect] = useState<number | undefined>(scanType === 'barcode' ? 3 : 1);
 
   const onCropChange = useCallback((c: { x: number, y: number }) => setCrop(c), []);
   const onZoomChange = useCallback((z: number) => setZoom(z), []);
@@ -120,29 +121,45 @@ export const ImageCropperModal: React.FC<ImageCropperModalProps> = ({ image, onC
       <div style={{
         padding: '30px', background: 'rgba(0,0,0,0.9)', display: 'flex', flexDirection: 'column', gap: '20px'
       }}>
-        <div style={{ display: 'flex', justifyContent: 'center', gap: '8px' }}>
+        <div style={{ display: 'flex', justifyContent: 'center', gap: '6px', flexWrap: 'wrap' }}>
+          <button 
+            onClick={() => setAspect(3)}
+            style={{ 
+              flex: 1, padding: '10px 4px', borderRadius: '12px', fontSize: '10px', fontWeight: '800', cursor: 'pointer',
+              background: aspect === 3 ? 'var(--theme-accent)' : 'rgba(255,255,255,0.05)',
+              border: aspect === 3 ? 'none' : '1px solid rgba(255,255,255,0.1)',
+              color: aspect === 3 ? '#000' : '#fff',
+              transition: 'all 0.2s',
+              minWidth: '90px',
+              textAlign: 'center'
+            }}>
+            BARCODE (WIDE)
+          </button>
           <button 
             onClick={() => setAspect(1)}
             style={{ 
-              flex: 1, padding: '10px', borderRadius: '12px', fontSize: '11px', fontWeight: '800', cursor: 'pointer',
+              flex: 1, padding: '10px 4px', borderRadius: '12px', fontSize: '10px', fontWeight: '800', cursor: 'pointer',
               background: aspect === 1 ? 'var(--theme-accent)' : 'rgba(255,255,255,0.05)',
               border: aspect === 1 ? 'none' : '1px solid rgba(255,255,255,0.1)',
               color: aspect === 1 ? '#000' : '#fff',
-              transition: 'all 0.2s'
+              transition: 'all 0.2s',
+              minWidth: '90px',
+              textAlign: 'center'
             }}>
             SQUARE (LABEL)
           </button>
           <button 
             onClick={() => setAspect(undefined)}
             style={{ 
-              flex: 1.2, padding: '10px', borderRadius: '12px', fontSize: '11px', fontWeight: '800', cursor: 'pointer',
+              flex: 1, padding: '10px 4px', borderRadius: '12px', fontSize: '10px', fontWeight: '800', cursor: 'pointer',
               background: aspect === undefined ? 'var(--theme-accent)' : 'rgba(255,255,255,0.05)',
               border: aspect === undefined ? 'none' : '1px solid rgba(255,255,255,0.1)',
               color: aspect === undefined ? '#000' : '#fff',
               transition: 'all 0.2s',
+              minWidth: '90px',
               textAlign: 'center'
             }}>
-            FREEFORM (ANY SHAPE)
+            FREEFORM
           </button>
           
           <button 
