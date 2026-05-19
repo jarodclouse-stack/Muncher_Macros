@@ -2499,6 +2499,11 @@ body .luminous-absolute-white * {
   opacity: 1 !important;
 }
 
+body.theme-light-surface .luminous-absolute-white,
+body.theme-light-surface .luminous-absolute-white * {
+  color: var(--theme-text) !important;
+}
+
 /* ====== ISOLATED FIX FOR AI REVIEW DETECTED MEAL ====== */
 /* The user requested that the text inside the "Review Detected Meal" bubbles 
    must be purely white, identical to the AI Meal Intelligence feature. 
@@ -2530,4 +2535,102 @@ body.theme-light-surface .ai-staged-food-card div[style*="var(--theme-error)"] {
 }
 body.theme-light-surface .ai-staged-food-card div[style*="var(--theme-warning)"] {
   color: var(--theme-warning) !important;
+}
+
+/* ====== PREMIUM LIGHT THEME BUBBLE CONTRAST SYSTEM ====== */
+/* Ensures category chips, tabs, micro-bubbles, and labels in all light-themed surfaces
+   have beautiful, high-contrast, tactile backgrounds that stand out cleanly from the page background. */
+body.theme-light-surface .pantry-filter-chip {
+  background: rgba(30, 40, 60, 0.06) !important;
+  border-color: rgba(30, 40, 60, 0.12) !important;
+  color: var(--theme-text) !important;
+  box-shadow: 
+    inset 0 1px 0 rgba(255, 255, 255, 0.5),
+    0 2px 6px rgba(0, 0, 0, 0.05) !important;
+}
+
+body.theme-light-surface .pantry-filter-chip:hover {
+  background: rgba(30, 40, 60, 0.1) !important;
+}
+
+body.theme-light-surface .pantry-filter-chip.active {
+  background: var(--theme-accent) !important;
+  border-color: var(--theme-accent) !important;
+  color: #FFFFFF !important;
+  box-shadow: 
+    0 4px 12px var(--theme-accent-dim) !important;
+}
+
+/* Inactive Search Coaster Tab Buttons */
+body.theme-light-surface .search-coaster-tab-btn {
+  background: rgba(30, 40, 60, 0.06) !important;
+  border-color: rgba(30, 40, 60, 0.1) !important;
+  color: var(--theme-text-dim) !important;
+  box-shadow: 
+    inset 0 1px 0 rgba(255, 255, 255, 0.5),
+    0 4px 10px rgba(0, 0, 0, 0.04) !important;
+}
+
+body.theme-light-surface .search-coaster-tab-btn:hover {
+  background: rgba(30, 40, 60, 0.1) !important;
+}
+
+body.theme-light-surface .search-coaster-tab-btn.active {
+  background: var(--theme-accent-dim) !important;
+  border-color: var(--theme-accent) !important;
+  color: var(--theme-accent) !important;
+  box-shadow: 
+    0 6px 15px var(--theme-accent-dim) !important;
+}
+
+/* Nutrient label bubbles in Pantry lists */
+body.theme-light-surface .nutrient-label-bubble {
+  background: rgba(30, 40, 60, 0.07) !important;
+  border-color: rgba(30, 40, 60, 0.14) !important;
+  color: var(--theme-text) !important;
+}
+
+/* Micro-bubbles inside nutrition facts display */
+body.theme-light-surface .micro-bubble {
+  background: rgba(30, 40, 60, 0.07) !important;
+  border-color: rgba(30, 40, 60, 0.14) !important;
+  color: var(--theme-accent) !important;
+}
+
+/* Quick Stats Breakdown Rows */
+body.theme-light-surface .quick-stats-bubble-row {
+  background: rgba(30, 40, 60, 0.04) !important;
+  border-color: rgba(30, 40, 60, 0.1) !important;
+}
+
+body.theme-light-surface .quick-stats-bubble-row div div:first-child {
+  color: var(--theme-text-dim) !important;
+}
+
+/* Pantry Main Switcher Tabs (Discover / My Pantry) - Retaining original look */
+.pantry-main-tab {
+  background: rgba(255,255,255,0.03);
+  border: 1px solid var(--theme-border, rgba(255,255,255,0.08));
+  box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+.pantry-main-tab:active { transform: scale(0.96); }
+
+.pantry-main-tab.active {
+  background: var(--theme-accent-dim, rgba(255,255,255,0.1)) !important;
+  border-color: var(--theme-accent, rgba(255,255,255,0.3)) !important;
+  color: #FFF !important;
+  box-shadow: 
+    0 8px 25px var(--theme-accent-dim, rgba(0,201,255,0.25)),
+    0 0 15px var(--theme-accent-dim, rgba(0,201,255,0.15)) !important;
+  transform: translateY(-2px);
+}
+
+body.theme-light-surface .pantry-main-tab.active {
+  color: var(--theme-text, #001114) !important;
+  font-weight: 900 !important;
+  box-shadow: 
+    0 10px 28px var(--theme-accent-dim, rgba(0,0,0,0.2)),
+    0 0 20px var(--theme-accent-dim, rgba(0,0,0,0.1)) !important;
 }

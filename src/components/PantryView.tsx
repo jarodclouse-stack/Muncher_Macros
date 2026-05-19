@@ -64,7 +64,7 @@ const NutrientDetailRow = ({ label, value, unit, benefit }: { label: string, val
     <div style={{ padding: '6px 12px', background: 'var(--theme-panel-dim)', borderRadius: '12px', border: '1px solid var(--theme-border)', marginBottom: '6px' }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-          <span style={{ 
+          <span className="nutrient-label-bubble" style={{ 
             fontSize: '10px', 
             fontWeight: '900', 
             color: 'var(--theme-text)', 
@@ -391,12 +391,12 @@ export const PantryView: React.FC = () => {
           borderBottom: '1px solid var(--theme-border)'
         }}>
         <button onClick={() => { setActiveTab('search'); clearSearchState(); }} 
-          className={`pantry-filter-chip ${activeTab === 'search' ? 'active' : ''}`}
+          className={`pantry-main-tab ${activeTab === 'search' ? 'active' : ''}`}
           style={{ padding: '12px 4px', borderRadius: '14px', border: 'none', color: activeTab === 'search' ? 'var(--theme-accent)' : 'var(--theme-text-dim)', fontWeight: '800', fontSize: '11px', textTransform: 'uppercase', cursor: 'pointer', textAlign: 'center' }}>
           Discover
         </button>
         <button onClick={() => setActiveTab('saved')} 
-          className={`pantry-filter-chip ${activeTab === 'saved' ? 'active' : ''}`}
+          className={`pantry-main-tab ${activeTab === 'saved' ? 'active' : ''}`}
           style={{ padding: '12px 4px', borderRadius: '14px', border: 'none', color: activeTab === 'saved' ? 'var(--theme-accent)' : 'var(--theme-text-dim)', fontWeight: '800', fontSize: '11px', textTransform: 'uppercase', cursor: 'pointer', textAlign: 'center' }}>
           My Pantry
         </button>
@@ -643,7 +643,7 @@ export const PantryView: React.FC = () => {
                           </div>
 
                           {/* Quick Stats Row - Distinguishing Bubble */}
-                          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '6px', marginBottom: '12px', background: 'var(--theme-panel-dim)', border: '1px solid var(--theme-border)', padding: '10px', borderRadius: '16px' }}>
+                          <div className="quick-stats-bubble-row" style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '6px', marginBottom: '12px', background: 'var(--theme-panel-dim)', border: '1px solid var(--theme-border)', padding: '10px', borderRadius: '16px' }}>
                             <div style={{ textAlign: 'center' }}><div style={{ fontSize: '8px', color: 'var(--theme-text-dim)', fontWeight: '700' }}>KCAL</div><div style={{ fontSize: '11px', fontWeight: '900', color: 'var(--theme-text)' }}>{Math.round((Number(f.cal) || 0) * multiplier)}</div></div>
                             <div style={{ textAlign: 'center' }}><div style={{ fontSize: '8px', color: 'var(--theme-text-dim)', fontWeight: '700' }}>P</div><div style={{ fontSize: '11px', fontWeight: '900', color: 'var(--theme-error)' }}>{((Number(f.p) || 0) * multiplier).toFixed(1)}g</div></div>
                             <div style={{ textAlign: 'center' }}><div style={{ fontSize: '8px', color: 'var(--theme-text-dim)', fontWeight: '700' }}>C</div><div style={{ fontSize: '11px', fontWeight: '900', color: 'var(--theme-accent)' }}>{((Number(f.c) || 0) * multiplier).toFixed(1)}g</div></div>

@@ -522,7 +522,7 @@ export const AddFoodModal: React.FC<AddFoodModalProps> = ({ meal, onClose }) => 
                         </div>
 
                         {/* Nutritional Breakdown Inline - Distinguishing Bubble */}
-                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '6px', marginBottom: '12px', background: 'var(--theme-panel-dim)', border: '1px solid var(--theme-border)', padding: '10px', borderRadius: '16px' }}>
+                        <div className="quick-stats-bubble-row" style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '6px', marginBottom: '12px', background: 'var(--theme-panel-dim)', border: '1px solid var(--theme-border)', padding: '10px', borderRadius: '16px' }}>
                           {(() => {
                             const currentQty = parseFloat(f.stagedQty || '') || 0;
                             const mult = computeMultiplier(f.serving || '100g', f.stagedUnit || '', currentQty);

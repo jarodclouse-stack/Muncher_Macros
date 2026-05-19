@@ -112,6 +112,7 @@ const TabBtn: React.FC<TabBtnProps> = ({ active, onClick, icon, label }) => {
   return (
     <button
       onClick={onClick}
+      className={`search-coaster-tab-btn ${active ? 'active' : ''}`}
       style={{
         flex: 1,
         display: 'flex',
@@ -120,11 +121,11 @@ const TabBtn: React.FC<TabBtnProps> = ({ active, onClick, icon, label }) => {
         justifyContent: 'center',
         gap: '4px',
         padding: '10px 0',
-        background: active ? 'rgba(0, 201, 255, 0.1)' : 'rgba(255, 255, 255, 0.03)',
+        background: active ? 'var(--theme-accent-dim, rgba(0, 201, 255, 0.1))' : 'var(--theme-panel, rgba(255, 255, 255, 0.03))',
         border: '1px solid',
-        borderColor: active ? 'var(--theme-accent, #00C9FF)' : 'rgba(255,255,255,0.08)',
+        borderColor: active ? 'var(--theme-accent, #00C9FF)' : 'var(--theme-border, rgba(255,255,255,0.08))',
         borderRadius: '18px',
-        color: active ? 'var(--theme-accent, #00C9FF)' : 'rgba(255,255,255,0.6)',
+        color: active ? 'var(--theme-accent, #00C9FF)' : 'var(--theme-text-dim, rgba(255,255,255,0.6))',
         cursor: 'pointer',
         transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
         boxShadow: active 
@@ -137,7 +138,7 @@ const TabBtn: React.FC<TabBtnProps> = ({ active, onClick, icon, label }) => {
       <div style={{ transform: active ? 'scale(1.1)' : 'scale(1)', transition: 'transform 0.2s', filter: active ? 'drop-shadow(0 0 8px var(--theme-accent))' : 'none' }}>
         {icon}
       </div>
-      <span style={{ fontSize: '10px', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.05em', color: active ? 'var(--theme-accent)' : '#fff' }}>
+      <span style={{ fontSize: '10px', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.05em', color: active ? 'var(--theme-accent, #00C9FF)' : 'var(--theme-text-dim, rgba(255,255,255,0.6))' }}>
         {label}
       </span>
     </button>

@@ -247,7 +247,7 @@ const DiaryEntryItem = ({ log, onRemove, onEditPortion, onMove }: any) => {
         </div>
 
         {/* Macro Breakdown Grid — matches AddFoodModal staging card */}
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '6px', marginBottom: '12px', background: 'var(--theme-panel-dim)', border: '1px solid var(--theme-border)', padding: '10px', borderRadius: '16px' }}>
+        <div className="quick-stats-bubble-row" style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '6px', marginBottom: '12px', background: 'var(--theme-panel-dim)', border: '1px solid var(--theme-border)', padding: '10px', borderRadius: '16px' }}>
           <div style={{ textAlign: 'center' }}>
             <div style={{ fontSize: '9px', color: 'rgba(255,255,255,0.4)', fontWeight: '700' }}>KCAL</div>
             <div style={{ fontSize: '14px', fontWeight: '900', color: 'var(--theme-text)' }}>{Math.round(f.calories || f.cal || 0)}</div>
