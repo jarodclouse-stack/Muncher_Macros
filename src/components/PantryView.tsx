@@ -109,10 +109,28 @@ const EntryField = ({ label, value, onChange, placeholder }: { label: string, va
   </div>
 );
 
+const getSmartDefaultMeal = (): string => {
+  const hour = new Date().getHours();
+  if (hour >= 5 && hour < 11) return 'Breakfast';
+  if (hour >= 11 && hour < 16) return 'Lunch';
+  if (hour >= 16 && hour < 22) return 'Dinner';
+  return 'Snacks';
+};
+
 export const PantryView: React.FC = () => {
   const { 
     localCache, saveCustomFood, addFoodLog, updateCustomFood, deleteCustomFood
   } = useDiary();
+  
+  const [targetMeal, setTargetMeal] = useState<string>(getSmartDefaultMeal());
+  const [notification, setNotification] = useState<string | null>(null);
+
+  const showNotification = (msg: string) => {
+    setNotification(msg);
+    setTimeout(() => {
+      setNotification(null);
+    }, 3000);
+  };
   
   const [form, setForm] = useState<Food>({ 
     name: '', 
@@ -433,6 +451,49 @@ export const PantryView: React.FC = () => {
 
   return (
     <div style={{ paddingBottom: '40px', width: '100%', maxWidth: '100vw', overflowX: 'hidden', boxSizing: 'border-box' }}>
+      
+      {/* Premium glassmorphic toast notification */}
+      {notification && (
+        <div style={{
+          position: 'fixed',
+          top: '24px',
+          left: '50%',
+          transform: 'translateX(-50%)',
+          zIndex: 9999,
+          padding: '14px 24px',
+          background: 'linear-gradient(135deg, rgba(146, 254, 157, 0.95) 0%, rgba(0, 201, 255, 0.95) 100%)',
+          border: '1px solid rgba(255,255,255,0.2)',
+          borderRadius: '18px',
+          boxShadow: '0 15px 35px rgba(0, 201, 255, 0.3)',
+          color: '#03080c',
+          fontWeight: '900',
+          fontSize: '13px',
+          letterSpacing: '0.5px',
+          display: 'flex',
+          alignItems: 'center',
+          gap: '8px',
+          backdropFilter: 'blur(12px)',
+          WebkitBackdropFilter: 'blur(12px)',
+          animation: 'slideDownFade 0.3s cubic-bezier(0.16, 1, 0.3, 1)'
+        }}>
+          <Check size={16} strokeWidth={3} />
+          <span>{notification}</span>
+        </div>
+      )}
+
+      {/* Styled slideDownFade keyframe */}
+      <style>{`
+        @keyframes slideDownFade {
+          from {
+            transform: translate(-50%, -20px);
+            opacity: 0;
+          }
+          to {
+            transform: translate(-50%, 0);
+            opacity: 1;
+          }
+        }
+      `}</style>
       
       {/* Tab Switcher */}
       <div 
@@ -848,35 +909,128 @@ export const PantryView: React.FC = () => {
                     <Plus size={18} /> ADD INGREDIENT
                   </button>
 
-                  <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+                  {/* Assign to Meal Selector for AI Review */}
+                  <div style={{ marginBottom: '20px', background: 'rgba(255,255,255,0.03)', padding: '16px', borderRadius: '18px', border: '1px solid var(--theme-border)' }}>
+                    <label style={{ fontSize: '10px', fontWeight: '800', color: 'var(--theme-accent)', display: 'block', marginBottom: '8px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Log Entire Meal To</label>
+                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '8px' }}>
+                      {['Breakfast', 'Lunch', 'Dinner', 'Snacks'].map(m => (
+                        <button
+                          key={m}
+                          type="button"
+                          onClick={() => setTargetMeal(m)}
+                          style={{
+                            padding: '10px 4px',
+                            borderRadius: '12px',
+                            border: '1px solid',
+                            borderColor: targetMeal === m ? 'var(--theme-accent, #00C9FF)' : 'var(--theme-border, rgba(255,255,255,0.08))',
+                            background: targetMeal === m ? 'var(--theme-accent-dim, rgba(0, 201, 255, 0.1))' : 'rgba(255,255,255,0.03)',
+                            color: targetMeal === m ? 'var(--theme-accent, #00C9FF)' : 'var(--theme-text-dim)',
+                            fontSize: '11px',
+                            fontWeight: '800',
+                            cursor: 'pointer',
+                            transition: 'all 0.2s'
+                          }}
+                        >
+                          {m}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', width: '100%' }}>
                     <button 
                       onClick={() => {
                         aiStagedResults.forEach(f => {
                           const mult = computeMultiplier(f.serving || '', f.stagedUnit || 'serving', parseFloat(String(f.stagedQty)) || 1);
                           const scaled = scaleLegacyFoodByAmount(f, mult);
-                          addFoodLog('Breakfast', scaled);
+                          addFoodLog(targetMeal, scaled);
                         });
                         setIsAiReviewing(false);
                         setAiStagedResults([]);
-                        alert("Meal logged to Breakfast!");
+                        showNotification(`Entire meal logged to ${targetMeal}!`);
                       }}
-                      style={{ flex: 1, minWidth: '140px', padding: '14px', background: 'var(--theme-accent)', border: 'none', borderRadius: '16px', color: 'var(--theme-bg)', fontWeight: '900', fontSize: '12px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px', boxShadow: '0 4px 15px var(--theme-accent-dim)' }}>
-                      <Check size={18} /> CONFIRM ALL
+                      style={{ width: '100%', padding: '14px', background: 'var(--theme-accent)', border: 'none', borderRadius: '16px', color: 'var(--theme-bg)', fontWeight: '900', fontSize: '13px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', boxShadow: '0 4px 15px var(--theme-accent-dim)' }}>
+                      <Check size={18} /> CONFIRM ALL TO DIARY
                     </button>
-                    <button 
-                      onClick={() => {
-                        aiStagedResults.forEach(f => {
-                          const mult = computeMultiplier(f.serving || '', f.stagedUnit || 'serving', parseFloat(String(f.stagedQty)) || 1);
-                          const scaled = scaleLegacyFoodByAmount(f, mult);
-                          saveCustomFood(scaled);
-                        });
-                        setIsAiReviewing(false);
-                        setAiStagedResults([]);
-                        alert("Items saved to Pantry!");
-                      }}
-                      style={{ flex: 1, minWidth: '140px', padding: '14px', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '16px', color: 'var(--theme-text-on-panel)', fontWeight: '900', fontSize: '12px', cursor: 'pointer' }}>
-                      SAVE TO PANTRY
-                    </button>
+                    
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px', width: '100%' }}>
+                      <button 
+                        onClick={() => {
+                          const mealName = prompt("Name this meal?", "AI Detected Meal") || "AI Detected Meal";
+                          const recipeItems: RecipeItem[] = aiStagedResults.map(f => ({
+                            food: f,
+                            qty: String(f.stagedQty || '1'),
+                            unit: f.stagedUnit || 'serving'
+                          }));
+
+                          const totals: Record<string, number> = { cal: 0, p: 0, c: 0, f: 0 };
+                          const keysToSum = ['cal', 'p', 'c', 'f', 'fiber', 'sugars', 'sat', 'mono', 'poly', 'trans', 'chol', 'Sodium', 'Potassium', 'Calcium', 'Magnesium'];
+
+                          recipeItems.forEach(item => {
+                            const mult = computeMultiplier(item.food.serving || '', item.unit, parseFloat(item.qty) || 0);
+                            const scaled = scaleLegacyFoodByAmount(item.food, mult);
+                            keysToSum.forEach(k => {
+                              if (scaled[k] != null) {
+                                totals[k] = (totals[k] || 0) + Number(scaled[k]);
+                              }
+                            });
+                          });
+
+                          const ingredientsText = aiStagedResults.map(f => {
+                            return `${f.stagedQty || '1'} ${f.stagedUnit || 'serving'} of ${f.name}`;
+                          }).join(', ');
+
+                          const mealData: Food = {
+                            name: mealName,
+                            serving: '1 meal',
+                            sQty: 1,
+                            sUnit: 'meal',
+                            isLocal: true,
+                            type: 'recipe',
+                            ingredientItems: recipeItems,
+                            ingredients: ingredientsText,
+                            cal: Math.round(totals.cal || 0),
+                            p: parseFloat((totals.p || 0).toFixed(1)),
+                            c: parseFloat((totals.c || 0).toFixed(1)),
+                            f: parseFloat((totals.f || 0).toFixed(1)),
+                            fiber: parseFloat((totals.fiber || 0).toFixed(1)),
+                            sugars: parseFloat((totals.sugars || 0).toFixed(1)),
+                            sat: parseFloat((totals.sat || 0).toFixed(1)),
+                            mono: parseFloat((totals.mono || 0).toFixed(1)),
+                            poly: parseFloat((totals.poly || 0).toFixed(1)),
+                            trans: parseFloat((totals.trans || 0).toFixed(1)),
+                            chol: Math.round(totals.chol || 0),
+                            Sodium: Math.round(totals.Sodium || 0),
+                            Potassium: Math.round(totals.Potassium || 0),
+                            Calcium: Math.round(totals.Calcium || 0),
+                            Magnesium: Math.round(totals.Magnesium || 0),
+                            id: `recipe-${Date.now()}`
+                          };
+
+                          saveCustomFood(mealData);
+                          setIsAiReviewing(false);
+                          setAiStagedResults([]);
+                          showNotification("Entire meal saved to Kitchen Pantry!");
+                        }}
+                        style={{ padding: '14px 5px', background: 'rgba(0, 201, 255, 0.1)', border: '1px solid var(--theme-accent)', borderRadius: '16px', color: 'var(--theme-accent)', fontWeight: '900', fontSize: '11px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '4px' }}>
+                        <Sparkles size={14} color="var(--theme-accent)" /> SAVE AS MEAL
+                      </button>
+                      
+                      <button 
+                        onClick={() => {
+                          aiStagedResults.forEach(f => {
+                            const mult = computeMultiplier(f.serving || '', f.stagedUnit || 'serving', parseFloat(String(f.stagedQty)) || 1);
+                            const scaled = scaleLegacyFoodByAmount(f, mult);
+                            saveCustomFood(scaled);
+                          });
+                          setIsAiReviewing(false);
+                          setAiStagedResults([]);
+                          showNotification("All items saved individually!");
+                        }}
+                        style={{ padding: '14px 5px', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '16px', color: 'var(--theme-text-on-panel)', fontWeight: '900', fontSize: '11px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '4px' }}>
+                        <Plus size={14} /> SAVE INDIVIDUALS
+                      </button>
+                    </div>
                   </div>
                 </div>
               )}
@@ -1504,14 +1658,42 @@ export const PantryView: React.FC = () => {
                 )}
               </div>
 
+              {/* Assign to Meal Selector */}
+              <div style={{ marginBottom: '16px', background: 'rgba(255,255,255,0.03)', padding: '16px', borderRadius: '18px', border: '1px solid var(--theme-border)' }}>
+                <label style={{ fontSize: '10px', fontWeight: '800', color: 'var(--theme-accent)', display: 'block', marginBottom: '8px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Assign to Meal</label>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '8px' }}>
+                  {['Breakfast', 'Lunch', 'Dinner', 'Snacks'].map(m => (
+                    <button
+                      key={m}
+                      type="button"
+                      onClick={() => setTargetMeal(m)}
+                      style={{
+                        padding: '10px 4px',
+                        borderRadius: '12px',
+                        border: '1px solid',
+                        borderColor: targetMeal === m ? 'var(--theme-accent, #00C9FF)' : 'var(--theme-border, rgba(255,255,255,0.08))',
+                        background: targetMeal === m ? 'var(--theme-accent-dim, rgba(0, 201, 255, 0.1))' : 'rgba(255,255,255,0.03)',
+                        color: targetMeal === m ? 'var(--theme-accent, #00C9FF)' : 'var(--theme-text-dim)',
+                        fontSize: '11px',
+                        fontWeight: '800',
+                        cursor: 'pointer',
+                        transition: 'all 0.2s'
+                      }}
+                    >
+                      {m}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
               <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
                 <button 
                   onClick={() => {
                     const mult = computeMultiplier(configuringFood.serving || '', servingUnit, parseFloat(servingQty) || 1);
                     const scaled = scaleLegacyFoodByAmount(configuringFood, mult);
-                    addFoodLog('Breakfast', scaled); // Defaulting to Breakfast for standalone pantry
+                    addFoodLog(targetMeal, scaled);
                     setConfiguringFood(null);
-                    alert("Added to Diary!");
+                    showNotification(`Added to ${targetMeal}!`);
                   }}
                   style={{ width: '100%', padding: '16px', background: 'var(--theme-success, #92FE9D)', border: 'none', borderRadius: '16px', color: 'var(--theme-bg, #000)', fontWeight: '900', fontSize: '15px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px', boxShadow: '0 8px 24px rgba(146,254,157,0.15)' }}>
                   <Plus size={20} /> ADD TO DIARY

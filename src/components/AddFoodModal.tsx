@@ -2,8 +2,8 @@ import React, { useState } from 'react';
 import ReactDOM from 'react-dom';
 import { useDiary } from '../context/DiaryContext';
 import { SERVING_UNITS } from '../lib/constants';
-import type { Food } from '../types/food';
-import { computeMultiplier, scaleLegacyFoodByAmount, sumFoods, normalizeFoodResult } from '../lib/food/serving-converter';
+import type { Food, RecipeItem } from '../types/food';
+import { computeMultiplier, scaleLegacyFoodByAmount, normalizeFoodResult } from '../lib/food/serving-converter';
 import { 
   Search, Sparkles, Plus, Check, 
   X, Loader2, Info, FileText, Trash2, Camera
@@ -22,10 +22,10 @@ interface AddFoodModalProps {
 export const AddFoodModal: React.FC<AddFoodModalProps> = ({ meal, onClose }) => {
   const { 
     localCache, addFoodLog, saveCustomFood, deleteCustomFood,
-    stagingTray, addToTray, clearTray 
+    stagingTray, clearTray 
   } = useDiary();
   
-  const [activeTab, setActiveTab] = useState<SearchTab>('ai-search');
+  const [activeTab, setActiveTab] = useState<SearchTab>('search');
   
   const [query, setQuery] = useState('');
   const [results, setResults] = useState<Food[]>([]);
@@ -34,6 +34,7 @@ export const AddFoodModal: React.FC<AddFoodModalProps> = ({ meal, onClose }) => 
 
   const barcodeCache = React.useRef<Record<string, Food[]>>({});
   const aiSearchCache = React.useRef<Record<string, Food[]>>({});
+  const searchCache = React.useRef<Record<string, Food[]>>({});
   
   const [scanningIngredients, setScanningIngredients] = useState<number | null>(null);
 
@@ -82,6 +83,14 @@ export const AddFoodModal: React.FC<AddFoodModalProps> = ({ meal, onClose }) => 
   const [showFullNutrition, setShowFullNutrition] = useState(false);
   const [servingQty, setServingQty] = useState('1');
   const [servingUnit, setServingUnit] = useState('serving');
+  const [notification, setNotification] = useState<string | null>(null);
+
+  const showNotification = (msg: string) => {
+    setNotification(msg);
+    setTimeout(() => {
+      setNotification(null);
+    }, 3000);
+  };
 
   const handleAddFoodClick = (food: Food) => {
     setConfiguringFood(food);
@@ -135,7 +144,50 @@ export const AddFoodModal: React.FC<AddFoodModalProps> = ({ meal, onClose }) => 
     }
   };
 
+  const handleLibrarySearch = async (e?: React.FormEvent, forcedQuery?: string) => {
+    if (e) e.preventDefault();
+    const q = (forcedQuery !== undefined ? forcedQuery : query).trim();
+    if (!q) return;
+    setSearching(true);
+    setErrorMsg('');
+    
+    const customFoods: Food[] = localCache.customFoods || [];
+    const localMatches = customFoods.filter((f: Food) => 
+      f.name.toLowerCase().includes(q.toLowerCase())
+    ).map((f: Food) => ({ ...f, isLocal: true }));
 
+    // 1. Immediately render local custom matches
+    setResults(localMatches);
+
+    // 2. Check cache
+    if (searchCache.current[q.toLowerCase()]) {
+      const cachedGlobal = searchCache.current[q.toLowerCase()];
+      setResults([...localMatches, ...cachedGlobal].slice(0, 50));
+      setSearching(false);
+      return;
+    }
+
+    try {
+      const res = await fetch('/api/off-search', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ query: q })
+      });
+      if (res.ok) {
+        const body = await res.json();
+        const globalRes = (body.foods || body.results || []).map(normalizeFoodResult);
+        
+        searchCache.current[q.toLowerCase()] = globalRes;
+        
+        setResults([...localMatches, ...globalRes].slice(0, 50));
+      } else {
+        setResults(localMatches);
+      }
+    } catch {
+      setResults(localMatches);
+    }
+    setSearching(false);
+  };
 
   const handleAISearch = async (e?: React.SyntheticEvent, forcedQuery?: string) => {
     if (e && e.preventDefault) e.preventDefault();
@@ -250,6 +302,35 @@ export const AddFoodModal: React.FC<AddFoodModalProps> = ({ meal, onClose }) => 
       background: 'var(--theme-bg)', 
       overflowY: 'auto' 
     }}>
+      {/* Premium glassmorphic toast notification */}
+      {notification && (
+        <div style={{
+          position: 'fixed',
+          top: '24px',
+          left: '50%',
+          transform: 'translateX(-50%)',
+          zIndex: 9999,
+          padding: '14px 24px',
+          background: 'linear-gradient(135deg, rgba(146, 254, 157, 0.95) 0%, rgba(0, 201, 255, 0.95) 100%)',
+          border: '1px solid rgba(255,255,255,0.2)',
+          borderRadius: '18px',
+          boxShadow: '0 15px 35px rgba(0, 201, 255, 0.3)',
+          color: '#03080c',
+          fontWeight: '900',
+          fontSize: '13px',
+          letterSpacing: '0.5px',
+          display: 'flex',
+          alignItems: 'center',
+          gap: '8px',
+          backdropFilter: 'blur(12px)',
+          WebkitBackdropFilter: 'blur(12px)',
+          animation: 'slideDownFade 0.3s cubic-bezier(0.16, 1, 0.3, 1)'
+        }}>
+          <Check size={16} strokeWidth={3} />
+          <span>{notification}</span>
+        </div>
+      )}
+
       
       {/* Header */}
       <div style={{ width: '100%', maxWidth: '600px', padding: '24px 20px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
@@ -282,7 +363,150 @@ export const AddFoodModal: React.FC<AddFoodModalProps> = ({ meal, onClose }) => 
         <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
           <div style={{ color: 'var(--theme-error)', fontSize: '12px', marginBottom: '8px', textAlign: 'center' }}>{errorMsg}</div>
           
-          {activeTab === 'ai-search' ? (
+          {activeTab === 'search' ? (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-md)' }}>
+              <form 
+                onSubmit={(e) => {
+                  e.preventDefault();
+                  handleLibrarySearch(e);
+                }} 
+                style={{ display: 'flex', gap: '8px' }}
+              >
+                <div style={{ position: 'relative', flex: 1 }}>
+                  <style>
+                    {`
+                      .ai-search-input-black::placeholder {
+                        color: #000 !important;
+                        opacity: 0.8 !important;
+                      }
+                      body.theme-dark .ai-search-input-black::placeholder {
+                        color: #fff !important;
+                        opacity: 0.8 !important;
+                      }
+                    `}
+                  </style>
+                  <input 
+                    className="ai-search-input-black"
+                    placeholder="Search library by name or brand..."
+                    value={query}
+                    onChange={(e) => {
+                      const val = e.target.value;
+                      setQuery(val);
+                      if (errorMsg) setErrorMsg('');
+                      
+                      if (val.trim()) {
+                        const customFoods: Food[] = localCache.customFoods || [];
+                        let localMatches = customFoods.filter(f => 
+                          f.name.toLowerCase().includes(val.toLowerCase())
+                        ).map((f, idx) => ({ ...f, isLocal: true, localIdx: idx }));
+                        if (highProteinOnly) {
+                          localMatches = localMatches.filter(f => (Number(f.p) || 0) >= 20);
+                        }
+                        setResults(localMatches);
+                      } else {
+                        setResults([]);
+                      }
+                    }}
+
+                    style={{ 
+                      width: '100%', 
+                      padding: 'var(--space-md) var(--space-md) var(--space-md) 44px', 
+                      background: 'rgba(10, 30, 33, 0.08)', 
+                      border: '1px solid var(--theme-border)', 
+                      borderRadius: '18px', 
+                      color: 'var(--theme-text)', 
+                      outline: 'none', 
+                      fontSize: '15px', 
+                      minHeight: '52px',
+                      boxShadow: 'inset 0 2px 4px rgba(0,0,0,0.05)'
+                    }}
+                  />
+                  <button type="submit" disabled={searching} style={{ position: 'absolute', left: '16px', top: '50%', transform: 'translateY(-50%)', color: 'var(--theme-accent)', background: 'transparent', border: 'none', cursor: 'pointer', padding: 0, display: 'flex', alignItems: 'center' }}>
+                    {searching ? <Loader2 className="spin" size={20} /> : <Search size={20} />}
+                  </button>
+                  
+                  {/* High-Fidelity Loading Progress Bar */}
+                  {searching && (
+                    <div style={{ 
+                      position: 'absolute',
+                      bottom: '-4px',
+                      left: '20px',
+                      right: '20px',
+                      height: '3px', 
+                      background: 'rgba(255,255,255,0.05)', 
+                      borderRadius: '3px', 
+                      overflow: 'hidden',
+                      zIndex: 10
+                    }}>
+                      <div style={{ 
+                        height: '100%', 
+                        width: '40%', 
+                        background: 'var(--theme-accent)', 
+                        borderRadius: '3px',
+                        boxShadow: '0 0 10px var(--theme-accent)',
+                        animation: 'searching-bar 1.5s infinite ease-in-out' 
+                      }} />
+                    </div>
+                  )}
+                </div>
+              </form>
+
+              {/* High Protein Filter Toggle */}
+              <div style={{ display: 'flex', justifyContent: 'flex-start', padding: '0 4px', marginTop: '-4px', marginBottom: '4px' }}>
+                <button
+                  type="button"
+                  onClick={() => {
+                    const nextVal = !highProteinOnly;
+                    setHighProteinOnly(nextVal);
+                    if (query.trim()) {
+                      const customFoods: Food[] = localCache.customFoods || [];
+                      let localMatches = customFoods.filter(f => 
+                        f.name.toLowerCase().includes(query.toLowerCase())
+                      ).map((f, idx) => ({ ...f, isLocal: true, localIdx: idx }));
+                      if (nextVal) {
+                        localMatches = localMatches.filter(f => (Number(f.p) || 0) >= 20);
+                      }
+                      setResults(localMatches);
+                    }
+                  }}
+                  style={{
+                    background: highProteinOnly ? 'rgba(146, 254, 157, 0.12)' : 'var(--theme-panel-dim, rgba(255,255,255,0.04))',
+                    border: highProteinOnly ? '1px solid var(--theme-success, #92FE9D)' : '1px solid var(--theme-border, rgba(255,255,255,0.08))',
+                    borderRadius: '12px',
+                    padding: '6px 12px',
+                    color: highProteinOnly ? 'var(--theme-success, #92FE9D)' : 'var(--theme-text-dim)',
+                    fontSize: '11px',
+                    fontWeight: '800',
+                    cursor: 'pointer',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '6px',
+                    transition: 'all 0.2s ease'
+                  }}
+                >
+                  <Sparkles size={12} color={highProteinOnly ? 'var(--theme-success)' : 'var(--theme-text-dim)'} />
+                  HIGH PROTEIN ONLY (≥20g)
+                </button>
+              </div>
+
+              {results.length > 0 && !isAiReviewing && (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-xs)', maxHeight: '400px', overflowY: 'auto', paddingRight: '4px' }}>
+                  {results.map((f, i) => (
+                    <SearchResultItem 
+                      key={i} 
+                      food={f} 
+                      onClick={() => handleAddFoodClick(f)}
+                      localIdx={(f as Food & { localIdx?: number }).localIdx}
+                      onDelete={(idx) => {
+                        deleteCustomFood(idx);
+                        setResults(prev => prev.filter((_, itemIdx) => itemIdx !== i));
+                      }}
+                    />
+                  ))}
+                </div>
+              )}
+            </div>
+          ) : activeTab === 'ai-search' ? (
             <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-md)' }}>
               <form 
                 onSubmit={(e) => {
@@ -521,9 +745,9 @@ export const AddFoodModal: React.FC<AddFoodModalProps> = ({ meal, onClose }) => 
                     setQuery(String(displayQuery));
                     if (displayQuery) {
                       const dummyEvent = { preventDefault: () => {} } as React.FormEvent;
-                      handleAISearch(dummyEvent, String(displayQuery));
+                      handleLibrarySearch(dummyEvent, String(displayQuery));
                     }
-                    setActiveTab('ai-search');
+                    setActiveTab('search');
                   }
                 }}
                 onScanError={(err) => setErrorMsg(err)}
@@ -756,21 +980,95 @@ export const AddFoodModal: React.FC<AddFoodModalProps> = ({ meal, onClose }) => 
                     </button>
                   </div>
 
+                  {/* Assign to Meal Selector for AI Review in Modal */}
+                  <div style={{ marginTop: '16px', background: 'rgba(255,255,255,0.03)', padding: '16px', borderRadius: '18px', border: '1px solid var(--theme-border)' }}>
+                    <label style={{ fontSize: '10px', fontWeight: '800', color: 'var(--theme-accent)', display: 'block', marginBottom: '8px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Log Entire Meal To</label>
+                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '8px' }}>
+                      {['Breakfast', 'Lunch', 'Dinner', 'Snacks'].map(m => (
+                        <button
+                          key={m}
+                          type="button"
+                          onClick={() => setTargetMeal(m)}
+                          style={{
+                            padding: '10px 4px',
+                            borderRadius: '12px',
+                            border: '1px solid',
+                            borderColor: targetMeal === m ? 'var(--theme-accent, #00C9FF)' : 'var(--theme-border, rgba(255,255,255,0.08))',
+                            background: targetMeal === m ? 'var(--theme-accent-dim, rgba(0, 201, 255, 0.1))' : 'rgba(255,255,255,0.03)',
+                            color: targetMeal === m ? 'var(--theme-accent, #00C9FF)' : 'var(--theme-text-dim)',
+                            fontSize: '11px',
+                            fontWeight: '800',
+                            cursor: 'pointer',
+                            transition: 'all 0.2s'
+                          }}
+                        >
+                          {m}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
                   <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px', marginTop: '10px' }}>
                     <button 
                       onClick={() => {
-                        const mealData = {
-                          name: `AI Meal: ${(query || mealDesc).length > 20 ? (query || mealDesc).substring(0, 20) + '...' : (query || mealDesc)}`,
+                        const mealName = `AI Meal: ${(query || mealDesc).length > 20 ? (query || mealDesc).substring(0, 20) + '...' : (query || mealDesc)}`;
+                        const recipeItems: RecipeItem[] = aiStagedResults.map(f => ({
+                          food: f,
+                          qty: String(f.stagedQty || '1'),
+                          unit: f.stagedUnit || 'serving'
+                        }));
+
+                        const totals: Record<string, number> = { cal: 0, p: 0, c: 0, f: 0 };
+                        const keysToSum = ['cal', 'p', 'c', 'f', 'fiber', 'sugars', 'sat', 'mono', 'poly', 'trans', 'chol', 'Sodium', 'Potassium', 'Calcium', 'Magnesium'];
+
+                        recipeItems.forEach(item => {
+                          const mult = computeMultiplier(item.food.serving || '', item.unit, parseFloat(item.qty) || 0);
+                          const scaled = scaleLegacyFoodByAmount(item.food, mult);
+                          keysToSum.forEach(k => {
+                            if (scaled[k] != null) {
+                              totals[k] = (totals[k] || 0) + Number(scaled[k]);
+                            }
+                          });
+                        });
+
+                        const ingredientsText = aiStagedResults.map(f => {
+                          return `${f.stagedQty || '1'} ${f.stagedUnit || 'serving'} of ${f.name}`;
+                        }).join(', ');
+
+                        const mealData: Food = {
+                          name: mealName,
                           serving: '1 meal',
-                          items: aiStagedResults.map(f => {
-                            const mult = computeMultiplier(f.serving || '', f.stagedUnit || 'piece', parseFloat(f.stagedQty || '1') || 1);
-                            return scaleLegacyFoodByAmount(f, mult);
-                          })
+                          sQty: 1,
+                          sUnit: 'meal',
+                          isLocal: true,
+                          type: 'recipe',
+                          ingredientItems: recipeItems,
+                          ingredients: ingredientsText,
+                          cal: Math.round(totals.cal || 0),
+                          p: parseFloat((totals.p || 0).toFixed(1)),
+                          c: parseFloat((totals.c || 0).toFixed(1)),
+                          f: parseFloat((totals.f || 0).toFixed(1)),
+                          fiber: parseFloat((totals.fiber || 0).toFixed(1)),
+                          sugars: parseFloat((totals.sugars || 0).toFixed(1)),
+                          sat: parseFloat((totals.sat || 0).toFixed(1)),
+                          mono: parseFloat((totals.mono || 0).toFixed(1)),
+                          poly: parseFloat((totals.poly || 0).toFixed(1)),
+                          trans: parseFloat((totals.trans || 0).toFixed(1)),
+                          chol: Math.round(totals.chol || 0),
+                          Sodium: Math.round(totals.Sodium || 0),
+                          Potassium: Math.round(totals.Potassium || 0),
+                          Calcium: Math.round(totals.Calcium || 0),
+                          Magnesium: Math.round(totals.Magnesium || 0),
+                          id: `recipe-${Date.now()}`
                         };
-                        saveCustomFood(mealData as unknown as Food);
-                        alert("Meal template saved to Kitchen!");
-                        setIsAiReviewing(false);
-                        setAiStagedResults([]);
+
+                        saveCustomFood(mealData);
+                        showNotification("Meal template saved to Kitchen!");
+                        setTimeout(() => {
+                          setIsAiReviewing(false);
+                          setAiStagedResults([]);
+                          onClose();
+                        }, 1000);
                       }}
                       style={{ padding: '18px 5px', background: 'rgba(146, 254, 157, 0.1)', border: '1px solid var(--theme-success)', borderRadius: '18px', color: 'var(--theme-success)', fontWeight: '900', fontSize: '9px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '4px' }}>
                       <Plus size={14} /> BRING TO KITCHEN
@@ -779,26 +1077,63 @@ export const AddFoodModal: React.FC<AddFoodModalProps> = ({ meal, onClose }) => 
                     <button 
                       onClick={() => {
                         const mealName = prompt("Name this meal?", "AI Detected Meal") || "AI Detected Meal";
-                        const totalMacros = sumFoods(aiStagedResults.map(f => {
-                           const mult = computeMultiplier(f.serving || '', f.stagedUnit || 'piece', parseFloat(f.stagedQty || '1') || 1);
-                           return scaleLegacyFoodByAmount(f, mult);
+                        const recipeItems: RecipeItem[] = aiStagedResults.map(f => ({
+                          food: f,
+                          qty: String(f.stagedQty || '1'),
+                          unit: f.stagedUnit || 'serving'
                         }));
-                        
-                        const mealData = {
-                          ...totalMacros,
+
+                        const totals: Record<string, number> = { cal: 0, p: 0, c: 0, f: 0 };
+                        const keysToSum = ['cal', 'p', 'c', 'f', 'fiber', 'sugars', 'sat', 'mono', 'poly', 'trans', 'chol', 'Sodium', 'Potassium', 'Calcium', 'Magnesium'];
+
+                        recipeItems.forEach(item => {
+                          const mult = computeMultiplier(item.food.serving || '', item.unit, parseFloat(item.qty) || 0);
+                          const scaled = scaleLegacyFoodByAmount(item.food, mult);
+                          keysToSum.forEach(k => {
+                            if (scaled[k] != null) {
+                              totals[k] = (totals[k] || 0) + Number(scaled[k]);
+                            }
+                          });
+                        });
+
+                        const ingredientsText = aiStagedResults.map(f => {
+                          return `${f.stagedQty || '1'} ${f.stagedUnit || 'serving'} of ${f.name}`;
+                        }).join(', ');
+
+                        const mealData: Food = {
                           name: mealName,
                           serving: '1 meal',
                           sQty: 1,
                           sUnit: 'meal',
                           isLocal: true,
                           type: 'recipe',
-                          id: `meal-${Date.now()}`
+                          ingredientItems: recipeItems,
+                          ingredients: ingredientsText,
+                          cal: Math.round(totals.cal || 0),
+                          p: parseFloat((totals.p || 0).toFixed(1)),
+                          c: parseFloat((totals.c || 0).toFixed(1)),
+                          f: parseFloat((totals.f || 0).toFixed(1)),
+                          fiber: parseFloat((totals.fiber || 0).toFixed(1)),
+                          sugars: parseFloat((totals.sugars || 0).toFixed(1)),
+                          sat: parseFloat((totals.sat || 0).toFixed(1)),
+                          mono: parseFloat((totals.mono || 0).toFixed(1)),
+                          poly: parseFloat((totals.poly || 0).toFixed(1)),
+                          trans: parseFloat((totals.trans || 0).toFixed(1)),
+                          chol: Math.round(totals.chol || 0),
+                          Sodium: Math.round(totals.Sodium || 0),
+                          Potassium: Math.round(totals.Potassium || 0),
+                          Calcium: Math.round(totals.Calcium || 0),
+                          Magnesium: Math.round(totals.Magnesium || 0),
+                          id: `recipe-${Date.now()}`
                         };
-                        
+
                         saveCustomFood(mealData);
-                        alert("Entire meal saved to Kitchen!");
-                        setIsAiReviewing(false);
-                        setAiStagedResults([]);
+                        showNotification("Entire meal saved to Kitchen!");
+                        setTimeout(() => {
+                          setIsAiReviewing(false);
+                          setAiStagedResults([]);
+                          onClose();
+                        }, 1000);
                       }}
                       style={{ padding: '18px 5px', background: 'var(--theme-panel-dim)', border: '1px solid var(--theme-border)', borderRadius: '18px', color: 'var(--theme-text)', fontWeight: '900', fontSize: '9px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '4px' }}>
                       <Sparkles size={14} color="var(--theme-accent)" /> SAVE AS MEAL
@@ -811,10 +1146,11 @@ export const AddFoodModal: React.FC<AddFoodModalProps> = ({ meal, onClose }) => 
                           const scaled = scaleLegacyFoodByAmount(f, mult);
                           scaled.serving = `${f.stagedQty} ${f.stagedUnit}`;
                           scaled._base = f; 
-                          addToTray(scaled);
+                          addFoodLog(targetMeal, scaled);
                         });
                         setIsAiReviewing(false);
                         setAiStagedResults([]);
+                        onClose();
                       }}
                       style={{ gridColumn: 'span 2', padding: '18px 10px', background: 'var(--theme-accent)', border: 'none', borderRadius: '18px', color: '#000', fontWeight: '900', fontSize: '12px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', boxShadow: '0 8px 20px rgba(0,201,255,0.2)' }}>
                       <Check size={18} /> CONFIRM ITEMS TO DIARY
@@ -979,9 +1315,11 @@ export const AddFoodModal: React.FC<AddFoodModalProps> = ({ meal, onClose }) => 
                     const qty = parseFloat(servingQty) || 1;
                     const foodData = { ...configuringFood, name: editName, serving: `${qty} ${servingUnit}`, sQty: qty, sUnit: servingUnit };
                     saveCustomFood(foodData);
-                    setConfiguringFood(null);
-                    onClose();
-                    alert("Food saved to Pantry! You can now add it as an ingredient in the Macro Kitchen tab.");
+                    showNotification("Food saved to Kitchen Pantry!");
+                    setTimeout(() => {
+                      setConfiguringFood(null);
+                      onClose();
+                    }, 1500);
                   }}
                   style={{ width: '100%', padding: '16px', background: 'var(--theme-panel-dim, rgba(255,255,255,0.05))', border: '1px solid var(--theme-border, rgba(255,255,255,0.1))', borderRadius: '16px', color: 'var(--theme-text)', fontWeight: '800', fontSize: '14px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
                   <Sparkles size={18} color="var(--theme-accent)" /> USE AS INGREDIENT
