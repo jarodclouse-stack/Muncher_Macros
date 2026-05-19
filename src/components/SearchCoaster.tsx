@@ -77,7 +77,7 @@ export const SearchCoaster: React.FC<SearchCoasterProps> = ({ activeTab, onTabCh
           active={activeTab === 'search'} 
           onClick={() => onTabChange('search')} 
           icon={<Search size={18} />} 
-          label="Library" 
+          label="Search" 
         />
         <TabBtn 
           active={activeTab === 'ai-search'} 

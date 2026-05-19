@@ -144,7 +144,7 @@ export const AddFoodModal: React.FC<AddFoodModalProps> = ({ meal, onClose }) => 
     }
   };
 
-  const handleLibrarySearch = async (e?: React.FormEvent, forcedQuery?: string) => {
+  const handleDatabaseSearch = async (e?: React.FormEvent, forcedQuery?: string) => {
     if (e) e.preventDefault();
     const q = (forcedQuery !== undefined ? forcedQuery : query).trim();
     if (!q) return;
@@ -368,7 +368,7 @@ export const AddFoodModal: React.FC<AddFoodModalProps> = ({ meal, onClose }) => 
               <form 
                 onSubmit={(e) => {
                   e.preventDefault();
-                  handleLibrarySearch(e);
+                  handleDatabaseSearch(e);
                 }} 
                 style={{ display: 'flex', gap: '8px' }}
               >
@@ -387,7 +387,7 @@ export const AddFoodModal: React.FC<AddFoodModalProps> = ({ meal, onClose }) => 
                   </style>
                   <input 
                     className="ai-search-input-black"
-                    placeholder="Search library by name or brand..."
+                    placeholder="Search foods by name or brand..."
                     value={query}
                     onChange={(e) => {
                       const val = e.target.value;
@@ -530,7 +530,7 @@ export const AddFoodModal: React.FC<AddFoodModalProps> = ({ meal, onClose }) => 
                   </style>
                   <input 
                     className="ai-search-input-black"
-                    placeholder="Search library or Ask AI (e.g. '1/2 cup of blueberries')"
+                    placeholder="Search foods or Ask AI (e.g. '1/2 cup of blueberries')"
                     value={query}
                     onChange={(e) => {
                       const val = e.target.value;
@@ -745,7 +745,7 @@ export const AddFoodModal: React.FC<AddFoodModalProps> = ({ meal, onClose }) => 
                     setQuery(String(displayQuery));
                     if (displayQuery) {
                       const dummyEvent = { preventDefault: () => {} } as React.FormEvent;
-                      handleLibrarySearch(dummyEvent, String(displayQuery));
+                      handleDatabaseSearch(dummyEvent, String(displayQuery));
                     }
                     setActiveTab('search');
                   }
