@@ -13,9 +13,10 @@ import { LogOut, Activity, Flame, Utensils, Award, Plus, Settings, X, Info, Spar
 export const MainDashboard: React.FC = () => {
   const { user, logout } = useAuth();
   const { localCache, isScannerActive } = useDiary();
-  const [activeTab, setActiveTab] = useState<'diary' | 'nutrition' | 'progress' | 'vault' | 'pantry'>('diary');
+  const [activeTab, setActiveTab] = useState<'diary' | 'nutrition' | 'progress' | 'pantry'>('diary');
   const [showRewardModal, setShowRewardModal] = useState(false);
   const [showSettingsModal, setShowSettingsModal] = useState(false);
+  const [showVaultModal, setShowVaultModal] = useState(false);
   
   const rewards = getRewardBreakdown(localCache);
 
@@ -43,7 +44,6 @@ export const MainDashboard: React.FC = () => {
                 {activeTab === 'nutrition' && <Activity size={12} color="var(--theme-accent)" />}
                 {activeTab === 'pantry' && <Plus size={12} color="var(--theme-accent)" />}
                 {activeTab === 'progress' && <Flame size={12} color="var(--theme-accent)" />}
-                {activeTab === 'vault' && <Sparkles size={12} color="var(--theme-accent)" />}
                 {user?.email?.split('@')[0] || 'Guest'}
               </h1>
             </div>
@@ -52,8 +52,8 @@ export const MainDashboard: React.FC = () => {
           <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginLeft: 'auto' }}>
             {/* The Vault Nav */}
             <div style={{ display: 'flex', borderRight: '1px solid var(--theme-border, rgba(255,255,255,0.1))', paddingRight: '6px' }}>
-              <button onClick={() => setActiveTab('vault')} style={{ background: activeTab==='vault' ? 'var(--theme-accent-dim)' : 'var(--theme-panel, rgba(255,255,255,0.03))', border: activeTab==='vault' ? '1px solid var(--theme-accent)' : '1px solid var(--theme-border, rgba(255,255,255,0.05))', color: activeTab==='vault' ? 'var(--theme-accent)' : 'var(--theme-text)', padding: '4px 6px', borderRadius: '8px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '4px', transition: 'all 0.2s', height: '100%' }}>
-                <Sparkles size={10} color={activeTab==='vault' ? 'var(--theme-accent)' : '#A5B4FC'} />
+              <button onClick={() => setShowVaultModal(true)} style={{ background: showVaultModal ? 'var(--theme-accent-dim)' : 'var(--theme-panel, rgba(255,255,255,0.03))', border: showVaultModal ? '1px solid var(--theme-accent)' : '1px solid var(--theme-border, rgba(255,255,255,0.05))', color: showVaultModal ? 'var(--theme-accent)' : 'var(--theme-text)', padding: '4px 6px', borderRadius: '8px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '4px', transition: 'all 0.2s', height: '100%' }}>
+                <Sparkles size={10} color={showVaultModal ? 'var(--theme-accent)' : '#A5B4FC'} />
                 <span style={{ fontSize: '8px', fontWeight: '800', letterSpacing: '0.5px', textTransform: 'uppercase' }}>The Vault</span>
               </button>
             </div>
@@ -87,7 +87,6 @@ export const MainDashboard: React.FC = () => {
         {activeTab === 'diary' && <DiaryView />}
         {activeTab === 'nutrition' && <NutritionView />}
         {activeTab === 'progress' && <ProgressView />}
-        {activeTab === 'vault' && <VaultView />}
         {activeTab === 'pantry' && <PantryView />}
       </main>
 
@@ -151,6 +150,7 @@ export const MainDashboard: React.FC = () => {
         </div>
       )}
       {showSettingsModal && <SettingsView onClose={() => setShowSettingsModal(false)} />}
+      {showVaultModal && <VaultView onClose={() => setShowVaultModal(false)} />}
 
       {/* Bottom Navigation */}
       {!isScannerActive && (
