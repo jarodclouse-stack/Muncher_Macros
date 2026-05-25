@@ -117,12 +117,18 @@ const getSmartDefaultMeal = (): string => {
   return 'Snacks';
 };
 
-export const PantryView: React.FC = () => {
+interface PantryViewProps {
+  initialMeal?: string;
+  onClose?: () => void;
+  isModal?: boolean;
+}
+
+export const PantryView: React.FC<PantryViewProps> = ({ initialMeal, onClose, isModal = false }) => {
   const { 
     localCache, saveCustomFood, addFoodLog, updateCustomFood, deleteCustomFood
   } = useDiary();
   
-  const [targetMeal, setTargetMeal] = useState<string>(getSmartDefaultMeal());
+  const [targetMeal, setTargetMeal] = useState<string>(initialMeal || getSmartDefaultMeal());
   const [notification, setNotification] = useState<string | null>(null);
 
   const showNotification = (msg: string) => {
@@ -495,6 +501,29 @@ export const PantryView: React.FC = () => {
         }
       `}</style>
       
+      {isModal && (
+        <div style={{ 
+          width: '100%', 
+          padding: '24px 20px 0', 
+          display: 'flex', 
+          justifyContent: 'space-between', 
+          alignItems: 'center', 
+          background: 'var(--theme-panel)', 
+          backdropFilter: 'blur(25px)', 
+          WebkitBackdropFilter: 'blur(25px)'
+        }}>
+          <div>
+            <h2 style={{ color: 'var(--theme-text)', fontSize: '22px', fontWeight: '900', margin: 0, letterSpacing: '-0.5px' }}>ADD FOOD</h2>
+            <div style={{ color: 'var(--theme-accent, #00C9FF)', fontSize: '12px', fontWeight: '800', textTransform: 'uppercase', marginTop: '2px' }}>{targetMeal}</div>
+          </div>
+          {onClose && (
+            <button onClick={onClose} style={{ background: 'var(--theme-panel-dim, rgba(255,255,255,0.05))', border: 'none', borderRadius: '50%', width: '40px', height: '40px', color: 'var(--theme-text)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <X size={24} />
+            </button>
+          )}
+        </div>
+      )}
+
       {/* Tab Switcher */}
       <div 
         style={{ 
@@ -508,7 +537,7 @@ export const PantryView: React.FC = () => {
           background: 'var(--theme-panel)', 
           backdropFilter: 'blur(25px)',
           WebkitBackdropFilter: 'blur(25px)',
-          padding: '24px 20px 16px 20px', 
+          padding: isModal ? '8px 20px 16px 20px' : '24px 20px 16px 20px', 
           borderBottom: '1px solid var(--theme-border)'
         }}>
         <button onClick={() => { setActiveTab('search'); clearSearchState(); }} 

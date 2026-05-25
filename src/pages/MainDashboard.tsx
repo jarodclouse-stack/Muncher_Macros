@@ -3,21 +3,17 @@ import { useAuth } from '../context/AuthContext';
 import { DiaryView } from '../components/DiaryView';
 import { NutritionView } from '../components/NutritionView';
 import { ProgressView } from '../components/ProgressView';
+import { PantryView } from '../components/PantryView';
 import { SettingsView } from '../components/SettingsView';
 import { VaultView } from '../components/VaultView';
-import { AddFoodModal } from '../components/AddFoodModal';
 import { useDiary } from '../context/DiaryContext';
 import { getRewardBreakdown } from '../lib/reward-utils';
 import { LogOut, Activity, Flame, Utensils, Award, Plus, Settings, X, Info, Sparkles } from 'lucide-react';
-import { MEALS } from '../lib/constants';
 
 export const MainDashboard: React.FC = () => {
   const { user, logout } = useAuth();
   const { localCache, isScannerActive } = useDiary();
-  const [activeTab, setActiveTab] = useState<'diary' | 'nutrition' | 'progress'>('diary');
-  const [showAddFoodModal, setShowAddFoodModal] = useState(false);
-  const [addFoodMeal, setAddFoodMeal] = useState('Breakfast');
-  const [showMealPicker, setShowMealPicker] = useState(false);
+  const [activeTab, setActiveTab] = useState<'diary' | 'nutrition' | 'progress' | 'pantry'>('diary');
   const [showRewardModal, setShowRewardModal] = useState(false);
   const [showSettingsModal, setShowSettingsModal] = useState(false);
   const [showVaultModal, setShowVaultModal] = useState(false);
@@ -45,6 +41,7 @@ export const MainDashboard: React.FC = () => {
               <h1 style={{ fontFamily: "'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Inter', sans-serif", fontSize: '10px', fontWeight: '800', margin: 0, display: 'flex', alignItems: 'center', gap: '6px', textTransform: 'uppercase', letterSpacing: '2px', textShadow: '0 0 10px rgba(0,201,255,0.2)' }}>
                 {activeTab === 'diary' && <Utensils size={12} color="var(--theme-accent)" />}
                 {activeTab === 'nutrition' && <Activity size={12} color="var(--theme-accent)" />}
+                {activeTab === 'pantry' && <Plus size={12} color="var(--theme-accent)" />}
                 {activeTab === 'progress' && <Flame size={12} color="var(--theme-accent)" />}
                 {user?.email?.split('@')[0] || 'Guest'}
               </h1>
@@ -81,44 +78,14 @@ export const MainDashboard: React.FC = () => {
 
       {/* Main Content Area */}
       <main className="app-container" style={{ 
-        paddingTop: 'var(--space-xl)', 
+        paddingTop: activeTab === 'pantry' ? '0' : 'var(--space-xl)', 
         paddingBottom: isScannerActive ? '0' : 'calc(58px + max(0px, env(safe-area-inset-bottom) - 15px))',
         background: 'transparent'
       }}>
         {activeTab === 'diary' && <DiaryView />}
         {activeTab === 'nutrition' && <NutritionView />}
         {activeTab === 'progress' && <ProgressView />}
-
-        {/* Meal picker sheet — shown when tapping Add Food from nav */}
-        {showMealPicker && !showAddFoodModal && (
-          <div 
-            style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.6)', backdropFilter: 'blur(8px)', zIndex: 500, display: 'flex', alignItems: 'flex-end', justifyContent: 'center' }}
-            onClick={() => setShowMealPicker(false)}
-          >
-            <div 
-              onClick={e => e.stopPropagation()}
-              style={{ width: '100%', maxWidth: '500px', background: 'rgba(10,25,28,0.97)', border: '1px solid rgba(255,255,255,0.12)', borderRadius: '24px 24px 0 0', padding: '24px 20px 40px', backdropFilter: 'blur(20px)' }}
-            >
-              <div style={{ width: '40px', height: '4px', background: 'rgba(255,255,255,0.15)', borderRadius: '2px', margin: '0 auto 20px' }} />
-              <div style={{ fontSize: '11px', fontWeight: '900', color: 'var(--theme-accent, #00C9FF)', textTransform: 'uppercase', letterSpacing: '2px', marginBottom: '16px', textAlign: 'center' }}>Log To Which Meal?</div>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
-                {MEALS.map(m => (
-                  <button
-                    key={m}
-                    onClick={() => { setAddFoodMeal(m); setShowMealPicker(false); setShowAddFoodModal(true); }}
-                    style={{ padding: '18px 8px', background: addFoodMeal === m ? 'rgba(0,201,255,0.12)' : 'rgba(255,255,255,0.04)', border: addFoodMeal === m ? '1.5px solid var(--theme-accent, #00C9FF)' : '1px solid rgba(255,255,255,0.08)', borderRadius: '16px', color: addFoodMeal === m ? 'var(--theme-accent, #00C9FF)' : '#FFF', fontSize: '14px', fontWeight: '800', cursor: 'pointer', transition: 'all 0.2s', textAlign: 'center' }}
-                  >
-                    {m}
-                  </button>
-                ))}
-              </div>
-            </div>
-          </div>
-        )}
-
-        {showAddFoodModal && (
-          <AddFoodModal meal={addFoodMeal} onClose={() => setShowAddFoodModal(false)} />
-        )}
+        {activeTab === 'pantry' && <PantryView />}
       </main>
 
       {showRewardModal && (
@@ -202,7 +169,7 @@ export const MainDashboard: React.FC = () => {
         }}>
           <NavItem active={activeTab === 'diary'} onClick={() => setActiveTab('diary')} label="Diary" icon={<Utensils size={16} />} />
           <NavItem active={activeTab === 'nutrition'} onClick={() => setActiveTab('nutrition')} label="Nutrition" icon={<Activity size={16} />} />
-          <NavItem active={showMealPicker || showAddFoodModal} onClick={() => { setShowMealPicker(true); }} label="Add Food" icon={<Plus size={16} />} />
+          <NavItem active={activeTab === 'pantry'} onClick={() => setActiveTab('pantry')} label="Add Food" icon={<Plus size={16} />} />
           <NavItem active={activeTab === 'progress'} onClick={() => setActiveTab('progress')} label="Goals" icon={<Flame size={16} />} />
         </nav>
       )}
