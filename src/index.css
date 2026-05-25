@@ -95,569 +95,295 @@ body {
   transition: background-color var(--transition-smooth), color var(--transition-smooth);
 }
 
-/* 1. Cybermancer */
+/* /* ==================== 22 DARK THEMES ==================== */
+
+/* 1. Obsidian */
+body.theme-obsidian {
+  --theme-bg: radial-gradient(circle at 50% 50%, #0c0f17 0%, #06070a 100%);
+  --theme-panel: rgba(18, 21, 32, 0.85);
+  --theme-panel-base: #121520;
+  --theme-accent: #00F5D4;
+  --theme-accent-dim: rgba(0, 245, 212, 0.15);
+  --theme-text: #EDF2F4;
+  --theme-text-dim: #BDC4C6;
+  --theme-border: rgba(0, 245, 212, 0.25);
+  --theme-neon-goal: #FF00FF;
+}
+
+/* 2. Cybermancer */
 body.theme-cybermancer {
-  --theme-bg: #0D0221;
-  --theme-panel: rgba(30, 8, 54, 0.8);
+  --theme-bg: radial-gradient(circle at 50% 30%, #1a042e 0%, #080112 100%);
+  --theme-panel: rgba(30, 8, 54, 0.85);
   --theme-panel-base: #1E0836;
   --theme-accent: #FF00E5;
   --theme-accent-dim: rgba(255, 0, 229, 0.15);
   --theme-text: #FFFFFF;
   --theme-text-dim: #B392AC;
-  --theme-border: rgba(255, 0, 229, 0.25);
-  --theme-neon-goal: #39FF14; /* Neon Green */
+  --theme-border: rgba(255, 0, 229, 0.3);
+  --theme-neon-goal: #39FF14;
 }
 
-/* 2. Gold Reserve */
+/* 3. Gold Reserve */
 body.theme-gold-reserve {
-  --theme-bg: #111111;
-  --theme-panel: rgba(28, 28, 28, 0.8);
+  --theme-bg: radial-gradient(circle at 50% 25%, #221a0a 0%, #0d0a04 100%);
+  --theme-panel: rgba(28, 28, 28, 0.85);
   --theme-panel-base: #1C1C1C;
   --theme-accent: #D4AF37;
   --theme-accent-dim: rgba(212, 175, 55, 0.15);
   --theme-text: #F5F5DC;
   --theme-text-dim: #A09D80;
-  --theme-border: rgba(212, 175, 55, 0.25);
-  --theme-neon-goal: #00FFFF; /* Neon Cyan */
-}
-
-/* 3. Glacier Peak (Light Theme) - Luminescent Infusion */
-body.theme-glacier-peak {
-  --theme-bg: radial-gradient(circle at 50% 50%, #E0F2FE 0%, #BAE6FD 45%, #F0F9FF 100%);
-  --theme-panel: hsla(200, 100%, 98%, 0.4);
-  --theme-panel-tint: hsla(200, 80%, 90%, 0.4);
-  --theme-panel-base: hsla(200, 100%, 99%, 0.5);
-  --theme-panel-dim: rgba(255, 255, 255, 0.5);
-  --theme-accent: #0284C7;
-  --theme-accent-dim: rgba(2, 132, 199, 0.2);
-  --theme-text: #075985;
-  --theme-text-dim: #0369A1;
-  --theme-border: rgba(2, 132, 199, 0.15);
-  --theme-placeholder: rgba(7, 89, 133, 0.4);
-  --theme-input-bg: rgba(255, 255, 255, 0.85);
-  --theme-neon-goal: #FF00E5;
-  --theme-shadow: 0 32px 64px -16px rgba(2, 132, 199, 0.4);
-  --glass-shine: inset 0 1px 1px 0 rgba(255, 255, 255, 0.8), 0 0 0 1px rgba(2, 132, 199, 0.1);
+  --theme-border: rgba(212, 175, 55, 0.3);
+  --theme-neon-goal: #00FFFF;
 }
 
 /* 4. Forest Phantom */
 body.theme-forest-phantom {
-  --theme-bg: #0A1410;
-  --theme-panel: rgba(20, 31, 26, 0.8);
+  --theme-bg: radial-gradient(circle at 50% 30%, #081812 0%, #020604 100%);
+  --theme-panel: rgba(20, 31, 26, 0.85);
   --theme-panel-base: #141F1A;
   --theme-accent: #92FE9D;
   --theme-accent-dim: rgba(146, 254, 157, 0.15);
   --theme-text: #E8F5E9;
   --theme-text-dim: #81C784;
-  --theme-border: rgba(146, 254, 157, 0.2);
-  --theme-neon-goal: #FF007F; /* Neon Rose */
+  --theme-border: rgba(146, 254, 157, 0.25);
+  --theme-neon-goal: #FF007F;
 }
 
 /* 5. Midnight Crimson */
 body.theme-midnight-crimson {
-  --theme-bg: #050000;
-  --theme-panel: rgba(26, 8, 8, 0.8);
+  --theme-bg: radial-gradient(circle at 50% 30%, #240404 0%, #090000 100%);
+  --theme-panel: rgba(26, 8, 8, 0.85);
   --theme-panel-base: #1A0808;
   --theme-accent: #E63946;
   --theme-accent-dim: rgba(230, 57, 70, 0.15);
   --theme-text: #F1FAEE;
   --theme-text-dim: #A8DADC;
-  --theme-border: rgba(230, 57, 70, 0.25);
-  --theme-neon-goal: #CCFF00; /* Neon Lime */
+  --theme-border: rgba(230, 57, 70, 0.3);
+  --theme-neon-goal: #CCFF00;
 }
 
 /* 6. Sunset Horizon */
 body.theme-sunset-horizon {
-  --theme-bg: #1A0F0F;
-  --theme-panel: rgba(45, 20, 20, 0.8);
+  --theme-bg: radial-gradient(circle at 50% 20%, #30110d 0%, #150604 60%, #090201 100%);
+  --theme-panel: rgba(45, 20, 20, 0.85);
   --theme-panel-base: #2D1414;
   --theme-accent: #FF9F1C;
   --theme-accent-dim: rgba(255, 159, 28, 0.15);
   --theme-text: #FDFFFC;
   --theme-text-dim: #E71D36;
   --theme-border: rgba(255, 159, 28, 0.3);
-  --theme-neon-goal: #39FF14; /* Neon Green */
+  --theme-neon-goal: #39FF14;
 }
 
 /* 7. Quantum Violet */
 body.theme-quantum-violet {
-  --theme-bg: #0F0014;
-  --theme-panel: rgba(30, 0, 43, 0.8);
+  --theme-bg: radial-gradient(circle at 50% 30%, #1e002b 0%, #06000c 100%);
+  --theme-panel: rgba(30, 0, 43, 0.85);
   --theme-panel-base: #1E002B;
   --theme-accent: #9A48D0;
   --theme-accent-dim: rgba(154, 72, 208, 0.15);
   --theme-text: #F8F0FA;
   --theme-text-dim: #C5A1D6;
-  --theme-border: rgba(154, 72, 208, 0.3);
-  --theme-neon-goal: #00F5D4; /* Neon Teal */
+  --theme-border: rgba(154, 72, 208, 0.35);
+  --theme-neon-goal: #00F5D4;
 }
 
-/* 8. Matcha Zen (Light Theme) - Luminescent Infusion */
-body.theme-matcha-zen {
-  --theme-bg: radial-gradient(circle at 50% 50%, #ECFCCB 0%, #D9F99D 50%, #F7FEE7 100%);
-  --theme-panel: hsla(84, 80%, 98%, 0.4);
-  --theme-panel-tint: hsla(84, 60%, 90%, 0.4);
-  --theme-panel-base: hsla(84, 80%, 99%, 0.5);
-  --theme-panel-dim: rgba(255, 255, 255, 0.5);
-  --theme-accent: #4D7C0F;
-  --theme-accent-dim: rgba(77, 124, 15, 0.2);
-  --theme-text: #365314;
-  --theme-text-dim: #4D7C0F;
-  --theme-border: rgba(77, 124, 15, 0.15);
-  --theme-placeholder: rgba(54, 83, 20, 0.4);
-  --theme-input-bg: rgba(255, 255, 255, 0.85);
-  --theme-neon-goal: #FF10F0;
-  --theme-shadow: 0 32px 64px -16px rgba(77, 124, 15, 0.35);
-  --glass-shine: inset 0 1px 1px 0 rgba(255, 255, 255, 0.8), 0 0 0 1px rgba(77, 124, 15, 0.1);
-}
-
-/* 9. Sandstone (Light Theme) - Luminescent Infusion */
-body.theme-sandstone {
-  --theme-bg: radial-gradient(circle at 50% 50%, #FEF3C7 0%, #FDE68A 50%, #FFFBEB 100%);
-  --theme-panel: hsla(45, 100%, 98%, 0.4);
-  --theme-panel-tint: hsla(45, 80%, 90%, 0.4);
-  --theme-panel-base: hsla(45, 100%, 99%, 0.5);
-  --theme-panel-dim: rgba(255, 255, 255, 0.5);
-  --theme-accent: #B45309;
-  --theme-accent-dim: rgba(180, 83, 9, 0.2);
-  --theme-text: #78350F;
-  --theme-text-dim: #B45309;
-  --theme-border: rgba(180, 83, 9, 0.15);
-  --theme-placeholder: rgba(120, 53, 15, 0.4);
-  --theme-input-bg: rgba(255, 255, 255, 0.85);
-  --theme-neon-goal: #283618;
-  --theme-shadow: 0 32px 64px -16px rgba(180, 83, 9, 0.35);
-  --glass-shine: inset 0 1px 1px 0 rgba(255, 255, 255, 0.8), 0 0 0 1px rgba(180, 83, 9, 0.1);
-}
-
-/* 10. Olympian Gold (⚡) */
+/* 8. Olympian Gold */
 body.theme-olympian-gold {
-  --theme-bg: #0F0D08;
-  --theme-panel: rgba(28, 26, 20, 0.8);
-  --theme-panel-base: #1C1A14;
-  --theme-accent: #D4AF37;
-  --theme-accent-dim: rgba(212, 175, 55, 0.15);
-  --theme-text: #F5F5DC;
-  --theme-text-dim: #A09D80;
-  --theme-border: rgba(212, 175, 55, 0.25);
-  --theme-neon-goal: #FFFFFF; /* Bright White */
-}
-
-/* 11. Aegean Mist (🌊) - Luminescent Infusion */
-body.theme-aegean-mist {
-  --theme-bg: radial-gradient(circle at 50% 50%, #BAE6FD 0%, #7DD3FC 50%, #F0F9FF 100%);
-  --theme-panel: hsla(199, 100%, 98%, 0.4);
-  --theme-panel-tint: hsla(199, 80%, 90%, 0.4);
-  --theme-panel-base: hsla(199, 100%, 99%, 0.5);
-  --theme-panel-dim: rgba(255, 255, 255, 0.5);
-  --theme-accent: #0369A1;
-  --theme-accent-dim: rgba(3, 105, 161, 0.2);
-  --theme-text: #0C4A6E;
-  --theme-text-dim: #0369A1;
-  --theme-border: rgba(3, 105, 161, 0.2);
-  --theme-placeholder: rgba(12, 74, 110, 0.4);
-  --theme-input-bg: rgba(255, 255, 255, 0.9);
-  --theme-neon-goal: #FF00FF;
-  --theme-shadow: 0 32px 64px -16px rgba(3, 105, 161, 0.4);
-  --glass-shine: inset 0 1px 1px 0 rgba(255, 255, 255, 0.8), 0 0 0 1px rgba(3, 105, 161, 0.1);
-}
-
-/* 12. Hades' Ember (🔥) */
-body.theme-hades-ember {
-  --theme-bg: #0A0202;
-  --theme-panel: rgba(26, 8, 8, 0.85);
-  --theme-panel-base: #1A0808;
-  --theme-accent: #FF4500;
-  --theme-accent-dim: rgba(255, 69, 0, 0.15);
-  --theme-text: #FFE4E1;
-  --theme-text-dim: #CD5C5C;
-  --theme-border: rgba(255, 69, 0, 0.3);
-  --theme-neon-goal: #00FFFF; /* Neon Cyan */
-}
-
-/* 13. Athena's Wisdom (🦉) - Luminescent Infusion */
-body.theme-athenas-wisdom {
-  --theme-bg: radial-gradient(circle at 50% 50%, #FEF9C3 0%, #FDE047 60%, #FFFBEB 100%);
-  --theme-panel: hsla(54, 100%, 98%, 0.4);
-  --theme-panel-tint: hsla(54, 80%, 90%, 0.4);
-  --theme-panel-base: hsla(54, 100%, 99%, 0.5);
-  --theme-panel-dim: rgba(255, 255, 255, 0.5);
-  --theme-accent: #854D0E;
-  --theme-accent-dim: rgba(133, 77, 14, 0.2);
-  --theme-text: #422006;
-  --theme-text-dim: #854D0E;
-  --theme-border: rgba(133, 77, 14, 0.15);
-  --theme-placeholder: rgba(66, 32, 6, 0.4);
-  --theme-input-bg: rgba(255, 255, 255, 0.85);
-  --theme-neon-goal: #65A30D;
-  --theme-shadow: 0 32px 64px -16px rgba(133, 77, 14, 0.35);
-  --glass-shine: inset 0 1px 1px 0 rgba(255, 255, 255, 0.8), 0 0 0 1px rgba(133, 77, 14, 0.1);
-}
-
-/* 14. Dionysus' Vineyard (🍇) */
-body.theme-dionysus-vineyard {
-  --theme-bg: #1A0A1F;
-  --theme-panel: rgba(45, 20, 55, 0.8);
-  --theme-panel-base: #2D1437;
-  --theme-accent: #9D4EDD;
-  --theme-accent-dim: rgba(157, 78, 221, 0.15);
-  --theme-text: #F3E8FF;
-  --theme-text-dim: #C084FC;
-  --theme-border: rgba(157, 78, 221, 0.3);
-  --theme-neon-goal: #39FF14; /* Neon Green */
-}
-
-/* 15. Poseidon's Depths (🔱) */
-body.theme-poseidons-depths {
-  --theme-bg: #051923;
-  --theme-panel: rgba(0, 53, 84, 0.8);
-  --theme-panel-base: #003554;
-  --theme-accent: #00A6FB;
-  --theme-accent-dim: rgba(0, 166, 251, 0.15);
-  --theme-text: #E0F2FE;
-  --theme-text-dim: #7DD3FC;
-  --theme-border: rgba(0, 166, 251, 0.3);
-  --theme-neon-goal: #FF00FF; /* Neon Magenta */
-}
-
-/* 16. Artemis' Moonlight (🌙) */
-body.theme-artemis-moonlight {
-  --theme-bg: #0B0E14;
-  --theme-panel: rgba(21, 26, 35, 0.85);
-  --theme-panel-base: #151A23;
-  --theme-accent: #A5B4FC;
-  --theme-accent-dim: rgba(165, 180, 252, 0.15);
-  --theme-text: #F8FAFC;
-  --theme-text-dim: #94A3B8;
-  --theme-border: rgba(165, 180, 252, 0.2);
-  --theme-neon-goal: #00FFFF; /* Neon Cyan */
-}
-
-/* 17. Hermes' Swiftness (👟) */
-body.theme-hermes-swiftness {
-  --theme-bg: #1F1D1A;
-  --theme-panel: rgba(45, 40, 35, 0.8);
-  --theme-panel-base: #2D2823;
-  --theme-accent: #F97316;
-  --theme-accent-dim: rgba(249, 115, 22, 0.15);
-  --theme-text: #FFF7ED;
-  --theme-text-dim: #FB923C;
-  --theme-border: rgba(249, 115, 22, 0.3);
-  --theme-neon-goal: #FF073A; /* Neon Red */
-}
-
-/* 18. Spartan Grit (🛡️) */
-body.theme-spartan-grit {
-  --theme-bg: #0F0A0A;
-  --theme-panel: rgba(40, 20, 20, 0.8);
-  --theme-panel-base: #281414;
-  --theme-accent: #991B1B;
-  --theme-accent-dim: rgba(153, 27, 27, 0.15);
-  --theme-text: #FEE2E2;
-  --theme-text-dim: #F87171;
-  --theme-border: rgba(153, 27, 27, 0.3);
-  --theme-neon-goal: #FFD700; /* Neon Gold */
-}
-
-/* 19. Oracle's Vision (🔮) */
-body.theme-oracles-vision {
-  --theme-bg: #0D0B12;
-  --theme-panel: rgba(30, 25, 45, 0.85);
-  --theme-panel-base: #1E192D;
-  --theme-accent: #C084FC;
-  --theme-accent-dim: rgba(192, 132, 252, 0.15);
-  --theme-text: #FAF5FF;
-  --theme-text-dim: #D8B4FE;
-  --theme-border: rgba(192, 132, 252, 0.3);
-  --theme-neon-goal: #39FF14; /* Neon Green */
-}
-
-
-/* 10. Obsidian (defined by default :root but added class for consistency) */
-body.theme-obsidian {
-  --theme-bg: #080A0F;
-  --theme-panel: rgba(18, 21, 32, 0.8);
-  --theme-panel-base: #121520;
-  --theme-accent: #00F5D4;
-  --theme-accent-dim: rgba(0, 245, 212, 0.15);
-  --theme-text: #EDF2F4;
-  --theme-text-dim: #BDC4C6;
-  --theme-border: rgba(0, 245, 212, 0.2);
-  --theme-neon-goal: #FF00FF; /* Neon Magenta */
-}
-
-/* 11. Olympian Gold ⚡ */
-body.theme-olympian-gold {
-  --theme-bg: #0F0D08;
-  --theme-panel: rgba(30, 26, 16, 0.8);
+  --theme-bg: radial-gradient(circle at 50% 20%, #241c0a 0%, #0c0903 100%);
+  --theme-panel: rgba(30, 26, 16, 0.85);
   --theme-panel-base: #1E1A10;
   --theme-accent: #D4AF37;
   --theme-accent-dim: rgba(212, 175, 55, 0.15);
   --theme-text: #FFFFFF;
   --theme-text-dim: #C5B358;
-  --theme-border: rgba(212, 175, 55, 0.3);
-  --theme-neon-goal: #FFFFFF; /* Bright White */
+  --theme-border: rgba(212, 175, 55, 0.35);
+  --theme-neon-goal: #FFFFFF;
 }
 
-/* 12. Aegean Mist 🌊 */
-body.theme-aegean-mist {
-  --theme-bg: #001E2B;
-  --theme-panel: rgba(0, 50, 70, 0.8);
-  --theme-panel-base: #003246;
-  --theme-accent: #00C9FF;
-  --theme-accent-dim: rgba(0, 201, 255, 0.15);
-  --theme-text: #F0F9FF;
-  --theme-text-dim: #A5D8FF;
-  --theme-border: rgba(0, 201, 255, 0.3);
-  --theme-neon-goal: #FF00FF; /* Neon Magenta */
-}
-
-/* 13. Hades' Ember 🔥 */
+/* 9. Hades' Ember */
 body.theme-hades-ember {
-  --theme-bg: #0A0202;
-  --theme-panel: rgba(25, 5, 5, 0.8);
+  --theme-bg: radial-gradient(circle at 50% 85%, #300808 0%, #100202 60%, #050000 100%);
+  --theme-panel: rgba(25, 5, 5, 0.85);
   --theme-panel-base: #190505;
   --theme-accent: #FF4500;
   --theme-accent-dim: rgba(255, 69, 0, 0.15);
   --theme-text: #FEE2E2;
   --theme-text-dim: #EF4444;
-  --theme-border: rgba(255, 69, 0, 0.3);
-  --theme-neon-goal: #00FFFF; /* Neon Cyan */
+  --theme-border: rgba(255, 69, 0, 0.35);
+  --theme-neon-goal: #00FFFF;
 }
 
-/* 14. Athena's Wisdom 🦉 */
-body.theme-athenas-wisdom {
-  --theme-bg: #141612;
-  --theme-panel: rgba(35, 38, 30, 0.8);
-  --theme-panel-base: #23261E;
-  --theme-accent: #8B9A67;
-  --theme-accent-dim: rgba(139, 154, 103, 0.15);
-  --theme-text: #E3E8D8;
-  --theme-text-dim: #556B2F;
-  --theme-border: rgba(139, 154, 103, 0.3);
-  --theme-neon-goal: #39FF14; /* Neon Green */
-}
-
-/* 15. Dionysus' Vineyard 🍇 */
+/* 10. Dionysus' Vineyard */
 body.theme-dionysus-vineyard {
-  --theme-bg: #1A0A1F;
-  --theme-panel: rgba(45, 18, 54, 0.8);
+  --theme-bg: radial-gradient(circle at 50% 30%, #24052e 0%, #0d0112 100%);
+  --theme-panel: rgba(45, 18, 54, 0.85);
   --theme-panel-base: #2D1236;
   --theme-accent: #7B2CBF;
   --theme-accent-dim: rgba(123, 44, 191, 0.15);
   --theme-text: #F3E8FF;
   --theme-text-dim: #9D4EDD;
-  --theme-border: rgba(123, 44, 191, 0.3);
-  --theme-neon-goal: #39FF14; /* Neon Green */
+  --theme-border: rgba(123, 44, 191, 0.35);
+  --theme-neon-goal: #39FF14;
 }
 
-/* 16. Poseidon's Depths 🔱 */
+/* 11. Poseidon's Depths */
 body.theme-poseidons-depths {
-  --theme-bg: #051923;
-  --theme-panel: rgba(10, 36, 49, 0.8);
+  --theme-bg: radial-gradient(circle at 50% 20%, #002d42 0%, #00121c 100%);
+  --theme-panel: rgba(10, 36, 49, 0.85);
   --theme-panel-base: #0A2431;
   --theme-accent: #00A6FB;
   --theme-accent-dim: rgba(0, 166, 251, 0.15);
   --theme-text: #E0F2F1;
   --theme-text-dim: #4FB0C6;
-  --theme-border: rgba(0, 166, 251, 0.3);
-  --theme-neon-goal: #FF00FF; /* Neon Magenta */
+  --theme-border: rgba(0, 166, 251, 0.35);
+  --theme-neon-goal: #FF00FF;
 }
 
-/* 17. Artemis' Moonlight 🌙 */
+/* 12. Artemis' Moonlight */
 body.theme-artemis-moonlight {
-  --theme-bg: #0B0E14;
-  --theme-panel: rgba(25, 30, 44, 0.8);
+  --theme-bg: radial-gradient(circle at 50% 15%, #1c2333 0%, #0a0d14 100%);
+  --theme-panel: rgba(25, 30, 44, 0.85);
   --theme-panel-base: #191E2C;
   --theme-accent: #A5B4FC;
   --theme-accent-dim: rgba(165, 180, 252, 0.15);
   --theme-text: #EEF2FF;
   --theme-text-dim: #6366F1;
   --theme-border: rgba(165, 180, 252, 0.3);
-  --theme-neon-goal: #00FFFF; /* Neon Cyan */
+  --theme-neon-goal: #00FFFF;
 }
 
-/* 18. Hermes' Swiftness 👟 */
+/* 13. Hermes' Swiftness */
 body.theme-hermes-swiftness {
-  --theme-bg: #1F1D1A;
-  --theme-panel: rgba(45, 41, 36, 0.8);
+  --theme-bg: radial-gradient(circle at 50% 30%, #2d1704 0%, #0d0701 100%);
+  --theme-panel: rgba(45, 41, 36, 0.85);
   --theme-panel-base: #2D2924;
   --theme-accent: #F97316;
   --theme-accent-dim: rgba(249, 115, 22, 0.15);
   --theme-text: #FFF7ED;
   --theme-text-dim: #FB923C;
-  --theme-border: rgba(249, 115, 22, 0.3);
-  --theme-neon-goal: #FF073A; /* Neon Red */
+  --theme-border: rgba(249, 115, 22, 0.35);
+  --theme-neon-goal: #FF073A;
 }
 
-/* 19. Spartan Grit 🛡️ */
+/* 14. Spartan Grit */
 body.theme-spartan-grit {
-  --theme-bg: #0F0A0A;
-  --theme-panel: rgba(40, 15, 15, 0.8);
+  --theme-bg: radial-gradient(circle at 50% 30%, #240c0c 0%, #0c0404 100%);
+  --theme-panel: rgba(40, 15, 15, 0.85);
   --theme-panel-base: #280F0F;
   --theme-accent: #991B1B;
   --theme-accent-dim: rgba(153, 27, 27, 0.15);
   --theme-text: #FEF2F2;
   --theme-text-dim: #EF4444;
-  --theme-border: rgba(153, 27, 27, 0.3);
-  --theme-neon-goal: #FFD700; /* Neon Gold */
+  --theme-border: rgba(153, 27, 27, 0.35);
+  --theme-neon-goal: #FFD700;
 }
 
-/* 20. Oracle's Vision 🔮 */
+/* 15. Oracle's Vision */
 body.theme-oracles-vision {
-  --theme-bg: #0D0B12;
-  --theme-panel: rgba(28, 24, 38, 0.8);
+  --theme-bg: radial-gradient(circle at 50% 40%, #1e1035 0%, #0b0514 100%);
+  --theme-panel: rgba(28, 24, 38, 0.85);
   --theme-panel-base: #1C1826;
   --theme-accent: #C084FC;
   --theme-accent-dim: rgba(192, 132, 252, 0.15);
   --theme-text: #FAF5FF;
   --theme-text-dim: #A855F7;
-  --theme-border: rgba(192, 132, 252, 0.3);
-  --theme-neon-goal: #39FF14; /* Neon Green */
+  --theme-border: rgba(192, 132, 252, 0.35);
+  --theme-neon-goal: #39FF14;
 }
 
-/* 21. Solar Flare ☀️ */
+/* 16. Solar Flare */
 body.theme-solar-flare {
-  --theme-bg: #1A0700;
-  --theme-panel: rgba(50, 15, 0, 0.8);
+  --theme-bg: radial-gradient(circle at 50% 0%, #441400 0%, #1a0800 65%, #090200 100%);
+  --theme-panel: rgba(50, 15, 0, 0.85);
   --theme-panel-base: #320F00;
   --theme-accent: #FF9F1C;
   --theme-accent-dim: rgba(255, 159, 28, 0.15);
   --theme-text: #FFF7ED;
   --theme-text-dim: #FFB703;
-  --theme-border: rgba(255, 159, 28, 0.3);
-  --theme-neon-goal: #00FFFF; /* Neon Cyan */
+  --theme-border: rgba(255, 159, 28, 0.35);
+  --theme-neon-goal: #00FFFF;
 }
 
-/* 22. Deep Sea 🌊 */
+/* 17. Deep Sea */
 body.theme-deep-sea {
-  --theme-bg: #001219;
-  --theme-panel: rgba(0, 40, 50, 0.8);
+  --theme-bg: radial-gradient(circle at 50% 30%, #001f30 0%, #000c14 100%);
+  --theme-panel: rgba(0, 40, 50, 0.85);
   --theme-panel-base: #002832;
   --theme-accent: #0077B6;
   --theme-accent-dim: rgba(0, 119, 182, 0.15);
   --theme-text: #E9D8A6;
   --theme-text-dim: #94D2BD;
-  --theme-border: rgba(0, 119, 182, 0.3);
-  --theme-neon-goal: #FF00FF; /* Neon Magenta */
+  --theme-border: rgba(0, 119, 182, 0.35);
+  --theme-neon-goal: #FF00FF;
 }
 
-/* 23. Sakura Spring (🌸) - Luminescent Infusion */
-body.theme-sakura-spring {
-  --theme-bg: radial-gradient(circle at 50% 50%, #FCE7F3 0%, #FBCFE8 50%, #FFF1F2 100%);
-  --theme-panel: hsla(340, 100%, 98%, 0.4);
-  --theme-panel-tint: hsla(340, 80%, 95%, 0.4);
-  --theme-panel-base: hsla(340, 100%, 99%, 0.5);
-  --theme-panel-dim: rgba(255, 255, 255, 0.6);
-  --theme-accent: #BE185D;
-  --theme-accent-dim: rgba(190, 24, 93, 0.2);
-  --theme-text: #831843;
-  --theme-text-dim: #BE185D;
-  --theme-border: rgba(190, 24, 93, 0.15);
-  --theme-placeholder: rgba(131, 24, 67, 0.4);
-  --theme-input-bg: rgba(255, 255, 255, 0.85);
-  --theme-neon-goal: #ED64A6;
-  --theme-shadow: 0 32px 64px -16px rgba(190, 24, 93, 0.35);
-  --glass-shine: inset 0 1px 1px 0 rgba(255, 255, 255, 0.8), 0 0 0 1px rgba(190, 24, 93, 0.1);
-}
-
-/* 24. Neon Wasteland ⚡ */
+/* 18. Neon Wasteland */
 body.theme-neon-wasteland {
-  --theme-bg: #0D0221;
-  --theme-panel: rgba(30, 10, 50, 0.8);
+  --theme-bg: radial-gradient(circle at 50% 30%, #031401 0%, #010600 100%);
+  --theme-panel: rgba(30, 10, 50, 0.85);
   --theme-panel-base: #1E0A32;
   --theme-accent: #39FF14;
   --theme-accent-dim: rgba(57, 255, 20, 0.15);
   --theme-text: #C084FC;
   --theme-text-dim: #7B2CBF;
-  --theme-border: rgba(57, 255, 20, 0.3);
-  --theme-neon-goal: #FF00E5; /* Neon Pink */
+  --theme-border: rgba(57, 255, 20, 0.35);
+  --theme-neon-goal: #FF00E5;
 }
 
-/* 25. Emerald City 🏰 */
+/* 19. Emerald City */
 body.theme-emerald-city {
-  --theme-bg: #012E1B;
-  --theme-panel: rgba(1, 45, 28, 0.8);
+  --theme-bg: radial-gradient(circle at 50% 20%, #00361a 0%, #00140a 100%);
+  --theme-panel: rgba(1, 45, 28, 0.85);
   --theme-panel-base: #012D1C;
   --theme-accent: #50C878;
   --theme-accent-dim: rgba(80, 200, 120, 0.15);
   --theme-text: #D1FFD7;
   --theme-text-dim: #FFD700;
-  --theme-border: rgba(80, 200, 120, 0.3);
-  --theme-neon-goal: #00FFFF; /* Neon Cyan */
+  --theme-border: rgba(80, 200, 120, 0.35);
+  --theme-neon-goal: #00FFFF;
 }
 
-/* 26. Carbon Fiber 🏎️ */
+/* 20. Carbon Fiber */
 body.theme-carbon-fiber {
-  --theme-bg: #111111;
-  --theme-panel: rgba(25, 25, 25, 0.8);
+  --theme-bg: 
+    linear-gradient(45deg, #111 25%, transparent 25%, transparent 75%, #111 75%, #111) 0 0 / 8px 8px,
+    linear-gradient(45deg, #111 25%, #222 25%, #222 75%, #111 75%, #111) 4px 4px / 8px 8px,
+    #151515;
+  --theme-panel: rgba(25, 25, 25, 0.88);
   --theme-panel-base: #191919;
   --theme-accent: #E63946;
   --theme-accent-dim: rgba(230, 57, 70, 0.15);
   --theme-text: #F1FAEE;
   --theme-text-dim: #A8DADC;
-  --theme-border: rgba(230, 57, 70, 0.3);
-  --theme-neon-goal: #39FF14; /* Neon Green */
+  --theme-border: rgba(230, 57, 70, 0.35);
+  --theme-neon-goal: #39FF14;
 }
 
-/* 27. Sahara Gold 🏜️ */
-body.theme-sahara-gold {
-  --theme-bg: #F5E6BE;
-  --theme-panel: rgba(235, 215, 170, 0.8);
-  --theme-panel-base: #EBD7AA;
-  --theme-accent: #D4AF37;
-  --theme-accent-dim: rgba(212, 175, 55, 0.15);
-  --theme-text: #785A28;
-  --theme-text-dim: #B08D57;
-  --theme-border: rgba(212, 175, 55, 0.3);
-  --theme-placeholder: rgba(59, 46, 42, 0.4);
-  --theme-input-bg: rgba(255, 255, 255, 0.9);
-  --theme-neon-goal: #FF00FF; /* Neon Magenta */
-}
-
-/* 28. Midnight Galaxy 🌌 */
+/* 21. Midnight Galaxy */
 body.theme-midnight-galaxy {
-  --theme-bg: #10002B;
-  --theme-panel: rgba(36, 0, 70, 0.8);
+  --theme-bg: radial-gradient(circle at 50% 40%, #15003b 0%, #060017 100%);
+  --theme-panel: rgba(36, 0, 70, 0.85);
   --theme-panel-base: #240046;
   --theme-accent: #E0AAFF;
   --theme-accent-dim: rgba(224, 170, 255, 0.15);
   --theme-text: #FFFFFF;
   --theme-text-dim: #9D4EDD;
-  --theme-border: rgba(224, 170, 255, 0.3);
-  --theme-neon-goal: #39FF14; /* Neon Green */
+  --theme-border: rgba(224, 170, 255, 0.35);
+  --theme-neon-goal: #39FF14;
 }
 
-/* 29. Nordic Frost (🧊) - Luminescent Infusion */
-body.theme-nordic-frost {
-  --theme-bg: radial-gradient(circle at 50% 50%, #E0F2FE 0%, #BAE6FD 50%, #F0F9FF 100%);
-  --theme-panel: hsla(200, 100%, 98%, 0.4);
-  --theme-panel-tint: hsla(200, 80%, 90%, 0.4);
-  --theme-panel-base: hsla(200, 100%, 99%, 0.5);
-  --theme-panel-dim: rgba(255, 255, 255, 0.5);
-  --theme-accent: #0369A1;
-  --theme-accent-dim: rgba(3, 105, 161, 0.2);
-  --theme-text: #0C4A6E;
-  --theme-text-dim: #0369A1;
-  --theme-border: rgba(3, 105, 161, 0.15);
-  --theme-placeholder: rgba(12, 74, 110, 0.4);
-  --theme-input-bg: rgba(255, 255, 255, 0.85);
-  --theme-neon-goal: #0EA5E9;
-  --theme-shadow: 0 32px 64px -16px rgba(3, 105, 161, 0.4);
-  --glass-shine: inset 0 1px 1px 0 rgba(255, 255, 255, 0.8), 0 0 0 1px rgba(3, 105, 161, 0.1);
-}
-
-/* 30. Ember Forge ⚒️ */
+/* 22. Ember Forge */
 body.theme-ember-forge {
-  --theme-bg: #1B0B04;
-  --theme-panel: rgba(40, 15, 10, 0.8);
+  --theme-bg: radial-gradient(circle at 50% 90%, #361002 0%, #140500 65%, #050100 100%);
+  --theme-panel: rgba(40, 15, 10, 0.85);
   --theme-panel-base: #280F0A;
   --theme-accent: #FF4500;
   --theme-accent-dim: rgba(255, 69, 0, 0.15);
   --theme-text: #FFDAB9;
   --theme-text-dim: #D2691E;
-  --theme-border: rgba(255, 69, 0, 0.3);
-  --theme-neon-goal: #00FFFF; /* Neon Cyan */
+  --theme-border: rgba(255, 69, 0, 0.35);
+  --theme-neon-goal: #00FFFF;
 }
 
 /* ===== REMAINDER OF YOUR ORIGINAL CSS GOES HERE ===== */
@@ -799,12 +525,6 @@ body.theme-ember-forge {
   .daily-collapse-body{display:none}
   .daily-collapse-card.open .daily-collapse-body{display:block}
 
-  /* Light-theme protein-ratio readability fix */
-  body.theme-light-surface .ac-ratio{
-    color:#56b9ca !important;
-    background:linear-gradient(180deg,rgba(137,220,227,0.18),rgba(137,220,227,0.08)) !important;
-    border-color:rgba(86,185,202,0.22) !important;
-  }
 
 /* DATE ROW */
   .date-row{display:flex;align-items:center;gap:10px}
@@ -1320,11 +1040,9 @@ main, header, nav, .page, .app-page{position:relative; z-index:1;}
   -webkit-backdrop-filter: var(--glass-blur);
 }
 
-/* Legacy-Style Theme Glows for New 10 Themes */
+/* Legacy-Style Theme Glows for New Themes */
 body.theme-olympian-gold h1, body.theme-olympian-gold h2, body.theme-olympian-gold .ctitle,
-body.theme-aegean-mist h1, body.theme-aegean-mist h2, body.theme-aegean-mist .ctitle,
 body.theme-hades-ember h1, body.theme-hades-ember h2, body.theme-hades-ember .ctitle,
-body.theme-athenas-wisdom h1, body.theme-athenas-wisdom h2, body.theme-athenas-wisdom .ctitle,
 body.theme-dionysus-vineyard h1, body.theme-dionysus-vineyard h2, body.theme-dionysus-vineyard .ctitle,
 body.theme-poseidons-depths h1, body.theme-poseidons-depths h2, body.theme-poseidons-depths .ctitle,
 body.theme-artemis-moonlight h1, body.theme-artemis-moonlight h2, body.theme-artemis-moonlight .ctitle,
@@ -1382,16 +1100,6 @@ textarea{
 input::placeholder,
 textarea::placeholder{color: rgba(209,230,234,0.55) !important;}
 
-body.theme-light-surface input,
-body.theme-light-surface select,
-body.theme-light-surface textarea {
-  color: var(--theme-text) !important;
-}
-
-body.theme-light-surface input::placeholder,
-body.theme-light-surface textarea::placeholder {
-  color: var(--theme-placeholder) !important;
-}
 .progress,
 .progress-bar-shell{
   background: linear-gradient(180deg, rgba(255,255,255,0.08), rgba(255,255,255,0.03)) !important;
@@ -1547,26 +1255,6 @@ nav.glass-nav{
     color: #eafcff !important;
   }
 
-  body.theme-light-surface .ac-ratio,
-  body.theme-light-surface .stat-box,
-  body.theme-light-surface .gsbox,
-  body.theme-light-surface .spm,
-  body.theme-light-surface .nc-chip,
-  body.theme-light-surface .wt-win-btn,
-  body.theme-light-surface .shop-tab-btn,
-  body.theme-light-surface .btn-s,
-  body.theme-light-surface .recent-chip,
-  body.theme-light-surface .macro-split-glass,
-  body.theme-light-surface .macro-slider-bar,
-  body.theme-light-surface .shop-card {
-    background: #FFFFFF !important;
-    border-color: var(--theme-border) !important;
-    box-shadow:
-      inset 0 1px 0 rgba(255,255,255,0.65),
-      0 10px 25px rgba(0, 0, 0, 0.04),
-      0 2px 4px rgba(0, 0, 0, 0.01) !important;
-  }
-
   /* Premium Filter Bubbles (The Text Bubbles from user request) */
   .pantry-filter-chip {
     background: rgba(255,255,255,0.03);
@@ -1587,410 +1275,7 @@ nav.glass-nav{
     transform: translateY(-2px);
   }
 
-  body.theme-light-surface .pantry-filter-chip.active {
-    color: var(--theme-text, #001114) !important;
-    font-weight: 900 !important;
-    box-shadow: 
-      0 10px 28px var(--theme-accent-dim, rgba(0,0,0,0.2)),
-      0 0 20px var(--theme-accent-dim, rgba(0,0,0,0.1)) !important;
-  }
 
-  body.theme-light-surface .stat-box .stat-lbl,
-  body.theme-light-surface .gsbox-lbl,
-  body.theme-light-surface .spm-lbl,
-  body.theme-light-surface .wt-win-btn,
-  body.theme-light-surface .shop-tab-btn,
-  body.theme-light-surface .btn-s,
-  body.theme-light-surface .recent-chip,
-  body.theme-light-surface .macro-slider-label,
-  body.theme-light-surface .meal-cals,
-  body.theme-light-surface .meal-hdr,
-  body.theme-light-surface .lbl {
-    color: #1e293b !important;
-    text-shadow: none !important;
-  }
-
-  body.theme-light-surface .stat-box .stat-val,
-  body.theme-light-surface .gsbox-val,
-  body.theme-light-surface .spm-val,
-  body.theme-light-surface .ac-ratio,
-  body.theme-light-surface .macro-slider-val {
-    color: #0f172a !important;
-    font-weight: 800 !important;
-    text-shadow: none !important;
-  }
-
-  body.theme-light-surface .card,
-  body.theme-light-surface .shop-card,
-  body.theme-light-surface .activity-card {
-    background: #FFFFFF !important;
-    border: 1px solid var(--theme-border) !important;
-    box-shadow:
-      0 15px 35px rgba(0, 0, 0, 0.04),
-      0 3px 6px rgba(0, 0, 0, 0.01) !important;
-  }
-
-  body.theme-light-surface .app {
-    background: linear-gradient(180deg, rgba(255,255,255,0.92), rgba(245,249,247,0.98)) !important;
-  }
-
-  body.theme-light-surface {
-    --theme-success: color-mix(in srgb, #92FE9D 60%, var(--theme-text)) !important;
-    --theme-panel: #FFFFFF !important;
-    --theme-panel-base: #FFFFFF !important;
-    --theme-panel-dim: color-mix(in srgb, var(--theme-text) 3%, rgba(255, 255, 255, 0.94)) !important;
-    --theme-border: color-mix(in srgb, var(--theme-text) 18%, transparent) !important;
-    --theme-input-bg: color-mix(in srgb, var(--theme-text) 1.5%, rgba(255, 255, 255, 0.98)) !important;
-  }
-
-  /* Dark-surface text contrast fix */
-  .theme-light-surface .food-card,
-  .theme-light-surface .saved-food-card,
-  .theme-light-surface .result-card,
-  .theme-light-surface .mealCard,
-  .theme-light-surface .sp,
-  .theme-light-surface [style*="background:#001114"],
-  .theme-light-surface [style*="background: #001114"],
-  .theme-light-surface [style*="background:#001d22"],
-  .theme-light-surface [style*="background: #001d22"],
-  .theme-light-surface [style*="background:#002b30"],
-  .theme-light-surface [style*="background: #002b30"],
-  .theme-light-surface [style*="background:var(--bg-highest"],
-  .theme-light-surface [style*="background: var(--bg-highest"],
-  .theme-light-surface [style*="background:var(--bg2)"],
-  .theme-light-surface [style*="background: var(--bg2)"]{
-    color:#F5F5F5 !important;
-  }
-
-  .theme-light-surface .food-card *,
-  .theme-light-surface .saved-food-card *,
-  .theme-light-surface .result-card *,
-  .theme-light-surface .mealCard *,
-  .theme-light-surface .sp *,
-  .theme-light-surface [style*="background:#001114"] *,
-  .theme-light-surface [style*="background: #001114"] *,
-  .theme-light-surface [style*="background:#001d22"] *,
-  .theme-light-surface [style*="background: #001d22"] *,
-  .theme-light-surface [style*="background:#002b30"] *,
-  .theme-light-surface [style*="background: #002b30"] *{
-    color:inherit;
-  }
-
-  .theme-light-surface .food-card [style*="color:#1E1A3E"],
-  .theme-light-surface .food-card [style*="color: #1E1A3E"],
-  .theme-light-surface .food-card [style*="color:#2D2F36"],
-  .theme-light-surface .food-card [style*="color: #2D2F36"],
-  .theme-light-surface .food-card [style*="color:#3B2E2A"],
-  .theme-light-surface .food-card [style*="color: #3B2E2A"],
-  .theme-light-surface .food-card [style*="color:#2C4A47"],
-  .theme-light-surface .food-card [style*="color: #2C4A47"],
-  .theme-light-surface .food-card [style*="color:var(--text2)"],
-  .theme-light-surface .food-card [style*="color: var(--text2)"],
-  .theme-light-surface .food-card [style*="color:var(--text3)"],
-  .theme-light-surface .food-card [style*="color: var(--text3)"],
-  .theme-light-surface .saved-food-card [style*="color:var(--text2)"],
-  .theme-light-surface .saved-food-card [style*="color: var(--text2)"],
-  .theme-light-surface .saved-food-card [style*="color:var(--text3)"],
-  .theme-light-surface .saved-food-card [style*="color: var(--text3)"],
-  .theme-light-surface .result-card [style*="color:var(--text2)"],
-  .theme-light-surface .result-card [style*="color: var(--text2)"],
-  .theme-light-surface .result-card [style*="color:var(--text3)"],
-  .theme-light-surface .result-card [style*="color: var(--text3)"],
-  .theme-light-surface .mealCard [style*="color:var(--text2)"],
-  .theme-light-surface .mealCard [style*="color: var(--text2)"],
-  .theme-light-surface .mealCard [style*="color:var(--text3)"],
-  .theme-light-surface .mealCard [style*="color: var(--text3)"],
-  .theme-light-surface .sp [style*="color:var(--text2)"],
-  .theme-light-surface .sp [style*="color: var(--text2)"],
-  .theme-light-surface .sp [style*="color:var(--text3)"],
-  .theme-light-surface .sp [style*="color: var(--text3)"]{
-    color:#DDE7EA !important;
-  }
-
-  .theme-light-surface .food-card a,
-  .theme-light-surface .saved-food-card a,
-  .theme-light-surface .result-card a,
-  .theme-light-surface .mealCard a,
-  .theme-light-surface .sp a{
-    color:#9FE3FF !important;
-  }
-
-  .theme-light-surface .food-card .built-in-badge,
-  .theme-light-surface .saved-food-card .built-in-badge,
-  .theme-light-surface .result-card .built-in-badge{
-    color:#F5F5F5 !important;
-    background:rgba(255,255,255,0.14) !important;
-    border-color:rgba(255,255,255,0.18) !important;
-  }
-
-/* Paste ALL your existing layout CSS below this line. 
-   Keep everything from .glass, .material-symbols-outlined, .glass-card, 
-   .font-headline, .nc-title, .nc-subtitle, .nc-chip, etc. 
-   Do NOT change anything else. */
-
-/* ===== LIGHT THEME BABY-BLUE TEXT DARKENING ===== */
-body.theme-light-surface [style*="color:#89dce3"],
-body.theme-light-surface [style*="color: #89dce3"],
-body.theme-light-surface [style*="color:#89DCF3"],
-body.theme-light-surface [style*="color: #89DCF3"],
-body.theme-light-surface .ctitle,
-body.theme-light-surface .nc-chip-teal,
-body.theme-light-surface .ring-cal,
-body.theme-light-surface .date-nav,
-body.theme-light-surface .info-text,
-body.theme-light-surface .helper-text,
-body.theme-light-surface .subtle-accent,
-body.theme-light-surface .shop-section-title,
-body.theme-light-surface .shop-tab-btn.shop-tab-active,
-body.theme-light-surface .daily-collapse-btn,
-body.theme-light-surface .log-main-tab.active,
-body.theme-light-surface .search-tab-btn.active,
-body.theme-light-surface .foods-tab-btn.active {
-  color: #2f6f86 !important;
-  text-shadow: none !important;
-}
-
-body.theme-light-surface .nc-chip-teal,
-body.theme-light-surface .shop-tab-btn.shop-tab-active,
-body.theme-light-surface .daily-collapse-btn {
-  border-color: rgba(47,111,134,0.22) !important;
-}
-
-
-/* ===== AUTO CONTRAST FIX (DARK BG + DARK TEXT) ===== */
-[class*="card"],
-[class*="result"],
-[class*="meal"],
-[class*="box"],
-[class*="wrap"],
-[class*="glass"] {
-  position: relative;
-}
-
-/* If background is dark → force light readable text */
-[class*="card"],
-[class*="result"],
-[class*="meal"],
-[class*="box"],
-[class*="wrap"],
-[class*="glass"] {
-  color: inherit;
-}
-
-/* ===== Light Theme Global Contrast Fix ===== */
-body.theme-light-surface .card,
-body.theme-light-surface .card-header,
-body.theme-light-surface .lbl,
-body.theme-light-surface .inp,
-body.theme-light-surface .stat-box,
-body.theme-light-surface .gsbox,
-body.theme-light-surface .sp,
-body.theme-light-surface .dd-section,
-body.theme-light-surface .activity-card {
-  color: var(--theme-text) !important;
-}
-
-body.theme-light-surface .card *:not(.luminous-absolute-white),
-body.theme-light-surface .stat-box *:not(.luminous-absolute-white),
-body.theme-light-surface .gsbox *:not(.luminous-absolute-white),
-body.theme-light-surface .sp *:not(.luminous-absolute-white),
-body.theme-light-surface .dd-section *:not(.luminous-absolute-white),
-body.theme-light-surface .activity-card *:not(.luminous-absolute-white) {
-  color: inherit !important;
-}
-
-body.theme-light-surface .lbl,
-body.theme-light-surface .text-dim,
-body.theme-light-surface .ac-desc {
-  color: var(--theme-text-dim) !important;
-}
-
-body.theme-light-surface .inp::placeholder {
-  color: var(--theme-placeholder) !important;
-}
-
-/* Portion Result Calorie Display — default (dark themes): vibrant green */
-.portion-result-value {
-  color: var(--theme-success, #92FE9D);
-}
-
-/* Light themes: slightly darken text inside the portion modal for contrast against gray backdrop */
-body.theme-light-surface .portion-edit-modal {
-  color: color-mix(in srgb, var(--theme-text) 80%, black) !important;
-}
-body.theme-light-surface .portion-edit-modal h2 {
-  color: color-mix(in srgb, var(--theme-text) 70%, black) !important;
-}
-body.theme-light-surface .portion-edit-modal h2 svg {
-  color: color-mix(in srgb, var(--theme-accent) 75%, black) !important;
-}
-body.theme-light-surface .portion-edit-modal label {
-  color: color-mix(in srgb, var(--theme-text) 80%, black) !important;
-}
-body.theme-light-surface .portion-edit-modal .portion-result-value {
-  color: color-mix(in srgb, var(--theme-text) 70%, black) !important;
-}
-body.theme-light-surface .portion-edit-modal .portion-result-box {
-  background: rgba(0, 0, 0, 0.03) !important;
-  border-color: rgba(0, 0, 0, 0.08) !important;
-}
-body.theme-light-surface .portion-edit-modal .portion-result-box div:first-child {
-  color: color-mix(in srgb, var(--theme-text) 80%, black) !important;
-  opacity: 1 !important;
-}
-/* Keep input/select text dark on their white backgrounds */
-body.theme-light-surface .portion-edit-modal .mm-input,
-body.theme-light-surface .portion-edit-modal .mm-select {
-  color: var(--theme-text) !important;
-}
-/* Slightly darken food name and serving text inside the info card */
-body.theme-light-surface .portion-edit-modal > div:nth-child(2) > div:first-child {
-  color: color-mix(in srgb, var(--theme-accent) 75%, black) !important;
-}
-body.theme-light-surface .portion-edit-modal > div:nth-child(2) > div:last-child {
-  color: color-mix(in srgb, var(--theme-text) 80%, black) !important;
-}
-
-/* ===== REWARD MODAL — Light Theme Contrast Fixes ===== */
-/* Slightly darken text for readability without making it too heavy. */
-body.theme-light-surface .reward-modal {
-  background: color-mix(in srgb, var(--theme-panel-base) 95%, black) !important;
-}
-body.theme-light-surface .reward-title {
-  color: color-mix(in srgb, var(--theme-text) 70%, black) !important;
-}
-body.theme-light-surface .reward-close-btn {
-  background: rgba(0, 0, 0, 0.05) !important;
-  border-color: rgba(0, 0, 0, 0.08) !important;
-  color: color-mix(in srgb, var(--theme-text) 80%, black) !important;
-}
-body.theme-light-surface .reward-stat-box {
-  background: rgba(0, 0, 0, 0.025) !important;
-  border-color: rgba(0, 0, 0, 0.06) !important;
-}
-body.theme-light-surface .reward-label {
-  color: color-mix(in srgb, var(--theme-text) 80%, black) !important;
-}
-body.theme-light-surface .reward-info-card {
-  background: color-mix(in srgb, var(--theme-accent-dim) 80%, rgba(0,0,0,0.04)) !important;
-  border-color: color-mix(in srgb, var(--theme-accent) 40%, transparent) !important;
-}
-body.theme-light-surface .reward-info-title {
-  color: color-mix(in srgb, var(--theme-accent) 75%, black) !important;
-}
-body.theme-light-surface .reward-info-body {
-  color: color-mix(in srgb, var(--theme-text) 75%, black) !important;
-  opacity: 1 !important;
-}
-body.theme-light-surface .reward-code {
-  background: rgba(0, 0, 0, 0.05) !important;
-  color: color-mix(in srgb, var(--theme-text) 80%, black) !important;
-}
-body.theme-light-surface .reward-gems-value {
-  color: color-mix(in srgb, var(--theme-accent) 80%, black) !important;
-}
-body.theme-light-surface .reward-progress-track {
-  background: rgba(0, 0, 0, 0.04) !important;
-  border-color: rgba(0, 0, 0, 0.06) !important;
-}
-body.theme-light-surface .reward-dismiss-btn {
-  background: rgba(0, 0, 0, 0.03) !important;
-  border-color: rgba(0, 0, 0, 0.08) !important;
-  color: color-mix(in srgb, var(--theme-text) 75%, black) !important;
-}
-body.theme-light-surface .reward-dismiss-btn:hover {
-  background: rgba(0, 0, 0, 0.06) !important;
-}
-
-/* ===== GLOBAL LIGHT-THEME UI SYSTEM ===== */
-/* Subtle overrides so dark-theme-only rgba(255,255,255,x) patterns become
-   gently visible on light themes without looking too heavy. */
-
-/* --- Notification/Settings Toggle Switches --- */
-body.theme-light-surface div[style*="rgba(255,255,255,0.1)"][style*="border-radius: 12px"][style*="width: 42px"] {
-  background: rgba(0, 0, 0, 0.08) !important;
-}
-
-/* --- Section/Card panels inside modals --- */
-body.theme-light-surface .section,
-body.theme-light-surface .section[style*="var(--theme-panel)"] {
-  background: #FFFFFF !important;
-  border-color: var(--theme-border) !important;
-  box-shadow: 
-    0 10px 30px rgba(0, 0, 0, 0.03), 
-    0 1px 3px rgba(0, 0, 0, 0.01) !important;
-}
-
-/* --- Theme picker cards: unselected borders & backgrounds --- */
-body.theme-light-surface div[style*="rgba(255,255,255,0.05)"][style*="border-radius"] {
-  border-color: var(--theme-border) !important;
-  background: var(--theme-panel-dim) !important;
-}
-
-/* --- Color swatch borders in theme picker --- */
-body.theme-light-surface div[style*="rgba(255,255,255,0.15)"][style*="overflow: hidden"] {
-  border-color: rgba(0, 0, 0, 0.1) !important;
-}
-
-/* --- Tab/Pill segmented controls (VaultView, AddFoodModal) --- */
-body.theme-light-surface div[style*="rgba(255,255,255,0.03)"][style*="padding: 4px"] {
-  background: rgba(0, 0, 0, 0.025) !important;
-}
-
-/* --- All buttons with faint white backgrounds --- */
-body.theme-light-surface button[style*="rgba(255,255,255,0.05)"] {
-  background: rgba(0, 0, 0, 0.03) !important;
-  border-color: rgba(0, 0, 0, 0.06) !important;
-}
-
-/* --- All divs using faint white backgrounds (stat boxes, cards, panels) --- */
-body.theme-light-surface div[style*="background: rgba(255,255,255,0.05)"],
-body.theme-light-surface div[style*="background: rgba(255,255,255,0.03)"],
-body.theme-light-surface div[style*="background: rgba(255,255,255,0.02)"] {
-  background: rgba(0, 0, 0, 0.025) !important;
-}
-
-/* --- All faint white borders converted to visible dark borders --- */
-body.theme-light-surface div[style*="border: 1px solid rgba(255,255,255,0.1)"],
-body.theme-light-surface div[style*="border: 1px solid rgba(255,255,255,0.05)"] {
-  border-color: rgba(0, 0, 0, 0.06) !important;
-}
-
-/* --- Separator lines (borderTop/borderLeft using white alpha) --- */
-body.theme-light-surface div[style*="border-top: 1px solid rgba(255,255,255"],
-body.theme-light-surface div[style*="border-left: 1px solid rgba(255,255,255"] {
-  border-color: rgba(0, 0, 0, 0.06) !important;
-}
-
-/* --- Code blocks in modals --- */
-body.theme-light-surface code[style*="rgba(0,0,0,0.3)"] {
-  background: rgba(0, 0, 0, 0.05) !important;
-  color: var(--theme-text) !important;
-}
-
-/* --- Light green success text (#92FE9D) is invisible on light themes --- */
-body.theme-light-surface span[style*="color: #92FE9D"],
-body.theme-light-surface span[style*="color: rgb(146, 254, 157)"] {
-  color: color-mix(in srgb, var(--theme-accent) 80%, black) !important;
-}
-
-/* --- Progress bar tracks --- */
-body.theme-light-surface div[style*="rgba(255,255,255,0.08)"][style*="border-radius: 10px"] {
-  background: rgba(0, 0, 0, 0.05) !important;
-  border-color: rgba(0, 0, 0, 0.08) !important;
-}
-
-/* --- Close/dismiss buttons on modals --- */
-body.theme-light-surface button[style*="rgba(0,0,0,0.2)"][style*="border-radius: 50%"] {
-  background: rgba(0, 0, 0, 0.05) !important;
-  border: 1px solid rgba(0, 0, 0, 0.08) !important;
-}
-
-/* --- Macro bubbles and small info badges --- */
-body.theme-light-surface div[style*="rgba(255,255,255,0.02)"][style*="border-radius"] {
-  background: rgba(0, 0, 0, 0.02) !important;
-  border-color: rgba(0, 0, 0, 0.05) !important;
-}
 
 
 
@@ -2036,281 +1321,6 @@ body.theme-light-surface div[style*="rgba(255,255,255,0.02)"][style*="border-rad
   color: var(--theme-accent);
 }
 
-body.theme-light-surface .info-btn {
-  background: rgba(0,0,0,0.05);
-  border-color: rgba(0,0,0,0.1);
-  color: var(--theme-text-dim);
-}
-body.theme-light-surface .info-btn.active {
-  background: var(--theme-accent);
-  border-color: var(--theme-accent);
-  color: #FFFFFF !important;
-}
-
-.nutrition-facts-display {
-  background: #1e293b !important; /* Deep dark slate to contrast white text */
-  border-color: #334155 !important;
-}
-
-.nutrition-facts-display,
-.nutrition-facts-display * {
-  color: #FFFFFF !important;
-}
-
-.nutrition-facts-display .micro-bubble {
-  background: rgba(255, 255, 255, 0.15) !important;
-  border-color: rgba(255, 255, 255, 0.2) !important;
-}
-
-.nutrition-facts-display .micro-input,
-.nutrition-facts-display .micro-input:focus,
-.nutrition-facts-display .micro-input:active,
-.nutrition-facts-display .micro-input:-webkit-autofill,
-.nutrition-facts-display .micro-input:-webkit-autofill:hover,
-.nutrition-facts-display .micro-input:-webkit-autofill:focus,
-.nutrition-facts-display .micro-input:-webkit-autofill:active {
-  background: rgba(0, 0, 0, 0.4) !important;
-  border-color: rgba(255, 255, 255, 0.15) !important;
-  color: #FFFFFF !important;
-  -webkit-text-fill-color: #FFFFFF !important;
-}
-
-/* DIARY HEADER DARKENING FOR LIGHT THEMES */
-body.theme-light-surface .diary-header-text {
-  color: #1e293b !important; /* Deep dark slate */
-  text-shadow: none !important;
-  opacity: 1 !important;
-}
-
-body.theme-light-surface div.diary-header-subtitle,
-body.theme-light-surface .diary-header-text:not(h2) {
-  color: #475569 !important; /* Subtitle slightly lighter but still very dark */
-  opacity: 0.8 !important;
-}
-
-/* Explicitly force white text for inputs in ALL dark themes */
-body:not(.theme-light-surface) .inp,
-body:not(.theme-light-surface) .search-input {
-  color: #FFFFFF !important;
-}
-body:not(.theme-light-surface) .inp::placeholder,
-body:not(.theme-light-surface) .search-input::placeholder {
-  color: rgba(255, 255, 255, 0.5) !important;
-}
-
-/* --- LUMINOUS MASTER CONTRAST VAULT --- */
-
-/* Absolute Synchronization: All descendants of analytical bubbles MUST match the Cheer Banner color */
-body div.glass-card, 
-body div.glass-card *,
-body div.card,
-body div.card * {
-  /* Copying the Dark Theme approach: Force pure white for absolute contrast visibility */
-  --theme-text-on-panel: #FFFFFF !important;
-  --theme-text-dim-on-panel: rgba(255, 255, 255, 0.9) !important;
-  color: var(--theme-text-on-panel) !important;
-  transition: color 0.3s ease;
-}
-
-body.theme-light-surface .glass-card,
-body.theme-light-surface .card {
-  /* Logic integrated into global vault above */
-}
-
-/* Secondary labels/dim text synchronization at high-fidelity white */
-body div.glass-card .text-dim,
-body div.glass-card .lbl,
-body div.card .text-dim,
-body div.card .lbl,
-body div.glass-card span[style*="opacity: 0.6"],
-body div.card span[style*="opacity: 0.6"] {
-  color: rgba(255, 255, 255, 0.9) !important;
-  opacity: 1 !important; /* Prevent double-dimming */
-}
-
-/* Force dark analytical 'featured' tabs in light mode */
-body.theme-light-surface .weekly-report-card {
-  background: rgba(10, 30, 33, 0.5) !important;
-  border-color: rgba(255, 255, 255, 0.1) !important;
-}
-
-body.theme-light-surface .weekly-report-card .this-week-title {
-  color: #FFFFFF !important;
-}
-
-/* Luminous Breath Animation: For premium 'fading and contrasting' UI feel */
-@keyframes luminous-breath {
-  0% { 
-    border-color: rgba(255, 255, 255, 0.1); 
-    box-shadow: 0 8px 32px rgba(0,0,0,0.15); 
-  }
-  50% { 
-    border-color: var(--theme-accent, #00C9FF); 
-    box-shadow: 0 12px 48px rgba(0,0,0,0.25), 0 0 15px var(--theme-accent-dim, rgba(0,201,255,0.2)); 
-  }
-  100% { 
-    border-color: rgba(255, 255, 255, 0.1); 
-    box-shadow: 0 8px 32px rgba(0,0,0,0.15); 
-  }
-}
-
-.luminous-breath {
-  animation: luminous-breath 6s infinite ease-in-out;
-  transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-/* Re-allow accent colors to pop ONLY for explicit status items */
-body .glass-card .status-color,
-body .card .status-color,
-body .glass-card [style*="color: var(--theme-success)"],
-body .card [style*="color: var(--theme-success)"],
-body .glass-card [style*="color: var(--theme-error)"],
-body .card [style*="color: var(--theme-error)"] {
-  color: inherit !important;
-}
-
-
-/* TROPICAL ESCAPE COLLECTION REMOVED */
-
-
-/* --- STOCK THEMES START HERE --- */
-
-/* READABILITY OVERRIDES FOR LIGHT THEMES */
-
-/* Nuclear CSS - Overrides inline white text ONLY if outside of our dark bubbles */
-body.theme-light-surface [style*="color: #fff"]:not(.glass-card):not(.card):not(.glass-card *):not(.card *):not([style*="color: #FFFFFF"]),
-body.theme-light-surface [style*="color: white"]:not(.glass-card):not(.card):not(.glass-card *):not(.card *):not([style*="color: #FFFFFF"]),
-body.theme-light-surface [style*="color: rgb(255, 255, 255)"]:not(.glass-card):not(.card):not(.glass-card *):not(.card *):not([style*="color: #FFFFFF"]),
-body.theme-light-surface [style*="color: rgba(255, 255, 255, 1)"]:not(.glass-card):not(.card):not(.glass-card *):not(.card *):not([style*="color: #FFFFFF"]),
-body.theme-light-surface [style*="color: #FFFFFF"]:not(.glass-card):not(.card):not(.glass-card *):not(.card *),
-body.theme-light-surface .meal-hdr,
-body.theme-light-surface .meal-cals,
-body.theme-light-surface .meal-add-btn,
-body.theme-light-surface .del-btn,
-body.theme-light-surface .btn-p {
-  color: var(--theme-text) !important;
-}
-
-/* Specific override for dim text in light themes - ignoring panel-bound text */
-body.theme-light-surface [style*="color: rgba(255, 255, 255, 0.7)"]:not(.glass-card *):not(.card *),
-body.theme-light-surface [style*="color: rgba(255, 255, 255, 0.6)"]:not(.glass-card *):not(.card *) {
-  color: var(--theme-text-dim) !important;
-}
-
-/* INPUT BUBBLE CONTRAST HARDENING - MAX CONTRAST */
-body.theme-light-surface input::placeholder,
-body.theme-light-surface textarea::placeholder {
-  color: var(--theme-text) !important;
-  opacity: 0.9 !important; /* Force hint text to be as dark as possible */
-}
-
-.force-white-placeholder::placeholder,
-body.theme-light-surface .force-white-placeholder::placeholder {
-  color: rgba(255, 255, 255, 0.7) !important;
-  opacity: 1 !important;
-}
-
-body.theme-light-surface input:not(.force-white-placeholder):not(.glass-card input),
-body.theme-light-surface select:not(.glass-card select),
-body.theme-light-surface textarea:not(.force-white-placeholder) {
-  color: var(--theme-text) !important;
-}
-
-/* Force white text on all inputs/textareas inside glass cards (dark backgrounds) */
-body.theme-light-surface .glass-card input,
-body.theme-light-surface .glass-card select,
-body.theme-light-surface .glass-card textarea {
-  color: color-mix(in srgb, var(--theme-text) 30%, white) !important;
-}
-body.theme-light-surface .force-white-placeholder {
-  color: #FFFFFF !important;
-}
-
-/* Make amount/unit inputs slightly darker on light themes so they stand out against light backgrounds */
-body.theme-light-surface .config-input {
-  background: rgba(0, 0, 0, 0.06) !important;
-  border-color: rgba(0, 0, 0, 0.12) !important;
-  color: var(--theme-text) !important;
-}
-
-/* Force ALL text inside glass-cards to be a lightened theme shade on light themes.
-   Glass-cards always have dark semi-transparent backgrounds. */
-body.theme-light-surface .glass-card,
-body.theme-light-surface .glass-card div,
-body.theme-light-surface .glass-card span,
-body.theme-light-surface .glass-card button,
-body.theme-light-surface .glass-card label,
-body.theme-light-surface .glass-card p,
-body.theme-light-surface .glass-card h3,
-body.theme-light-surface .glass-card code {
-  color: color-mix(in srgb, var(--theme-text) 30%, white) !important;
-}
-body.theme-light-surface .glass-card button {
-  border-color: rgba(255, 255, 255, 0.15) !important;
-}
-/* Dim text inside glass-cards (labels like KCAL, P, C, F) */
-body.theme-light-surface .glass-card div[style*="var(--theme-text-dim)"] {
-  color: color-mix(in srgb, var(--theme-text) 15%, white) !important;
-}
-/* Keep accent-colored text visible inside glass cards */
-body.theme-light-surface .glass-card div[style*="var(--theme-accent)"],
-body.theme-light-surface .glass-card button[style*="var(--theme-accent)"] {
-  color: var(--theme-accent) !important;
-}
-body.theme-light-surface .glass-card div[style*="var(--theme-error)"] {
-  color: var(--theme-error) !important;
-}
-body.theme-light-surface .glass-card div[style*="var(--theme-warning)"] {
-  color: var(--theme-warning) !important;
-}
-/* Glass-card inner card separators should be white-alpha */
-body.theme-light-surface .glass-card div[style*="var(--theme-panel-dim)"],
-body.theme-light-surface .glass-card div[style*="var(--theme-border)"] {
-  border-color: rgba(255, 255, 255, 0.1) !important;
-}
-
-/* Force no arrows on select menus */
-body.theme-light-surface select {
-  background-image: none !important;
-}
-
-/* Selected tab darkening for light themes */
-body.theme-light-surface .pantry-filter.active,
-body.theme-light-surface .search-tab-active {
-  color: var(--theme-text) !important;
-  filter: brightness(0.8);
-}
-
-/* Specific contrast darkening for macro denominators in light themes */
-body.theme-light-surface .luminous-macro-denom {
-  color: var(--theme-text) !important;
-  opacity: 0.9 !important;
-}
-
-
-/* GLASSMORPHIC BACKGROUND GLOWS */
-.bg-glow-container {
-  position: fixed;
-  inset: 0;
-  z-index: -1;
-  overflow: hidden;
-  pointer-events: none;
-  background: var(--theme-bg, #080A0F);
-}
-
-.glow-blob {
-  position: absolute;
-  border-radius: 50%;
-  filter: blur(80px);
-  opacity: 0.15;
-  mix-blend-mode: screen;
-}
-
-body.theme-light-surface .glow-blob {
-  mix-blend-mode: multiply;
-  opacity: 0.1;
-  filter: blur(100px);
-}
 
 .glow-blob-1 {
   width: 400px;
@@ -2383,8 +1393,8 @@ body.theme-light-surface .glow-blob {
   background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
 }
 
-/* Hardened Glass for Dark Themes with Neon Pulse */
-body:not(.theme-light-surface) .glass-card {
+/* Hardened Glass with Neon Pulse */
+.glass-card {
   backdrop-filter: blur(35px);
   box-shadow: 
     0 8px 32px 0 rgba(0,0,0,0.45),
@@ -2453,10 +1463,6 @@ body:not(.theme-light-surface) .glass-card {
   background: var(--theme-accent);
 }
 
-body.theme-light-surface .static-blob {
-  mix-blend-mode: multiply;
-  opacity: 0.08;
-}
 
 .blob-top-right {
   width: 80%;
@@ -2492,9 +1498,6 @@ body.theme-light-surface .static-blob {
   opacity: 0.2;
 }
 
-body.theme-light-surface .contour-lines {
-  opacity: 0.1;
-}
 
 @keyframes searching-bar {
   0% { left: -40%; width: 30%; }
@@ -2509,319 +1512,4 @@ body .luminous-absolute-white * {
   opacity: 1 !important;
 }
 
-body.theme-light-surface .luminous-absolute-white,
-body.theme-light-surface .luminous-absolute-white * {
-  color: var(--theme-text) !important;
-}
 
-/* ====== ISOLATED FIX FOR AI REVIEW DETECTED MEAL ====== */
-/* The user requested that the text inside the "Review Detected Meal" bubbles 
-   must be purely white, identical to the AI Meal Intelligence feature. 
-   We target only this specific card so we do not break Vault or other features. */
-body.theme-light-surface .ai-staged-food-card,
-body.theme-light-surface .ai-staged-food-card div,
-body.theme-light-surface .ai-staged-food-card span,
-body.theme-light-surface .ai-staged-food-card button,
-body.theme-light-surface .ai-staged-food-card label,
-body.theme-light-surface .ai-staged-food-card p,
-body.theme-light-surface .ai-staged-food-card h3,
-body.theme-light-surface .ai-staged-food-card code,
-body.theme-light-surface .ai-staged-food-card input,
-body.theme-light-surface .ai-staged-food-card select,
-body.theme-light-surface .ai-staged-food-card textarea {
-  color: color-mix(in srgb, var(--theme-text) 35%, white) !important;
-}
-
-body.theme-light-surface .ai-staged-food-card div[style*="var(--theme-text-dim)"] {
-  color: color-mix(in srgb, var(--theme-text) 15%, white) !important;
-}
-
-body.theme-light-surface .ai-staged-food-card div[style*="var(--theme-accent)"],
-body.theme-light-surface .ai-staged-food-card button[style*="var(--theme-accent)"] {
-  color: var(--theme-accent) !important;
-}
-body.theme-light-surface .ai-staged-food-card div[style*="var(--theme-error)"] {
-  color: var(--theme-error) !important;
-}
-body.theme-light-surface .ai-staged-food-card div[style*="var(--theme-warning)"] {
-  color: var(--theme-warning) !important;
-}
-
-/* ====== PREMIUM LIGHT THEME BUBBLE CONTRAST SYSTEM ====== */
-/* Ensures category chips, tabs, micro-bubbles, and labels in all light-themed surfaces
-   have beautiful, high-contrast, tactile backgrounds that stand out cleanly from the page background. */
-body.theme-light-surface .pantry-filter-chip {
-  background: rgba(30, 40, 60, 0.06) !important;
-  border-color: rgba(30, 40, 60, 0.12) !important;
-  color: var(--theme-text) !important;
-  box-shadow: 
-    inset 0 1px 0 rgba(255, 255, 255, 0.5),
-    0 2px 6px rgba(0, 0, 0, 0.05) !important;
-}
-
-body.theme-light-surface .pantry-filter-chip:hover {
-  background: rgba(30, 40, 60, 0.1) !important;
-}
-
-body.theme-light-surface .pantry-filter-chip.active {
-  background: var(--theme-accent) !important;
-  border-color: var(--theme-accent) !important;
-  color: #FFFFFF !important;
-  box-shadow: 
-    0 4px 12px var(--theme-accent-dim) !important;
-}
-
-/* Inactive Search Coaster Tab Buttons */
-body.theme-light-surface .search-coaster-tab-btn {
-  background: #FFFFFF !important;
-  border-color: var(--theme-border) !important;
-  color: var(--theme-text-dim) !important;
-  box-shadow: 
-    0 3px 8px rgba(0, 0, 0, 0.04),
-    inset 0 1px 0 rgba(255, 255, 255, 0.9) !important;
-}
-
-body.theme-light-surface .search-coaster-tab-btn:hover {
-  background: var(--theme-panel-dim) !important;
-}
-
-body.theme-light-surface .search-coaster-tab-btn.active {
-  background: var(--theme-accent-dim) !important;
-  border-color: var(--theme-accent) !important;
-  color: var(--theme-accent) !important;
-  box-shadow: 
-    0 5px 14px var(--theme-accent-dim) !important;
-}
-
-/* Nutrient label bubbles in Pantry lists */
-body.theme-light-surface .nutrient-label-bubble {
-  background: rgba(30, 40, 60, 0.07) !important;
-  border-color: rgba(30, 40, 60, 0.14) !important;
-  color: var(--theme-text) !important;
-}
-
-/* Micro-bubbles inside nutrition facts display */
-body.theme-light-surface .micro-bubble {
-  background: rgba(30, 40, 60, 0.07) !important;
-  border-color: rgba(30, 40, 60, 0.14) !important;
-  color: var(--theme-accent) !important;
-}
-
-/* Quick Stats Breakdown Rows */
-body.theme-light-surface .quick-stats-bubble-row {
-  background: rgba(30, 40, 60, 0.04) !important;
-  border-color: rgba(30, 40, 60, 0.1) !important;
-}
-
-body.theme-light-surface .quick-stats-bubble-row div div:first-child {
-  color: var(--theme-text-dim) !important;
-}
-
-/* ==========================================================================
-   UNIFIED PREMIUM BUTTON & COASTER TAB SYSTEM (DARK & LIGHT THEMES)
-   ========================================================================== */
-
-/* 1. Global Button Standard Resets & Tactility */
-button {
-  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1) !important;
-}
-
-button:active {
-  transform: scale(0.96) !important;
-}
-
-/* 2. Primary Action Buttons (App-wide) */
-.btn-p,
-.btn-primary,
-.add-btn,
-.login-btn {
-  background: linear-gradient(135deg, var(--theme-accent) 0%, color-mix(in srgb, var(--theme-accent) 70%, #000) 100%) !important;
-  color: var(--theme-bg, #05080C) !important;
-  border: 1px solid var(--theme-accent) !important;
-  font-weight: 800 !important;
-  letter-spacing: 0.5px !important;
-  text-transform: uppercase !important;
-  font-size: 11px !important;
-  padding: 10px 18px !important;
-  border-radius: 14px !important;
-  cursor: pointer !important;
-  box-shadow: 
-    0 6px 20px var(--theme-accent-dim, rgba(0, 201, 255, 0.25)),
-    inset 0 1px 0 rgba(255, 255, 255, 0.15) !important;
-  text-shadow: none !important;
-}
-
-.btn-p:hover,
-.btn-primary:hover,
-.add-btn:hover,
-.login-btn:hover {
-  opacity: 1 !important;
-  transform: translateY(-2px) !important;
-  box-shadow: 
-    0 10px 28px var(--theme-accent-dim, rgba(0, 201, 255, 0.45)),
-    0 0 15px var(--theme-accent, rgba(0, 201, 255, 0.2)) !important;
-}
-
-/* 3. Secondary & Panel-integrated Buttons (App-wide) */
-.btn-s,
-.btn-secondary,
-.wt-win-btn,
-.shop-tab-btn,
-.qbtn {
-  background: var(--theme-panel, rgba(255, 255, 255, 0.03)) !important;
-  border: 1px solid var(--theme-border, rgba(255, 255, 255, 0.08)) !important;
-  color: var(--theme-text-dim, rgba(255, 255, 255, 0.6)) !important;
-  border-radius: 12px !important;
-  cursor: pointer !important;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1) !important;
-  text-shadow: none !important;
-  font-weight: 750 !important;
-}
-
-.btn-s:hover,
-.btn-secondary:hover,
-.wt-win-btn:hover,
-.shop-tab-btn:hover,
-.qbtn:hover {
-  background: var(--theme-accent-dim, rgba(0, 201, 255, 0.1)) !important;
-  border-color: var(--theme-accent, #00C9FF) !important;
-  color: var(--theme-accent, #00C9FF) !important;
-  box-shadow: 0 6px 16px var(--theme-accent-dim, rgba(0, 201, 255, 0.15)) !important;
-  transform: translateY(-1px);
-}
-
-.wt-win-btn.active,
-.shop-tab-btn.shop-tab-active {
-  background: var(--theme-accent-dim, rgba(0, 201, 255, 0.15)) !important;
-  border-color: var(--theme-accent, #00C9FF) !important;
-  color: var(--theme-accent, #00C9FF) !important;
-  font-weight: 800 !important;
-  box-shadow: 
-    0 6px 20px var(--theme-accent-dim, rgba(0, 201, 255, 0.25)),
-    0 0 10px var(--theme-accent-dim, rgba(0, 201, 255, 0.15)) !important;
-}
-
-/* 4. Search Coaster Tab Buttons (Fully Unified) */
-.search-coaster-tab-btn {
-  background: var(--theme-panel, rgba(255, 255, 255, 0.03)) !important;
-  border: 1px solid var(--theme-border, rgba(255, 255, 255, 0.08)) !important;
-  color: var(--theme-text-dim, rgba(255, 255, 255, 0.6)) !important;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12) !important;
-}
-
-.search-coaster-tab-btn:hover {
-  background: var(--theme-panel-dim, rgba(255, 255, 255, 0.06)) !important;
-  transform: translateY(-1px);
-}
-
-.search-coaster-tab-btn.active {
-  background: var(--theme-accent-dim, rgba(0, 201, 255, 0.1)) !important;
-  border: 1px solid var(--theme-accent, #00C9FF) !important;
-  color: var(--theme-accent, #00C9FF) !important;
-  box-shadow: 
-    0 6px 20px var(--theme-accent-dim, rgba(0, 201, 255, 0.25)), 
-    0 0 15px var(--theme-accent-dim, rgba(0, 201, 255, 0.15)) !important;
-  transform: translateY(-2px) scale(1.02);
-}
-
-.coaster-icon-container {
-  transform: scale(1);
-  transition: transform 0.2s;
-}
-
-.search-coaster-tab-btn.active .coaster-icon-container {
-  transform: scale(1.1);
-  filter: drop-shadow(0 0 8px var(--theme-accent));
-}
-
-.coaster-label {
-  font-size: 10px;
-  font-weight: 800;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  color: inherit;
-}
-
-/* 5. Pantry Main Switcher Tabs (Discover / My Pantry) - Beautifully Tinted */
-.pantry-main-tab {
-  background: var(--theme-panel, rgba(255, 255, 255, 0.03)) !important;
-  border: 1px solid var(--theme-border, rgba(255, 255, 255, 0.08)) !important;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12) !important;
-  color: var(--theme-text-dim, rgba(255, 255, 255, 0.6)) !important;
-  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1) !important;
-}
-
-.pantry-main-tab:hover {
-  background: var(--theme-panel-dim, rgba(255, 255, 255, 0.06)) !important;
-}
-
-.pantry-main-tab.active {
-  background: var(--theme-accent-dim, rgba(0, 201, 255, 0.1)) !important;
-  border-color: var(--theme-accent, #00C9FF) !important;
-  color: var(--theme-accent, #00C9FF) !important;
-  box-shadow: 
-    0 8px 25px var(--theme-accent-dim, rgba(0, 201, 255, 0.25)),
-    0 0 15px var(--theme-accent-dim, rgba(0, 201, 255, 0.15)) !important;
-  transform: translateY(-2px);
-  font-weight: 800 !important;
-}
-
-/* ==========================================================================
-   LIGHT SURFACE OVERRIDES (Tactile Pop & Absolute Contrast)
-   ========================================================================== */
-body.theme-light-surface .btn-p,
-body.theme-light-surface .btn-primary,
-body.theme-light-surface .add-btn,
-body.theme-light-surface .login-btn {
-  color: #FFFFFF !important;
-  background: linear-gradient(135deg, var(--theme-accent) 0%, color-mix(in srgb, var(--theme-accent) 85%, #000) 100%) !important;
-  box-shadow: 
-    0 4px 12px var(--theme-accent-dim, rgba(0, 0, 0, 0.12)),
-    inset 0 1px 0 rgba(255, 255, 255, 0.2) !important;
-}
-
-body.theme-light-surface .btn-s,
-body.theme-light-surface .btn-secondary,
-body.theme-light-surface .wt-win-btn,
-body.theme-light-surface .shop-tab-btn,
-body.theme-light-surface .qbtn {
-  background: #FFFFFF !important;
-  border-color: var(--theme-border) !important;
-  color: var(--theme-text) !important;
-  box-shadow: 
-    0 2px 8px rgba(0, 0, 0, 0.05),
-    inset 0 1px 0 rgba(255, 255, 255, 0.9) !important;
-}
-
-body.theme-light-surface .btn-s:hover,
-body.theme-light-surface .btn-secondary:hover,
-body.theme-light-surface .wt-win-btn:hover,
-body.theme-light-surface .shop-tab-btn:hover,
-body.theme-light-surface .qbtn:hover {
-  background: var(--theme-panel-dim) !important;
-  border-color: var(--theme-accent) !important;
-  color: var(--theme-accent) !important;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08) !important;
-}
-
-body.theme-light-surface .pantry-main-tab {
-  background: #FFFFFF !important;
-  border-color: var(--theme-border) !important;
-  color: var(--theme-text-dim) !important;
-  box-shadow: 
-    0 3px 8px rgba(0, 0, 0, 0.04),
-    inset 0 1px 0 rgba(255, 255, 255, 0.9) !important;
-}
-
-body.theme-light-surface .pantry-main-tab:hover {
-  background: var(--theme-panel-dim) !important;
-}
-
-body.theme-light-surface .pantry-main-tab.active {
-  background: var(--theme-accent-dim) !important;
-  border-color: var(--theme-accent) !important;
-  color: var(--theme-accent) !important;
-  box-shadow: 
-    0 5px 14px var(--theme-accent-dim) !important;
-  font-weight: 900 !important;
-}
