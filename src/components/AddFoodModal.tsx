@@ -25,7 +25,7 @@ export const AddFoodModal: React.FC<AddFoodModalProps> = ({ meal, onClose }) => 
     stagingTray, clearTray 
   } = useDiary();
   
-  const [activeTab, setActiveTab] = useState<SearchTab>('search');
+  const [activeTab, setActiveTab] = useState<SearchTab>('ai-search');
   
   const [query, setQuery] = useState('');
   const [results, setResults] = useState<Food[]>([]);
@@ -35,6 +35,7 @@ export const AddFoodModal: React.FC<AddFoodModalProps> = ({ meal, onClose }) => 
   const barcodeCache = React.useRef<Record<string, Food[]>>({});
   const aiSearchCache = React.useRef<Record<string, Food[]>>({});
   const searchCache = React.useRef<Record<string, Food[]>>({});
+  const tabChanging = React.useRef(false);
 
 
 
@@ -89,6 +90,8 @@ export const AddFoodModal: React.FC<AddFoodModalProps> = ({ meal, onClose }) => 
 
   // Auto-load pantry foods when Search tab is active (or pantry changes)
   useEffect(() => {
+    // Don't override the clear that happens during tab switches
+    if (tabChanging.current) return;
     if (activeTab === 'search' && !query.trim()) {
       const customFoods: Food[] = localCache.customFoods || [];
       let pantryItems = customFoods.map((f, idx) => ({ ...f, isLocal: true, localIdx: idx }));
@@ -362,6 +365,8 @@ export const AddFoodModal: React.FC<AddFoodModalProps> = ({ meal, onClose }) => 
           activeTab={activeTab} 
           onTabChange={(tab) => {
             if (tab !== activeTab) {
+              // Set flag so useEffect doesn't immediately re-populate results
+              tabChanging.current = true;
               setErrorMsg('');
               setQuery('');
               setResults([]);
@@ -369,6 +374,8 @@ export const AddFoodModal: React.FC<AddFoodModalProps> = ({ meal, onClose }) => 
               setIsAiReviewing(false);
               setAiStagedResults([]);
               setActiveTab(tab);
+              // Release flag after React has flushed state updates
+              setTimeout(() => { tabChanging.current = false; }, 50);
             }
           }} 
         />
@@ -1204,10 +1211,15 @@ export const AddFoodModal: React.FC<AddFoodModalProps> = ({ meal, onClose }) => 
                     <button 
                       onClick={() => {
                         aiStagedResults.forEach(f => {
-                          const mult = computeMultiplier(f.serving || '', f.stagedUnit || 'piece', parseFloat(f.stagedQty || '1') || 1);
+                          const qty = parseFloat(f.stagedQty || '1') || 1;
+                          const unit = f.stagedUnit || 'serving';
+                          const mult = computeMultiplier(f.serving || '1 serving', unit, qty);
                           const scaled = scaleLegacyFoodByAmount(f, mult);
-                          scaled.serving = `${f.stagedQty} ${f.stagedUnit}`;
-                          scaled._base = f; 
+                          // Preserve the user-set serving size as the logged portion label
+                          scaled.serving = `${f.stagedQty} ${unit}`;
+                          scaled.sQty = qty;
+                          scaled.sUnit = unit;
+                          scaled._base = f;
                           addFoodLog(targetMeal, scaled);
                         });
                         setIsAiReviewing(false);
