@@ -100,10 +100,11 @@ body {
 /* 1. Obsidian */
 body.theme-obsidian {
   --theme-bg: 
-    linear-gradient(30deg, rgba(255, 255, 255, 0.007) 12%, transparent 12.5%, transparent 87%, rgba(255, 255, 255, 0.007) 87.5%),
-    linear-gradient(150deg, rgba(255, 255, 255, 0.007) 12%, transparent 12.5%, transparent 87%, rgba(255, 255, 255, 0.007) 87.5%),
+    radial-gradient(circle at 10px 10px, rgba(255, 255, 255, 0.01) 3px, rgba(0, 0, 0, 0.15) 3.5px, transparent 4px) 0 0 / 40px 40px,
+    radial-gradient(circle at 25px 30px, rgba(255, 255, 255, 0.007) 5px, rgba(0, 0, 0, 0.12) 5.5px, transparent 6px) 0 0 / 50px 50px,
+    radial-gradient(circle at 5px 25px, rgba(255, 255, 255, 0.008) 2px, rgba(0, 0, 0, 0.12) 2.5px, transparent 3px) 0 0 / 60px 60px,
+    radial-gradient(rgba(255, 255, 255, 0.007) 0.5px, transparent 0.5px) 0 0 / 12px 12px,
     radial-gradient(circle at 50% 50%, #0c0f17 0%, #06070a 100%);
-  background-size: 80px 140px, 80px 140px, 100% 100%;
   --theme-panel: rgba(18, 21, 32, 0.85);
   --theme-panel-base: #121520;
   --theme-accent: #00F5D4;
@@ -198,10 +199,9 @@ body.theme-quantum-violet {
 /* 8. Olympian Gold */
 body.theme-olympian-gold {
   --theme-bg: 
-    linear-gradient(135deg, transparent 40%, rgba(212, 175, 55, 0.02) 40%, rgba(212, 175, 55, 0.02) 42%, transparent 42%) 0 0 / 60px 60px,
-    linear-gradient(45deg, transparent 45%, rgba(212, 175, 55, 0.02) 45%, rgba(212, 175, 55, 0.02) 47%, transparent 47%) 0 0 / 60px 60px,
-    linear-gradient(90deg, rgba(212, 175, 55, 0.012) 1px, transparent 1px) 0 0 / 30px 30px,
-    linear-gradient(0deg, rgba(212, 175, 55, 0.012) 1px, transparent 1px) 0 0 / 30px 30px,
+    linear-gradient(24deg, transparent 48%, rgba(212, 175, 55, 0.02) 49%, rgba(212, 175, 55, 0.035) 50%, rgba(212, 175, 55, 0.02) 51%, transparent 52%) 0 0 / 120px 120px,
+    linear-gradient(114deg, transparent 46%, rgba(212, 175, 55, 0.018) 47%, rgba(212, 175, 55, 0.03) 48%, rgba(212, 175, 55, 0.018) 49%, transparent 50%) 40px 60px / 120px 120px,
+    linear-gradient(158deg, transparent 47%, rgba(212, 175, 55, 0.015) 48%, rgba(212, 175, 55, 0.025) 49%, rgba(212, 175, 55, 0.015) 50%, transparent 51%) 80px 20px / 120px 120px,
     radial-gradient(circle at 50% 20%, #241c0a 0%, #0c0903 100%);
   --theme-panel: rgba(30, 26, 16, 0.85);
   --theme-panel-base: #1E1A10;
@@ -216,10 +216,10 @@ body.theme-olympian-gold {
 /* 10. Dionysus' Vineyard */
 body.theme-dionysus-vineyard {
   --theme-bg: 
-    radial-gradient(circle at 50% 0%, transparent 40%, rgba(123, 44, 191, 0.02) 41%, rgba(123, 44, 191, 0.02) 46%, transparent 47%) 0 0 / 30px 60px,
-    radial-gradient(circle at 50% 50%, rgba(123, 44, 191, 0.03) 2px, transparent 3px) 0 0 / 30px 30px,
-    radial-gradient(circle at 45% 55%, rgba(123, 44, 191, 0.03) 2px, transparent 3px) 0 0 / 30px 30px,
-    radial-gradient(circle at 55% 55%, rgba(123, 44, 191, 0.03) 2px, transparent 3px) 0 0 / 30px 30px,
+    radial-gradient(circle at 12px 14px, rgba(123, 44, 191, 0.04) 4px, transparent 5px) 0 0 / 32px 32px,
+    radial-gradient(circle at 20px 14px, rgba(123, 44, 191, 0.04) 4px, transparent 5px) 0 0 / 32px 32px,
+    radial-gradient(circle at 16px 20px, rgba(123, 44, 191, 0.05) 4px, transparent 5px) 0 0 / 32px 32px,
+    radial-gradient(circle at 16px 8px, rgba(80, 200, 120, 0.035) 2.5px, transparent 3.5px) 0 0 / 32px 32px,
     radial-gradient(circle at 50% 30%, #24052e 0%, #0d0112 100%);
   --theme-panel: rgba(45, 18, 54, 0.85);
   --theme-panel-base: #2D1236;
