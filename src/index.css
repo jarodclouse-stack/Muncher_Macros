@@ -227,8 +227,8 @@ body.theme-olympian-gold {
 /* 9. Hades' Ember */
 body.theme-hades-ember {
   --theme-bg: 
-    linear-gradient(60deg, rgba(255, 69, 0, 0.015) 25%, transparent 25%, transparent 75%, rgba(255, 69, 0, 0.015) 75%) 0 0 / 20px 20px,
-    linear-gradient(120deg, rgba(255, 69, 0, 0.015) 25%, transparent 25%, transparent 75%, rgba(255, 69, 0, 0.015) 75%) 10px 10px / 20px 20px,
+    radial-gradient(ellipse at 50% 40%, rgba(255, 69, 0, 0.025) 0%, rgba(255, 69, 0, 0.005) 40%, transparent 70%) 0 0 / 30px 60px,
+    radial-gradient(ellipse at 50% 20%, rgba(255, 140, 0, 0.02) 0%, rgba(255, 140, 0, 0.005) 30%, transparent 60%) 15px 30px / 30px 60px,
     radial-gradient(circle at 50% 85%, #300808 0%, #100202 60%, #050000 100%);
   --theme-panel: rgba(25, 5, 5, 0.85);
   --theme-panel-base: #190505;
@@ -354,7 +354,8 @@ body.theme-solar-flare {
 /* 17. Deep Sea */
 body.theme-deep-sea {
   --theme-bg: 
-    linear-gradient(180deg, transparent 95%, rgba(0, 119, 182, 0.015) 95%) 0 0 / 100% 12px,
+    radial-gradient(circle at 50% 100%, transparent 60%, rgba(0, 119, 182, 0.025) 62%, rgba(0, 119, 182, 0.025) 70%, transparent 72%) 0 0 / 32px 16px,
+    radial-gradient(circle at 100% 0%, transparent 60%, rgba(0, 119, 182, 0.015) 62%, rgba(0, 119, 182, 0.015) 70%, transparent 72%) 16px 8px / 32px 16px,
     radial-gradient(circle at 50% 30%, #001f30 0%, #000c14 100%);
   --theme-panel: rgba(0, 40, 50, 0.85);
   --theme-panel-base: #002832;
