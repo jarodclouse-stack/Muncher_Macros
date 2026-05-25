@@ -95,11 +95,15 @@ body {
   transition: background-color var(--transition-smooth), color var(--transition-smooth);
 }
 
-/* /* ==================== 22 DARK THEMES ==================== */
+/* ==================== 22 DARK THEMES WITH TACTILE TEXTURES ==================== */
 
 /* 1. Obsidian */
 body.theme-obsidian {
-  --theme-bg: radial-gradient(circle at 50% 50%, #0c0f17 0%, #06070a 100%);
+  --theme-bg: 
+    linear-gradient(30deg, rgba(255, 255, 255, 0.007) 12%, transparent 12.5%, transparent 87%, rgba(255, 255, 255, 0.007) 87.5%),
+    linear-gradient(150deg, rgba(255, 255, 255, 0.007) 12%, transparent 12.5%, transparent 87%, rgba(255, 255, 255, 0.007) 87.5%),
+    radial-gradient(circle at 50% 50%, #0c0f17 0%, #06070a 100%);
+  background-size: 80px 140px, 80px 140px, 100% 100%;
   --theme-panel: rgba(18, 21, 32, 0.85);
   --theme-panel-base: #121520;
   --theme-accent: #00F5D4;
@@ -112,7 +116,11 @@ body.theme-obsidian {
 
 /* 2. Cybermancer */
 body.theme-cybermancer {
-  --theme-bg: radial-gradient(circle at 50% 30%, #1a042e 0%, #080112 100%);
+  --theme-bg: 
+    radial-gradient(rgba(255, 0, 229, 0.12) 1px, transparent 1px) 0 0 / 24px 24px,
+    linear-gradient(rgba(255, 0, 229, 0.02) 1px, transparent 1px) 0 0 / 24px 24px,
+    linear-gradient(90deg, rgba(255, 0, 229, 0.02) 1px, transparent 1px) 0 0 / 24px 24px,
+    radial-gradient(circle at 50% 30%, #1a042e 0%, #080112 100%);
   --theme-panel: rgba(30, 8, 54, 0.85);
   --theme-panel-base: #1E0836;
   --theme-accent: #FF00E5;
@@ -125,7 +133,10 @@ body.theme-cybermancer {
 
 /* 3. Gold Reserve */
 body.theme-gold-reserve {
-  --theme-bg: radial-gradient(circle at 50% 25%, #221a0a 0%, #0d0a04 100%);
+  --theme-bg: 
+    linear-gradient(45deg, rgba(212, 175, 55, 0.02) 25%, transparent 25%, transparent 75%, rgba(212, 175, 55, 0.02) 75%) 0 0 / 16px 16px,
+    linear-gradient(-45deg, rgba(212, 175, 55, 0.02) 25%, transparent 25%, transparent 75%, rgba(212, 175, 55, 0.02) 75%) 8px 8px / 16px 16px,
+    radial-gradient(circle at 50% 25%, #221a0a 0%, #0d0a04 100%);
   --theme-panel: rgba(28, 28, 28, 0.85);
   --theme-panel-base: #1C1C1C;
   --theme-accent: #D4AF37;
@@ -138,7 +149,9 @@ body.theme-gold-reserve {
 
 /* 4. Forest Phantom */
 body.theme-forest-phantom {
-  --theme-bg: radial-gradient(circle at 50% 30%, #081812 0%, #020604 100%);
+  --theme-bg: 
+    linear-gradient(90deg, rgba(146, 254, 157, 0.015) 1px, transparent 1px) 0 0 / 8px 100%,
+    radial-gradient(circle at 50% 30%, #081812 0%, #020604 100%);
   --theme-panel: rgba(20, 31, 26, 0.85);
   --theme-panel-base: #141F1A;
   --theme-accent: #92FE9D;
@@ -151,7 +164,10 @@ body.theme-forest-phantom {
 
 /* 5. Midnight Crimson */
 body.theme-midnight-crimson {
-  --theme-bg: radial-gradient(circle at 50% 30%, #240404 0%, #090000 100%);
+  --theme-bg: 
+    linear-gradient(45deg, rgba(230, 57, 70, 0.015) 25%, transparent 25%) 0 0 / 4px 4px,
+    linear-gradient(-45deg, rgba(230, 57, 70, 0.015) 25%, transparent 25%) 0 0 / 4px 4px,
+    radial-gradient(circle at 50% 30%, #240404 0%, #090000 100%);
   --theme-panel: rgba(26, 8, 8, 0.85);
   --theme-panel-base: #1A0808;
   --theme-accent: #E63946;
@@ -164,7 +180,9 @@ body.theme-midnight-crimson {
 
 /* 6. Sunset Horizon */
 body.theme-sunset-horizon {
-  --theme-bg: radial-gradient(circle at 50% 20%, #30110d 0%, #150604 60%, #090201 100%);
+  --theme-bg: 
+    linear-gradient(180deg, transparent 95%, rgba(255, 159, 28, 0.02) 95%) 0 0 / 100% 6px,
+    radial-gradient(circle at 50% 20%, #30110d 0%, #150604 60%, #090201 100%);
   --theme-panel: rgba(45, 20, 20, 0.85);
   --theme-panel-base: #2D1414;
   --theme-accent: #FF9F1C;
@@ -177,7 +195,10 @@ body.theme-sunset-horizon {
 
 /* 7. Quantum Violet */
 body.theme-quantum-violet {
-  --theme-bg: radial-gradient(circle at 50% 30%, #1e002b 0%, #06000c 100%);
+  --theme-bg: 
+    radial-gradient(circle at 0% 0%, rgba(154, 72, 208, 0.03) 15px, transparent 16px) 0 0 / 32px 32px,
+    radial-gradient(circle at 100% 100%, rgba(154, 72, 208, 0.03) 15px, transparent 16px) 16px 16px / 32px 32px,
+    radial-gradient(circle at 50% 30%, #1e002b 0%, #06000c 100%);
   --theme-panel: rgba(30, 0, 43, 0.85);
   --theme-panel-base: #1E002B;
   --theme-accent: #9A48D0;
@@ -190,7 +211,9 @@ body.theme-quantum-violet {
 
 /* 8. Olympian Gold */
 body.theme-olympian-gold {
-  --theme-bg: radial-gradient(circle at 50% 20%, #241c0a 0%, #0c0903 100%);
+  --theme-bg: 
+    linear-gradient(135deg, rgba(212, 175, 55, 0.012) 0%, transparent 50%, rgba(212, 175, 55, 0.012) 100%),
+    radial-gradient(circle at 50% 20%, #241c0a 0%, #0c0903 100%);
   --theme-panel: rgba(30, 26, 16, 0.85);
   --theme-panel-base: #1E1A10;
   --theme-accent: #D4AF37;
@@ -203,7 +226,10 @@ body.theme-olympian-gold {
 
 /* 9. Hades' Ember */
 body.theme-hades-ember {
-  --theme-bg: radial-gradient(circle at 50% 85%, #300808 0%, #100202 60%, #050000 100%);
+  --theme-bg: 
+    linear-gradient(60deg, rgba(255, 69, 0, 0.015) 25%, transparent 25%, transparent 75%, rgba(255, 69, 0, 0.015) 75%) 0 0 / 20px 20px,
+    linear-gradient(120deg, rgba(255, 69, 0, 0.015) 25%, transparent 25%, transparent 75%, rgba(255, 69, 0, 0.015) 75%) 10px 10px / 20px 20px,
+    radial-gradient(circle at 50% 85%, #300808 0%, #100202 60%, #050000 100%);
   --theme-panel: rgba(25, 5, 5, 0.85);
   --theme-panel-base: #190505;
   --theme-accent: #FF4500;
@@ -216,7 +242,10 @@ body.theme-hades-ember {
 
 /* 10. Dionysus' Vineyard */
 body.theme-dionysus-vineyard {
-  --theme-bg: radial-gradient(circle at 50% 30%, #24052e 0%, #0d0112 100%);
+  --theme-bg: 
+    linear-gradient(45deg, rgba(123, 44, 191, 0.02) 25%, transparent 25%, transparent 75%, rgba(123, 44, 191, 0.02) 75%) 0 0 / 24px 24px,
+    linear-gradient(-45deg, rgba(123, 44, 191, 0.02) 25%, transparent 25%, transparent 75%, rgba(123, 44, 191, 0.02) 75%) 0 0 / 24px 24px,
+    radial-gradient(circle at 50% 30%, #24052e 0%, #0d0112 100%);
   --theme-panel: rgba(45, 18, 54, 0.85);
   --theme-panel-base: #2D1236;
   --theme-accent: #7B2CBF;
@@ -229,7 +258,10 @@ body.theme-dionysus-vineyard {
 
 /* 11. Poseidon's Depths */
 body.theme-poseidons-depths {
-  --theme-bg: radial-gradient(circle at 50% 20%, #002d42 0%, #00121c 100%);
+  --theme-bg: 
+    radial-gradient(circle at 50% 0%, rgba(0, 166, 251, 0.03) 12px, transparent 13px) 0 0 / 24px 12px,
+    radial-gradient(circle at 0% 100%, rgba(0, 166, 251, 0.015) 12px, transparent 13px) 12px 12px / 24px 12px,
+    radial-gradient(circle at 50% 20%, #002d42 0%, #00121c 100%);
   --theme-panel: rgba(10, 36, 49, 0.85);
   --theme-panel-base: #0A2431;
   --theme-accent: #00A6FB;
@@ -242,7 +274,10 @@ body.theme-poseidons-depths {
 
 /* 12. Artemis' Moonlight */
 body.theme-artemis-moonlight {
-  --theme-bg: radial-gradient(circle at 50% 15%, #1c2333 0%, #0a0d14 100%);
+  --theme-bg: 
+    radial-gradient(rgba(165, 180, 252, 0.09) 0.5px, transparent 0.5px) 0 0 / 30px 30px,
+    radial-gradient(rgba(165, 180, 252, 0.04) 1px, transparent 1px) 15px 15px / 60px 60px,
+    radial-gradient(circle at 50% 15%, #1c2333 0%, #0a0d14 100%);
   --theme-panel: rgba(25, 30, 44, 0.85);
   --theme-panel-base: #191E2C;
   --theme-accent: #A5B4FC;
@@ -255,7 +290,10 @@ body.theme-artemis-moonlight {
 
 /* 13. Hermes' Swiftness */
 body.theme-hermes-swiftness {
-  --theme-bg: radial-gradient(circle at 50% 30%, #2d1704 0%, #0d0701 100%);
+  --theme-bg: 
+    linear-gradient(63deg, rgba(249, 115, 22, 0.015) 23%, transparent 23%) 0 0 / 12px 24px,
+    linear-gradient(117deg, rgba(249, 115, 22, 0.015) 23%, transparent 23%) 0 0 / 12px 24px,
+    radial-gradient(circle at 50% 30%, #2d1704 0%, #0d0701 100%);
   --theme-panel: rgba(45, 41, 36, 0.85);
   --theme-panel-base: #2D2924;
   --theme-accent: #F97316;
@@ -268,7 +306,10 @@ body.theme-hermes-swiftness {
 
 /* 14. Spartan Grit */
 body.theme-spartan-grit {
-  --theme-bg: radial-gradient(circle at 50% 30%, #240c0c 0%, #0c0404 100%);
+  --theme-bg: 
+    radial-gradient(circle at 50% 50%, transparent 60%, rgba(153, 27, 27, 0.02) 62%, rgba(153, 27, 27, 0.02) 70%, transparent 72%) 0 0 / 12px 12px,
+    radial-gradient(circle at 0 0, transparent 60%, rgba(153, 27, 27, 0.015) 62%, rgba(153, 27, 27, 0.015) 70%, transparent 72%) 6px 6px / 12px 12px,
+    radial-gradient(circle at 50% 30%, #240c0c 0%, #0c0404 100%);
   --theme-panel: rgba(40, 15, 15, 0.85);
   --theme-panel-base: #280F0F;
   --theme-accent: #991B1B;
@@ -281,7 +322,10 @@ body.theme-spartan-grit {
 
 /* 15. Oracle's Vision */
 body.theme-oracles-vision {
-  --theme-bg: radial-gradient(circle at 50% 40%, #1e1035 0%, #0b0514 100%);
+  --theme-bg: 
+    linear-gradient(45deg, rgba(192, 132, 252, 0.015) 25%, transparent 25%, transparent 75%, rgba(192, 132, 252, 0.015) 75%) 0 0 / 30px 30px,
+    linear-gradient(-45deg, rgba(192, 132, 252, 0.015) 25%, transparent 25%, transparent 75%, rgba(192, 132, 252, 0.015) 75%) 15px 15px / 30px 30px,
+    radial-gradient(circle at 50% 40%, #1e1035 0%, #0b0514 100%);
   --theme-panel: rgba(28, 24, 38, 0.85);
   --theme-panel-base: #1C1826;
   --theme-accent: #C084FC;
@@ -294,7 +338,9 @@ body.theme-oracles-vision {
 
 /* 16. Solar Flare */
 body.theme-solar-flare {
-  --theme-bg: radial-gradient(circle at 50% 0%, #441400 0%, #1a0800 65%, #090200 100%);
+  --theme-bg: 
+    radial-gradient(rgba(255, 159, 28, 0.015) 1.5px, transparent 2px) 0 0 / 16px 16px,
+    radial-gradient(circle at 50% 0%, #441400 0%, #1a0800 65%, #090200 100%);
   --theme-panel: rgba(50, 15, 0, 0.85);
   --theme-panel-base: #320F00;
   --theme-accent: #FF9F1C;
@@ -307,7 +353,9 @@ body.theme-solar-flare {
 
 /* 17. Deep Sea */
 body.theme-deep-sea {
-  --theme-bg: radial-gradient(circle at 50% 30%, #001f30 0%, #000c14 100%);
+  --theme-bg: 
+    linear-gradient(180deg, transparent 95%, rgba(0, 119, 182, 0.015) 95%) 0 0 / 100% 12px,
+    radial-gradient(circle at 50% 30%, #001f30 0%, #000c14 100%);
   --theme-panel: rgba(0, 40, 50, 0.85);
   --theme-panel-base: #002832;
   --theme-accent: #0077B6;
@@ -320,7 +368,10 @@ body.theme-deep-sea {
 
 /* 18. Neon Wasteland */
 body.theme-neon-wasteland {
-  --theme-bg: radial-gradient(circle at 50% 30%, #031401 0%, #010600 100%);
+  --theme-bg: 
+    linear-gradient(45deg, rgba(57, 255, 20, 0.015) 25%, transparent 25%, transparent 75%, rgba(57, 255, 20, 0.015) 75%) 0 0 / 12px 12px,
+    linear-gradient(-45deg, rgba(57, 255, 20, 0.015) 25%, transparent 25%, transparent 75%, rgba(57, 255, 20, 0.015) 75%) 6px 6px / 12px 12px,
+    radial-gradient(circle at 50% 30%, #031401 0%, #010600 100%);
   --theme-panel: rgba(30, 10, 50, 0.85);
   --theme-panel-base: #1E0A32;
   --theme-accent: #39FF14;
@@ -333,7 +384,10 @@ body.theme-neon-wasteland {
 
 /* 19. Emerald City */
 body.theme-emerald-city {
-  --theme-bg: radial-gradient(circle at 50% 20%, #00361a 0%, #00140a 100%);
+  --theme-bg: 
+    linear-gradient(60deg, rgba(80, 200, 120, 0.015) 25%, transparent 25%, transparent 75%, rgba(80, 200, 120, 0.015) 75%) 0 0 / 16px 28px,
+    linear-gradient(120deg, rgba(80, 200, 120, 0.015) 25%, transparent 25%, transparent 75%, rgba(80, 200, 120, 0.015) 75%) 8px 14px / 16px 28px,
+    radial-gradient(circle at 50% 20%, #00361a 0%, #00140a 100%);
   --theme-panel: rgba(1, 45, 28, 0.85);
   --theme-panel-base: #012D1C;
   --theme-accent: #50C878;
@@ -362,7 +416,10 @@ body.theme-carbon-fiber {
 
 /* 21. Midnight Galaxy */
 body.theme-midnight-galaxy {
-  --theme-bg: radial-gradient(circle at 50% 40%, #15003b 0%, #060017 100%);
+  --theme-bg: 
+    radial-gradient(rgba(224, 170, 255, 0.09) 0.5px, transparent 0.5px) 0 0 / 40px 40px,
+    radial-gradient(rgba(224, 170, 255, 0.04) 1px, transparent 1px) 20px 20px / 80px 80px,
+    radial-gradient(circle at 50% 40%, #15003b 0%, #060017 100%);
   --theme-panel: rgba(36, 0, 70, 0.85);
   --theme-panel-base: #240046;
   --theme-accent: #E0AAFF;
@@ -375,7 +432,10 @@ body.theme-midnight-galaxy {
 
 /* 22. Ember Forge */
 body.theme-ember-forge {
-  --theme-bg: radial-gradient(circle at 50% 90%, #361002 0%, #140500 65%, #050100 100%);
+  --theme-bg: 
+    radial-gradient(circle at 50% 50%, rgba(255, 69, 0, 0.02) 2px, transparent 3px) 0 0 / 12px 12px,
+    radial-gradient(circle at 100% 100%, rgba(255, 69, 0, 0.015) 2px, transparent 3px) 6px 6px / 12px 12px,
+    radial-gradient(circle at 50% 90%, #361002 0%, #140500 65%, #050100 100%);
   --theme-panel: rgba(40, 15, 10, 0.85);
   --theme-panel-base: #280F0A;
   --theme-accent: #FF4500;
