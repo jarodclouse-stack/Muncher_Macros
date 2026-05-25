@@ -245,14 +245,6 @@ export const PantryView: React.FC<PantryViewProps> = ({ initialMeal, onClose, is
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [ingQuery]);
 
-  React.useEffect(() => {
-    const timer = setTimeout(() => {
-      if (innerGlobalSearchTab === 'describe') return;
-      if (searchQuery.length > 2) handleGlobalSearch();
-    }, 500);
-    return () => clearTimeout(timer);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [searchQuery, innerGlobalSearchTab]);
 
   const [aiStagedResults, setAiStagedResults] = useState<Food[]>([]);
   const [isAiReviewing, setIsAiReviewing] = useState(false);

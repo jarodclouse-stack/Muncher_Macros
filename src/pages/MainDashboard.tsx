@@ -165,7 +165,9 @@ export const MainDashboard: React.FC = () => {
           borderTop: '1px solid var(--theme-border, rgba(255,255,255,0.05))', 
           padding: '2px 8px max(2px, env(safe-area-inset-bottom) - 15px) 8px', 
           zIndex: 100,
-          gap: '2px'
+          gap: '2px',
+          transform: 'translate3d(0, 0, 0)',
+          WebkitTransform: 'translate3d(0, 0, 0)'
         }}>
           <NavItem active={activeTab === 'diary'} onClick={() => setActiveTab('diary')} label="Diary" icon={<Utensils size={16} />} />
           <NavItem active={activeTab === 'nutrition'} onClick={() => setActiveTab('nutrition')} label="Nutrition" icon={<Activity size={16} />} />
