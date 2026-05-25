@@ -259,8 +259,9 @@ body.theme-dionysus-vineyard {
 /* 11. Poseidon's Depths */
 body.theme-poseidons-depths {
   --theme-bg: 
-    radial-gradient(circle at 50% 0%, rgba(0, 166, 251, 0.03) 12px, transparent 13px) 0 0 / 24px 12px,
-    radial-gradient(circle at 0% 100%, rgba(0, 166, 251, 0.015) 12px, transparent 13px) 12px 12px / 24px 12px,
+    radial-gradient(circle at 50% 50%, transparent 40%, rgba(0, 166, 251, 0.025) 41%, rgba(0, 166, 251, 0.025) 46%, transparent 47%) 0 0 / 40px 40px,
+    linear-gradient(45deg, rgba(0, 166, 251, 0.018) 25%, transparent 25%, transparent 75%, rgba(0, 166, 251, 0.018) 75%) 0 0 / 40px 40px,
+    linear-gradient(-45deg, rgba(0, 166, 251, 0.018) 25%, transparent 25%, transparent 75%, rgba(0, 166, 251, 0.018) 75%) 20px 20px / 40px 40px,
     radial-gradient(circle at 50% 20%, #002d42 0%, #00121c 100%);
   --theme-panel: rgba(10, 36, 49, 0.85);
   --theme-panel-base: #0A2431;
