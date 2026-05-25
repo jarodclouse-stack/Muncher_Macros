@@ -397,12 +397,8 @@ export const AddFoodModal: React.FC<AddFoodModalProps> = ({ meal, onClose }) => 
                   <style>
                     {`
                       .ai-search-input-black::placeholder {
-                        color: #000 !important;
-                        opacity: 0.8 !important;
-                      }
-                      body.theme-dark .ai-search-input-black::placeholder {
-                        color: #fff !important;
-                        opacity: 0.8 !important;
+                        color: var(--theme-placeholder, rgba(255, 255, 255, 0.4)) !important;
+                        opacity: 1 !important;
                       }
                     `}
                   </style>
@@ -572,12 +568,8 @@ export const AddFoodModal: React.FC<AddFoodModalProps> = ({ meal, onClose }) => 
                   <style>
                     {`
                       .ai-search-input-black::placeholder {
-                        color: #000 !important;
-                        opacity: 0.8 !important;
-                      }
-                      body.theme-dark .ai-search-input-black::placeholder {
-                        color: #fff !important;
-                        opacity: 0.8 !important;
+                        color: var(--theme-placeholder, rgba(255, 255, 255, 0.4)) !important;
+                        opacity: 1 !important;
                       }
                     `}
                   </style>
