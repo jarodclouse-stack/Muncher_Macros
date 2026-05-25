@@ -316,7 +316,7 @@ export const DiaryProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   const purchaseTheme = (themeId: string) => {
     const currentPurchased = localCache.settings?.purchasedThemes || [
       'obsidian', 'cybermancer', 'gold-reserve', 
-      'forest-phantom', 'midnight-crimson', 'sunset-horizon', 
+      'forest-phantom', 'sunset-horizon', 
       'quantum-violet'
     ];
     if (!currentPurchased.includes(themeId)) {

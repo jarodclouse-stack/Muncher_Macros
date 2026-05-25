@@ -28,7 +28,7 @@ export const SettingsView: React.FC<{ onClose: () => void }> = ({ onClose }) => 
     },
     purchasedThemes: [
       'obsidian', 'cybermancer', 'gold-reserve', 
-      'forest-phantom', 'midnight-crimson', 'sunset-horizon', 
+      'forest-phantom', 'sunset-horizon', 
       'quantum-violet'
     ]
   };
@@ -48,7 +48,6 @@ export const SettingsView: React.FC<{ onClose: () => void }> = ({ onClose }) => 
     { id: 'neon-wasteland', name: 'Neon Wasteland', emoji: '⚡', price: 0, colors: ['#0D0221', '#39FF14'] },
     { id: 'cybermancer', name: 'Cybermancer', emoji: '🔮', price: 0, colors: ['#0D0221', '#FF00E5'] },
     { id: 'solar-flare', name: 'Solar Flare', emoji: '☀️', price: 0, colors: ['#1A0700', '#FF9F1C'] },
-    { id: 'midnight-crimson', name: 'Midnight Crimson', emoji: '🩸', price: 0, colors: ['#050000', '#E63946'] },
     { id: 'deep-sea', name: 'Deep Sea', emoji: '🌊', price: 0, colors: ['#001219', '#0077B6'] },
     { id: 'forest-phantom', name: 'Forest Phantom', emoji: '🌿', price: 0, colors: ['#0A1410', '#92FE9D'] },
     { id: 'dionysus-vineyard', name: 'Dionysus\' Vineyard', emoji: '🍇', price: 0, colors: ['#1A0A1F', '#9D4EDD'] },

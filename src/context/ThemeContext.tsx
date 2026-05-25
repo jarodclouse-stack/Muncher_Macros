@@ -5,7 +5,6 @@ export type ThemeName =
   | 'cybermancer' 
   | 'gold-reserve' 
   | 'forest-phantom' 
-  | 'midnight-crimson' 
   | 'sunset-horizon' 
   | 'quantum-violet' 
   | 'olympian-gold'
@@ -36,7 +35,6 @@ const getThemeSolidColor = (theme: ThemeName): string => {
     case 'cybermancer': return '#0B0816';
     case 'gold-reserve': return '#1C1A14';
     case 'forest-phantom': return '#0F1411';
-    case 'midnight-crimson': return '#160505';
     case 'sunset-horizon': return '#251010';
     case 'quantum-violet': return '#1E002B';
     case 'olympian-gold': return '#1C1A14';
@@ -62,7 +60,7 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     const saved = localStorage.getItem('mm_theme') as ThemeName;
     const validThemes: ThemeName[] = [
       'obsidian', 'cybermancer', 'gold-reserve', 'forest-phantom',
-      'midnight-crimson', 'sunset-horizon', 'quantum-violet',
+      'sunset-horizon', 'quantum-violet',
       'olympian-gold', 'dionysus-vineyard',
       'poseidons-depths', 'artemis-moonlight', 'hermes-swiftness',
       'spartan-grit', 'oracles-vision', 'solar-flare', 'deep-sea',

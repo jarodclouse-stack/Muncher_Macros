@@ -163,23 +163,6 @@ body.theme-forest-phantom {
   --theme-border: rgba(146, 254, 157, 0.25);
   --theme-neon-goal: #FF007F;
 }
-
-/* 5. Midnight Crimson */
-body.theme-midnight-crimson {
-  --theme-bg: 
-    linear-gradient(45deg, rgba(230, 57, 70, 0.015) 25%, transparent 25%) 0 0 / 4px 4px,
-    linear-gradient(-45deg, rgba(230, 57, 70, 0.015) 25%, transparent 25%) 0 0 / 4px 4px,
-    radial-gradient(circle at 50% 30%, #240404 0%, #090000 100%);
-  --theme-panel: rgba(26, 8, 8, 0.85);
-  --theme-panel-base: #1A0808;
-  --theme-accent: #E63946;
-  --theme-accent-dim: rgba(230, 57, 70, 0.15);
-  --theme-text: #F1FAEE;
-  --theme-text-dim: #A8DADC;
-  --theme-border: rgba(230, 57, 70, 0.3);
-  --theme-neon-goal: #CCFF00;
-}
-
 /* 6. Sunset Horizon */
 body.theme-sunset-horizon {
   --theme-bg: 
