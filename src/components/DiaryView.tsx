@@ -216,30 +216,35 @@ const DiaryEntryItem = ({ log, onRemove, onEditPortion, onMove }: any) => {
       <div 
         onClick={() => setIsOpen(!isOpen)}
         style={{ 
-          background: 'rgba(0,0,0,0.3)', 
+          background: 'rgba(12,25,28,0.85)',
           padding: '16px', 
           borderRadius: '18px',
-          border: '1px solid rgba(255,255,255,0.08)',
+          border: '1px solid rgba(255,255,255,0.1)',
           borderLeft: '4px solid var(--theme-accent)', 
           '--theme-text': '#FFF', 
           '--theme-text-dim': 'rgba(255,255,255,0.6)',
           '--theme-panel-dim': 'rgba(255,255,255,0.05)',
           '--theme-border': 'rgba(255,255,255,0.1)',
           cursor: 'pointer', 
-          transition: 'transform 0.2s'
+          transition: 'transform 0.2s, box-shadow 0.2s',
+          backdropFilter: 'blur(12px)',
+          WebkitBackdropFilter: 'blur(12px)',
+          boxShadow: '0 4px 20px rgba(0,0,0,0.35)',
         } as React.CSSProperties}
+        onMouseEnter={e => (e.currentTarget.style.transform = 'translateY(-1px)')}
+        onMouseLeave={e => (e.currentTarget.style.transform = 'translateY(0)')}
       >
         {/* Top Row: Name + Actions */}
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flex: 1 }}>
             <div style={{ fontWeight: '800', color: 'var(--theme-accent)', fontSize: '15px' }}>{f.name}</div>
-            {f.brand && <div style={{ fontSize: '10px', color: 'var(--theme-text-dim)', opacity: 0.6 }}>• {f.brand}</div>}
+            {f.brand && <div style={{ fontSize: '10px', color: 'rgba(255,255,255,0.45)', fontWeight: '600' }}>• {f.brand}</div>}
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-            {isOpen ? <ChevronUp size={18} color="var(--theme-text-dim)" /> : <ChevronDown size={18} color="var(--theme-text-dim)" />}
+            {isOpen ? <ChevronUp size={18} color="rgba(255,255,255,0.5)" /> : <ChevronDown size={18} color="rgba(255,255,255,0.5)" />}
             <button 
               onClick={(e) => { e.stopPropagation(); onRemove(); }} 
-              style={{ background: 'rgba(255,107,107,0.1)', border: 'none', color: '#FF6B6B', cursor: 'pointer', padding: '8px', borderRadius: '10px' }}
+              style={{ background: 'rgba(255,107,107,0.1)', border: '1px solid rgba(255,107,107,0.2)', color: '#FF6B6B', cursor: 'pointer', padding: '8px', borderRadius: '10px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
             >
               <Trash2 size={16} />
             </button>
@@ -247,31 +252,31 @@ const DiaryEntryItem = ({ log, onRemove, onEditPortion, onMove }: any) => {
         </div>
 
         {/* Macro Breakdown Grid — matches AddFoodModal staging card */}
-        <div className="quick-stats-bubble-row" style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '6px', marginBottom: '12px', background: 'var(--theme-panel-dim)', border: '1px solid var(--theme-border)', padding: '10px', borderRadius: '16px' }}>
+        <div className="quick-stats-bubble-row" style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '6px', marginBottom: '12px', background: 'rgba(0,0,0,0.25)', border: '1px solid rgba(255,255,255,0.08)', padding: '10px', borderRadius: '16px' }}>
           <div style={{ textAlign: 'center' }}>
             <div style={{ fontSize: '9px', color: 'rgba(255,255,255,0.4)', fontWeight: '700' }}>KCAL</div>
-            <div style={{ fontSize: '14px', fontWeight: '900', color: 'var(--theme-text)' }}>{Math.round(f.calories || f.cal || 0)}</div>
+            <div style={{ fontSize: '14px', fontWeight: '900', color: '#FFF' }}>{Math.round(f.calories || f.cal || 0)}</div>
           </div>
           <div style={{ textAlign: 'center' }}>
             <div style={{ fontSize: '9px', color: 'rgba(255,255,255,0.4)', fontWeight: '700' }}>P</div>
-            <div style={{ fontSize: '14px', fontWeight: '900', color: 'var(--theme-error)' }}>{Number(f.p || 0).toFixed(1)}g</div>
+            <div style={{ fontSize: '14px', fontWeight: '900', color: 'var(--theme-error, #FF6B6B)' }}>{Number(f.p || 0).toFixed(1)}g</div>
           </div>
           <div style={{ textAlign: 'center' }}>
             <div style={{ fontSize: '9px', color: 'rgba(255,255,255,0.4)', fontWeight: '700' }}>C</div>
-            <div style={{ fontSize: '14px', fontWeight: '900', color: 'var(--theme-accent)' }}>{Number(f.c || 0).toFixed(1)}g</div>
+            <div style={{ fontSize: '14px', fontWeight: '900', color: 'var(--theme-accent, #00C9FF)' }}>{Number(f.c || 0).toFixed(1)}g</div>
           </div>
           <div style={{ textAlign: 'center' }}>
             <div style={{ fontSize: '9px', color: 'rgba(255,255,255,0.4)', fontWeight: '700' }}>F</div>
-            <div style={{ fontSize: '14px', fontWeight: '900', color: 'var(--theme-warning)' }}>{Number(f.f || 0).toFixed(1)}g</div>
+            <div style={{ fontSize: '14px', fontWeight: '900', color: 'var(--theme-warning, #FCC419)' }}>{Number(f.f || 0).toFixed(1)}g</div>
           </div>
         </div>
 
         {/* Serving + Portion Button */}
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-          <div style={{ fontSize: '12px', color: 'var(--theme-text)', fontWeight: '700' }}>{f.serving}</div>
+          <div style={{ fontSize: '12px', color: 'rgba(255,255,255,0.7)', fontWeight: '700' }}>{f.serving}</div>
           <button 
             onClick={(e) => { e.stopPropagation(); onEditPortion(); }} 
-            style={{ background: 'var(--theme-panel-dim)', border: '1px solid var(--theme-border)', color: 'var(--theme-accent)', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '4px', padding: '8px 14px', borderRadius: '12px', boxShadow: '0 2px 8px rgba(0,0,0,0.3)', fontSize: '11px', fontWeight: '800' }}
+            style={{ background: 'rgba(0,201,255,0.08)', border: '1px solid rgba(0,201,255,0.25)', color: 'var(--theme-accent, #00C9FF)', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '4px', padding: '8px 14px', borderRadius: '12px', boxShadow: '0 2px 8px rgba(0,0,0,0.3)', fontSize: '11px', fontWeight: '800' }}
           >
             <Scale size={16} /> ADJUST
           </button>
