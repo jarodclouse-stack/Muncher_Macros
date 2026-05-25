@@ -9,7 +9,6 @@ export type ThemeName =
   | 'sunset-horizon' 
   | 'quantum-violet' 
   | 'olympian-gold'
-  | 'hades-ember'
   | 'dionysus-vineyard'
   | 'poseidons-depths'
   | 'artemis-moonlight'
@@ -41,7 +40,6 @@ const getThemeSolidColor = (theme: ThemeName): string => {
     case 'sunset-horizon': return '#251010';
     case 'quantum-violet': return '#1E002B';
     case 'olympian-gold': return '#1C1A14';
-    case 'hades-ember': return '#1A0808';
     case 'dionysus-vineyard': return '#1A0F2B';
     case 'poseidons-depths': return '#002030';
     case 'artemis-moonlight': return '#1C1F2B';
@@ -65,7 +63,7 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     const validThemes: ThemeName[] = [
       'obsidian', 'cybermancer', 'gold-reserve', 'forest-phantom',
       'midnight-crimson', 'sunset-horizon', 'quantum-violet',
-      'olympian-gold', 'hades-ember', 'dionysus-vineyard',
+      'olympian-gold', 'dionysus-vineyard',
       'poseidons-depths', 'artemis-moonlight', 'hermes-swiftness',
       'spartan-grit', 'oracles-vision', 'solar-flare', 'deep-sea',
       'neon-wasteland', 'emerald-city', 'carbon-fiber', 'midnight-galaxy',
