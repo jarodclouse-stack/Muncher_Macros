@@ -615,9 +615,27 @@ export const PantryView: React.FC<PantryViewProps> = ({ initialMeal, onClose, is
                   </h3>
                   <ChevronDown size={16} style={{ color: 'var(--theme-text-dim-on-panel)', transform: guideExpanded ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s' }} />
                 </div>
-                <p style={{ fontSize: '13px', color: 'var(--theme-text-dim-on-panel)', margin: '0 0 12px 0', lineHeight: '1.5', fontWeight: '500' }}>
+                <p style={{ fontSize: '13px', color: 'var(--theme-text-dim-on-panel)', margin: '0 0 8px 0', lineHeight: '1.5', fontWeight: '500' }}>
                   Welcome! Use our flexible search tools to easily track and log virtually any food or multi-ingredient meal to your diary.
                 </p>
+
+                {/* Explicit Text Toggle Button for Obvious Call-to-Action */}
+                <div style={{ 
+                  display: 'inline-flex', 
+                  alignItems: 'center', 
+                  gap: '6px', 
+                  color: 'var(--theme-accent)', 
+                  fontSize: '11px', 
+                  fontWeight: '800', 
+                  textTransform: 'uppercase', 
+                  letterSpacing: '0.5px',
+                  marginTop: '2px',
+                  marginBottom: guideExpanded ? '14px' : '2px',
+                  transition: 'margin 0.2s'
+                }}>
+                  <span>{guideExpanded ? 'Hide Details' : 'Show Details'}</span>
+                  <ChevronDown size={12} style={{ transform: guideExpanded ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s' }} />
+                </div>
 
                 {/* Collapsible Tool List */}
                 {guideExpanded && (
