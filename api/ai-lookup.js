@@ -92,7 +92,7 @@ function normalizeResult(f) {
     sQty: Number(f.detectedCount || f.sQty || f.qty || f.quantity || 1),
     sUnit: String(f.sUnit || f.unit || 'piece'),
     cal, p, c, f: fat,
-    fb: Math.round((Number(f.fb) || 0) * 10) / 10,
+    fb: Math.round((Number(f.fb || f.Fiber || f.fiber) || 0) * 10) / 10,
     sat: Math.round((Number(f.sat) || 0) * 10) / 10,
     trans: Math.round((Number(f.trans) || 0) * 10) / 10,
     mono: Math.round((Number(f.mono) || 0) * 10) / 10,
@@ -106,20 +106,47 @@ function normalizeResult(f) {
     'Vitamin C': Math.round((Number(f['Vitamin C']) || 0) * 10) / 10,
     'Vitamin A': Math.round(Number(f['Vitamin A']) || 0),
     'Vitamin D': Math.round((Number(f['Vitamin D']) || 0) * 10) / 10,
+    'Vitamin B1': Math.round((Number(f['Vitamin B1']) || 0) * 100) / 100,
+    'Vitamin B2': Math.round((Number(f['Vitamin B2']) || 0) * 100) / 100,
+    'Vitamin B3': Math.round((Number(f['Vitamin B3']) || 0) * 100) / 100,
+    'Vitamin B5': Math.round((Number(f['Vitamin B5']) || 0) * 100) / 100,
+    'Vitamin B6': Math.round((Number(f['Vitamin B6']) || 0) * 100) / 100,
+    'Vitamin B7': Math.round((Number(f['Vitamin B7']) || 0) * 100) / 100,
+    'Vitamin B9': Math.round((Number(f['Vitamin B9']) || 0) * 100) / 100,
     'Vitamin B12': Math.round((Number(f['Vitamin B12']) || 0) * 100) / 100,
+    'Vitamin E': Math.round((Number(f['Vitamin E']) || 0) * 10) / 10,
+    'Vitamin K': Math.round((Number(f['Vitamin K']) || 0) * 10) / 10,
     Magnesium: Math.round(Number(f.Magnesium) || 0),
+    Phosphorus: Math.round(Number(f.Phosphorus) || 0),
     Zinc: Math.round((Number(f.Zinc) || 0) * 10) / 10,
+    Copper: Math.round((Number(f.Copper) || 0) * 1000) / 1000,
+    Manganese: Math.round((Number(f.Manganese) || 0) * 100) / 100,
+    Selenium: Math.round((Number(f.Selenium) || 0) * 10) / 10,
+    Chloride: Math.round(Number(f.Chloride) || 0),
+    Iodine: Math.round((Number(f.Iodine) || 0) * 10) / 10,
+    Chromium: Math.round((Number(f.Chromium) || 0) * 10) / 10,
+    Molybdenum: Math.round((Number(f.Molybdenum) || 0) * 10) / 10,
+    Fluoride: Math.round((Number(f.Fluoride) || 0) * 10) / 10,
+    Fiber: Math.round((Number(f.Fiber || f.fb || f.fiber) || 0) * 10) / 10,
     _src: 'ai',
     // Legacy support
     calories: cal,
     protein: p,
     carbs: c,
     fat: fat,
-    fiber: Math.round((Number(f.fb) || 0) * 10) / 10,
+    fiber: Math.round((Number(f.fb || f.Fiber || f.fiber) || 0) * 10) / 10,
     sugar: Math.round((Number(f.sugars) || 0) * 10) / 10,
     sodium: Math.round(Number(f.Sodium) || 0),
     potassium: Math.round(Number(f.Potassium) || 0),
     cholesterol: Math.round(Number(f.chol) || 0),
+    saturatedFat: Math.round((Number(f.sat) || 0) * 10) / 10,
+    monounsaturatedFat: Math.round((Number(f.mono) || 0) * 10) / 10,
+    polyunsaturatedFat: Math.round((Number(f.poly) || 0) * 10) / 10,
+    chloride: Math.round(Number(f.Chloride) || 0),
+    iodine: Math.round((Number(f.Iodine) || 0) * 10) / 10,
+    chromium: Math.round((Number(f.Chromium) || 0) * 10) / 10,
+    molybdenum: Math.round((Number(f.Molybdenum) || 0) * 10) / 10,
+    fluoride: Math.round((Number(f.Fluoride) || 0) * 10) / 10,
     stagedQty: String(f.detectedCount || f.sQty || f.qty || f.quantity || 1),
     stagedUnit: String(f.sUnit || f.unit || 'serving')
   };
@@ -143,14 +170,15 @@ export default async function handler(req, res) {
 
   DIETARY PERCEPTION PROTOCOL:
   1. ITEM COUNT/WEIGHT: Identify the base serving weight or count (e.g. 174 for a 174g breast).
-  2. NUTRITION: Extract nutrition for exactly that quantity.
+  2. NUTRITION: Extract nutrition for exactly that quantity. You MUST estimate and populate every single micronutrient and trace mineral key listed below. Do not leave them out or set them all to 0. Realistically estimate each value using scientific nutrition databases (USDA/NCCDB).
   
-  JSON keys: name, serving, detectedCount, sUnit, cal, p, c, f, fb, sat, trans, mono, poly, chol, sugars, Sodium, Potassium, Calcium, Iron, "Vitamin C", "Vitamin A", "Vitamin D", "Magnesium", "Zinc".
+  JSON keys: name, serving, detectedCount, sUnit, cal, p, c, f, fb, sat, trans, mono, poly, chol, sugars, Sodium, Potassium, Calcium, Iron, "Vitamin C", "Vitamin A", "Vitamin D", "Vitamin B1", "Vitamin B2", "Vitamin B3", "Vitamin B5", "Vitamin B6", "Vitamin B7", "Vitamin B9", "Vitamin B12", "Vitamin E", "Vitamin K", "Magnesium", "Phosphorus", "Zinc", "Copper", "Manganese", "Selenium", "Chloride", "Iodine", "Chromium", "Molybdenum", "Fluoride", "Fiber".
 
   Rules:
   - Return ONLY raw JSON. No markdown fences.
   - Accuracy is paramount. Use P*4 + C*4 + F*9 for calories.
-  - CRITICAL: Use GRAMS (g) as sUnit if a weight is known, and put the weight in detectedCount. (e.g. "Chicken Breast" -> detectedCount: 174, sUnit: "g")`;
+  - CRITICAL: Use GRAMS (g) as sUnit if a weight is known, and put the weight in detectedCount. (e.g. "Chicken Breast" -> detectedCount: 174, sUnit: "g")
+  - DO NOT omit any key. Ensure every single key from the list above is included in the output JSON objects. All values should be estimated as realistically as possible for the base serving.`;
 
   try {
     const aiResults = await anthropicJson(prompt, apiKey);

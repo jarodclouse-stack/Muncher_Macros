@@ -99,7 +99,7 @@ function normalizeResult(f) {
     p,
     c,
     f: fat,
-    fb: Math.round((Number(f.fb) || 0) * 10) / 10,
+    fb: Math.round((Number(f.fb || f.Fiber || f.fiber) || 0) * 10) / 10,
     sat: Math.round((Number(f.sat) || 0) * 10) / 10,
     trans: Math.round((Number(f.trans) || 0) * 10) / 10,
     mono: Math.round((Number(f.mono) || 0) * 10) / 10,
@@ -129,13 +129,22 @@ function normalizeResult(f) {
     Copper: Math.round((Number(f.Copper) || 0) * 1000) / 1000,
     Manganese: Math.round((Number(f.Manganese) || 0) * 100) / 100,
     Selenium: Math.round((Number(f.Selenium) || 0) * 10) / 10,
+    Chloride: Math.round(Number(f.Chloride) || 0),
+    Iodine: Math.round((Number(f.Iodine) || 0) * 10) / 10,
+    Chromium: Math.round((Number(f.Chromium) || 0) * 10) / 10,
+    Molybdenum: Math.round((Number(f.Molybdenum) || 0) * 10) / 10,
+    Fluoride: Math.round((Number(f.Fluoride) || 0) * 10) / 10,
+    Fiber: Math.round((Number(f.Fiber || f.fb || f.fiber) || 0) * 10) / 10,
+    // NEW: ontology classification + confidence scoring (Rules 12 & 15)
+    category: String(f.category || 'unknown'),
+    confidence: String(f.confidence || 'high'),
     _src: f._src || 'ai',
     // Duplicate keys for legacy compatibility
     calories: cal,
     protein: p,
     carbs: c,
     fat: fat,
-    fiber: Math.round((Number(f.fb) || 0) * 10) / 10,
+    fiber: Math.round((Number(f.fb || f.Fiber || f.fiber) || 0) * 10) / 10,
     sugar: Math.round((Number(f.sugars) || 0) * 10) / 10,
     sodium: Math.round(Number(f.Sodium) || 0),
     potassium: Math.round(Number(f.Potassium) || 0),
@@ -143,6 +152,11 @@ function normalizeResult(f) {
     saturatedFat: Math.round((Number(f.sat) || 0) * 10) / 10,
     monounsaturatedFat: Math.round((Number(f.mono) || 0) * 10) / 10,
     polyunsaturatedFat: Math.round((Number(f.poly) || 0) * 10) / 10,
+    chloride: Math.round(Number(f.Chloride) || 0),
+    iodine: Math.round((Number(f.Iodine) || 0) * 10) / 10,
+    chromium: Math.round((Number(f.Chromium) || 0) * 10) / 10,
+    molybdenum: Math.round((Number(f.Molybdenum) || 0) * 10) / 10,
+    fluoride: Math.round((Number(f.Fluoride) || 0) * 10) / 10,
     // Staging pre-population - CRITICAL: Preserve natural units from AI
     // Check multiple possible keys from AI: sQty, qty, quantity
     stagedQty: String(f.detectedCount || f.sQty || f.qty || f.quantity || 1),
@@ -173,37 +187,145 @@ export default async function handler(req, res) {
     });
   }
 
-  const prompt = `You are a world-class nutrition scientist.
-  
-  Meal: "${description}"
+  const prompt = `You are a world-class nutrition scientist and food parsing engine.
 
-  DIETARY PERCEPTION PROTOCOL (MANDATORY):
-  1. DECONSTRUCTION: Break the meal down into its core individual components/ingredients (e.g., "Chicken Salad Sandwich" -> ["Chicken Breast", "Mayonnaise", "Celery", "Bread Slices"]).
-  2. ITEM COUNT: How many units of each component? (e.g. "2 eggs" -> 2).
-  3. PER UNIT NUTRITION: What is the nutrition for exactly ONE (1) of that specific unit? 
-  4. JSON POPULATION:
-     - Set "name" to the specific ingredient name.
-     - Set "detectedCount" to the number from step 2.
-     - Set "cal", "p", "c", "f" to the values from step 3.
+Meal description: "${description}"
 
-  IF YOU DEFAULT TO 1 WHEN THE USER MENTIONED A DIFFERENT NUMBER, THE DATA WILL BE REJECTED.
+Parse this meal description into individual food components using the rules below. Return ONLY a JSON array — no markdown fences, no commentary.
 
-  EXAMPLES:
-  - "2 eggs" -> detectedCount: 2, cal: 70 (for 1 unit)
-  - "3 slices of toast" -> detectedCount: 3, cal: 80 (for 1 unit)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+STEP 1 — CANONICALIZATION (Rule 16)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Before parsing, normalize the input:
+- Fix typos: "browmie" → brownie, "carne asadaa" → carne asada
+- Normalize brand aliases: "coke zero" → Coca-Cola Zero Sugar, "chik fil a" → Chick-fil-A, "micky d's" → McDonald's
+- Normalize capitalization and spacing
 
-  Return ONLY a JSON array of objects. Format:
-  [{
-    "name": "specific ingredient name",
-    "detectedCount": number,
-    "sUnit": "piece|slice|whole|serving|oz|cup|tbsp|tsp|g|ml",
-    "cal": number, "p": number, "c": number, "f": number, ...
-  }]
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+STEP 2 — FOOD ONTOLOGY CLASSIFICATION (Rule 15)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Classify every identified component into one of these categories:
+  protein | grain | vegetable | fruit | dairy | sauce | topping | side | beverage | dessert | condiment | snack | other
 
-  Rules:
-  - Return ONLY raw JSON. No markdown fences.
-  - CRITICAL: detectedCount = count of units. cal = calories for ONE of those units.
-  - Calorie Math: P*4 + C*4 + F*9.`;
+These categories DIRECTLY control quantity inheritance in Step 3.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+STEP 3 — QUANTITY PARSING (Rules 1–4, 11, 17)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Determine detectedCount for every component. Follow this decision tree:
+
+A) EXPLICIT COUNT — always takes priority.
+   "2 eggs" → 2. "3 slices toast" → 3. "a brownie" or "one brownie" → 1.
+
+B) TOPPING / FILLING INHERITANCE — applies when the meal uses "with" or "topped with":
+   When "X [dish] with [ingredients]", toppings/fillings/sauces inherit X.
+   - "3 tacos with lettuce, salsa, cheese" → tortilla=3, carne asada=3, lettuce=3, salsa=3, cheese=3
+   - "2 bagels with cream cheese" → bagel=2, cream cheese=2
+   - "2 slices pizza with pepperoni" → pizza slices=2, pepperoni=2
+   - "2 sandwiches with mayo" → sandwich=2, mayo=2
+   INHERITANCE only applies to categories: topping, sauce, condiment, filling, protein, grain, vegetable, dairy
+   INHERITANCE never applies to: beverage, dessert, side, snack
+
+C) STANDALONE / SIDE ITEMS — never inherit the main dish quantity.
+   Listed after a comma OR clearly a separate food type (dessert, drink, side dish).
+   "3 tacos, rice, beans, Coke" → tacos=3, rice=1, beans=1, Coke=1
+   "3 tacos with salsa and a brownie" → tacos+salsa=3, brownie=1
+   "2 burgers and fries" → burgers=2, fries=1
+   "2 burgers with cheese" → burgers=2, cheese=2 (cheese is a topping, not a side)
+   RULE: beverages and desserts are ALWAYS standalone quantity=1 unless explicitly "2 brownies" etc.
+
+D) AMBIGUOUS — if you cannot determine the relationship, default to quantity 1 (Rule 17 safety).
+
+E) MULTI-FOOD INDEPENDENT TRACKING (Rule 11):
+   "2 tacos and 3 enchiladas" → tacos=2, enchiladas=3 (completely independent)
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+STEP 4 — IMPLICIT INGREDIENTS (Rule 5)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Infer standard base components from named dishes unless contradicted:
+- "carne asada taco" → infer corn tortilla + carne asada (do NOT add lettuce/salsa unless mentioned)
+- "cheeseburger" → infer bun + beef patty + cheese slice
+- "pepperoni pizza" → infer crust + tomato sauce + mozzarella + pepperoni
+- "BLT sandwich" → infer bread + bacon + lettuce + tomato + mayo
+DO NOT infer exotic or uncommon additions. Only infer what is virtually always present.
+DUPLICATE PREVENTION (Rule 10): If the user already names a component, do NOT add it again as an implicit ingredient.
+  "cheeseburger with cheese" → DO NOT double the cheese. It is already included.
+  "cheeseburger with extra cheese" → ADD one additional cheese component.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+STEP 5 — PORTION & STATE ASSUMPTIONS (Rules 6, 7, 8, 9)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+COOKED STATE (Rule 7): Assume cooked/ready-to-eat unless "raw" is stated.
+  "8 oz chicken" → cooked chicken breast. "1 cup rice" → cooked rice.
+
+RESTAURANT / CHAIN SCALING (Rule 6): If a chain is named, use their known nutrition data.
+  "McDonald's fries" ≠ generic fries. "Chipotle burrito" uses Chipotle's portions.
+  Restaurant nachos are larger than homemade. Adjust cal accordingly.
+
+BEVERAGE RULES (Rule 8):
+  - Coffee does NOT include cream or sugar unless stated.
+  - "black coffee" → ~5 cal, no fat, no sugar.
+  - "diet Coke" / "Coke Zero" → ~0–5 cal, 0g sugar. NEVER assign sugar calories to diet drinks.
+  - Size adjectives scale calories: "large Coke" has more cal than "small Coke".
+  - "coffee with cream and sugar" → add dairy and sugar calories.
+
+UNIT HEURISTICS (Rule 9):
+  - "bowl pasta" → medium restaurant bowl ~2 cups cooked (~200g)
+  - "handful almonds" → ~1 oz (28g)
+  - "scoop protein powder" → standard manufacturer serving (~30g, check brand if named)
+  - "slice of cake" → standard dessert slice (~100–120g)
+  - "glass of milk" → 8 fl oz (240ml)
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+STEP 6 — CONFIDENCE SCORING (Rule 12)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Assign a confidence level to each component:
+  "high"   → branded food, explicit quantity, well-known item (e.g. "2 eggs", "McDonald's Big Mac")
+  "medium" → common food with reasonable estimate (e.g. "chicken taco", "bowl of oatmeal")
+  "low"    → vague description, homemade dish, ambiguous portion (e.g. "some chips", "homemade casserole", "bowl")
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+STEP 7 — NUTRITION ESTIMATION (Rules 13, 14)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+For each component, estimate nutrition for exactly ONE (1) unit:
+
+MICRONUTRIENT MANDATE (Rule 13): You MUST estimate and populate every micronutrient and trace mineral below.
+Do NOT leave them as 0 unless the value is truly negligible (e.g. selenium in Coke). Use USDA/NCCDB data.
+
+CONTRADICTION PREVENTION (Rule 14):
+  - Diet/zero-sugar drinks: sugars ≈ 0, cal ≈ 0–5. Violating this is an error.
+  - Black coffee: no milk fat, no sugar. cal ≈ 5.
+  - Verify: P*4 + C*4 + F*9 ≈ stated cal. Recalculate cal from macros if inconsistent.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+OUTPUT FORMAT
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Return a JSON array. Every object must contain ALL keys below. No omissions.
+
+[{
+  "name": "specific ingredient name (canonicalized)",
+  "category": "protein|grain|vegetable|fruit|dairy|sauce|topping|side|beverage|dessert|condiment|snack|other",
+  "confidence": "high|medium|low",
+  "detectedCount": number,
+  "sUnit": "piece|slice|whole|serving|oz|cup|tbsp|tsp|g|ml",
+  "cal": number, "p": number, "c": number, "f": number,
+  "fb": number, "sugars": number, "sat": number, "trans": number, "mono": number, "poly": number, "chol": number,
+  "Sodium": number, "Potassium": number, "Calcium": number, "Iron": number,
+  "Vitamin C": number, "Vitamin A": number, "Vitamin D": number,
+  "Vitamin B1": number, "Vitamin B2": number, "Vitamin B3": number, "Vitamin B5": number,
+  "Vitamin B6": number, "Vitamin B7": number, "Vitamin B9": number, "Vitamin B12": number,
+  "Vitamin E": number, "Vitamin K": number,
+  "Magnesium": number, "Phosphorus": number, "Zinc": number, "Copper": number,
+  "Manganese": number, "Selenium": number, "Chloride": number, "Iodine": number,
+  "Chromium": number, "Molybdenum": number, "Fluoride": number, "Fiber": number
+}]
+
+CRITICAL REMINDERS:
+- cal = calories for ONE unit. detectedCount is the multiplier the app applies.
+- Calorie formula: P*4 + C*4 + F*9. Always verify.
+- beverages and desserts: NEVER inherit main dish quantity unless explicitly numbered.
+- diet/zero-sugar drinks: sugars = 0, cal ≈ 0–5.
+- Return ONLY raw JSON. No markdown fences, no explanation text.`;
 
   try {
     const aiResults = await anthropicJson(prompt, apiKey);

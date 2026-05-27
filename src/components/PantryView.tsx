@@ -591,37 +591,45 @@ export const PantryView: React.FC<PantryViewProps> = ({ initialMeal, onClose, is
                 <Sparkles size={16} />
               </div>
               
-              <div style={{ paddingRight: '20px' }}>
-                <h3 style={{ fontSize: '13px', fontWeight: '800', margin: '0 0 6px 0', color: 'var(--theme-text-on-panel)' }}>
+              <div style={{ paddingRight: '20px', flex: 1 }}>
+                <h3 style={{ fontSize: '15px', fontWeight: '800', margin: '0 0 8px 0', color: 'var(--theme-text-on-panel)' }}>
                   Pantry & Discovery Guide
                 </h3>
-                <p style={{ fontSize: '11px', color: 'var(--theme-text-dim-on-panel)', margin: '0 0 10px 0', lineHeight: '1.5', fontWeight: '500' }}>
+                <p style={{ fontSize: '13px', color: 'var(--theme-text-dim-on-panel)', margin: '0 0 14px 0', lineHeight: '1.5', fontWeight: '500' }}>
                   Welcome! Use our flexible search tools to easily track and log virtually any food or multi-ingredient meal to your diary.
                 </p>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', fontSize: '11px', color: 'var(--theme-text-dim-on-panel)' }}>
-                  <div style={{ display: 'flex', gap: '6px', alignItems: 'flex-start' }}>
-                    <span style={{ color: 'var(--theme-accent)', fontWeight: '800', display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', fontSize: '13px', color: 'var(--theme-text-dim-on-panel)' }}>
+                  <div style={{ display: 'flex', gap: '10px', alignItems: 'flex-start' }}>
+                    <span style={{ color: 'var(--theme-accent)', fontWeight: '800', display: 'inline-flex', alignItems: 'center', gap: '6px', width: '105px', flexShrink: 0 }}>
                       <span style={{ fontSize: '16px' }}>🔍</span> Search:
                     </span>
-                    <span style={{ lineHeight: '1.4' }}>Queries the official, verified **USDA Food Database** (ideal for groceries, barcodes, and raw ingredients).</span>
+                    <span style={{ lineHeight: '1.5', flex: 1 }}>
+                      Queries the official, verified <strong>USDA Food Database</strong> (ideal for groceries, barcodes, and raw ingredients).
+                    </span>
                   </div>
-                  <div style={{ display: 'flex', gap: '6px', alignItems: 'flex-start' }}>
-                    <span style={{ color: 'var(--theme-accent)', fontWeight: '800', display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
+                  <div style={{ display: 'flex', gap: '10px', alignItems: 'flex-start' }}>
+                    <span style={{ color: 'var(--theme-accent)', fontWeight: '800', display: 'inline-flex', alignItems: 'center', gap: '6px', width: '105px', flexShrink: 0 }}>
                       <span style={{ fontSize: '16px' }}>📸</span> Scan:
                     </span>
-                    <span style={{ lineHeight: '1.4' }}>Activates your device camera to **scan food barcodes** (perfect for instantly logging standard packaged products and groceries without any manual entry).</span>
+                    <span style={{ lineHeight: '1.5', flex: 1 }}>
+                      Activates your device camera to <strong>scan food barcodes</strong> (perfect for instantly logging standard packaged products and groceries without any manual entry).
+                    </span>
                   </div>
-                  <div style={{ display: 'flex', gap: '6px', alignItems: 'flex-start' }}>
-                    <span style={{ color: 'var(--theme-accent)', fontWeight: '800', display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
+                  <div style={{ display: 'flex', gap: '10px', alignItems: 'flex-start' }}>
+                    <span style={{ color: 'var(--theme-accent)', fontWeight: '800', display: 'inline-flex', alignItems: 'center', gap: '6px', width: '105px', flexShrink: 0 }}>
                       <span style={{ fontSize: '16px' }}>✨</span> Ask AI:
                     </span>
-                    <span style={{ lineHeight: '1.4' }}>A custom AI search for **local, unique, or uncommon foods** not accessible in the USDA database—guaranteeing you can log almost anything.</span>
+                    <span style={{ lineHeight: '1.5', flex: 1 }}>
+                      A custom AI search for <strong>local, unique, or uncommon foods</strong> not accessible in the USDA database—guaranteeing you can log almost anything.
+                    </span>
                   </div>
-                  <div style={{ display: 'flex', gap: '6px', alignItems: 'flex-start' }}>
-                    <span style={{ color: 'var(--theme-accent)', fontWeight: '800', display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
+                  <div style={{ display: 'flex', gap: '10px', alignItems: 'flex-start' }}>
+                    <span style={{ color: 'var(--theme-accent)', fontWeight: '800', display: 'inline-flex', alignItems: 'center', gap: '6px', width: '105px', flexShrink: 0 }}>
                       <span style={{ fontSize: '16px' }}>📝</span> Describe:
                     </span>
-                    <span style={{ lineHeight: '1.4' }}>Allows you to describe **whole multi-ingredient meals** in natural language (e.g., *"two scrambled eggs with spinach and toast"*), automatically breakdown into macros!</span>
+                    <span style={{ lineHeight: '1.5', flex: 1 }}>
+                      Allows you to describe <strong>whole multi-ingredient meals</strong> in natural language (e.g., <em>"two scrambled eggs with spinach and toast"</em>), automatically breakdown into macros!
+                    </span>
                   </div>
                 </div>
               </div>
@@ -875,7 +883,44 @@ export const PantryView: React.FC<PantryViewProps> = ({ initialMeal, onClose, is
                                   if (next.length === 0) setIsAiReviewing(false);
                                 }} style={{ background: 'none', border: 'none', color: 'var(--theme-error)', cursor: 'pointer', padding: '4px' }}><X size={18} /></button>
                               </div>
-                          </div>
+                            </div>
+
+                          {/* Confidence badge + category chip */}
+                          {((f as any).confidence === 'low' || (f as any).confidence === 'medium' || ((f as any).category && (f as any).category !== 'unknown')) && (
+                            <div style={{ display: 'flex', gap: '6px', alignItems: 'center', marginBottom: '10px', flexWrap: 'wrap' }}>
+                              {(f as any).confidence === 'low' && (
+                                <span style={{
+                                  display: 'inline-flex', alignItems: 'center', gap: '3px',
+                                  background: 'rgba(255, 180, 0, 0.12)', border: '1px solid rgba(255, 180, 0, 0.35)',
+                                  color: '#ffb400', borderRadius: '6px', padding: '2px 7px',
+                                  fontSize: '9px', fontWeight: '800', letterSpacing: '0.3px'
+                                }}>~ ESTIMATED</span>
+                              )}
+                              {(f as any).confidence === 'medium' && (
+                                <span style={{
+                                  display: 'inline-flex', alignItems: 'center', gap: '3px',
+                                  background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.15)',
+                                  color: 'rgba(255,255,255,0.45)', borderRadius: '6px', padding: '2px 7px',
+                                  fontSize: '9px', fontWeight: '800', letterSpacing: '0.3px'
+                                }}>~ APPROX</span>
+                              )}
+                              {(f as any).category && (f as any).category !== 'unknown' && (
+                                <span style={{
+                                  display: 'inline-flex', alignItems: 'center', gap: '3px',
+                                  background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.1)',
+                                  color: 'rgba(255,255,255,0.35)', borderRadius: '6px', padding: '2px 7px',
+                                  fontSize: '9px', fontWeight: '700', letterSpacing: '0.3px', textTransform: 'lowercase'
+                                }}>
+                                  {
+                                    ({ protein: '🥩', grain: '🌾', vegetable: '🥦', fruit: '🍎', dairy: '🧀',
+                                      sauce: '🫙', topping: '🧂', side: '🍚', beverage: '🥤',
+                                      dessert: '🍫', condiment: '🫙', snack: '🍟', other: '🍽️'
+                                    } as Record<string, string>)[String((f as any).category)] || '🍽️'
+                                  } {(f as any).category}
+                                </span>
+                              )}
+                            </div>
+                          )}
 
                           {/* Quick Stats Row - Distinguishing Bubble */}
                           <div className="quick-stats-bubble-row" style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '6px', marginBottom: '12px', background: 'var(--theme-panel-dim)', border: '1px solid var(--theme-border)', padding: '10px', borderRadius: '16px' }}>
@@ -884,6 +929,7 @@ export const PantryView: React.FC<PantryViewProps> = ({ initialMeal, onClose, is
                             <div style={{ textAlign: 'center' }}><div style={{ fontSize: '8px', color: 'var(--theme-text-dim)', fontWeight: '700' }}>C</div><div style={{ fontSize: '11px', fontWeight: '900', color: 'var(--theme-accent)' }}>{((Number(f.c) || 0) * multiplier).toFixed(1)}g</div></div>
                             <div style={{ textAlign: 'center' }}><div style={{ fontSize: '8px', color: 'var(--theme-text-dim)', fontWeight: '700' }}>F</div><div style={{ fontSize: '11px', fontWeight: '900', color: 'var(--theme-warning)' }}>{((Number(f.f) || 0) * multiplier).toFixed(1)}g</div></div>
                           </div>
+
                       
                         {/* Nutrition Intel Expandable Block */}
                         {f.showNutrientIntel && (

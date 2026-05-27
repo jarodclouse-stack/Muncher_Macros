@@ -1,4 +1,5 @@
 import type { Food } from '../../types/food';
+import { ALL_MICRO_KEYS } from '../constants';
 
 export function round(value: number | string, decimals: number = 1): number {
   const factor = Math.pow(10, decimals);
@@ -129,6 +130,19 @@ export function scaleLegacyFoodByAmount(food: any, amount: number | string): any
 
 export function sumFoods(foodEntries: any[]): any {
   const entries = Array.isArray(foodEntries) ? foodEntries : [];
+  
+  // Set up dynamic initial object
+  const initial: any = { 
+    calories: 0, protein: 0, carbs: 0, fiber: 0, sugar: 0, fat: 0, 
+    saturatedFat: 0, monounsaturatedFat: 0, polyunsaturatedFat: 0, transFat: 0, 
+    cholesterol: 0, sodium: 0, potassium: 0 
+  };
+  
+  ALL_MICRO_KEYS.forEach(k => {
+    initial[k] = 0;
+    initial[k.toLowerCase()] = 0;
+  });
+
   const totals = entries.reduce((acc, item) => {
     acc.calories += safeNum(item.calories != null ? item.calories : item.cal);
     acc.protein += safeNum(item.protein != null ? item.protein : item.p);
@@ -143,8 +157,16 @@ export function sumFoods(foodEntries: any[]): any {
     acc.cholesterol += safeNum(item.cholesterol != null ? item.cholesterol : item.chol);
     acc.sodium += safeNum(item.sodium != null ? item.sodium : item.Sodium);
     acc.potassium += safeNum(item.potassium != null ? item.potassium : item.Potassium);
+
+    // Dynamic Micro Keys
+    ALL_MICRO_KEYS.forEach(k => {
+      const val = safeNum(item[k] !== undefined ? item[k] : item[k.toLowerCase()]);
+      acc[k] += val;
+      acc[k.toLowerCase()] += val;
+    });
+
     return acc;
-  }, { calories:0, protein:0, carbs:0, fiber:0, sugar:0, fat:0, saturatedFat:0, monounsaturatedFat:0, polyunsaturatedFat:0, transFat:0, cholesterol:0, sodium:0, potassium:0 });
+  }, initial);
   
   Object.keys(totals).forEach((k) => { totals[k] = round(totals[k]); });
   return totals;
@@ -210,34 +232,42 @@ export const normalizeFoodResult = (food: any): Food => {
     p: r(food.p),
     c: r(food.c),
     f: r(food.f),
-    fb: r(food.fb),
+    fb: r(food.fb || food.Fiber || food.fiber),
     sat: r(food.sat),
     trans: r(food.trans),
     mono: r(food.mono),
     poly: r(food.poly),
     chol: Math.round(Number(food.chol) || 0),
     sugars: r(food.sugars),
-    Sodium: Math.round(Number(food.Sodium) || 0),
-    Potassium: Math.round(Number(food.Potassium) || 0),
-    Calcium: Math.round(Number(food.Calcium) || 0),
-    Iron: r(food.Iron),
-    'Vitamin C': r(food['Vitamin C']),
-    'Vitamin A': Math.round(Number(food['Vitamin A']) || 0),
-    'Vitamin D': r(food['Vitamin D']),
-    'Vitamin B1': r(food['Vitamin B1'], 2),
-    'Vitamin B2': r(food['Vitamin B2'], 2),
-    'Vitamin B3': r(food['Vitamin B3'], 2),
-    'Vitamin B5': r(food['Vitamin B5'], 2),
-    'Vitamin B6': r(food['Vitamin B6'], 2),
-    'Vitamin B12': r(food['Vitamin B12'], 2),
-    'Vitamin E': r(food['Vitamin E']),
-    'Vitamin K': r(food['Vitamin K']),
-    Magnesium: Math.round(Number(food.Magnesium) || 0),
-    Zinc: r(food.Zinc),
-    Phosphorus: Math.round(Number(food.Phosphorus) || 0),
-    Manganese: r(food.Manganese, 2),
-    Selenium: r(food.Selenium),
-    Copper: r(food.Copper, 3),
+    Sodium: Math.round(Number(food.Sodium || food.sodium) || 0),
+    Potassium: Math.round(Number(food.Potassium || food.potassium) || 0),
+    Calcium: Math.round(Number(food.Calcium || food.calcium) || 0),
+    Iron: r(food.Iron || food.iron),
+    'Vitamin C': r(food['Vitamin C'] || food.vitamin_c),
+    'Vitamin A': Math.round(Number(food['Vitamin A'] || food.vitamin_a) || 0),
+    'Vitamin D': r(food['Vitamin D'] || food.vitamin_d),
+    'Vitamin B1': r(food['Vitamin B1'] || food.vitamin_b1, 2),
+    'Vitamin B2': r(food['Vitamin B2'] || food.vitamin_b2, 2),
+    'Vitamin B3': r(food['Vitamin B3'] || food.vitamin_b3, 2),
+    'Vitamin B5': r(food['Vitamin B5'] || food.vitamin_b5, 2),
+    'Vitamin B6': r(food['Vitamin B6'] || food.vitamin_b6, 2),
+    'Vitamin B7': r(food['Vitamin B7'] || food.vitamin_b7, 2),
+    'Vitamin B9': r(food['Vitamin B9'] || food.vitamin_b9, 2),
+    'Vitamin B12': r(food['Vitamin B12'] || food.vitamin_b12, 2),
+    'Vitamin E': r(food['Vitamin E'] || food.vitamin_e),
+    'Vitamin K': r(food['Vitamin K'] || food.vitamin_k),
+    Magnesium: Math.round(Number(food.Magnesium || food.magnesium) || 0),
+    Zinc: r(food.Zinc || food.zinc),
+    Phosphorus: Math.round(Number(food.Phosphorus || food.phosphorus) || 0),
+    Manganese: r(food.Manganese || food.manganese, 2),
+    Selenium: r(food.Selenium || food.selenium),
+    Copper: r(food.Copper || food.copper, 3),
+    Chloride: Math.round(Number(food.Chloride || food.chloride) || 0),
+    Iodine: r(food.Iodine || food.iodine),
+    Chromium: r(food.Chromium || food.chromium),
+    Molybdenum: r(food.Molybdenum || food.molybdenum),
+    Fluoride: r(food.Fluoride || food.fluoride),
+    Fiber: r(food.Fiber || food.fiber || food.fb),
   };
 
   return enforceCalorieConsistency(normalized);
