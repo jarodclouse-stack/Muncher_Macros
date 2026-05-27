@@ -159,6 +159,10 @@ export const PantryView: React.FC<PantryViewProps> = ({ initialMeal, onClose, is
     if (typeof window === 'undefined') return true;
     return localStorage.getItem('mm_pantry_guide_dismissed') !== 'true';
   });
+  const [guideExpanded, setGuideExpanded] = useState(() => {
+    if (typeof window === 'undefined') return true;
+    return localStorage.getItem('mm_pantry_guide_expanded') !== 'false';
+  });
   const [pantryMode, setPantryMode] = useState<'list' | 'create'>('list');
   const [createTab, setCreateTab] = useState<'basics' | 'micros' | 'recipe'>('basics');
   
@@ -554,19 +558,30 @@ export const PantryView: React.FC<PantryViewProps> = ({ initialMeal, onClose, is
 
           {showGuide && (
             <div className="card" style={{ 
-              padding: '18px 20px', 
+              padding: '16px 20px', 
               display: 'flex', 
-              gap: '14px', 
-              alignItems: 'flex-start',
+              flexDirection: 'column',
+              gap: guideExpanded ? '14px' : '0px', 
               position: 'relative',
-              marginBottom: '16px'
-            }}>
+              marginBottom: '16px',
+              cursor: 'pointer',
+              userSelect: 'none',
+              transition: 'all 0.2s'
+            }}
+            onClick={(e) => {
+              if ((e.target as HTMLElement).closest('.dismiss-btn')) return;
+              const next = !guideExpanded;
+              setGuideExpanded(next);
+              localStorage.setItem('mm_pantry_guide_expanded', String(next));
+            }}
+            >
               {/* Close Button */}
               <button 
                 onClick={() => {
                   setShowGuide(false);
                   localStorage.setItem('mm_pantry_guide_dismissed', 'true');
                 }}
+                className="dismiss-btn hover-dim"
                 style={{
                   position: 'absolute',
                   top: '12px',
@@ -580,59 +595,73 @@ export const PantryView: React.FC<PantryViewProps> = ({ initialMeal, onClose, is
                   alignItems: 'center',
                   justifyContent: 'center',
                   borderRadius: '50%',
-                  transition: 'background 0.2s'
+                  transition: 'background 0.2s',
+                  zIndex: 2
                 }}
-                className="hover-dim"
               >
                 <X size={14} />
               </button>
 
-              <div style={{ background: 'var(--theme-panel-dim)', padding: '8px', borderRadius: '12px', color: 'var(--theme-accent)', border: '1px solid var(--theme-border)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, marginTop: '2px' }}>
-                <Sparkles size={16} />
-              </div>
-              
-              <div style={{ paddingRight: '20px', flex: 1 }}>
-                <h3 style={{ fontSize: '15px', fontWeight: '800', margin: '0 0 8px 0', color: 'var(--theme-text-on-panel)' }}>
-                  Pantry & Discovery Guide
-                </h3>
-                <p style={{ fontSize: '13px', color: 'var(--theme-text-dim-on-panel)', margin: '0 0 14px 0', lineHeight: '1.5', fontWeight: '500' }}>
-                  Welcome! Use our flexible search tools to easily track and log virtually any food or multi-ingredient meal to your diary.
-                </p>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', fontSize: '13px', color: 'var(--theme-text-dim-on-panel)' }}>
-                  <div style={{ display: 'flex', gap: '10px', alignItems: 'flex-start' }}>
-                    <span style={{ color: 'var(--theme-accent)', fontWeight: '800', display: 'inline-flex', alignItems: 'center', gap: '6px', width: '105px', flexShrink: 0 }}>
-                      <span style={{ fontSize: '16px' }}>🔍</span> Search:
-                    </span>
-                    <span style={{ lineHeight: '1.5', flex: 1 }}>
-                      Queries the official, verified <strong>USDA Food Database</strong> (ideal for groceries, barcodes, and raw ingredients).
-                    </span>
-                  </div>
-                  <div style={{ display: 'flex', gap: '10px', alignItems: 'flex-start' }}>
-                    <span style={{ color: 'var(--theme-accent)', fontWeight: '800', display: 'inline-flex', alignItems: 'center', gap: '6px', width: '105px', flexShrink: 0 }}>
-                      <span style={{ fontSize: '16px' }}>📸</span> Scan:
-                    </span>
-                    <span style={{ lineHeight: '1.5', flex: 1 }}>
-                      Activates your device camera to <strong>scan food barcodes</strong> (perfect for instantly logging standard packaged products and groceries without any manual entry).
-                    </span>
-                  </div>
-                  <div style={{ display: 'flex', gap: '10px', alignItems: 'flex-start' }}>
-                    <span style={{ color: 'var(--theme-accent)', fontWeight: '800', display: 'inline-flex', alignItems: 'center', gap: '6px', width: '105px', flexShrink: 0 }}>
-                      <span style={{ fontSize: '16px' }}>✨</span> Ask AI:
-                    </span>
-                    <span style={{ lineHeight: '1.5', flex: 1 }}>
-                      A custom AI search for <strong>local, unique, or uncommon foods</strong> not accessible in the USDA database—guaranteeing you can log almost anything.
-                    </span>
-                  </div>
-                  <div style={{ display: 'flex', gap: '10px', alignItems: 'flex-start' }}>
-                    <span style={{ color: 'var(--theme-accent)', fontWeight: '800', display: 'inline-flex', alignItems: 'center', gap: '6px', width: '105px', flexShrink: 0 }}>
-                      <span style={{ fontSize: '16px' }}>📝</span> Describe:
-                    </span>
-                    <span style={{ lineHeight: '1.5', flex: 1 }}>
-                      Allows you to describe <strong>whole multi-ingredient meals</strong> in natural language (e.g., <em>"two scrambled eggs with spinach and toast"</em>), automatically breakdown into macros!
-                    </span>
-                  </div>
+              {/* Header Row (Always Visible) */}
+              <div style={{ display: 'flex', gap: '14px', alignItems: 'center', width: '100%', paddingRight: '28px' }}>
+                <div style={{ background: 'var(--theme-panel-dim)', padding: '8px', borderRadius: '12px', color: 'var(--theme-accent)', border: '1px solid var(--theme-border)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                  <Sparkles size={16} />
+                </div>
+                <div style={{ flex: 1, display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <h3 style={{ fontSize: '15px', fontWeight: '800', margin: 0, color: 'var(--theme-text-on-panel)' }}>
+                    Pantry & Discovery Guide
+                  </h3>
+                  <ChevronDown size={16} style={{ color: 'var(--theme-text-dim-on-panel)', transform: guideExpanded ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s' }} />
                 </div>
               </div>
+
+              {/* Collapsible Body */}
+              {guideExpanded && (
+                <div style={{ display: 'flex', gap: '14px', alignItems: 'flex-start', marginTop: '4px' }}>
+                  {/* Spacer aligns content perfectly under header title */}
+                  <div style={{ width: '34px', flexShrink: 0 }} />
+                  
+                  <div style={{ flex: 1 }}>
+                    <p style={{ fontSize: '13px', color: 'var(--theme-text-dim-on-panel)', margin: '0 0 14px 0', lineHeight: '1.5', fontWeight: '500' }}>
+                      Welcome! Use our flexible search tools to easily track and log virtually any food or multi-ingredient meal to your diary.
+                    </p>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', fontSize: '13px', color: 'var(--theme-text-dim-on-panel)' }}>
+                      <div style={{ display: 'flex', gap: '10px', alignItems: 'flex-start' }}>
+                        <span style={{ color: 'var(--theme-accent)', fontWeight: '800', display: 'inline-flex', alignItems: 'center', gap: '6px', width: '105px', flexShrink: 0 }}>
+                          <span style={{ fontSize: '16px' }}>🔍</span> Search:
+                        </span>
+                        <span style={{ lineHeight: '1.5', flex: 1 }}>
+                          Queries the official, verified <strong>USDA Food Database</strong> (ideal for groceries, barcodes, and raw ingredients).
+                        </span>
+                      </div>
+                      <div style={{ display: 'flex', gap: '10px', alignItems: 'flex-start' }}>
+                        <span style={{ color: 'var(--theme-accent)', fontWeight: '800', display: 'inline-flex', alignItems: 'center', gap: '6px', width: '105px', flexShrink: 0 }}>
+                          <span style={{ fontSize: '16px' }}>📸</span> Scan:
+                        </span>
+                        <span style={{ lineHeight: '1.5', flex: 1 }}>
+                          Activates your device camera to <strong>scan food barcodes</strong> (perfect for instantly logging standard packaged products and groceries without any manual entry).
+                        </span>
+                      </div>
+                      <div style={{ display: 'flex', gap: '10px', alignItems: 'flex-start' }}>
+                        <span style={{ color: 'var(--theme-accent)', fontWeight: '800', display: 'inline-flex', alignItems: 'center', gap: '6px', width: '105px', flexShrink: 0 }}>
+                          <span style={{ fontSize: '16px' }}>✨</span> Ask AI:
+                        </span>
+                        <span style={{ lineHeight: '1.5', flex: 1 }}>
+                          A custom AI search for <strong>local, unique, or uncommon foods</strong> not accessible in the USDA database—guaranteeing you can log almost anything.
+                        </span>
+                      </div>
+                      <div style={{ display: 'flex', gap: '10px', alignItems: 'flex-start' }}>
+                        <span style={{ color: 'var(--theme-accent)', fontWeight: '800', display: 'inline-flex', alignItems: 'center', gap: '6px', width: '105px', flexShrink: 0 }}>
+                          <span style={{ fontSize: '16px' }}>📝</span> Describe:
+                        </span>
+                        <span style={{ lineHeight: '1.5', flex: 1 }}>
+                          Allows you to describe <strong>whole multi-ingredient meals</strong> in natural language (e.g., <em>"two scrambled eggs with spinach and toast"</em>), automatically breakdown into macros!
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
             </div>
           )}
           
