@@ -6,7 +6,7 @@ import { MICRO_CATEGORIES } from '../lib/constants';
 import { DEFICIENCY_INFO, NUTRIENT_BENEFITS } from '../lib/nutrient-info';
 import { Doughnut } from 'react-chartjs-2';
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js';
-import { Info } from 'lucide-react';
+import { Info, Sparkles } from 'lucide-react';
 import type { Food } from '../types/food';
 
 ChartJS.register(ArcElement, Tooltip, Legend);
@@ -71,6 +71,31 @@ export const NutritionView: React.FC = () => {
 
   return (
     <div className="section" style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-lg)' }}>
+      {/* Friendly Guide Bubble */}
+      <div className="glass-card" style={{ 
+        padding: '16px 20px', 
+        background: 'var(--theme-accent-dim, rgba(0, 201, 255, 0.08))', 
+        border: '1px solid var(--theme-border, rgba(255,255,255,0.1))',
+        borderLeft: '4px solid var(--theme-accent, #00C9FF)',
+        borderRadius: '20px', 
+        display: 'flex', 
+        gap: '12px', 
+        alignItems: 'flex-start',
+        boxShadow: '0 8px 32px rgba(0,0,0,0.15)'
+      }}>
+        <div style={{ background: 'rgba(255,255,255,0.05)', padding: '8px', borderRadius: '12px', color: 'var(--theme-accent)' }}>
+          <Sparkles size={18} />
+        </div>
+        <div>
+          <h3 style={{ fontSize: '13px', fontWeight: '900', margin: '0 0 4px 0', color: 'var(--theme-text)', textTransform: 'uppercase', letterSpacing: '1px' }}>
+            Fuel & Vitality Guide
+          </h3>
+          <p style={{ fontSize: '12px', color: 'var(--theme-text-dim, rgba(255,255,255,0.7))', margin: 0, lineHeight: '1.5', fontWeight: '600' }}>
+            Welcome to your body's dashboard! This tab translates the food you log into the exact energy (Calories), building blocks (Protein, Carbs, Fats), and vitamins powering your health. Think of it as a blueprint showing exactly how your meals are fueling your goals.
+          </p>
+        </div>
+      </div>
+
       {/* Overview Card */}
       <div className="card" style={{ padding: 'var(--space-xl)' }}>
         <h2 style={{ fontSize: '18px', fontWeight: '800', marginBottom: 'var(--space-lg)', color: 'var(--theme-text-on-panel)' }}>Macronutrients</h2>
