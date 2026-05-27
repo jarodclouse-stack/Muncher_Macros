@@ -432,12 +432,12 @@ const WeeklyReport = ({ localCache, currentDate, targetCal }: any) => {
       {isOpen && (
         <div style={{ padding: '20px', borderTop: '1px solid rgba(255,255,255,0.1)' }}>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '12px', marginBottom: '20px' }}>
-            <div style={{ background: 'rgba(0,0,0,0.2)', padding: '16px', borderRadius: '16px', textAlign: 'center' }}>
+            <div style={{ background: 'var(--theme-panel-dim, rgba(255,255,255,0.03))', padding: '16px', borderRadius: '20px', border: '1px solid var(--theme-border, rgba(255,255,255,0.08))', textAlign: 'center' }}>
               <div style={{ fontSize: '10px', color: 'var(--theme-text-dim-on-panel)', textTransform: 'uppercase', marginBottom: '8px', fontWeight: '700' }}>Avg Calories</div>
               <div style={{ fontSize: '20px', fontWeight: '900', color: Math.abs(calDiff) < 150 ? 'var(--theme-success, #92FE9D)' : calDiff > 0 ? 'var(--theme-error, #FF6B6B)' : 'var(--theme-accent, #4DABF7)' }}>{avgCal}</div>
               <div style={{ fontSize: '10px', color: 'var(--theme-text-dim-on-panel)', marginTop: '4px' }}>7-day rolling average</div>
             </div>
-            <div style={{ background: 'rgba(0,0,0,0.2)', padding: '16px', borderRadius: '16px', textAlign: 'center' }}>
+            <div style={{ background: 'var(--theme-panel-dim, rgba(255,255,255,0.03))', padding: '16px', borderRadius: '20px', border: '1px solid var(--theme-border, rgba(255,255,255,0.08))', textAlign: 'center' }}>
               <div style={{ fontSize: '10px', color: 'var(--theme-text-dim-on-panel)', textTransform: 'uppercase', marginBottom: '8px', fontWeight: '700' }}>On Target</div>
               <div style={{ fontSize: '20px', fontWeight: '900', color: 'var(--theme-success, #92FE9D)' }}>{onTarget}/{loggedDays.length}</div>
               <div style={{ fontSize: '10px', color: 'var(--theme-text-dim-on-panel)', marginTop: '4px' }}>days ±15%</div>
@@ -445,8 +445,8 @@ const WeeklyReport = ({ localCache, currentDate, targetCal }: any) => {
           </div>
 
           {/* Deep Insights Row */}
-          <div style={{ background: 'var(--theme-accent-dim, rgba(0,201,255,0.03))', border: '1px solid var(--theme-border, rgba(0,201,255,0.1))', padding: '16px', borderRadius: '16px', marginBottom: '20px' }}>
-            <div style={{ fontSize: '10px', color: 'var(--theme-accent, #00C9FF)', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '12px' }}>Deep Dietary Intelligence</div>
+          <div style={{ background: 'var(--theme-panel-dim, rgba(255,255,255,0.03))', padding: '16px', borderRadius: '20px', border: '1px solid var(--theme-border, rgba(255,255,255,0.08))', marginBottom: '20px' }}>
+            <div style={{ fontSize: '10px', color: 'var(--theme-text-dim, #8b8b9b)', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '12px' }}>Deep Dietary Intelligence</div>
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '8px' }}>
               <div>
                 <div style={{ fontSize: '9px', color: 'var(--theme-text-dim-on-panel)', marginBottom: '4px' }}>Variation</div>
@@ -471,7 +471,7 @@ const WeeklyReport = ({ localCache, currentDate, targetCal }: any) => {
           </div>
 
           {/* New Weekly Nutrient Aggregates Section */}
-          <div style={{ background: 'var(--theme-panel, rgba(255,255,255,0.02))', padding: '16px', borderRadius: '16px', border: '1px solid var(--theme-border, rgba(255,255,255,0.05))', marginBottom: '24px' }}>
+          <div style={{ background: 'var(--theme-panel-dim, rgba(255,255,255,0.03))', padding: '16px', borderRadius: '20px', border: '1px solid var(--theme-border, rgba(255,255,255,0.08))', marginBottom: '24px' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
               <div style={{ fontSize: '10px', color: 'var(--theme-text-dim, #8b8b9b)', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.05em' }}>7-Day Nutrient Averages</div>
               <button 
