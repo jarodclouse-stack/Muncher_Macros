@@ -72,25 +72,15 @@ export const NutritionView: React.FC = () => {
   return (
     <div className="section" style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-lg)' }}>
       {/* Friendly Guide Bubble */}
-      <div className="glass-card" style={{ 
-        padding: '16px 20px', 
-        background: 'var(--theme-accent-dim, rgba(0, 201, 255, 0.08))', 
-        border: '1px solid var(--theme-border, rgba(255,255,255,0.1))',
-        borderLeft: '4px solid var(--theme-accent, #00C9FF)',
-        borderRadius: '20px', 
-        display: 'flex', 
-        gap: '12px', 
-        alignItems: 'flex-start',
-        boxShadow: '0 8px 32px rgba(0,0,0,0.15)'
-      }}>
-        <div style={{ background: 'rgba(255,255,255,0.05)', padding: '8px', borderRadius: '12px', color: 'var(--theme-accent)' }}>
-          <Sparkles size={18} />
+      <div className="card" style={{ padding: 'var(--space-xl)', display: 'flex', gap: 'var(--space-md)', alignItems: 'flex-start' }}>
+        <div style={{ background: 'var(--theme-panel-dim)', padding: '10px', borderRadius: '14px', color: 'var(--theme-accent)', border: '1px solid var(--theme-border)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+          <Sparkles size={20} />
         </div>
         <div>
-          <h3 style={{ fontSize: '13px', fontWeight: '900', margin: '0 0 4px 0', color: 'var(--theme-text)', textTransform: 'uppercase', letterSpacing: '1px' }}>
+          <h3 style={{ fontSize: '14px', fontWeight: '800', margin: '0 0 6px 0', color: 'var(--theme-text-on-panel)' }}>
             Fuel & Vitality Guide
           </h3>
-          <p style={{ fontSize: '12px', color: 'var(--theme-text-dim, rgba(255,255,255,0.7))', margin: 0, lineHeight: '1.5', fontWeight: '600' }}>
+          <p style={{ fontSize: '13px', color: 'var(--theme-text-dim-on-panel)', margin: 0, lineHeight: '1.6', fontWeight: '500' }}>
             Welcome to your body's dashboard! This tab translates the food you log into the exact energy (Calories), building blocks (Protein, Carbs, Fats), and vitamins powering your health. Think of it as a blueprint showing exactly how your meals are fueling your goals.
           </p>
         </div>
