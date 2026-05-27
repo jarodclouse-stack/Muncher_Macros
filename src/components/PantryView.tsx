@@ -780,6 +780,23 @@ export const PantryView: React.FC<PantryViewProps> = ({ initialMeal, onClose, is
                       resize: 'none'
                     }}
                   />
+
+                  {/* Simplified serving size reminder */}
+                  <div style={{ 
+                    background: 'rgba(255, 193, 7, 0.08)', 
+                    border: '1px solid rgba(255, 193, 7, 0.25)', 
+                    borderRadius: '16px', 
+                    padding: '12px 16px', 
+                    display: 'flex', 
+                    gap: '10px', 
+                    alignItems: 'flex-start',
+                    marginTop: '-4px'
+                  }}>
+                    <span style={{ fontSize: '16px', marginTop: '-1px' }}>💡</span>
+                    <span style={{ fontSize: '12px', color: 'rgba(255, 255, 255, 0.85)', lineHeight: '1.4', fontWeight: '500' }}>
+                      <strong>Serving Size Tip:</strong> AI portion sizes are smart guesses and might not be perfect. Don't worry! You can easily tweak and change them on the next screen before adding them to your diary.
+                    </span>
+                  </div>
                 </div>
               </div>
             </div>
