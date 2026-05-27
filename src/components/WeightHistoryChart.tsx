@@ -218,7 +218,7 @@ export const WeightHistoryChart: React.FC<WeightHistoryChartProps> = ({ localCac
   };
 
   return (
-    <div className="glass-card" style={{ 
+    <div className="card" style={{ 
       padding: 'var(--space-xl)'
     }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
