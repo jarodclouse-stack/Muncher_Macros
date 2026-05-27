@@ -155,6 +155,10 @@ export const PantryView: React.FC<PantryViewProps> = ({ initialMeal, onClose, is
   const [editingIndex, setEditingIndex] = useState<number | null>(null);
   const [errorMsg, setErrorMsg] = useState('');
   const [activeTab, setActiveTab] = useState<SearchTab | 'saved'>('search');
+  const [showGuide, setShowGuide] = useState(() => {
+    if (typeof window === 'undefined') return true;
+    return localStorage.getItem('mm_pantry_guide_dismissed') !== 'true';
+  });
   const [pantryMode, setPantryMode] = useState<'list' | 'create'>('list');
   const [createTab, setCreateTab] = useState<'basics' | 'micros' | 'recipe'>('basics');
   
@@ -547,6 +551,70 @@ export const PantryView: React.FC<PantryViewProps> = ({ initialMeal, onClose, is
       {activeTab === 'search' && (
         <div style={{ padding: '0 20px' }}>
           <div style={{ height: '20px' }} />
+
+          {showGuide && (
+            <div className="card" style={{ 
+              padding: '18px 20px', 
+              display: 'flex', 
+              gap: '14px', 
+              alignItems: 'flex-start',
+              position: 'relative',
+              marginBottom: '16px'
+            }}>
+              {/* Close Button */}
+              <button 
+                onClick={() => {
+                  setShowGuide(false);
+                  localStorage.setItem('mm_pantry_guide_dismissed', 'true');
+                }}
+                style={{
+                  position: 'absolute',
+                  top: '12px',
+                  right: '12px',
+                  background: 'none',
+                  border: 'none',
+                  color: 'var(--theme-text-dim, #8b8b9b)',
+                  cursor: 'pointer',
+                  padding: '4px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  borderRadius: '50%',
+                  transition: 'background 0.2s'
+                }}
+                className="hover-dim"
+              >
+                <X size={14} />
+              </button>
+
+              <div style={{ background: 'var(--theme-panel-dim)', padding: '8px', borderRadius: '12px', color: 'var(--theme-accent)', border: '1px solid var(--theme-border)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, marginTop: '2px' }}>
+                <Sparkles size={16} />
+              </div>
+              
+              <div style={{ paddingRight: '20px' }}>
+                <h3 style={{ fontSize: '13px', fontWeight: '800', margin: '0 0 6px 0', color: 'var(--theme-text-on-panel)' }}>
+                  Pantry & Discovery Guide
+                </h3>
+                <p style={{ fontSize: '11px', color: 'var(--theme-text-dim-on-panel)', margin: '0 0 10px 0', lineHeight: '1.5', fontWeight: '500' }}>
+                  Welcome! Use our flexible search tools to easily track and log virtually any food or multi-ingredient meal to your diary.
+                </p>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', fontSize: '11px', color: 'var(--theme-text-dim-on-panel)' }}>
+                  <div style={{ display: 'flex', gap: '6px', alignItems: 'flex-start' }}>
+                    <span style={{ color: 'var(--theme-accent)', fontWeight: '800' }}>🔍 Search:</span>
+                    <span style={{ lineHeight: '1.4' }}>Queries the official, verified **USDA Food Database** (ideal for groceries, barcodes, and raw ingredients).</span>
+                  </div>
+                  <div style={{ display: 'flex', gap: '6px', alignItems: 'flex-start' }}>
+                    <span style={{ color: 'var(--theme-accent)', fontWeight: '800' }}>✨ Ask AI:</span>
+                    <span style={{ lineHeight: '1.4' }}>A custom AI search for **local, unique, or uncommon foods** not accessible in the USDA database—guaranteeing you can log almost anything.</span>
+                  </div>
+                  <div style={{ display: 'flex', gap: '6px', alignItems: 'flex-start' }}>
+                    <span style={{ color: 'var(--theme-accent)', fontWeight: '800' }}>📝 Describe:</span>
+                    <span style={{ lineHeight: '1.4' }}>Allows you to describe **whole multi-ingredient meals** in natural language (e.g., *"two scrambled eggs with spinach and toast"*), automatically breakdown into macros!</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
           
           <SearchCoaster 
             activeTab={innerGlobalSearchTab} 
