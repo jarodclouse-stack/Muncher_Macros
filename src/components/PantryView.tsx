@@ -600,15 +600,27 @@ export const PantryView: React.FC<PantryViewProps> = ({ initialMeal, onClose, is
                 </p>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', fontSize: '11px', color: 'var(--theme-text-dim-on-panel)' }}>
                   <div style={{ display: 'flex', gap: '6px', alignItems: 'flex-start' }}>
-                    <span style={{ color: 'var(--theme-accent)', fontWeight: '800' }}>🔍 Search:</span>
+                    <span style={{ color: 'var(--theme-accent)', fontWeight: '800', display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
+                      <span style={{ fontSize: '16px' }}>🔍</span> Search:
+                    </span>
                     <span style={{ lineHeight: '1.4' }}>Queries the official, verified **USDA Food Database** (ideal for groceries, barcodes, and raw ingredients).</span>
                   </div>
                   <div style={{ display: 'flex', gap: '6px', alignItems: 'flex-start' }}>
-                    <span style={{ color: 'var(--theme-accent)', fontWeight: '800' }}>✨ Ask AI:</span>
+                    <span style={{ color: 'var(--theme-accent)', fontWeight: '800', display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
+                      <span style={{ fontSize: '16px' }}>📸</span> Scan:
+                    </span>
+                    <span style={{ lineHeight: '1.4' }}>Activates your device camera to **scan food barcodes** (perfect for instantly logging standard packaged products and groceries without any manual entry).</span>
+                  </div>
+                  <div style={{ display: 'flex', gap: '6px', alignItems: 'flex-start' }}>
+                    <span style={{ color: 'var(--theme-accent)', fontWeight: '800', display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
+                      <span style={{ fontSize: '16px' }}>✨</span> Ask AI:
+                    </span>
                     <span style={{ lineHeight: '1.4' }}>A custom AI search for **local, unique, or uncommon foods** not accessible in the USDA database—guaranteeing you can log almost anything.</span>
                   </div>
                   <div style={{ display: 'flex', gap: '6px', alignItems: 'flex-start' }}>
-                    <span style={{ color: 'var(--theme-accent)', fontWeight: '800' }}>📝 Describe:</span>
+                    <span style={{ color: 'var(--theme-accent)', fontWeight: '800', display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
+                      <span style={{ fontSize: '16px' }}>📝</span> Describe:
+                    </span>
                     <span style={{ lineHeight: '1.4' }}>Allows you to describe **whole multi-ingredient meals** in natural language (e.g., *"two scrambled eggs with spinach and toast"*), automatically breakdown into macros!</span>
                   </div>
                 </div>
