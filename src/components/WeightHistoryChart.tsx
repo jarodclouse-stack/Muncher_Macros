@@ -78,24 +78,38 @@ export const WeightHistoryChart: React.FC<WeightHistoryChartProps> = ({ localCac
         backgroundColor: (context: any) => {
           const chart = context.chart;
           const {ctx, chartArea} = chart;
-          if (!chartArea) return null;
-          const gradient = ctx.createLinearGradient(0, chartArea.top, 0, chartArea.bottom);
+          if (!chartArea) return 'transparent';
           
-          // Helper to add alpha safely
-          const addAlpha = (color: string, alpha: number) => {
-              if (color.startsWith('#')) {
-                  const hexAlpha = Math.round(alpha * 255).toString(16).padStart(2, '0');
-                  return `${color}${hexAlpha}`;
-              }
-              if (color.startsWith('rgb')) {
-                  return color.replace('rgb', 'rgba').replace(')', `, ${alpha})`);
-              }
-              return color;
-          };
+          const top = chartArea.top;
+          const bottom = chartArea.bottom;
+          
+          // Canvas gradients throw fatal errors if coordinates are non-finite or degenerate (like NaN, Infinity, or identical values)
+          if (typeof top !== 'number' || typeof bottom !== 'number' || !isFinite(top) || !isFinite(bottom) || bottom - top <= 0) {
+            return 'transparent';
+          }
+          
+          try {
+            const gradient = ctx.createLinearGradient(0, top, 0, bottom);
+            
+            // Helper to add alpha safely
+            const addAlpha = (color: string, alpha: number) => {
+                if (color.startsWith('#')) {
+                    const hexAlpha = Math.round(alpha * 255).toString(16).padStart(2, '0');
+                    return `${color}${hexAlpha}`;
+                }
+                if (color.startsWith('rgb')) {
+                    return color.replace('rgb', 'rgba').replace(')', `, ${alpha})`);
+                }
+                return color;
+            };
 
-          gradient.addColorStop(0, addAlpha(resolvedAccent, 0.4));
-          gradient.addColorStop(1, addAlpha(resolvedAccent, 0));
-          return gradient;
+            gradient.addColorStop(0, addAlpha(resolvedAccent, 0.4));
+            gradient.addColorStop(1, addAlpha(resolvedAccent, 0));
+            return gradient;
+          } catch (e) {
+            console.error("Failed to create chart gradient:", e);
+            return 'transparent';
+          }
         },
         fill: true,
         borderWidth: 4,
