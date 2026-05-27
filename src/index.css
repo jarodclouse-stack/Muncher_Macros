@@ -435,15 +435,15 @@ body.theme-ember-forge {
 /* Dark mode — Macro Munchers is always dark */
   .glass{
     background: linear-gradient(135deg, var(--theme-panel-tint), rgba(255,255,255,0.03));
-    backdrop-filter: blur(40px) saturate(220%);
-    -webkit-backdrop-filter: blur(40px) saturate(220%);
+    backdrop-filter: blur(15px) saturate(220%);
+    -webkit-backdrop-filter: blur(15px) saturate(220%);
     border: 1px solid var(--theme-border);
     box-shadow: var(--glass-shine), var(--theme-shadow);
   }
   .glass-card{
     background: linear-gradient(135deg, var(--theme-panel-tint), rgba(255,255,255,0.04));
-    backdrop-filter: blur(30px) saturate(200%);
-    -webkit-backdrop-filter: blur(30px) saturate(200%);
+    backdrop-filter: blur(15px) saturate(200%);
+    -webkit-backdrop-filter: blur(15px) saturate(200%);
     border: 1px solid var(--theme-border);
     box-shadow: var(--glass-shine), var(--theme-shadow);
   }
@@ -1051,7 +1051,7 @@ body.theme-ember-forge {
 body::before{
   content:"";
   position:fixed;
-  inset:-50%; /* Oversize to allow for movement */
+  inset:-15%; /* Bounded to prevent oversized rendering canvas */
   pointer-events:none;
   background:
     radial-gradient(circle at 20% 20%, var(--theme-accent-dim, rgba(137,220,227,0.15)), transparent 40%),
@@ -1061,7 +1061,8 @@ body::before{
   z-index: -1;
   animation: meshDrift 20s infinite alternate ease-in-out;
   opacity: 0.8;
-  filter: blur(60px);
+  filter: blur(20px);
+  -webkit-filter: blur(20px);
 }
 main, header, nav, .page, .app-page{position:relative; z-index:1;}
 .card,
@@ -1502,7 +1503,8 @@ nav.glass-nav{
 .static-blob {
   position: absolute;
   border-radius: 50%;
-  filter: blur(100px);
+  filter: blur(15px);
+  -webkit-filter: blur(15px);
   mix-blend-mode: screen;
   opacity: 0.15;
   background: var(--theme-accent);
