@@ -160,8 +160,8 @@ export const PantryView: React.FC<PantryViewProps> = ({ initialMeal, onClose, is
     return localStorage.getItem('mm_pantry_guide_dismissed') !== 'true';
   });
   const [guideExpanded, setGuideExpanded] = useState(() => {
-    if (typeof window === 'undefined') return true;
-    return localStorage.getItem('mm_pantry_guide_expanded') !== 'false';
+    if (typeof window === 'undefined') return false;
+    return localStorage.getItem('mm_pantry_guide_expanded') === 'true';
   });
   const [pantryMode, setPantryMode] = useState<'list' | 'create'>('list');
   const [createTab, setCreateTab] = useState<'basics' | 'micros' | 'recipe'>('basics');
