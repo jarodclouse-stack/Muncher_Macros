@@ -152,7 +152,7 @@ export const ProgressView: React.FC = () => {
       <WeightHistoryChart localCache={localCache} targetWeight={Number(targetWeight)} />
 
       {/* 4. Progress to Goal Visualization */}
-      <div className="glass-card" style={{ background: 'var(--theme-panel)', border: '1px solid var(--theme-border)', borderRadius: 'var(--radius-lg)', padding: 'var(--space-lg)', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
+      <div className="glass-card" style={{ padding: 'var(--space-xl)', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '16px', fontWeight: '700', marginBottom: 'var(--space-lg)', color: 'var(--theme-text)' }}><Activity size={18} color="var(--theme-success, #92FE9D)" /> Progress to Goal Visualization</div>
         <div style={{ textAlign: 'center', marginBottom: 'var(--space-lg)', padding: '0 var(--space-md)' }}>
           <div style={{ fontSize: '48px', fontWeight: '900', color: 'var(--theme-text)', lineHeight: 1 }}>
@@ -181,7 +181,7 @@ export const ProgressView: React.FC = () => {
       </div>
 
       {/* 5. Weight Tools (Manual Entry) */}
-      <div className="glass-card" id="weight-logging" style={{ padding: 'var(--space-lg)', boxShadow: '0 8px 30px rgba(0,0,0,0.15)' }}>
+      <div className="glass-card" id="weight-logging" style={{ padding: 'var(--space-xl)' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '18px', fontWeight: '900', marginBottom: 'var(--space-lg)', color: 'var(--theme-accent)', textTransform: 'uppercase', letterSpacing: '1px' }}><Scale size={20} color="var(--theme-accent)" /> Weight Record & History</div>
         <form onSubmit={handleSaveDailyWeight} style={{ display: 'flex', gap: 'var(--space-md)', flexWrap: 'wrap', alignItems: 'flex-end' }}>
           <div style={{ flex: 1, minWidth: '120px' }}>
@@ -200,7 +200,7 @@ export const ProgressView: React.FC = () => {
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: 'var(--space-md)' }}>
 
         {/* 4. Body Stats & Goal Configuration */}
-        <div className="glass-card" style={{ gridColumn: '1 / -1', padding: 'var(--space-lg)' }}>
+        <div className="glass-card" style={{ gridColumn: '1 / -1', padding: 'var(--space-xl)' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '16px', fontWeight: '700', marginBottom: 'var(--space-lg)', color: 'var(--theme-text)' }}><User size={18} color="var(--theme-accent, #00C9FF)" /> Body Stats & TDEE Configuration</div>
           
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: 'var(--space-lg)' }}>
@@ -269,7 +269,7 @@ export const ProgressView: React.FC = () => {
         </div>
 
         {/* 3. Activity Level */}
-        <div className="glass-card" style={{ background: 'var(--theme-panel)', border: '1px solid var(--theme-border)', borderRadius: 'var(--radius-lg)', padding: 'var(--space-lg)' }}>
+        <div className="glass-card" style={{ padding: 'var(--space-xl)' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '16px', fontWeight: '700', marginBottom: 'var(--space-lg)', color: 'var(--theme-text)' }}><Activity size={18} color="var(--theme-warning, #FCC419)" /> Activity & Protein Target</div>
           <form onSubmit={handleSaveActivity} style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-md)' }}>
             <div>
@@ -304,7 +304,7 @@ export const ProgressView: React.FC = () => {
         </div>
 
         {/* 4. Calorie Breakdown Visual */}
-        <div className="glass-card" style={{ gridColumn: '1 / -1', padding: 'var(--space-lg)' }}>
+        <div className="glass-card" style={{ gridColumn: '1 / -1', padding: 'var(--space-xl)' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '16px', fontWeight: '700', marginBottom: 'var(--space-lg)', color: 'var(--theme-text)' }}><Flame size={18} color="var(--theme-error, #FF6B6B)" /> TDEE Calculator Breakdown</div>
           
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: 'var(--space-md)', alignItems: 'center', marginTop: 'var(--space-md)' }}>
@@ -337,7 +337,7 @@ export const ProgressView: React.FC = () => {
         </div>
 
         {/* 5. Macro Split & Water Goal */}
-        <div className="glass-card" style={{ gridColumn: '1 / -1', padding: 'var(--space-lg)' }}>
+        <div className="glass-card" style={{ gridColumn: '1 / -1', padding: 'var(--space-xl)' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '16px', fontWeight: '700', marginBottom: 'var(--space-lg)', color: 'var(--theme-text)' }}><PieChart size={18} color="var(--theme-accent, #B197FC)" /> Macro Split & Daily Fluids</div>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: 'var(--space-lg)', marginTop: 'var(--space-md)' }}>
             
@@ -420,7 +420,7 @@ export const ProgressView: React.FC = () => {
 
 
         {/* 7. Micro Nutrients Targets */}
-        <div className="glass-card" style={{ gridColumn: '1 / -1', padding: 'var(--space-lg)' }}>
+        <div className="glass-card" style={{ gridColumn: '1 / -1', padding: 'var(--space-xl)' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 'var(--space-lg)', flexWrap: 'wrap', gap: 'var(--space-md)' }}>
              <div style={{ fontSize: '13px', color: 'var(--theme-text-dim)' }}>Based on your stats and activity level, here are your daily targets:</div>
              <button 

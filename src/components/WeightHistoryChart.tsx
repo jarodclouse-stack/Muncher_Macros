@@ -218,13 +218,8 @@ export const WeightHistoryChart: React.FC<WeightHistoryChartProps> = ({ localCac
   };
 
   return (
-    <div className="card" style={{ 
-      background: 'var(--theme-panel)', 
-      border: '1px solid var(--theme-border)', 
-      borderRadius: '24px', 
-      padding: '24px',
-      backdropFilter: 'blur(20px)',
-      boxShadow: '0 12px 40px rgba(0,0,0,0.1)'
+    <div className="glass-card" style={{ 
+      padding: 'var(--space-xl)'
     }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
         <h3 style={{ fontSize: '13px', fontWeight: '900', margin: 0, display: 'flex', alignItems: 'center', gap: '8px', color: 'var(--theme-text)', textTransform: 'uppercase', letterSpacing: '1px' }}>
