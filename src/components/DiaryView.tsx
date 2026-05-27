@@ -2,7 +2,7 @@ import React, { useState, useMemo } from 'react';
 import { useDiary } from '../context/DiaryContext';
 import { sumFoods } from '../lib/food/serving-converter';
 import { computeGoals } from '../lib/goals/compute';
-import { Utensils, Trash2, Sparkles, Droplets, Minus, Plus, ChevronLeft, ChevronRight, ChevronDown, ChevronUp, Scale, Activity } from 'lucide-react';
+import { Utensils, Trash2, Sparkles, Droplets, ChevronLeft, ChevronRight, ChevronDown, ChevronUp, Scale, Activity } from 'lucide-react';
 import { MEALS, ALL_MICRO_KEYS, MICRO_UNITS } from '../lib/constants';
 
 import { AddFoodModal } from './AddFoodModal';
@@ -668,7 +668,7 @@ const HydrationCard = ({ current, goal, onAdd }: { current: number, goal: number
         {/* Quick Action Buttons */}
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '10px' }}>
            <WaterBtn icon="🥤" label={mode === 'add' ? "+8 oz" : "-8 oz"} onClick={() => handleQuickAdd(8)} color={mode === 'remove' ? 'var(--theme-error-dim, rgba(255,107,107,0.05))' : undefined} />
-           <WaterBtn icon="🍾" label={mode === 'add' ? "+16.9 oz" : "-16.9 oz"} onClick={() => handleQuickAdd(16.9)} color={mode === 'remove' ? 'var(--theme-error-dim, rgba(255,107,107,0.1))' : 'var(--theme-accent-dim, rgba(0,201,255,0.1))'} />
+           <WaterBtn icon="🍾" label={mode === 'add' ? "+16 oz" : "-16 oz"} onClick={() => handleQuickAdd(16)} color={mode === 'remove' ? 'var(--theme-error-dim, rgba(255,107,107,0.1))' : 'var(--theme-accent-dim, rgba(0,201,255,0.1))'} />
            {isCustom ? (
              <div style={{ gridColumn: 'span 2', display: 'flex', background: 'var(--theme-panel-dim, rgba(0,0,0,0.3))', borderRadius: '14px', padding: '4px', border: mode === 'add' ? '1px solid var(--theme-accent, #00C9FF)' : '1px solid var(--theme-error, #FF6B6B)' }}>
                  <input 
@@ -685,13 +685,8 @@ const HydrationCard = ({ current, goal, onAdd }: { current: number, goal: number
              </div>
            ) : (
              <>
-               <WaterBtn icon="🥤" label="Custom" onClick={() => setIsCustom(true)} color={mode === 'remove' ? 'var(--theme-error-dim, rgba(255,107,107,0.15))' : 'var(--theme-accent-dim, rgba(0,201,255,0.15))'} />
-               <button 
-                 onClick={() => onAdd(mode === 'add' ? -8 : 8)}
-                 style={{ background: 'var(--theme-panel, rgba(255,255,255,0.05))', border: 'none', borderRadius: '14px', color: 'var(--theme-text-dim, #8b8b9b)', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '12px 0', gap: '4px', cursor: 'pointer' }}>
-                 {mode === 'add' ? <Minus size={14} /> : <Plus size={14} />}
-                 <span style={{ fontSize: '10px', fontWeight: '700' }}>8 oz</span>
-               </button>
+               <WaterBtn icon="➕" label="Custom +" onClick={() => { setIsCustom(true); setMode('add'); }} color="var(--theme-accent-dim, rgba(0,201,255,0.15))" />
+               <WaterBtn icon="➖" label="Custom -" onClick={() => { setIsCustom(true); setMode('remove'); }} color="var(--theme-error-dim, rgba(255,107,107,0.15))" />
              </>
            )}
         </div>
