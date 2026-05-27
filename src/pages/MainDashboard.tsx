@@ -162,14 +162,11 @@ export const MainDashboard: React.FC = () => {
                               <h3 style={{ fontSize: '13px', fontWeight: '900', margin: 0, color: 'var(--theme-text)', textTransform: 'uppercase', letterSpacing: '1px' }}>Persistence Badges</h3>
                           </div>
                           <div 
-                            className="hide-scrollbar"
                             style={{ 
-                              display: 'flex', 
-                              overflowX: 'auto', 
-                              gap: '12px',
-                              paddingBottom: '8px',
-                              scrollSnapType: 'x mandatory',
-                              WebkitOverflowScrolling: 'touch'
+                              display: 'grid', 
+                              gridTemplateColumns: 'repeat(3, 1fr)', 
+                              gap: '10px',
+                              paddingBottom: '8px'
                             }}
                           >
                             {BADGES.map(badge => {
@@ -178,9 +175,6 @@ export const MainDashboard: React.FC = () => {
                                 <div 
                                   key={badge.title}
                                   style={{ 
-                                    flex: '0 0 auto',
-                                    width: '110px',
-                                    scrollSnapAlign: 'start',
                                     background: isEarned ? 'var(--theme-panel, rgba(255,255,255,0.02))' : 'var(--theme-panel-dim, rgba(255,255,255,0.01))',
                                     border: isEarned ? `1px solid ${badge.color}44` : '1px dashed var(--theme-border, rgba(255,255,255,0.1))',
                                     borderRadius: '16px',
@@ -207,7 +201,7 @@ export const MainDashboard: React.FC = () => {
                                     {isEarned ? getTierIcon(badge.tier, true) : <Lock size={14} color="var(--theme-text-dim, #8b8b9b)" />}
                                   </div>
 
-                                  <div style={{ textAlign: 'center' }}>
+                                  <div style={{ textAlign: 'center', width: '100%' }}>
                                     <div style={{ 
                                       fontSize: '11px', 
                                       fontWeight: '900', 
@@ -217,7 +211,8 @@ export const MainDashboard: React.FC = () => {
                                       overflow: 'hidden',
                                       textOverflow: 'ellipsis',
                                       whiteSpace: 'nowrap',
-                                      width: '94px'
+                                      maxWidth: '100%',
+                                      boxSizing: 'border-box'
                                     }} title={badge.title}>{badge.title}</div>
                                     <div style={{ fontSize: '8px', color: isEarned ? badge.color : 'var(--theme-text-dim)', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
                                       {isEarned ? 'UNLOCKED' : `Day ${badge.day}`}
