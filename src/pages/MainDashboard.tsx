@@ -9,7 +9,7 @@ import { VaultView } from '../components/VaultView';
 import { useDiary } from '../context/DiaryContext';
 import { getRewardBreakdown } from '../lib/reward-utils';
 import { BADGES, BADGE_TIERS } from '../lib/badge-info';
-import { LogOut, Activity, Flame, Utensils, Award, Plus, Settings, X, Info, Sparkles, Trophy, Star, Shield, Zap, Lock } from 'lucide-react';
+import { LogOut, Activity, Flame, Utensils, Award, Plus, Settings, X, Info, Sparkles, Trophy, Star, Shield, Zap, Lock, Menu } from 'lucide-react';
 
 export const MainDashboard: React.FC = () => {
   const { user, logout } = useAuth();
@@ -18,6 +18,7 @@ export const MainDashboard: React.FC = () => {
   const [showRewardModal, setShowRewardModal] = useState(false);
   const [showSettingsModal, setShowSettingsModal] = useState(false);
   const [showVaultModal, setShowVaultModal] = useState(false);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
   
   const rewards = getRewardBreakdown(localCache);
 
@@ -44,36 +45,89 @@ export const MainDashboard: React.FC = () => {
                 {activeTab === 'nutrition' && <Activity size={12} color="var(--theme-accent)" />}
                 {activeTab === 'pantry' && <Plus size={12} color="var(--theme-accent)" />}
                 {activeTab === 'progress' && <Flame size={12} color="var(--theme-accent)" />}
-                {user?.email?.split('@')[0] || 'Guest'}
+                {localCache.settings?.displayName || user?.email?.split('@')[0] || 'Guest'}
               </h1>
             </div>
           </div>
           
-          <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginLeft: 'auto' }}>
-            {/* The Vault Nav */}
-            <div style={{ display: 'flex', borderRight: '1px solid var(--theme-border, rgba(255,255,255,0.1))', paddingRight: '6px' }}>
-              <button onClick={() => setShowVaultModal(true)} style={{ background: showVaultModal ? 'var(--theme-accent-dim)' : 'var(--theme-panel, rgba(255,255,255,0.03))', border: showVaultModal ? '1px solid var(--theme-accent)' : '1px solid var(--theme-border, rgba(255,255,255,0.05))', color: showVaultModal ? 'var(--theme-accent)' : 'var(--theme-text)', padding: '4px 6px', borderRadius: '8px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '4px', transition: 'all 0.2s', height: '100%' }}>
-                <Sparkles size={10} color={showVaultModal ? 'var(--theme-accent)' : '#A5B4FC'} />
-                <span style={{ fontSize: '8px', fontWeight: '800', letterSpacing: '0.5px', textTransform: 'uppercase' }}>The Vault</span>
-              </button>
-            </div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginLeft: 'auto', position: 'relative' }}>
+            {/* Click-away Overlay */}
+            {isMenuOpen && (
+              <div 
+                onClick={() => setIsMenuOpen(false)} 
+                style={{ position: 'fixed', inset: 0, zIndex: 99, background: 'transparent' }} 
+              />
+            )}
 
-            {/* Prestige Section (Merged Streak & Gems) */}
-            <div style={{ display: 'flex', borderRight: '1px solid var(--theme-border, rgba(255,255,255,0.1))', paddingRight: '6px', gap: '4px' }}>
-              <button onClick={() => setShowRewardModal(true)} style={{ background: showRewardModal ? 'var(--theme-accent-dim)' : 'var(--theme-panel, rgba(255,255,255,0.03))', border: showRewardModal ? '1px solid var(--theme-accent)' : '1px solid var(--theme-border, rgba(255,255,255,0.05))', color: showRewardModal ? 'var(--theme-accent)' : 'var(--theme-text)', padding: '4px 6px', borderRadius: '8px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '4px', transition: 'all 0.2s', height: '100%' }}>
-                <Award size={10} color={showRewardModal ? 'var(--theme-accent)' : '#FFD700'} />
-                <span style={{ fontSize: '8px', fontWeight: '800', letterSpacing: '0.5px', textTransform: 'uppercase' }}>Prestige</span>
-              </button>
-            </div>
+            {/* Burger Menu Toggle Button */}
+            <button 
+              onClick={() => setIsMenuOpen(!isMenuOpen)} 
+              style={{ 
+                background: isMenuOpen ? 'var(--theme-accent-dim, rgba(0, 201, 255, 0.1))' : 'rgba(255,255,255,0.05)', 
+                border: isMenuOpen ? '1px solid var(--theme-accent)' : '1px solid var(--theme-border, rgba(255,255,255,0.1))', 
+                color: isMenuOpen ? 'var(--theme-accent)' : 'var(--theme-text-dim, #c0c0d0)', 
+                padding: '8px', 
+                borderRadius: '10px', 
+                cursor: 'pointer', 
+                transition: 'all 0.2s', 
+                display: 'flex', 
+                alignItems: 'center', 
+                justifyContent: 'center',
+                zIndex: 100,
+                outline: 'none'
+              }}
+            >
+              <Menu size={16} />
+            </button>
 
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', minWidth: '32px' }}>
-              <button onClick={() => setShowSettingsModal(true)} style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid var(--theme-border, rgba(255,255,255,0.1))', color: 'var(--theme-text-dim, #c0c0d0)', padding: '5px', borderRadius: '6px', cursor: 'pointer', transition: 'all 0.2s', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                <Settings size={12} />
-              </button>
-              <button onClick={logout} style={{ background: 'rgba(255,107,107,0.1)', border: '1px solid rgba(255,107,107,0.2)', color: '#FF6B6B', padding: '5px', borderRadius: '6px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'all 0.2s' }}>
-                <LogOut size={12} />
-              </button>
-            </div>
+            {/* Burger Dropdown Menu */}
+            {isMenuOpen && (
+              <div 
+                style={{ 
+                  position: 'absolute', 
+                  top: '38px', 
+                  right: '0', 
+                  background: 'var(--theme-panel, rgba(10, 30, 33, 0.95))', 
+                  border: '1px solid var(--theme-border, rgba(255,255,255,0.08))', 
+                  borderRadius: '16px', 
+                  boxShadow: '0 20px 40px rgba(0,0,0,0.6)', 
+                  backdropFilter: 'blur(24px)',
+                  WebkitBackdropFilter: 'blur(24px)',
+                  padding: '8px', 
+                  display: 'flex', 
+                  flexDirection: 'column', 
+                  gap: '4px', 
+                  minWidth: '170px',
+                  zIndex: 100,
+                  animation: 'menuFadeIn 0.2s cubic-bezier(0.16, 1, 0.3, 1)'
+                }}
+              >
+                <DropdownItem 
+                  onClick={() => { setIsMenuOpen(false); setShowVaultModal(true); }}
+                  icon={<Sparkles size={14} color="#A5B4FC" />}
+                  label="The Vault"
+                />
+                <DropdownItem 
+                  onClick={() => { setIsMenuOpen(false); setShowRewardModal(true); }}
+                  icon={<Award size={14} color="#FFD700" />}
+                  label="Prestige"
+                />
+                <DropdownItem 
+                  onClick={() => { setIsMenuOpen(false); setShowSettingsModal(true); }}
+                  icon={<Settings size={14} color="var(--theme-text-dim)" />}
+                  label="Settings"
+                />
+                
+                <div style={{ height: '1px', background: 'var(--theme-border, rgba(255,255,255,0.05))', margin: '4px 8px' }} />
+                
+                <DropdownItem 
+                  onClick={() => { setIsMenuOpen(false); logout(); }}
+                  icon={<LogOut size={14} color="#FF6B6B" />}
+                  label="Log Out"
+                  danger
+                />
+              </div>
+            )}
           </div>
         </header>
 
@@ -307,3 +361,53 @@ const NavItem = ({ active, onClick, label, icon }: { active: boolean, onClick: (
     <span style={{ fontSize: '8px', fontWeight: active ? '900' : '600', letterSpacing: '0.04em', textTransform: 'uppercase' }}>{label}</span>
   </button>
 );
+
+const DropdownItem = ({ onClick, icon, label, danger }: { onClick: () => void, icon: React.ReactNode, label: string, danger?: boolean }) => (
+  <button
+    type="button"
+    onClick={onClick}
+    className={`dropdown-menu-item ${danger ? 'dropdown-menu-item-danger' : ''}`}
+    style={{
+      width: '100%',
+      padding: '10px 14px',
+      background: 'none',
+      border: 'none',
+      borderRadius: '10px',
+      color: danger ? '#FF6B6B' : 'var(--theme-text, #f1f1f1)',
+      fontSize: '12px',
+      fontWeight: '700',
+      cursor: 'pointer',
+      display: 'flex',
+      alignItems: 'center',
+      gap: '10px',
+      textAlign: 'left',
+      transition: 'all 0.2s',
+      fontFamily: 'inherit',
+      outline: 'none'
+    }}
+  >
+    {icon}
+    <span>{label}</span>
+  </button>
+);
+
+// Inject animations and hover styling for premium burger dropdown
+if (typeof document !== 'undefined') {
+  const css = `
+    .dropdown-menu-item:hover {
+      background: rgba(255, 255, 255, 0.05) !important;
+    }
+    .dropdown-menu-item-danger:hover {
+      background: rgba(255, 107, 107, 0.08) !important;
+    }
+    @keyframes menuFadeIn {
+      from { transform: translateY(-8px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+  `;
+  const head = document.head || document.getElementsByTagName('head')[0];
+  const style = document.createElement('style');
+  style.appendChild(document.createTextNode(css));
+  head.appendChild(style);
+}
+

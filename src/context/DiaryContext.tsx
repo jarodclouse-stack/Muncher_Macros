@@ -11,6 +11,7 @@ interface LocalCache {
     units: { weight: string; height: string };
     notifications: Record<string, boolean>;
     purchasedThemes: string[];
+    displayName?: string;
   };
   [date: string]: any; 
 }

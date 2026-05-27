@@ -78,6 +78,9 @@ export const SettingsView: React.FC<{ onClose: () => void }> = ({ onClose }) => 
     }
   };
 
+  const [displayNameInput, setDisplayNameInput] = useState(() => {
+    return localCache.settings?.displayName || user?.email?.split('@')[0] || 'Guest';
+  });
   const [emailInput, setEmailInput] = useState(user?.email || '');
   const [passInput, setPassInput] = useState('');
   const [loading, setLoading] = useState(false);
@@ -281,6 +284,32 @@ export const SettingsView: React.FC<{ onClose: () => void }> = ({ onClose }) => 
                   {loading ? <Loader2 className="spin" size={16} /> : 'Change Password'}
                 </button>
               </form>
+            </div>
+
+            {/* Display Name Personalization Settings */}
+            <div className="section" style={{ background: 'var(--theme-panel)', border: '1px solid var(--theme-border)', borderRadius: 'var(--radius-lg)', padding: 'var(--space-xl)' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: 'var(--space-lg)', fontWeight: '700', color: 'var(--theme-text)' }}><User size={18} color="var(--theme-accent)" /> Display Name</div>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                <label className="lbl">Custom Screen Name</label>
+                <input 
+                  type="text" 
+                  className="inp" 
+                  value={displayNameInput} 
+                  onChange={e => setDisplayNameInput(e.target.value)} 
+                  maxLength={20}
+                  placeholder="Guest"
+                />
+                <button 
+                  onClick={() => {
+                    updateSettings({ displayName: displayNameInput });
+                    setMessage({ text: 'Display name successfully updated!', type: 'success' });
+                  }} 
+                  className="btn" 
+                  style={{ marginTop: '8px', background: 'var(--theme-accent)', color: '#000', width: '100%' }}
+                >
+                  Save Display Name
+                </button>
+              </div>
             </div>
 
           </div>

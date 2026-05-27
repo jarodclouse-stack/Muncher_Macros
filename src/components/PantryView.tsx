@@ -969,7 +969,7 @@ export const PantryView: React.FC<PantryViewProps> = ({ initialMeal, onClose, is
                                 <span style={{
                                   display: 'inline-flex', alignItems: 'center', gap: '3px',
                                   background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.1)',
-                                  color: 'rgba(255,255,255,0.35)', borderRadius: '6px', padding: '2px 7px',
+                                  color: 'rgba(255,255,255,0.85)', borderRadius: '6px', padding: '2px 7px',
                                   fontSize: '9px', fontWeight: '700', letterSpacing: '0.3px', textTransform: 'lowercase'
                                 }}>
                                   {
