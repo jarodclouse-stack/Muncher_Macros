@@ -2,7 +2,7 @@ import React, { useState, useMemo } from 'react';
 import { useDiary } from '../context/DiaryContext';
 import { sumFoods } from '../lib/food/serving-converter';
 import { computeGoals } from '../lib/goals/compute';
-import { Utensils, Trash2, Sparkles, Droplets, ChevronLeft, ChevronRight, ChevronDown, ChevronUp, Scale, Activity, Calendar } from 'lucide-react';
+import { Utensils, Trash2, Sparkles, Droplets, ChevronLeft, ChevronRight, ChevronDown, ChevronUp, Scale, Activity } from 'lucide-react';
 import { MEALS, ALL_MICRO_KEYS, MICRO_UNITS } from '../lib/constants';
 
 import { AddFoodModal } from './AddFoodModal';

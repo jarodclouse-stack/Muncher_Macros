@@ -9,7 +9,7 @@ import { VaultView } from '../components/VaultView';
 import { useDiary } from '../context/DiaryContext';
 import { getRewardBreakdown } from '../lib/reward-utils';
 import { BADGES, BADGE_TIERS } from '../lib/badge-info';
-import { LogOut, Activity, Flame, Utensils, Award, Plus, Settings, X, Info, Sparkles, Trophy, Star, Shield, Zap, Lock, Menu, BookOpen, Apple, TrendingUp, Target } from 'lucide-react';
+import { LogOut, Award, Plus, Settings, X, Info, Sparkles, Trophy, Star, Shield, Zap, Lock, Menu, BookOpen, Apple, TrendingUp, Target } from 'lucide-react';
 
 export const MainDashboard: React.FC = () => {
   const { user, logout } = useAuth();
