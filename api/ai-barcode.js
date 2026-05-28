@@ -1,4 +1,7 @@
 import https from 'https';
+import { setCors, handlePreflight } from './_lib/cors.js';
+import { validateImage, readBody } from './_lib/validate.js';
+import { rateLimit } from './_lib/rate-limit.js';
 
 const MODELS = [
   'claude-sonnet-4-6',
@@ -52,32 +55,17 @@ Return ONLY the raw digit sequence (UPC/EAN). No spaces or dashes.
 If NO barcode digits are found, return the text: "NO_BARCODE_DETECTED".
 Return ONLY the digits or the failure phrase. No markdown or conversational text.`;
 
-async function readBody(req) {
-  if (req.body && typeof req.body === 'object') return req.body;
-  return new Promise((resolve) => {
-    let chunks = [];
-    req.on('data', c => chunks.push(c));
-    req.on('end', () => {
-      const buffer = Buffer.concat(chunks);
-      try { resolve(JSON.parse(buffer.toString())); } 
-      catch { resolve({}); }
-    });
-    req.on('error', () => resolve({}));
-  });
-}
-
 export default async function handler(req, res) {
-  res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
-
-  if (req.method === 'OPTIONS') return res.status(200).end();
+  setCors(req, res);
+  if (handlePreflight(req, res)) return;
   if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
+  if (!rateLimit(req, res)) return;
 
   const body = await readBody(req);
   const { base64, mediaType } = body;
-  
-  if (!base64) return res.status(400).json({ error: 'Missing base64 image' });
+
+  const imgError = validateImage(base64, mediaType);
+  if (imgError) return res.status(400).json({ error: imgError });
 
   const apiKey = (process.env.ANTHROPIC_API_KEY || '').trim();
   if (!apiKey) return res.status(500).json({ error: 'ANTHROPIC_API_KEY not configured' });

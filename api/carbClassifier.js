@@ -1,5 +1,7 @@
 // api/carbClassifier.js
 
+import { setCors } from './_lib/cors.js';
+
 function safeNum(value) {
   const n = Number(value);
   return Number.isFinite(n) ? n : 0;
@@ -112,6 +114,9 @@ export async function classifyFood(query) {
 }
 
 export default async function handler(req, res) {
+  setCors(req, res);
+  if (req.method === 'OPTIONS') return res.status(200).end();
+
   const { query } = req.query || {};
   if (!query) return res.status(400).json({ error: 'Missing query parameter' });
   try {

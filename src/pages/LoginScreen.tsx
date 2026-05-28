@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { supabase } from '../lib/supabase';
 import { LogIn } from 'lucide-react';
+import { PrivacyPolicy } from '../components/PrivacyPolicy';
+import { TermsOfService } from '../components/TermsOfService';
 
 
 export const LoginScreen: React.FC = () => {
@@ -10,6 +12,8 @@ export const LoginScreen: React.FC = () => {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const [rememberMe, setRememberMe] = useState(true);
+  const [showPrivacy, setShowPrivacy] = useState(false);
+  const [showTerms, setShowTerms] = useState(false);
   const { loginAsGuest } = useAuth();
   
   const handleLogin = async (e: React.FormEvent) => {
@@ -116,8 +120,17 @@ export const LoginScreen: React.FC = () => {
           </svg>
           Sign in with Google
         </button>
-        
+
+        <p style={{ textAlign: 'center', fontSize: '11px', color: '#5b5b6b', marginTop: '20px', lineHeight: 1.6 }}>
+          By signing in, you agree to our{' '}
+          <span onClick={() => setShowTerms(true)} style={{ color: '#8b8bbb', cursor: 'pointer', textDecoration: 'underline' }}>Terms of Service</span>
+          {' '}and{' '}
+          <span onClick={() => setShowPrivacy(true)} style={{ color: '#8b8bbb', cursor: 'pointer', textDecoration: 'underline' }}>Privacy Policy</span>.
+        </p>
+
       </div>
+      {showPrivacy && <PrivacyPolicy onClose={() => setShowPrivacy(false)} />}
+      {showTerms && <TermsOfService onClose={() => setShowTerms(false)} />}
       <style>{`
         body.theme-light-surface .login-input,
         body .login-input { 

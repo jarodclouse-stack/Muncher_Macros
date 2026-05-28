@@ -1,8 +1,9 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useDiary } from '../context/DiaryContext';
 import { getRewardBreakdown } from '../lib/reward-utils';
 import { Check } from 'lucide-react';
 import { useTheme, type ThemeName } from '../context/ThemeContext';
+import { Toast } from './Toast';
 
 export const ThemesView: React.FC = () => {
   const { localCache, purchaseTheme } = useDiary();
@@ -11,6 +12,7 @@ export const ThemesView: React.FC = () => {
   const activeRef = useRef<HTMLDivElement>(null);
   const rewards = getRewardBreakdown(localCache);
   const currentGems = rewards.totalGems;
+  const [toastMsg, setToastMsg] = useState('');
 
   useEffect(() => {
     if (activeRef.current) {
@@ -60,13 +62,14 @@ export const ThemesView: React.FC = () => {
         purchaseTheme(t.id);
         setTheme(t.id);
       } else {
-        alert("Not enough gems!");
+        setToastMsg('Not enough gems!');
       }
     }
   };
 
   return (
     <div className="section" style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-lg)' }}>
+      {toastMsg && <Toast message={toastMsg} type="error" onClose={() => setToastMsg('')} />}
       <div className="section" style={{ background: 'var(--theme-panel)', border: '1px solid var(--theme-border)', borderRadius: 'var(--radius-lg)', padding: 'var(--space-xl)' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 'var(--space-sm)', flexWrap: 'wrap', gap: 'var(--space-sm)' }}>
           <h2 style={{ fontSize: '20px', fontWeight: '900', margin: 0, color: 'var(--theme-text)' }}>Theme Emporium</h2>

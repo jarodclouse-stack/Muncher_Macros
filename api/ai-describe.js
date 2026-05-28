@@ -1,16 +1,9 @@
 // api/ai-describe.js
 // Modern AI-Native Meal Perception Logic
-// Logic: AI parses AND estimates in ONE pass, then verifies against USDA if key exists.
 
-async function readBody(req) {
-  if (req.body && typeof req.body === 'object') return req.body;
-  return new Promise((resolve) => {
-    let raw = '';
-    req.on('data', c => { raw += c; });
-    req.on('end', () => { try { resolve(JSON.parse(raw)); } catch { resolve({}); } });
-    req.on('error', () => resolve({}));
-  });
-}
+import { setCors, handlePreflight } from './_lib/cors.js';
+import { validateText, readBody } from './_lib/validate.js';
+import { rateLimit } from './_lib/rate-limit.js';
 
 function extractJSON(text) {
   if (!text) return null;
@@ -165,26 +158,20 @@ function normalizeResult(f) {
 }
 
 export default async function handler(req, res) {
-  res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
-  if (req.method === 'OPTIONS') return res.status(200).end();
+  setCors(req, res);
+  if (handlePreflight(req, res)) return;
   if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
+  if (!rateLimit(req, res)) return;
 
   const body = await readBody(req);
-  const description = body.description || '';
+  const description = validateText(body.description);
   const meal = body.meal || 'Snacks';
 
   const apiKey = (process.env.ANTHROPIC_API_KEY || '').trim();
-  
-  // Diagnostic Log: Verify key format without leaking the whole thing
-  const keyDiagnostics = apiKey ? `[Valid Format, starts with ${apiKey.slice(0, 7)}... ends with ...${apiKey.slice(-4)}]` : '[MISSING]';
-  console.log(`AI Describe Trace: Key=${keyDiagnostics} Model=${MODELS[0]}`);
+  console.log(`AI Describe: key=${apiKey ? 'configured' : 'MISSING'} model=${MODELS[0]}`);
 
   if (!apiKey) {
-    return res.status(200).json({ 
-      error: 'Anthropic API Key is missing in Vercel settings. Please add ANTHROPIC_API_KEY to your environment variables.',
-      setupRequired: true
-    });
+    return res.status(500).json({ error: 'ANTHROPIC_API_KEY not configured' });
   }
 
   const prompt = `You are a world-class nutrition scientist and food parsing engine.

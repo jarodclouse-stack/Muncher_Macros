@@ -1,6 +1,9 @@
 import React, { useState } from 'react';
 import ReactDOM from 'react-dom';
-import { User, Mail, Lock, ShieldCheck, AlertCircle, Loader2, Settings as SettingsIcon, Trash2, Palette, RotateCcw, Check, X } from 'lucide-react';
+import { User, Mail, Lock, ShieldCheck, AlertCircle, Loader2, Settings as SettingsIcon, Trash2, Palette, RotateCcw, Check, X, Download } from 'lucide-react';
+import { Toast } from './Toast';
+import { ConfirmDialog } from './ConfirmDialog';
+import { PromptDialog } from './PromptDialog';
 import { useTheme, type ThemeName } from '../context/ThemeContext';
 import { useAuth } from '../context/AuthContext';
 import { useDiary } from '../context/DiaryContext';
@@ -73,7 +76,7 @@ export const SettingsView: React.FC<{ onClose: () => void }> = ({ onClose }) => 
         purchaseTheme(t.id);
         setTheme(t.id);
       } else {
-        alert("Not enough gems!");
+        setToastMsg('Not enough gems!');
       }
     }
   };
@@ -85,6 +88,8 @@ export const SettingsView: React.FC<{ onClose: () => void }> = ({ onClose }) => 
   const [passInput, setPassInput] = useState('');
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState({ text: '', type: '' });
+  const [toastMsg, setToastMsg] = useState('');
+  const [deleteStep, setDeleteStep] = useState<'none' | 'confirm' | 'type'>('none');
 
 
   const handleUpdateEmail = async (e: React.FormEvent) => {
@@ -115,30 +120,21 @@ export const SettingsView: React.FC<{ onClose: () => void }> = ({ onClose }) => 
     setLoading(false);
   };
 
-  const handleDeleteAccount = async () => {
+  const handleDeleteAccount = () => {
+    setDeleteStep('confirm');
+  };
+
+  const executeDelete = async () => {
     const isActuallyGuest = isGuest || !user;
-    
     if (isActuallyGuest) {
-      if (window.confirm("Are you sure? This will permanently delete your guest data on this browser.")) {
-        localStorage.removeItem('ft_guest');
-        window.location.reload();
-      }
+      localStorage.removeItem('ft_guest');
+      window.location.reload();
       return;
     }
-    
-    const confirm1 = window.confirm("CRITICAL WARNING: This will permanently delete your diet history, food logs, and account settings. This action is irreversible. Proceed?");
-    if (!confirm1) return;
-    
-    const confirm2 = window.prompt("Final confirmation: type 'DELETE' (all caps) to purge your account data:");
-    if (confirm2 !== 'DELETE') return;
-
     setLoading(true);
     try {
-      // Delete user_data row
       const { error } = await supabase.from('user_data').delete().eq('user_id', user.id);
       if (error) throw error;
-      
-      // Sign out
       await supabase.auth.signOut();
       window.location.reload();
     } catch (err: any) {
@@ -476,6 +472,31 @@ export const SettingsView: React.FC<{ onClose: () => void }> = ({ onClose }) => 
 
           </div>
 
+          {/* Data Export */}
+          <div className="section" style={{ background: 'var(--theme-panel)', border: '1px solid var(--theme-border)', borderRadius: 'var(--radius-lg)', padding: 'var(--space-xl)' }}>
+            <h3 style={{ fontSize: '16px', fontWeight: '800', color: 'var(--theme-text)', display: 'flex', alignItems: 'center', gap: '8px', marginBottom: 'var(--space-lg)' }}>
+              <Download size={18} /> Export My Data
+            </h3>
+            <p style={{ fontSize: '13px', color: 'var(--theme-text-dim)', marginBottom: 'var(--space-lg)', lineHeight: '1.5' }}>
+              Download all your logs, custom foods, goals, and settings as a JSON file.
+            </p>
+            <button
+              onClick={() => {
+                const blob = new Blob([JSON.stringify(localCache, null, 2)], { type: 'application/json' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `muncher-macros-export-${new Date().toISOString().slice(0, 10)}.json`;
+                a.click();
+                URL.revokeObjectURL(url);
+              }}
+              className="btn"
+              style={{ background: 'var(--theme-accent)', color: '#000', fontWeight: 700, marginTop: 0 }}
+            >
+              Download JSON
+            </button>
+          </div>
+
           {/* Danger Zone */}
           <div className="section" style={{ background: 'var(--theme-error-dim)', border: '1px solid var(--theme-error)', borderRadius: 'var(--radius-lg)', padding: 'var(--space-xl)' }}>
             <h3 style={{ fontSize: '16px', fontWeight: '800', color: 'var(--theme-error)', display: 'flex', alignItems: 'center', gap: '8px', marginBottom: 'var(--space-lg)' }}>
@@ -484,7 +505,7 @@ export const SettingsView: React.FC<{ onClose: () => void }> = ({ onClose }) => 
             <p style={{ fontSize: '13px', color: 'var(--theme-text-dim)', marginBottom: 'var(--space-lg)', lineHeight: '1.5' }}>
               Deleting your account will remove all logs, custom foods, and progress from our cloud database. This process is immediate and can never be reversed.
             </p>
-            <button 
+            <button
               onClick={handleDeleteAccount}
               disabled={loading}
               className="btn"
@@ -510,6 +531,32 @@ export const SettingsView: React.FC<{ onClose: () => void }> = ({ onClose }) => 
         .spin { animation: spin 1s linear infinite; }
         @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
       `}</style>
+      {toastMsg && <Toast message={toastMsg} type="error" onClose={() => setToastMsg('')} />}
+      {deleteStep === 'confirm' && (
+        <ConfirmDialog
+          title="Delete Account"
+          message={isGuest || !user
+            ? "Are you sure? This will permanently delete your guest data on this browser."
+            : "This will permanently delete your diet history, food logs, and account settings. This action is irreversible."}
+          confirmLabel={isGuest || !user ? "Delete" : "Continue"}
+          danger
+          onCancel={() => setDeleteStep('none')}
+          onConfirm={() => {
+            if (isGuest || !user) { executeDelete(); }
+            else { setDeleteStep('type'); }
+          }}
+        />
+      )}
+      {deleteStep === 'type' && (
+        <PromptDialog
+          title="Final Confirmation"
+          message="Type DELETE (all caps) to permanently purge your account data."
+          placeholder="DELETE"
+          confirmLabel="Permanently Delete"
+          onCancel={() => setDeleteStep('none')}
+          onConfirm={(val) => { if (val === 'DELETE') { setDeleteStep('none'); executeDelete(); } }}
+        />
+      )}
     </div>,
     document.body
   );

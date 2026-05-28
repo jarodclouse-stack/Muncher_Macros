@@ -5,6 +5,7 @@ import { LoginScreen } from './pages/LoginScreen';
 import { MainDashboard } from './pages/MainDashboard';
 import { ThemeProvider } from './context/ThemeContext';
 import { BackgroundGlow } from './components/BackgroundGlow';
+import { ErrorBoundary } from './components/ErrorBoundary';
 import './index.css';
 
 const AppContent: React.FC = () => {
@@ -30,12 +31,14 @@ const AppContent: React.FC = () => {
 
 export default function App() {
   return (
-    <AuthProvider>
-      <ThemeProvider>
-        <DiaryProvider>
-          <AppContent />
-        </DiaryProvider>
-      </ThemeProvider>
-    </AuthProvider>
+    <ErrorBoundary>
+      <AuthProvider>
+        <ThemeProvider>
+          <DiaryProvider>
+            <AppContent />
+          </DiaryProvider>
+        </ThemeProvider>
+      </AuthProvider>
+    </ErrorBoundary>
   );
 }

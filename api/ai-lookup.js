@@ -1,15 +1,9 @@
 // api/ai-lookup.js
 // Modern AI-Native Food Search Logic
 
-async function readBody(req) {
-  if (req.body && typeof req.body === 'object') return req.body;
-  return new Promise((resolve) => {
-    let raw = '';
-    req.on('data', c => { raw += c; });
-    req.on('end', () => { try { resolve(JSON.parse(raw)); } catch { resolve({}); } });
-    req.on('error', () => resolve({}));
-  });
-}
+import { setCors, handlePreflight } from './_lib/cors.js';
+import { validateQuery, readBody } from './_lib/validate.js';
+import { rateLimit } from './_lib/rate-limit.js';
 
 function extractJSON(text) {
   if (!text) return null;
@@ -153,13 +147,13 @@ function normalizeResult(f) {
 }
 
 export default async function handler(req, res) {
-  res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
-  if (req.method === 'OPTIONS') return res.status(200).end();
+  setCors(req, res);
+  if (handlePreflight(req, res)) return;
   if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
+  if (!rateLimit(req, res)) return;
 
   const body = await readBody(req);
-  const query = body.query || '';
+  const query = validateQuery(body.query);
 
   const apiKey = (process.env.ANTHROPIC_API_KEY || '').trim();
   if (!apiKey) return res.status(500).json({ error: 'Environment variable ANTHROPIC_API_KEY missing' });

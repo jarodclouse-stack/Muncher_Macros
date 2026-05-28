@@ -13,6 +13,8 @@ import { getPairingSuggestions } from '../lib/food/smart-pairing';
 import { SearchCoaster, type SearchTab } from './SearchCoaster';
 import { NutritionFactsDisplay } from './NutritionFactsDisplay';
 import { BarcodeScanner } from './BarcodeScanner';
+import { ConfirmDialog } from './ConfirmDialog';
+import { PromptDialog } from './PromptDialog';
 import type { Food, RecipeItem } from '../types/food';
 
 const CollapsibleEntrySection = ({ title, isOpen, onToggle, children }: { title: string, isOpen: boolean, onToggle: () => void, children: React.ReactNode }) => (
@@ -174,6 +176,8 @@ export const PantryView: React.FC<PantryViewProps> = ({ initialMeal, onClose, is
   const [searchResults, setSearchResults] = useState<Food[]>([]);
   const [innerGlobalSearchTab, setInnerGlobalSearchTab] = useState<SearchTab>('search');
   const [hasSearched, setHasSearched] = useState(false);
+  const [promptDialog, setPromptDialog] = useState<{ title: string; message?: string; defaultValue?: string; placeholder?: string; onConfirm: (v: string) => void } | null>(null);
+  const [confirmDialog, setConfirmDialog] = useState<{ title: string; message: string; onConfirm: () => void } | null>(null);
 
   const searchCache = React.useRef<Record<string, Food[]>>({});
   const aiSearchCache = React.useRef<Record<string, Food[]>>({});
@@ -1174,7 +1178,7 @@ export const PantryView: React.FC<PantryViewProps> = ({ initialMeal, onClose, is
                     <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px', width: '100%' }}>
                       <button 
                         onClick={() => {
-                          const mealName = prompt("Name this meal?", "AI Detected Meal") || "AI Detected Meal";
+                          setPromptDialog({ title: 'Name this meal', defaultValue: 'AI Detected Meal', onConfirm: (mealName) => { setPromptDialog(null); const saveMealName = mealName || 'AI Detected Meal';
                           const recipeItems: RecipeItem[] = aiStagedResults.map(f => ({
                             food: f,
                             qty: String(f.stagedQty || '1'),
@@ -1199,7 +1203,7 @@ export const PantryView: React.FC<PantryViewProps> = ({ initialMeal, onClose, is
                           }).join(', ');
 
                           const mealData: Food = {
-                            name: mealName,
+                            name: saveMealName,
                             serving: '1 meal',
                             sQty: 1,
                             sUnit: 'meal',
@@ -1229,6 +1233,7 @@ export const PantryView: React.FC<PantryViewProps> = ({ initialMeal, onClose, is
                           setIsAiReviewing(false);
                           setAiStagedResults([]);
                           showNotification("Entire meal saved to Kitchen Pantry!");
+                        }});
                         }}
                         style={{ padding: '14px 5px', background: 'rgba(0, 201, 255, 0.1)', border: '1px solid var(--theme-accent)', borderRadius: '16px', color: 'var(--theme-accent)', fontWeight: '900', fontSize: '11px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '4px' }}>
                         <Sparkles size={14} color="var(--theme-accent)" /> SAVE AS MEAL
@@ -1317,29 +1322,13 @@ export const PantryView: React.FC<PantryViewProps> = ({ initialMeal, onClose, is
             {/* Smart Scaling Controls */}
             {form.cal > 0 && (
               <div style={{ display: 'flex', gap: '8px', marginTop: '-8px' }}>
-                <button 
-                  onClick={() => {
-                    const target = prompt("Enter target Calories:", "500");
-                    if (!target) return;
-                    const val = parseFloat(target);
-                    if (val > 0) {
-                      const scaled = scaleToTarget(form, 'cal', val);
-                      setForm(scaled);
-                    }
-                  }}
+                <button
+                  onClick={() => setPromptDialog({ title: 'Scale to Calories', message: 'Enter target Calories:', defaultValue: '500', onConfirm: (v) => { setPromptDialog(null); const val = parseFloat(v); if (val > 0) setForm(scaleToTarget(form, 'cal', val)); } })}
                   style={{ flex: 1, padding: '8px', background: 'rgba(255,255,255,0.05)', border: '1px solid var(--theme-border)', borderRadius: '10px', color: 'var(--theme-accent)', fontSize: '10px', fontWeight: '800', cursor: 'pointer' }}>
                   SCALE TO KCAL
                 </button>
-                <button 
-                  onClick={() => {
-                    const target = prompt("Enter target Protein (g):", "50");
-                    if (!target) return;
-                    const val = parseFloat(target);
-                    if (val > 0) {
-                      const scaled = scaleToTarget(form, 'p', val);
-                      setForm(scaled);
-                    }
-                  }}
+                <button
+                  onClick={() => setPromptDialog({ title: 'Scale to Protein', message: 'Enter target Protein (g):', defaultValue: '50', onConfirm: (v) => { setPromptDialog(null); const val = parseFloat(v); if (val > 0) setForm(scaleToTarget(form, 'p', val)); } })}
                   style={{ flex: 1, padding: '8px', background: 'rgba(255,255,255,0.05)', border: '1px solid var(--theme-border)', borderRadius: '10px', color: 'var(--theme-accent)', fontSize: '10px', fontWeight: '800', cursor: 'pointer' }}>
                   SCALE TO PROTEIN
                 </button>
@@ -1692,9 +1681,7 @@ export const PantryView: React.FC<PantryViewProps> = ({ initialMeal, onClose, is
                     <button 
                       onClick={(e) => {
                         e.stopPropagation();
-                        if (confirm(`Are you sure you want to delete "${f.name}" from your Pantry?`)) {
-                          deleteCustomFood(originalIdx);
-                        }
+                        setConfirmDialog({ title: 'Delete Food', message: `Are you sure you want to delete "${f.name}" from your Pantry?`, onConfirm: () => { setConfirmDialog(null); deleteCustomFood(originalIdx); } });
                       }}
                       style={{ background: 'none', border: 'none', color: 'rgba(255,107,107,0.5)', cursor: 'pointer', padding: '4px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                       <Trash2 size={18} />
@@ -1807,41 +1794,13 @@ export const PantryView: React.FC<PantryViewProps> = ({ initialMeal, onClose, is
 
                 {/* Intelligence Scaling Row */}
                 <div style={{ display: 'flex', gap: '8px' }}>
-                  <button 
-                    onClick={() => {
-                      const target = prompt("Enter target Calories (kcal):", "500");
-                      if (target && !isNaN(Number(target))) {
-                        const targetKcal = Number(target);
-                        const baseKcal = Number(configuringFood.cal) || 0;
-                        if (baseKcal > 0) {
-                          // servingUnit and servingQty need to reach targetKcal
-                          // currentKcal = baseKcal * multiplier
-                          // multiplier = targetKcal / baseKcal
-                          // We need to find qty such that computeMultiplier(...) = targetKcal / baseKcal
-                          // This is complex because computeMultiplier handles density. 
-                          // Simplest: find the multiplier for "1 unit" of current selection, then scale.
-                          const multForOne = computeMultiplier(configuringFood.serving, servingUnit, 1);
-                          const needed = targetKcal / (baseKcal * multForOne);
-                          setServingQty(needed.toFixed(1));
-                        }
-                      }
-                    }}
+                  <button
+                    onClick={() => setPromptDialog({ title: 'Scale to Calories', message: 'Enter target Calories (kcal):', defaultValue: '500', onConfirm: (v) => { setPromptDialog(null); const targetKcal = Number(v); const baseKcal = Number(configuringFood.cal) || 0; if (baseKcal > 0) { const multForOne = computeMultiplier(configuringFood.serving, servingUnit, 1); setServingQty((targetKcal / (baseKcal * multForOne)).toFixed(1)); } } })}
                     style={{ flex: 1, padding: '10px', background: 'rgba(255,255,255,0.05)', border: '1px solid var(--theme-border)', borderRadius: '12px', color: 'var(--theme-accent, #00C9FF)', fontSize: '10px', fontWeight: '800', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '4px' }}>
                     <Flame size={12}/> SCALE TO KCAL
                   </button>
-                  <button 
-                    onClick={() => {
-                      const target = prompt("Enter target Protein (g):", "30");
-                      if (target && !isNaN(Number(target))) {
-                        const targetP = Number(target);
-                        const baseP = Number(configuringFood.p) || 0;
-                        if (baseP > 0) {
-                          const multForOne = computeMultiplier(configuringFood.serving || '', servingUnit, 1);
-                          const needed = targetP / (baseP * multForOne);
-                          setServingQty(needed.toFixed(1));
-                        }
-                      }
-                    }}
+                  <button
+                    onClick={() => setPromptDialog({ title: 'Scale to Protein', message: 'Enter target Protein (g):', defaultValue: '30', onConfirm: (v) => { setPromptDialog(null); const targetP = Number(v); const baseP = Number(configuringFood.p) || 0; if (baseP > 0) { const multForOne = computeMultiplier(configuringFood.serving || '', servingUnit, 1); setServingQty((targetP / (baseP * multForOne)).toFixed(1)); } } })}
                     style={{ flex: 1, padding: '10px', background: 'rgba(255,255,255,0.05)', border: '1px solid var(--theme-border)', borderRadius: '12px', color: 'var(--theme-success, #92FE9D)', fontSize: '10px', fontWeight: '800', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '4px' }}>
                     <Activity size={12}/> SCALE TO PROTEIN
                   </button>
@@ -1942,6 +1901,8 @@ export const PantryView: React.FC<PantryViewProps> = ({ initialMeal, onClose, is
           </div>
         </div>
       )}
+      {promptDialog && <PromptDialog title={promptDialog.title} message={promptDialog.message} defaultValue={promptDialog.defaultValue} placeholder={promptDialog.placeholder} onConfirm={promptDialog.onConfirm} onCancel={() => setPromptDialog(null)} />}
+      {confirmDialog && <ConfirmDialog title={confirmDialog.title} message={confirmDialog.message} danger onConfirm={confirmDialog.onConfirm} onCancel={() => setConfirmDialog(null)} />}
     </div>
   );
 };

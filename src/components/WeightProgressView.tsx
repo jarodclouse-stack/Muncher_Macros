@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useDiary } from '../context/DiaryContext';
 import { Activity, Scale, Check } from 'lucide-react';
+import { Toast } from './Toast';
 import { WeightHistoryChart } from './WeightHistoryChart';
 
 export const WeightProgressView: React.FC = () => {
@@ -17,6 +18,7 @@ export const WeightProgressView: React.FC = () => {
   const [logDate, setLogDate] = useState<string>(currentDate);
   const [weightLb, setWeightLb] = useState(goals.weight?.toString() || '175');
   const [targetWeight, setTargetWeight] = useState(goals.targetWeight?.toString() || '165');
+  const [toastMsg, setToastMsg] = useState('');
 
   const unitWeight = localCache.settings?.units?.weight || 'lb';
 
@@ -49,7 +51,7 @@ export const WeightProgressView: React.FC = () => {
         updateGoals({ weight: w });
         setWeightLb(w.toString());
       }
-      alert(`Weight record saved for ${logDate}!`);
+      setToastMsg(`Weight record saved for ${logDate}!`);
     }
   };
 
@@ -109,6 +111,7 @@ export const WeightProgressView: React.FC = () => {
         .btn:hover:not(:disabled) { background: var(--theme-panel, rgba(255,255,255,0.2)); }
         .btn:disabled { opacity: 0.5; cursor: not-allowed; }
       `}</style>
+      {toastMsg && <Toast message={toastMsg} type="success" onClose={() => setToastMsg('')} />}
     </div>
   );
 };

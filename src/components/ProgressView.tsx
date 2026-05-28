@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
-
+import { Toast } from './Toast';
 import { useDiary } from '../context/DiaryContext';
 import { ACTIVITY_LEVELS, MICRO_CATEGORIES } from '../lib/constants';
 import { computeGoals } from '../lib/goals/compute';
-import { Flame, Activity, Save, Droplet, User, PieChart, Info, Check, Edit2 } from 'lucide-react';
+import { Flame, Save, Droplet, User, PieChart, Info, Check, Edit2, ChevronDown, Leaf } from 'lucide-react';
 
 export const ProgressView: React.FC = () => {
   const { localCache, updateGoals } = useDiary();
@@ -22,7 +22,8 @@ export const ProgressView: React.FC = () => {
   const [goalType, setGoalType] = useState(goals.goalType || 'maintain');
   const [goalRate, setGoalRate] = useState(goals.rate?.toString() || '0.5');
   const [targetWeight, setTargetWeight] = useState(goals.targetWeight?.toString() || '165');
-  
+  const [toastMsg, setToastMsg] = useState('');
+
   // Auto-convert all body stats when units change
   React.useEffect(() => {
     const unitWeight = localCache.settings?.units?.weight || 'lb';
@@ -86,6 +87,7 @@ export const ProgressView: React.FC = () => {
   const [macroC, setMacroC] = useState(computed.macroC || 45);
   const [macroF, setMacroF] = useState(computed.macroF || 25);
 
+  const [isMicrosOpen, setIsMicrosOpen] = useState(false);
   const [editingMicro, setEditingMicro] = useState('');
   const [customMicroValue, setCustomMicroValue] = useState('');
 
@@ -96,17 +98,12 @@ export const ProgressView: React.FC = () => {
 
   const handleSaveBodyAndGoal = (e: React.FormEvent) => {
     e.preventDefault();
-    updateGoals({ sex, age: Number(age), height: Number(heightIn), weight: Number(weightLb), goalType, rate: Number(goalRate), targetWeight: Number(targetWeight) });
-  };
-
-  const handleSaveActivity = (e: React.FormEvent) => {
-    e.preventDefault();
-    updateGoals({ activityId, proteinLevelId, customRatioLb: proteinLevelId === 'custom' ? parseFloat(customRatioLb.toString()) : undefined });
+    updateGoals({ sex, age: Number(age), height: Number(heightIn), weight: Number(weightLb), goalType, rate: Number(goalRate), targetWeight: Number(targetWeight), activityId });
   };
 
   const handleSaveMacrosAndWater = () => {
-    if (macroP + macroC + macroF !== 100) return alert("Macros must equal exactly 100%");
-    updateGoals({ macroC, macroF, waterGoal });
+    if (macroP + macroC + macroF !== 100) { setToastMsg('Macros must equal exactly 100%'); return; }
+    updateGoals({ macroC, macroF, waterGoal, proteinLevelId, customRatioLb: proteinLevelId === 'custom' ? parseFloat(customRatioLb.toString()) : undefined });
   };
 
   const handleSaveWaterOnly = () => {
@@ -185,6 +182,17 @@ export const ProgressView: React.FC = () => {
                   </div>
                 </div>
               )}
+              <div style={{ fontWeight: '600', color: 'var(--theme-text)', borderBottom: '1px solid var(--theme-border)', paddingBottom: 'var(--space-xs)', marginTop: 'var(--space-xs)' }}>Activity Level</div>
+              <div>
+                <label className="lbl">Activity Level</label>
+                <select className="inp" value={activityId} onChange={e => setActivityId(e.target.value)}>
+                  {ACTIVITY_LEVELS.map((a: { id: string; label: string; tdee: number }) => (
+                    <option key={a.id} value={a.id}>{a.label} (×{a.tdee} PAL)</option>
+                  ))}
+                </select>
+                <div style={{ fontSize: '11px', color: 'var(--theme-text-dim)', marginTop: '4px' }}>{currentAct?.desc}</div>
+              </div>
+
               <div style={{ marginTop: 'var(--space-md)' }}>
                 <button type="submit" className="btn" style={{ background: 'var(--theme-accent)', color: 'var(--theme-panel-base, black)', width: '100%' }}><Save size={14} /> Update Body & Goal Settings</button>
               </div>
@@ -194,41 +202,6 @@ export const ProgressView: React.FC = () => {
               Keep your body stats up-to-date to ensure your TDEE (Total Daily Energy Expenditure) calculation remains accurate as you progress toward your goals.
             </div>
           </div>
-        </div>
-
-        {/* 3. Activity Level */}
-        <div className="card" style={{ padding: 'var(--space-xl)' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '16px', fontWeight: '700', marginBottom: 'var(--space-lg)', color: 'var(--theme-text)' }}><Activity size={18} color="var(--theme-warning, #FCC419)" /> Activity & Protein Target</div>
-          <form onSubmit={handleSaveActivity} style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-md)' }}>
-            <div>
-              <label className="lbl">Activity Level</label>
-              <select className="inp" value={activityId} onChange={e => setActivityId(e.target.value)}>
-                {ACTIVITY_LEVELS.map((a: { id: string; label: string; tdee: number }) => (
-                  <option key={a.id} value={a.id}>{a.label} (×{a.tdee} PAL)</option>
-                ))}
-              </select>
-              <div style={{ fontSize: '11px', color: 'var(--theme-text-dim)', marginTop: '4px' }}>{currentAct?.desc}</div>
-            </div>
-            <div>
-              <label className="lbl">Protein Target Level</label>
-              <select className="inp" value={proteinLevelId} onChange={e => setProteinLevelId(e.target.value)}>
-                {ACTIVITY_LEVELS.map((a: { id: string; label: string; ratioKg: number }) => (
-                  <option key={`p-${a.id}`} value={a.id}>{a.label} ({isMetric ? Math.round(a.ratioKg * 100)/100 : Math.round(a.ratioKg * 0.453592 * 100)/100}g / {unitWeight})</option>
-                ))}
-                <option value="custom">Custom target</option>
-              </select>
-            </div>
-            {proteinLevelId === 'custom' && (
-              <div>
-                <label className="lbl">Custom Protein (g per {unitWeight} of bodyweight)</label>
-                <input type="number" step="0.05" className="inp" value={customRatioLb} onChange={e => setCustomRatioLb(parseFloat(e.target.value) || 0)} />
-              </div>
-            )}
-            <div style={{ fontSize: '11px', color: 'var(--theme-accent)', marginTop: '4px', textAlign: 'right', fontWeight: '800' }}>
-              Final Target: {Math.round(computed.proteinG)}g / day
-            </div>
-            <button type="submit" className="btn" style={{ background: 'var(--theme-accent)', color: 'var(--theme-bg, #000)' }}><Save size={14} /> Save Activity</button>
-          </form>
         </div>
 
         {/* 4. Calorie Breakdown Visual */}
@@ -267,8 +240,30 @@ export const ProgressView: React.FC = () => {
         {/* 5. Macro Split & Water Goal */}
         <div className="card" style={{ gridColumn: '1 / -1', padding: 'var(--space-xl)' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '16px', fontWeight: '700', marginBottom: 'var(--space-lg)', color: 'var(--theme-text)' }}><PieChart size={18} color="var(--theme-accent, #B197FC)" /> Macro Split & Daily Fluids</div>
+
+          <div style={{ marginBottom: 'var(--space-lg)', display: 'flex', flexDirection: 'column', gap: 'var(--space-md)', borderBottom: '1px solid var(--theme-border)', paddingBottom: 'var(--space-lg)' }}>
+            <div>
+              <label className="lbl">Protein Target Level</label>
+              <select className="inp" value={proteinLevelId} onChange={e => setProteinLevelId(e.target.value)}>
+                {ACTIVITY_LEVELS.map((a: { id: string; label: string; ratioKg: number }) => (
+                  <option key={`p-${a.id}`} value={a.id}>{a.label} ({isMetric ? Math.round(a.ratioKg * 100)/100 : Math.round(a.ratioKg * 0.453592 * 100)/100}g / {unitWeight})</option>
+                ))}
+                <option value="custom">Custom target</option>
+              </select>
+            </div>
+            {proteinLevelId === 'custom' && (
+              <div>
+                <label className="lbl">Custom Protein (g per {unitWeight} of bodyweight)</label>
+                <input type="number" step="0.05" className="inp" value={customRatioLb} onChange={e => setCustomRatioLb(parseFloat(e.target.value) || 0)} />
+              </div>
+            )}
+            <div style={{ fontSize: '11px', color: 'var(--theme-accent)', textAlign: 'right', fontWeight: '800' }}>
+              Final Protein Target: {Math.round(computed.proteinG)}g / day
+            </div>
+          </div>
+
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: 'var(--space-lg)', marginTop: 'var(--space-md)' }}>
-            
+
             <div>
               <div style={{ marginBottom: 'var(--space-md)', fontSize: '13px', color: 'var(--theme-text-dim)' }}>Customize your calorie ratio. Must equal exactly 100%.</div>
               <div 
@@ -349,9 +344,18 @@ export const ProgressView: React.FC = () => {
 
         {/* 7. Micro Nutrients Targets */}
         <div className="card" style={{ gridColumn: '1 / -1', padding: 'var(--space-xl)' }}>
+          <div
+            onClick={() => setIsMicrosOpen(!isMicrosOpen)}
+            style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '16px', fontWeight: '700', color: 'var(--theme-text)', cursor: 'pointer', marginBottom: isMicrosOpen ? 'var(--space-lg)' : '0' }}
+          >
+            <Leaf size={18} color="var(--theme-success, #51CF66)" />
+            Micro Nutrients Targets
+            <ChevronDown size={18} color="var(--theme-text-dim)" style={{ marginLeft: 'auto', transform: isMicrosOpen ? 'rotate(180deg)' : 'rotate(0)', transition: 'transform 0.3s' }} />
+          </div>
+          {isMicrosOpen && <>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 'var(--space-lg)', flexWrap: 'wrap', gap: 'var(--space-md)' }}>
              <div style={{ fontSize: '13px', color: 'var(--theme-text-dim)' }}>Based on your stats and activity level, here are your daily targets:</div>
-             <button 
+             <button
                onClick={() => updateGoals({ customMicros: {} })}
                style={{ background: 'var(--theme-error-dim)', border: 'none', color: 'var(--theme-error)', fontSize: '11px', fontWeight: '700', padding: '6px 10px', borderRadius: '6px', cursor: 'pointer' }}>
                RESET ALL TO DEFAULTS
@@ -422,10 +426,11 @@ export const ProgressView: React.FC = () => {
               </div>
             ))}
           </div>
+          </>}
         </div>
 
       </div>
-      
+
       <style>{`
         .card { background: var(--theme-panel, rgba(255,255,255,0.02)); border: 1px solid var(--theme-border, rgba(255,255,255,0.05)); border-radius: 20px; padding: 24px; }
         .card-header { display: flex; align-items: center; gap: 8px; font-size: 16px; font-weight: 700; margin-bottom: 20px; color: var(--theme-text); }
@@ -470,6 +475,7 @@ export const ProgressView: React.FC = () => {
           to { transform: translateY(0); opacity: 1; }
         }
       `}</style>
+      {toastMsg && <Toast message={toastMsg} type="error" onClose={() => setToastMsg('')} />}
     </div>
   );
 };
