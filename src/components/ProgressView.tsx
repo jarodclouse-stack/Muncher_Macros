@@ -23,6 +23,9 @@ export const ProgressView: React.FC = () => {
   const [goalRate, setGoalRate] = useState(goals.rate?.toString() || '0.5');
   const [targetWeight, setTargetWeight] = useState(goals.targetWeight?.toString() || '165');
   const [toastMsg, setToastMsg] = useState('');
+  const [isBioExpanded, setIsBioExpanded] = useState(false);
+  const [isBioEditing, setIsBioEditing] = useState(false);
+
 
   // Auto-convert all body stats when units change
   React.useEffect(() => {
@@ -99,6 +102,7 @@ export const ProgressView: React.FC = () => {
   const handleSaveBodyAndGoal = (e: React.FormEvent) => {
     e.preventDefault();
     updateGoals({ sex, age: Number(age), height: Number(heightIn), weight: Number(weightLb), goalType, rate: Number(goalRate), targetWeight: Number(targetWeight), activityId, proteinLevelId: activityId });
+    setIsBioEditing(false);
   };
 
   const handleSaveMacrosAndWater = () => {
@@ -131,35 +135,152 @@ export const ProgressView: React.FC = () => {
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: 'var(--space-lg)' }}>
             <form onSubmit={handleSaveBodyAndGoal} style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-md)' }}>
               <div style={{ fontWeight: '600', color: 'var(--theme-text)', borderBottom: '1px solid var(--theme-border)', paddingBottom: 'var(--space-xs)' }}>Your physical details</div>
+              
               <div style={{ display: 'flex', gap: 'var(--space-sm)' }}>
                 <div style={{ flex: 1 }}>
-                  <label className="lbl">Sex</label>
-                  <select className="inp" value={sex} onChange={e => setSex(e.target.value)}>
-                    <option value="male">Male</option>
-                    <option value="female">Female</option>
-                  </select>
-                </div>
-                <div style={{ flex: 1 }}>
-                  <label className="lbl">Age</label>
-                  <input type="number" className="inp" value={age} onChange={e => setAge(cleanNumInput(e.target.value))} />
-                </div>
-              </div>
-               <div style={{ display: 'flex', gap: 'var(--space-sm)' }}>
-                <div style={{ flex: 1 }}>
-                  <label className="lbl">Height ({unitHeight})</label>
-                  <input type="number" className="inp" value={heightIn} onChange={e => setHeightIn(cleanNumInput(e.target.value))} />
-                </div>
-                <div style={{ flex: 1 }}>
-                  <label className="lbl">Weight ({unitWeight})</label>
+                  <label className="lbl">Current Weight ({unitWeight})</label>
                   <input type="number" className="inp" value={weightLb} onChange={e => setWeightLb(cleanNumInput(e.target.value))} />
                 </div>
-              </div>
-
-              <div style={{ display: 'flex', gap: 'var(--space-sm)' }}>
                 <div style={{ flex: 1 }}>
                   <label className="lbl">Goal Weight (Target)</label>
                   <input type="number" step="0.1" className="inp" value={targetWeight} onChange={e => setTargetWeight(cleanNumInput(e.target.value))} />
                 </div>
+              </div>
+
+              {/* Collapsible Biological Profile */}
+              <div className="glass-card" style={{ 
+                border: '1px solid var(--theme-border)', 
+                borderRadius: 'var(--radius-md)', 
+                overflow: 'hidden', 
+                background: 'var(--theme-panel-dim, rgba(255, 255, 255, 0.02))',
+                transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+                marginTop: 'var(--space-xs)'
+              }}>
+                <div 
+                  onClick={() => setIsBioExpanded(!isBioExpanded)}
+                  style={{ 
+                    padding: 'var(--space-sm) var(--space-md)', 
+                    display: 'flex', 
+                    alignItems: 'center', 
+                    justifyContent: 'space-between', 
+                    cursor: 'pointer',
+                    userSelect: 'none',
+                    background: 'var(--theme-panel-base, rgba(0, 0, 0, 0.05))',
+                    borderBottom: isBioExpanded ? '1px solid var(--theme-border)' : 'none'
+                  }}
+                >
+                  <span style={{ fontSize: '13px', fontWeight: '700', color: 'var(--theme-text)', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                    🧬 Biological Profile (Sex, Age, Height)
+                  </span>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <ChevronDown 
+                      size={16} 
+                      style={{ 
+                        transform: isBioExpanded ? 'rotate(180deg)' : 'none', 
+                        transition: 'transform 0.3s ease',
+                        color: 'var(--theme-text-dim)' 
+                      }} 
+                    />
+                  </div>
+                </div>
+
+                {isBioExpanded && (
+                  <div style={{ 
+                    padding: 'var(--space-md)', 
+                    display: 'flex', 
+                    flexDirection: 'column', 
+                    gap: 'var(--space-sm)',
+                    animation: 'fadeIn 0.2s ease-out'
+                  }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '4px' }}>
+                      <span style={{ fontSize: '11px', color: 'var(--theme-text-dim)', fontStyle: 'italic' }}>
+                        These stats are locked to prevent accidental changes.
+                      </span>
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setIsBioEditing(!isBioEditing);
+                        }}
+                        style={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: '4px',
+                          background: isBioEditing ? 'var(--theme-accent)' : 'transparent',
+                          color: isBioEditing ? 'var(--theme-panel-base, #000)' : 'var(--theme-accent)',
+                          border: '1px solid var(--theme-accent)',
+                          borderRadius: '4px',
+                          padding: '2px 8px',
+                          fontSize: '11px',
+                          fontWeight: '700',
+                          cursor: 'pointer',
+                          transition: 'all 0.2s ease'
+                        }}
+                      >
+                        {isBioEditing ? (
+                          <>
+                            <Check size={10} /> Done
+                          </>
+                        ) : (
+                          <>
+                            <Edit2 size={10} /> Edit
+                          </>
+                        )}
+                      </button>
+                    </div>
+
+                    <div style={{ display: 'flex', gap: 'var(--space-sm)' }}>
+                      <div style={{ flex: 1 }}>
+                        <label className="lbl" style={{ opacity: isBioEditing ? 1 : 0.6 }}>Sex</label>
+                        <select 
+                          className="inp" 
+                          value={sex} 
+                          onChange={e => setSex(e.target.value)}
+                          disabled={!isBioEditing}
+                          style={{ 
+                            opacity: isBioEditing ? 1 : 0.7, 
+                            cursor: isBioEditing ? 'default' : 'not-allowed',
+                            background: isBioEditing ? 'var(--theme-panel-base)' : 'var(--theme-panel-dim)'
+                          }}
+                        >
+                          <option value="male">Male</option>
+                          <option value="female">Female</option>
+                        </select>
+                      </div>
+                      <div style={{ flex: 1 }}>
+                        <label className="lbl" style={{ opacity: isBioEditing ? 1 : 0.6 }}>Age</label>
+                        <input 
+                          type="number" 
+                          className="inp" 
+                          value={age} 
+                          onChange={e => setAge(cleanNumInput(e.target.value))}
+                          disabled={!isBioEditing}
+                          style={{ 
+                            opacity: isBioEditing ? 1 : 0.7, 
+                            cursor: isBioEditing ? 'text' : 'not-allowed',
+                            background: isBioEditing ? 'var(--theme-panel-base)' : 'var(--theme-panel-dim)'
+                          }}
+                        />
+                      </div>
+                    </div>
+
+                    <div>
+                      <label className="lbl" style={{ opacity: isBioEditing ? 1 : 0.6 }}>Height ({unitHeight})</label>
+                      <input 
+                        type="number" 
+                        className="inp" 
+                        value={heightIn} 
+                        onChange={e => setHeightIn(cleanNumInput(e.target.value))}
+                        disabled={!isBioEditing}
+                        style={{ 
+                          opacity: isBioEditing ? 1 : 0.7, 
+                          cursor: isBioEditing ? 'text' : 'not-allowed',
+                          background: isBioEditing ? 'var(--theme-panel-base)' : 'var(--theme-panel-dim)'
+                        }}
+                      />
+                    </div>
+                  </div>
+                )}
               </div>
 
               <div style={{ fontWeight: '600', color: 'var(--theme-text)', borderBottom: '1px solid var(--theme-border)', paddingBottom: 'var(--space-xs)', marginTop: 'var(--space-xs)' }}>Weight Management Goal</div>
@@ -174,12 +295,43 @@ export const ProgressView: React.FC = () => {
               {goalType !== 'maintain' && (
                 <div>
                   <label className="lbl">Rate ({unitWeight} per week)</label>
-                  <div style={{ display: 'flex', gap: 'var(--space-xs)', alignItems: 'center' }}>
-                    <input type="number" step={isMetric ? 0.05 : 0.25} min="0" max={isMetric ? 1 : 2} className="inp" value={goalRate} onChange={e => {
-                      setGoalRate(cleanNumInput(e.target.value));
-                    }} />
-                    <span style={{ fontSize: '11px', color: 'var(--theme-text-dim)', fontWeight: '700' }}>{unitWeight}/wk</span>
-                  </div>
+                  {goalType === 'gain' ? (
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-xs)' }}>
+                      <select 
+                        className="inp" 
+                        value={goalRate} 
+                        onChange={e => setGoalRate(e.target.value)}
+                      >
+                        <option value="0.5">0.5 {unitWeight}/wk</option>
+                        <option value="1.0">1.0 {unitWeight}/wk</option>
+                        <option value="1.5">1.5 {unitWeight}/wk</option>
+                      </select>
+                      <div style={{ 
+                        marginTop: '4px', 
+                        padding: '10px 12px', 
+                        background: 'var(--theme-panel-dim, rgba(255, 255, 255, 0.02))', 
+                        border: '1px solid var(--theme-border)', 
+                        borderRadius: 'var(--radius-sm, 6px)',
+                        fontSize: '12px', 
+                        color: 'var(--theme-accent)', 
+                        lineHeight: '1.4',
+                        fontWeight: '550',
+                        display: 'flex',
+                        gap: '6px',
+                        alignItems: 'center'
+                      }}>
+                        <span>💡</span>
+                        <span>Building quality muscle requires consistent heavy lifting and dedicated effort!</span>
+                      </div>
+                    </div>
+                  ) : (
+                    <div style={{ display: 'flex', gap: 'var(--space-xs)', alignItems: 'center' }}>
+                      <input type="number" step={isMetric ? 0.05 : 0.25} min="0" max={isMetric ? 1 : 2} className="inp" value={goalRate} onChange={e => {
+                        setGoalRate(cleanNumInput(e.target.value));
+                      }} />
+                      <span style={{ fontSize: '11px', color: 'var(--theme-text-dim)', fontWeight: '700' }}>{unitWeight}/wk</span>
+                    </div>
+                  )}
                 </div>
               )}
               <div style={{ marginTop: 'var(--space-md)' }}>
