@@ -55,7 +55,10 @@ export function computeGoals(g: any) {
   
   // Normalize weight to LBS for protein ratio logic if stored in KG
   const wtLb = units.weight === 'kg' ? g.weight / KG_PER_LB : (g.weight || 175);
-  const ratioLb = g.customRatioLb || (proteinAct.ratioKg * KG_PER_LB);
+  const isCustomProtein = g.proteinLevelId === 'custom';
+  const ratioLb = isCustomProtein 
+    ? (g.customRatioLb || (proteinAct.ratioKg * KG_PER_LB))
+    : (proteinAct.ratioKg * KG_PER_LB);
   const proteinG = Math.round(wtLb * ratioLb);
   
   const sex = g.sex === 'f' ? 'female' : 'male';
