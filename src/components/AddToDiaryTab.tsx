@@ -134,7 +134,7 @@ export const AddToDiaryTab: React.FC<{ customFoods: any[] }> = ({ customFoods })
                   </div>
 
                   <button onClick={handleLog} style={{ background: 'var(--theme-success, #92FE9D)', color: '#000', padding: '14px', borderRadius: '14px', border: 'none', fontWeight: '800', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
-                    <Scale size={18} /> Confirm Add to Diary
+                    <Scale size={18} /> Confirm Add to Food Log
                   </button>
                 </div>
               )}

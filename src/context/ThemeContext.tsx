@@ -67,7 +67,7 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       'neon-wasteland', 'emerald-city', 'carbon-fiber', 'midnight-galaxy',
       'ember-forge'
     ];
-    return validThemes.includes(saved) ? saved : 'obsidian';
+    return validThemes.includes(saved) ? saved : 'artemis-moonlight';
   });
 
   const setTheme = (name: ThemeName) => {

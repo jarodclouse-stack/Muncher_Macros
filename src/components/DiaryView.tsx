@@ -237,7 +237,7 @@ export const DiaryView: React.FC = () => {
                   <h2 className="luminous-absolute-white diary-header-text" style={{ fontSize: '18px', fontWeight: '800', margin: 0 }}>{displayDate}</h2>
                   <ChevronDown size={16} color="var(--theme-accent)" />
                 </div>
-                <div className="luminous-absolute-white diary-header-text" style={{ fontSize: '11px', opacity: 0.9, fontWeight: '600', textTransform: 'uppercase', letterSpacing: '0.05em', marginTop: '2px' }}>Personal Diary</div>
+                <div className="luminous-absolute-white diary-header-text" style={{ fontSize: '11px', opacity: 0.9, fontWeight: '600', textTransform: 'uppercase', letterSpacing: '0.05em', marginTop: '2px' }}>Personal Food Log</div>
               </button>
             </div>
             <button onClick={() => changeDate(1)} style={{ background: 'var(--theme-panel)', border: 'none', color: 'var(--theme-text)', cursor: 'pointer', padding: '10px', borderRadius: 'var(--radius-md)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><ChevronRight size={20} /></button>

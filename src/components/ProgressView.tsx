@@ -3,21 +3,17 @@ import React, { useState } from 'react';
 import { useDiary } from '../context/DiaryContext';
 import { ACTIVITY_LEVELS, MICRO_CATEGORIES } from '../lib/constants';
 import { computeGoals } from '../lib/goals/compute';
-import { Flame, Activity, Save, Scale, Droplet, User, PieChart, Info, Check, Edit2 } from 'lucide-react';
-import { WeightHistoryChart } from './WeightHistoryChart';
+import { Flame, Activity, Save, Droplet, User, PieChart, Info, Check, Edit2 } from 'lucide-react';
 
 export const ProgressView: React.FC = () => {
-  const { localCache, updateGoals, updateDayData, currentDate } = useDiary();
+  const { localCache, updateGoals } = useDiary();
   const goals = localCache.goals || {};
-  const currentDayData = localCache[currentDate] || {};
   
   const cleanNumInput = (v: string) => {
     if (v.length > 1 && v.startsWith('0') && !v.startsWith('0.')) return v.substring(1);
     return v;
   };
   
-  const [dailyWeight, setDailyWeight] = useState<string>(currentDayData.weight?.toString() || '');
-  const [logDate, setLogDate] = useState<string>(currentDate);
   const [sex, setSex] = useState(goals.sex || 'male');
   const [age, setAge] = useState(goals.age?.toString() || '30');
   const [heightIn, setHeightIn] = useState(goals.height?.toString() || '70');
@@ -50,12 +46,8 @@ export const ProgressView: React.FC = () => {
             const v = parseFloat(prev);
             return isNaN(v) ? prev : (v * conv).toFixed(2);
         });
-        setDailyWeight((prev: string) => {
-            const v = parseFloat(prev);
-            return isNaN(v) ? prev : (v * conv).toFixed(1);
-        });
     }
-    
+
     if (lastUnitHeight && lastUnitHeight !== unitHeight) {
         // Convert height
         const conv = unitHeight === 'cm' ? 2.54 : (1 / 2.54);
@@ -122,21 +114,6 @@ export const ProgressView: React.FC = () => {
   };
 
 
-  const handleSaveDailyWeight = (e: React.FormEvent) => {
-    e.preventDefault();
-    const w = parseFloat(dailyWeight);
-    if (!isNaN(w) && w > 0) {
-      updateDayData(logDate, { weight: w });
-      // If logging for today, sync to global goals immediately
-      if (logDate === currentDate) {
-        updateGoals({ weight: w });
-        setWeightLb(w.toString()); // sync form visually
-      }
-      alert(`Weight record saved for ${logDate}!`);
-    }
-  };
-
-
   const calAdj = computed.targetCal - computed.tdee;
   const currentAct = ACTIVITY_LEVELS.find((a: { id: string; desc?: string; tdee?: number }) => a.id === activityId) || ACTIVITY_LEVELS[2];
 
@@ -146,55 +123,6 @@ export const ProgressView: React.FC = () => {
       <div style={{ padding: 'var(--space-md)', background: 'var(--theme-accent-dim, rgba(0, 201, 255, 0.1))', color: 'var(--theme-accent)', borderRadius: 'var(--radius-md)', fontSize: '13px', display: 'flex', gap: 'var(--space-sm)', alignItems: 'flex-start', border: '1px solid var(--theme-border)' }}>
         <Info size={16} style={{ flexShrink: 0, marginTop: '2px' }} />
         <span>Your targets power everything in the app. Updates save automatically when you confirm them.</span>
-      </div>
-
-      {/* 3. Legacy-style Weight History Chart */}
-      <WeightHistoryChart localCache={localCache} targetWeight={Number(targetWeight)} />
-
-      {/* 4. Progress to Goal Visualization */}
-      <div className="card" style={{ padding: 'var(--space-xl)', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '16px', fontWeight: '700', marginBottom: 'var(--space-lg)', color: 'var(--theme-text)' }}><Activity size={18} color="var(--theme-success, #92FE9D)" /> Progress to Goal Visualization</div>
-        <div style={{ textAlign: 'center', marginBottom: 'var(--space-lg)', padding: '0 var(--space-md)' }}>
-          <div style={{ fontSize: '48px', fontWeight: '900', color: 'var(--theme-text)', lineHeight: 1 }}>
-            {Math.abs(parseFloat(weightLb.toString()) - parseFloat(targetWeight.toString())).toFixed(1)}
-          </div>
-          <div style={{ fontSize: '13px', color: 'var(--theme-text)', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '1px', marginTop: 'var(--space-xs)', maxWidth: '400px', margin: 'var(--space-xs) auto 0' }}>
-            {unitWeight} remaining to Reach Your {targetWeight} {unitWeight} goal
-          </div>
-        </div>
-
-        <div style={{ padding: '0 var(--space-xs)' }}>
-          <div style={{ height: '14px', background: 'var(--theme-panel, rgba(255,255,255,0.07))', borderRadius: '20px', overflow: 'hidden', border: '1px solid var(--theme-border, rgba(255,255,255,0.1))', padding: '3px' }}>
-            <div style={{ 
-              height: '100%', 
-              background: 'linear-gradient(90deg, var(--theme-accent, #00C9FF), var(--theme-success, #92FE9D))', 
-              borderRadius: '10px',
-              width: `${Math.max(5, Math.min(100, (1 - Math.abs(weightLb - targetWeight) / 25) * 100))}%`,
-              transition: 'width 1.2s cubic-bezier(0.34, 1.56, 0.64, 1)'
-            }} />
-          </div>
-          <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '12px', fontWeight: '800', color: 'var(--theme-text)', marginTop: 'var(--space-md)' }}>
-            <span>Current: {weightLb} {unitWeight}</span>
-            <span>Target: {targetWeight} {unitWeight}</span>
-          </div>
-        </div>
-      </div>
-
-      {/* 5. Weight Tools (Manual Entry) */}
-      <div className="card" id="weight-logging" style={{ padding: 'var(--space-xl)' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '18px', fontWeight: '900', marginBottom: 'var(--space-lg)', color: 'var(--theme-accent)', textTransform: 'uppercase', letterSpacing: '1px' }}><Scale size={20} color="var(--theme-accent)" /> Weight Record & History</div>
-        <form onSubmit={handleSaveDailyWeight} style={{ display: 'flex', gap: 'var(--space-md)', flexWrap: 'wrap', alignItems: 'flex-end' }}>
-          <div style={{ flex: 1, minWidth: '120px' }}>
-            <label className="lbl">Record Date</label>
-            <input type="date" className="inp" value={logDate} onChange={e => setLogDate(e.target.value)} />
-          </div>
-          <div style={{ flex: 1, minWidth: '120px' }}>
-            <label className="lbl">Body Weight ({unitWeight})</label>
-            <input type="number" step="0.1" className="inp" placeholder="Enter weight..." value={dailyWeight} onChange={e => setDailyWeight(cleanNumInput(e.target.value))} />
-          </div>
-          <button type="submit" className="btn" style={{ height: '42px', marginTop: 0, padding: '0 24px', background: 'var(--theme-accent)', color: 'var(--theme-panel-base, #000)', fontWeight: '800', boxShadow: '0 0 10px var(--theme-accent-dim)' }}><Check size={16} /> Save Weight Record</button>
-        </form>
-        <div style={{ fontSize: '12px', color: 'var(--theme-accent)', marginTop: '16px', fontWeight: '700', background: 'var(--theme-accent-dim)', padding: '10px', borderRadius: '8px', border: '1px solid var(--theme-accent-dim)' }}>💡 Tip: Logging weight for today updates your body stats & TDEE app-wide. Historical logs update your chart only.</div>
       </div>
 
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: 'var(--space-md)' }}>

@@ -534,20 +534,17 @@ export const PantryView: React.FC<PantryViewProps> = ({ initialMeal, onClose, is
           position: 'sticky', 
           top: '0', 
           zIndex: 100, 
-          background: 'var(--theme-panel)', 
-          backdropFilter: 'blur(25px)',
-          WebkitBackdropFilter: 'blur(25px)',
-          padding: isModal ? '8px 20px 16px 20px' : '24px 20px 16px 20px', 
-          borderBottom: '1px solid var(--theme-border)'
+          background: 'transparent',
+          padding: isModal ? '8px 20px 16px 20px' : '24px 20px 16px 20px'
         }}>
         <button onClick={() => { setActiveTab('search'); clearSearchState(); }} 
           className={`pantry-main-tab ${activeTab === 'search' ? 'active' : ''}`}
-          style={{ padding: '12px 4px', borderRadius: '14px', border: 'none', color: activeTab === 'search' ? 'var(--theme-accent)' : 'var(--theme-text-dim)', fontWeight: '800', fontSize: '11px', textTransform: 'uppercase', cursor: 'pointer', textAlign: 'center' }}>
+          style={{ padding: '12px 4px', borderRadius: '14px', border: 'none', color: activeTab === 'search' ? '#fff' : 'rgba(255,255,255,0.7)', fontWeight: '800', fontSize: '11px', textTransform: 'uppercase', cursor: 'pointer', textAlign: 'center' }}>
           Discover
         </button>
-        <button onClick={() => setActiveTab('saved')} 
+        <button onClick={() => setActiveTab('saved')}
           className={`pantry-main-tab ${activeTab === 'saved' ? 'active' : ''}`}
-          style={{ padding: '12px 4px', borderRadius: '14px', border: 'none', color: activeTab === 'saved' ? 'var(--theme-accent)' : 'var(--theme-text-dim)', fontWeight: '800', fontSize: '11px', textTransform: 'uppercase', cursor: 'pointer', textAlign: 'center' }}>
+          style={{ padding: '12px 4px', borderRadius: '14px', border: 'none', color: activeTab === 'saved' ? '#fff' : 'rgba(255,255,255,0.7)', fontWeight: '800', fontSize: '11px', textTransform: 'uppercase', cursor: 'pointer', textAlign: 'center' }}>
           My Pantry
         </button>
       </div>
@@ -618,7 +615,7 @@ export const PantryView: React.FC<PantryViewProps> = ({ initialMeal, onClose, is
                     <ChevronDown size={16} style={{ color: 'var(--theme-text-dim-on-panel)', transform: guideExpanded ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s' }} />
                   </div>
                   <p style={{ fontSize: '13px', color: 'var(--theme-text-dim-on-panel)', margin: '0 0 8px 0', lineHeight: '1.5', fontWeight: '500' }}>
-                    Welcome! Use our flexible search tools to easily track and log virtually any food or multi-ingredient meal to your diary.
+                    Welcome! Use our flexible search tools to easily track and log virtually any food or multi-ingredient meal to your food log.
                   </p>
 
                   {/* Explicit Text Toggle Button for Obvious Call-to-Action */}
@@ -794,7 +791,7 @@ export const PantryView: React.FC<PantryViewProps> = ({ initialMeal, onClose, is
                   }}>
                     <span style={{ fontSize: '16px', marginTop: '-1px' }}>💡</span>
                     <span style={{ fontSize: '12px', color: 'rgba(255, 255, 255, 0.85)', lineHeight: '1.4', fontWeight: '500' }}>
-                      <strong>Serving Size Tip:</strong> AI portion sizes are smart guesses and might not be perfect. Don't worry! You can easily tweak and change them on the next screen before adding them to your diary.
+                      <strong>Serving Size Tip:</strong> AI portion sizes are smart guesses and might not be perfect. Don't worry! You can easily tweak and change them on the next screen before adding them to your food log.
                     </span>
                   </div>
                 </div>
@@ -1171,7 +1168,7 @@ export const PantryView: React.FC<PantryViewProps> = ({ initialMeal, onClose, is
                         showNotification(`Entire meal logged to ${targetMeal}!`);
                       }}
                       style={{ width: '100%', padding: '14px', background: 'var(--theme-accent)', border: 'none', borderRadius: '16px', color: 'var(--theme-bg)', fontWeight: '900', fontSize: '13px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', boxShadow: '0 4px 15px var(--theme-accent-dim)' }}>
-                      <Check size={18} /> CONFIRM ALL TO DIARY
+                      <Check size={18} /> CONFIRM ALL TO FOOD LOG
                     </button>
                     
                     <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px', width: '100%' }}>
@@ -1917,7 +1914,7 @@ export const PantryView: React.FC<PantryViewProps> = ({ initialMeal, onClose, is
                     showNotification(`Added to ${targetMeal}!`);
                   }}
                   style={{ width: '100%', padding: '16px', background: 'var(--theme-success, #92FE9D)', border: 'none', borderRadius: '16px', color: 'var(--theme-bg, #000)', fontWeight: '900', fontSize: '15px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px', boxShadow: '0 8px 24px rgba(146,254,157,0.15)' }}>
-                  <Plus size={20} /> ADD TO DIARY
+                  <Plus size={20} /> ADD TO FOOD LOG
                 </button>
 
                 <button 

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 import { useDiary } from '../context/DiaryContext';
 import { getRewardBreakdown } from '../lib/reward-utils';
 import { Check } from 'lucide-react';
@@ -8,8 +8,15 @@ export const ThemesView: React.FC = () => {
   const { localCache, purchaseTheme } = useDiary();
   const { theme: currentThemeName, setTheme } = useTheme();
   
+  const activeRef = useRef<HTMLDivElement>(null);
   const rewards = getRewardBreakdown(localCache);
   const currentGems = rewards.totalGems;
+
+  useEffect(() => {
+    if (activeRef.current) {
+      activeRef.current.scrollIntoView({ block: 'center', behavior: 'auto' });
+    }
+  }, []);
 
   const purchasedThemes = localCache.settings?.purchasedThemes || [
     'obsidian', 'cybermancer', 'gold-reserve', 
@@ -79,8 +86,9 @@ export const ThemesView: React.FC = () => {
           const isSelected = currentThemeName === t.id;
           const isPurchased = purchasedThemes.includes(t.id);
           return (
-            <div 
+            <div
               key={t.id}
+              ref={isSelected ? activeRef : undefined}
               onClick={() => handleSelectTheme(t)}
               className="section"
                 style={{ 
