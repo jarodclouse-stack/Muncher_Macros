@@ -23,7 +23,7 @@ const AppContent: React.FC = () => {
   return (
     <>
       <BackgroundGlow />
-      {user ? <MainDashboard /> : <LoginScreen />}
+      {user || import.meta.env.DEV ? <MainDashboard /> : <LoginScreen />}
     </>
   );
 };

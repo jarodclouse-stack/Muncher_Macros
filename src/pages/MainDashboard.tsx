@@ -9,12 +9,12 @@ import { VaultView } from '../components/VaultView';
 import { useDiary } from '../context/DiaryContext';
 import { getRewardBreakdown } from '../lib/reward-utils';
 import { BADGES, BADGE_TIERS } from '../lib/badge-info';
-import { LogOut, Activity, Flame, Utensils, Award, Plus, Settings, X, Info, Sparkles, Trophy, Star, Shield, Zap, Lock, Menu } from 'lucide-react';
+import { LogOut, Activity, Flame, Utensils, Award, Plus, Settings, X, Info, Sparkles, Trophy, Star, Shield, Zap, Lock, Menu, BookOpen, Apple, TrendingUp, Target } from 'lucide-react';
 
 export const MainDashboard: React.FC = () => {
   const { user, logout } = useAuth();
   const { localCache, isScannerActive } = useDiary();
-  const [activeTab, setActiveTab] = useState<'diary' | 'nutrition' | 'progress' | 'pantry'>('diary');
+  const [activeTab, setActiveTab] = useState<'diary' | 'nutrition' | 'progress' | 'pantry' | 'prestige'>('diary');
   const [showRewardModal, setShowRewardModal] = useState(false);
   const [showSettingsModal, setShowSettingsModal] = useState(false);
   const [showVaultModal, setShowVaultModal] = useState(false);
@@ -25,102 +25,124 @@ export const MainDashboard: React.FC = () => {
   return (
     <div style={{ background: 'transparent', minHeight: '100vh', width: '100%', display: 'flex', flexDirection: 'column', color: 'var(--theme-text, #f1f1f1)', fontFamily: 'Inter, sans-serif' }}>
       {/* Topbar */}
-      <header style={{ 
-          display: 'flex', 
-          justifyContent: 'space-between', 
-          alignItems: 'center', 
-          padding: 'calc(6px + env(safe-area-inset-top)) 12px 6px', 
-          background: 'var(--theme-panel, rgba(10, 30, 33, 0.72))', 
-          borderBottom: '1px solid var(--theme-border, rgba(255,255,255,0.05))', 
-          backdropFilter: 'blur(22px)', 
-          WebkitBackdropFilter: 'blur(22px)',
-          position: 'sticky', 
-          top: 0, 
-          zIndex: 10 
+      <header style={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          padding: 'calc(12px + env(safe-area-inset-top)) 20px 12px',
+          background: 'rgba(12, 12, 18, 0.7)',
+          backdropFilter: 'blur(24px) saturate(180%)',
+          WebkitBackdropFilter: 'blur(24px) saturate(180%)',
+          borderBottom: '1px solid rgba(255, 255, 255, 0.06)',
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          right: 0,
+          zIndex: 50,
+          transform: 'translate3d(0, 0, 0)',
+          WebkitTransform: 'translate3d(0, 0, 0)'
         }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+            <img
+              src="/logo.png"
+              alt="Muncher Macros"
+              style={{
+                width: '32px',
+                height: '32px',
+                objectFit: 'contain',
+                filter: 'brightness(0) invert(1)',
+                opacity: 0.9,
+                flexShrink: 0
+              }}
+            />
             <div>
-              <h1 style={{ fontFamily: "'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Inter', sans-serif", fontSize: '10px', fontWeight: '800', margin: 0, display: 'flex', alignItems: 'center', gap: '6px', textTransform: 'uppercase', letterSpacing: '2px', textShadow: '0 0 10px rgba(0,201,255,0.2)' }}>
-                {activeTab === 'diary' && <Utensils size={12} color="var(--theme-accent)" />}
-                {activeTab === 'nutrition' && <Activity size={12} color="var(--theme-accent)" />}
-                {activeTab === 'pantry' && <Plus size={12} color="var(--theme-accent)" />}
-                {activeTab === 'progress' && <Flame size={12} color="var(--theme-accent)" />}
-                {localCache.settings?.displayName || user?.email?.split('@')[0] || 'Guest'}
+              <h1 style={{
+                fontFamily: "'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Inter', sans-serif",
+                fontSize: '15px',
+                fontWeight: '800',
+                margin: 0,
+                color: 'var(--theme-text, #fff)',
+                letterSpacing: '-0.01em'
+              }}>
+                Muncher Macros
               </h1>
+              <p style={{
+                fontSize: '11px',
+                fontWeight: '500',
+                margin: 0,
+                color: 'var(--theme-text-dim, #8b8b9b)',
+                letterSpacing: '0.01em'
+              }}>
+                {localCache.settings?.displayName || user?.email?.split('@')[0] || 'Guest'}
+              </p>
             </div>
           </div>
-          
-          <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginLeft: 'auto', position: 'relative' }}>
-            {/* Click-away Overlay */}
+
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', position: 'relative' }}>
             {isMenuOpen && (
-              <div 
-                onClick={() => setIsMenuOpen(false)} 
-                style={{ position: 'fixed', inset: 0, zIndex: 99, background: 'transparent' }} 
+              <div
+                onClick={() => setIsMenuOpen(false)}
+                style={{ position: 'fixed', inset: 0, zIndex: 99, background: 'transparent' }}
               />
             )}
 
-            {/* Burger Menu Toggle Button */}
-            <button 
-              onClick={() => setIsMenuOpen(!isMenuOpen)} 
-              style={{ 
-                background: isMenuOpen ? 'var(--theme-accent-dim, rgba(0, 201, 255, 0.1))' : 'rgba(255,255,255,0.05)', 
-                border: isMenuOpen ? '1px solid var(--theme-accent)' : '1px solid var(--theme-border, rgba(255,255,255,0.1))', 
-                color: isMenuOpen ? 'var(--theme-accent)' : 'var(--theme-text-dim, #c0c0d0)', 
-                padding: '8px', 
-                borderRadius: '10px', 
-                cursor: 'pointer', 
-                transition: 'all 0.2s', 
-                display: 'flex', 
-                alignItems: 'center', 
+            <button
+              onClick={() => setIsMenuOpen(!isMenuOpen)}
+              style={{
+                background: isMenuOpen ? 'rgba(255, 255, 255, 0.12)' : 'rgba(255, 255, 255, 0.06)',
+                border: '1px solid rgba(255, 255, 255, 0.08)',
+                color: isMenuOpen ? 'var(--theme-accent)' : 'var(--theme-text-dim, #c0c0d0)',
+                width: '36px',
+                height: '36px',
+                borderRadius: '12px',
+                cursor: 'pointer',
+                transition: 'all 0.2s',
+                display: 'flex',
+                alignItems: 'center',
                 justifyContent: 'center',
                 zIndex: 100,
-                outline: 'none'
+                outline: 'none',
+                WebkitTapHighlightColor: 'transparent'
               }}
             >
-              <Menu size={16} />
+              <Menu size={18} />
             </button>
 
-            {/* Burger Dropdown Menu */}
             {isMenuOpen && (
-              <div 
-                style={{ 
-                  position: 'absolute', 
-                  top: '38px', 
-                  right: '0', 
-                  background: 'var(--theme-panel, rgba(10, 30, 33, 0.95))', 
-                  border: '1px solid var(--theme-border, rgba(255,255,255,0.08))', 
-                  borderRadius: '16px', 
-                  boxShadow: '0 20px 40px rgba(0,0,0,0.6)', 
+              <div
+                style={{
+                  position: 'absolute',
+                  top: '44px',
+                  right: '0',
+                  background: 'rgba(18, 18, 24, 0.92)',
+                  border: '1px solid rgba(255, 255, 255, 0.08)',
+                  borderRadius: '16px',
+                  boxShadow: '0 20px 40px rgba(0, 0, 0, 0.5)',
                   backdropFilter: 'blur(24px)',
                   WebkitBackdropFilter: 'blur(24px)',
-                  padding: '8px', 
-                  display: 'flex', 
-                  flexDirection: 'column', 
-                  gap: '4px', 
+                  padding: '8px',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: '4px',
                   minWidth: '170px',
                   zIndex: 100,
                   animation: 'menuFadeIn 0.2s cubic-bezier(0.16, 1, 0.3, 1)'
                 }}
               >
-                <DropdownItem 
+                <DropdownItem
                   onClick={() => { setIsMenuOpen(false); setShowVaultModal(true); }}
                   icon={<Sparkles size={14} color="#A5B4FC" />}
                   label="The Vault"
                 />
-                <DropdownItem 
-                  onClick={() => { setIsMenuOpen(false); setShowRewardModal(true); }}
-                  icon={<Award size={14} color="#FFD700" />}
-                  label="Prestige"
-                />
-                <DropdownItem 
+                <DropdownItem
                   onClick={() => { setIsMenuOpen(false); setShowSettingsModal(true); }}
                   icon={<Settings size={14} color="var(--theme-text-dim)" />}
                   label="Settings"
                 />
-                
-                <div style={{ height: '1px', background: 'var(--theme-border, rgba(255,255,255,0.05))', margin: '4px 8px' }} />
-                
-                <DropdownItem 
+
+                <div style={{ height: '1px', background: 'rgba(255, 255, 255, 0.06)', margin: '4px 8px' }} />
+
+                <DropdownItem
                   onClick={() => { setIsMenuOpen(false); logout(); }}
                   icon={<LogOut size={14} color="#FF6B6B" />}
                   label="Log Out"
@@ -133,12 +155,101 @@ export const MainDashboard: React.FC = () => {
 
       {/* Main Content Area */}
       <main className="app-container" style={{ 
-        paddingTop: activeTab === 'pantry' ? '0' : 'var(--space-xl)', 
-        paddingBottom: isScannerActive ? '0' : 'calc(58px + max(0px, env(safe-area-inset-bottom) - 15px))',
+        paddingTop: activeTab === 'pantry' ? 'calc(56px + env(safe-area-inset-top))' : 'calc(56px + env(safe-area-inset-top) + var(--space-xl))', 
+        paddingBottom: isScannerActive ? '0' : 'calc(80px + max(12px, env(safe-area-inset-bottom)))',
         background: 'transparent'
       }}>
         {activeTab === 'diary' && <DiaryView />}
         {activeTab === 'nutrition' && <NutritionView />}
+        {activeTab === 'prestige' && (() => {
+          const getTierIcon = (tierName: string, earned: boolean) => {
+            const size = 18;
+            const color = earned ? 'var(--theme-text)' : 'var(--theme-text-dim)';
+            if (tierName === BADGE_TIERS.EARLY.name) return <Star size={size} color={color} />;
+            if (tierName === BADGE_TIERS.CONSISTENCY.name) return <Shield size={size} color={color} />;
+            if (tierName === BADGE_TIERS.DISCIPLINE.name) return <Zap size={size} color={color} />;
+            if (tierName === BADGE_TIERS.ELITE.name) return <Trophy size={size} color={color} />;
+            return <Award size={size} color={color} />;
+          };
+          return (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
+                <div className="glass-card" style={{ padding: '16px', borderRadius: '16px' }}>
+                  <div style={{ fontSize: '10px', color: 'var(--theme-text-dim)', textTransform: 'uppercase', letterSpacing: '0.5px', fontWeight: '700' }}>Current Streak</div>
+                  <div style={{ fontSize: '22px', fontWeight: '900', color: '#FF6B6B', marginTop: '4px' }}>{rewards.streak} <span style={{ fontSize: '12px', fontWeight: '500', color: 'var(--theme-text-dim)' }}>days</span></div>
+                </div>
+                <div className="glass-card" style={{ padding: '16px', borderRadius: '16px' }}>
+                  <div style={{ fontSize: '10px', color: 'var(--theme-text-dim)', textTransform: 'uppercase', letterSpacing: '0.5px', fontWeight: '700' }}>Total Gems</div>
+                  <div style={{ fontSize: '22px', fontWeight: '900', color: '#FFD700', marginTop: '4px' }}>{rewards.totalGems}</div>
+                </div>
+              </div>
+
+              <div className="glass-card" style={{ padding: '16px', borderRadius: '16px' }}>
+                <div style={{ display: 'flex', gap: '8px', marginBottom: '8px' }}>
+                  <Info size={16} color="var(--theme-accent)" style={{ flexShrink: 0 }} />
+                  <div style={{ fontSize: '13px', fontWeight: '700', color: 'var(--theme-accent)' }}>Weekly Multiplier</div>
+                </div>
+                <p style={{ fontSize: '12px', color: 'var(--theme-text)', opacity: 0.8, margin: 0, lineHeight: '1.5' }}>
+                  Every 7 days, your consistency earns a massive bonus:
+                  <br/><br/>
+                  <code style={{ background: 'rgba(0,0,0,0.3)', padding: '4px 8px', borderRadius: '4px', fontSize: '11px' }}>
+                    (Weeks Streak x Current Days) = Bonus Gems
+                  </code>
+                </p>
+              </div>
+
+              <div className="glass-card" style={{ padding: '16px', borderRadius: '16px' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
+                  <span style={{ fontSize: '12px', color: 'var(--theme-text-dim)' }}>Next Milestone:</span>
+                  <span style={{ fontSize: '12px', fontWeight: '700', color: 'var(--theme-text)' }}>Day {rewards.nextMilestoneStreak}</span>
+                </div>
+                <div style={{ height: '10px', background: 'rgba(255,255,255,0.08)', borderRadius: '10px', overflow: 'hidden', marginBottom: '12px', border: '1px solid rgba(255,255,255,0.1)' }}>
+                  <div style={{ width: `${(rewards.streak % 7) / 7 * 100}%`, height: '100%', background: 'linear-gradient(90deg, var(--theme-accent), #92FE9D)', borderRadius: '10px' }} />
+                </div>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <span style={{ fontSize: '11px', color: 'var(--theme-text-dim)' }}>Estimated Bonus:</span>
+                  <span style={{ fontSize: '14px', fontWeight: '900', color: '#92FE9D' }}>+{rewards.potentialBonus} Gems</span>
+                </div>
+              </div>
+
+              <div className="glass-card" style={{ padding: '16px', borderRadius: '16px' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '14px' }}>
+                  <Trophy size={16} color="var(--theme-accent)" />
+                  <h3 style={{ fontSize: '13px', fontWeight: '900', margin: 0, color: 'var(--theme-text)', textTransform: 'uppercase', letterSpacing: '1px' }}>Persistence Badges</h3>
+                </div>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '10px' }}>
+                  {BADGES.map(badge => {
+                    const isEarned = rewards.streak >= badge.day;
+                    return (
+                      <div key={badge.title} style={{
+                        background: isEarned ? 'rgba(255,255,255,0.02)' : 'rgba(255,255,255,0.01)',
+                        border: isEarned ? `1px solid ${badge.color}44` : '1px dashed rgba(255,255,255,0.1)',
+                        borderRadius: '16px', padding: '12px 8px',
+                        display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px',
+                        opacity: isEarned ? 1 : 0.4
+                      }}>
+                        <div style={{
+                          width: '38px', height: '38px', borderRadius: '50%',
+                          background: isEarned ? badge.color : 'rgba(255,255,255,0.05)',
+                          display: 'flex', alignItems: 'center', justifyContent: 'center',
+                          boxShadow: isEarned ? `0 0 10px ${badge.color}55` : 'none'
+                        }}>
+                          {isEarned ? getTierIcon(badge.tier, true) : <Lock size={14} color="var(--theme-text-dim)" />}
+                        </div>
+                        <div style={{ textAlign: 'center', width: '100%' }}>
+                          <div style={{ fontSize: '11px', fontWeight: '900', color: isEarned ? 'var(--theme-text)' : 'var(--theme-text-dim)', lineHeight: '1.2', marginBottom: '2px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }} title={badge.title}>{badge.title}</div>
+                          <div style={{ fontSize: '8px', color: isEarned ? badge.color : 'var(--theme-text-dim)', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                            {isEarned ? 'UNLOCKED' : `Day ${badge.day}`}
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            </div>
+          );
+        })()}
         {activeTab === 'progress' && <ProgressView />}
         {activeTab === 'pantry' && <PantryView />}
       </main>
@@ -292,28 +403,67 @@ export const MainDashboard: React.FC = () => {
 
       {/* Bottom Navigation */}
       {!isScannerActive && (
-        <nav style={{ 
-          position: 'fixed', 
-          bottom: 0, 
-          left: 0, 
-          right: 0, 
-          display: 'flex', 
-          justifyContent: 'space-around', 
-          background: 'var(--theme-panel, rgba(20, 24, 34, 0.85))', 
-          backdropFilter: 'blur(20px) saturate(180%)', 
-          WebkitBackdropFilter: 'blur(20px) saturate(180%)',
-          borderTop: '1px solid var(--theme-border, rgba(255,255,255,0.05))', 
-          padding: '2px 8px max(2px, env(safe-area-inset-bottom) - 15px) 8px', 
+        <div style={{
+          position: 'fixed',
+          bottom: 0,
+          left: 0,
+          right: 0,
+          display: 'flex',
+          justifyContent: 'center',
+          paddingBottom: 'max(12px, env(safe-area-inset-bottom))',
+          paddingLeft: '16px',
+          paddingRight: '16px',
           zIndex: 100,
-          gap: '2px',
+          pointerEvents: 'none',
           transform: 'translate3d(0, 0, 0)',
           WebkitTransform: 'translate3d(0, 0, 0)'
         }}>
-          <NavItem active={activeTab === 'diary'} onClick={() => setActiveTab('diary')} label="Diary" icon={<Utensils size={16} />} />
-          <NavItem active={activeTab === 'nutrition'} onClick={() => setActiveTab('nutrition')} label="Nutrition" icon={<Activity size={16} />} />
-          <NavItem active={activeTab === 'pantry'} onClick={() => setActiveTab('pantry')} label="Add Food" icon={<Plus size={16} />} />
-          <NavItem active={activeTab === 'progress'} onClick={() => setActiveTab('progress')} label="Goals" icon={<Flame size={16} />} />
-        </nav>
+          <nav style={{
+            display: 'flex',
+            justifyContent: 'space-around',
+            alignItems: 'flex-end',
+            background: 'rgba(18, 18, 24, 0.72)',
+            backdropFilter: 'blur(24px) saturate(180%)',
+            WebkitBackdropFilter: 'blur(24px) saturate(180%)',
+            border: '1px solid rgba(255, 255, 255, 0.08)',
+            borderRadius: '22px',
+            padding: '6px 8px',
+            width: '100%',
+            maxWidth: '420px',
+            gap: '2px',
+            boxShadow: '0 8px 32px rgba(0, 0, 0, 0.4)',
+            pointerEvents: 'auto'
+          }}>
+            <NavItem active={activeTab === 'diary'} onClick={() => setActiveTab('diary')} label="Diary" icon={<BookOpen size={18} />} />
+            <NavItem active={activeTab === 'nutrition'} onClick={() => setActiveTab('nutrition')} label="Nutrition" icon={<Apple size={18} />} />
+            {/* Raised center + button */}
+            <button
+              type="button"
+              onClick={() => setActiveTab('pantry')}
+              style={{
+                background: 'var(--theme-accent, #00C9FF)',
+                border: 'none',
+                borderRadius: '50%',
+                width: '48px',
+                height: '48px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                cursor: 'pointer',
+                boxShadow: '0 4px 20px rgba(0, 201, 255, 0.35)',
+                transform: 'translateY(-10px)',
+                transition: 'all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1)',
+                outline: 'none',
+                WebkitTapHighlightColor: 'transparent',
+                flexShrink: 0
+              }}
+            >
+              <Plus size={24} color="#000" strokeWidth={2.5} />
+            </button>
+            <NavItem active={activeTab === 'prestige'} onClick={() => setActiveTab('prestige')} label="Progress" icon={<TrendingUp size={18} />} />
+            <NavItem active={activeTab === 'progress'} onClick={() => setActiveTab('progress')} label="Goals" icon={<Target size={18} />} />
+          </nav>
+        </div>
       )}
 
     </div>
@@ -322,43 +472,31 @@ export const MainDashboard: React.FC = () => {
 
 
 const NavItem = ({ active, onClick, label, icon }: { active: boolean, onClick: () => void, label: string, icon: React.ReactNode }) => (
-  <button 
+  <button
     type="button"
-    onClick={onClick} 
-    style={{ 
-      background: active ? 'color-mix(in srgb, var(--theme-text) 75%, transparent)' : 'none',
-      border: 'none', 
-      borderRadius: '12px',
-      color: active ? 'var(--theme-panel, #000)' : 'var(--theme-text-dim, #8b8b9b)', 
-      display: 'flex', 
-      flexDirection: 'column', 
-      alignItems: 'center', 
+    onClick={onClick}
+    style={{
+      background: active ? 'rgba(255, 255, 255, 0.12)' : 'none',
+      border: 'none',
+      borderRadius: '16px',
+      color: active ? 'var(--theme-text, #fff)' : 'var(--theme-text-dim, #8b8b9b)',
+      display: 'flex',
+      flexDirection: 'column',
+      alignItems: 'center',
       justifyContent: 'center',
-      gap: '2px', 
-      cursor: 'pointer', 
-      transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)', 
+      gap: '3px',
+      cursor: 'pointer',
+      transition: 'all 0.25s cubic-bezier(0.4, 0, 0.2, 1)',
       flex: 1,
-      padding: '2px',
+      padding: '8px 4px',
       outline: 'none',
       position: 'relative',
       WebkitTapHighlightColor: 'transparent'
     }}>
-    {active && (
-      <div style={{ 
-        position: 'absolute', 
-        top: '-6px', 
-        left: '20%', 
-        right: '20%', 
-        height: '2px', 
-        background: 'var(--theme-accent)', 
-        boxShadow: '0 0 10px var(--theme-accent)',
-        borderRadius: '2px'
-      }} />
-    )}
-    <div style={{ transform: active ? 'scale(1.15)' : 'scale(1)', transition: 'transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1)' }}>
+    <div style={{ transition: 'transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1)' }}>
       {icon}
     </div>
-    <span style={{ fontSize: '8px', fontWeight: active ? '900' : '600', letterSpacing: '0.04em', textTransform: 'uppercase' }}>{label}</span>
+    <span style={{ fontSize: '9px', fontWeight: active ? '800' : '600', letterSpacing: '0.04em', textTransform: 'uppercase' }}>{label}</span>
   </button>
 );
 

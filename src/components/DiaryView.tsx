@@ -2,7 +2,7 @@ import React, { useState, useMemo } from 'react';
 import { useDiary } from '../context/DiaryContext';
 import { sumFoods } from '../lib/food/serving-converter';
 import { computeGoals } from '../lib/goals/compute';
-import { Utensils, Trash2, Sparkles, Droplets, ChevronLeft, ChevronRight, ChevronDown, ChevronUp, Scale, Activity } from 'lucide-react';
+import { Utensils, Trash2, Sparkles, Droplets, ChevronLeft, ChevronRight, ChevronDown, ChevronUp, Scale, Activity, Calendar } from 'lucide-react';
 import { MEALS, ALL_MICRO_KEYS, MICRO_UNITS } from '../lib/constants';
 
 import { AddFoodModal } from './AddFoodModal';
@@ -12,9 +12,10 @@ import { NutritionFactsDisplay } from './NutritionFactsDisplay';
 
 
 export const DiaryView: React.FC = () => {
-  const { localCache, currentDate, changeDate, removeFoodLog, updateDayData, moveFoodLog } = useDiary();
+  const { localCache, currentDate, changeDate, goToDate, removeFoodLog, updateDayData, moveFoodLog } = useDiary();
   const [searchOpenFor, setSearchOpenFor] = useState<string | null>(null);
   const [editingPortion, setEditingPortion] = useState<{ meal: string, idx: number, food: any } | null>(null);
+  const [showDatePicker, setShowDatePicker] = useState(false);
 
   // Derive Daily Data
   const dayData = localCache[currentDate] || {};
@@ -82,9 +83,131 @@ export const DiaryView: React.FC = () => {
     return d.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
   }, [currentDate]);
 
+  const pickerDate = useMemo(() => {
+    const [y, m, d] = currentDate.split('-');
+    return { year: parseInt(y), month: parseInt(m) - 1, day: parseInt(d) };
+  }, [currentDate]);
+
+  const [pickerMonth, setPickerMonth] = useState(pickerDate.month);
+  const [pickerYear, setPickerYear] = useState(pickerDate.year);
+
+  const calendarDays = useMemo(() => {
+    const firstDay = new Date(pickerYear, pickerMonth, 1).getDay();
+    const daysInMonth = new Date(pickerYear, pickerMonth + 1, 0).getDate();
+    const days: (number | null)[] = [];
+    for (let i = 0; i < firstDay; i++) days.push(null);
+    for (let i = 1; i <= daysInMonth; i++) days.push(i);
+    return days;
+  }, [pickerMonth, pickerYear]);
+
+  const handlePickDate = (day: number) => {
+    const mm = String(pickerMonth + 1).padStart(2, '0');
+    const dd = String(day).padStart(2, '0');
+    goToDate(`${pickerYear}-${mm}-${dd}`);
+    setShowDatePicker(false);
+  };
+
   return (
     <div className="section" style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-lg)' }}>
-      
+
+      {/* Date Picker Modal */}
+      {showDatePicker && (
+        <div
+          onClick={() => setShowDatePicker(false)}
+          style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.5)', backdropFilter: 'blur(8px)', WebkitBackdropFilter: 'blur(8px)', zIndex: 200, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '24px' }}
+        >
+          <div
+            onClick={e => e.stopPropagation()}
+            style={{
+              background: 'rgba(18, 18, 24, 0.95)',
+              border: '1px solid rgba(255, 255, 255, 0.08)',
+              borderRadius: '20px',
+              padding: '20px',
+              width: '100%',
+              maxWidth: '340px',
+              boxShadow: '0 24px 48px rgba(0,0,0,0.5)',
+              animation: 'modalSlideUp 0.25s cubic-bezier(0.34, 1.56, 0.64, 1)'
+            }}
+          >
+            {/* Month/Year nav */}
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
+              <button onClick={() => { if (pickerMonth === 0) { setPickerMonth(11); setPickerYear(pickerYear - 1); } else setPickerMonth(pickerMonth - 1); }} style={{ background: 'rgba(255,255,255,0.06)', border: 'none', color: 'var(--theme-text)', cursor: 'pointer', padding: '8px', borderRadius: '10px', display: 'flex', alignItems: 'center' }}><ChevronLeft size={18} /></button>
+              <span style={{ fontSize: '15px', fontWeight: '700', color: 'var(--theme-text)' }}>
+                {new Date(pickerYear, pickerMonth).toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}
+              </span>
+              <button onClick={() => { if (pickerMonth === 11) { setPickerMonth(0); setPickerYear(pickerYear + 1); } else setPickerMonth(pickerMonth + 1); }} style={{ background: 'rgba(255,255,255,0.06)', border: 'none', color: 'var(--theme-text)', cursor: 'pointer', padding: '8px', borderRadius: '10px', display: 'flex', alignItems: 'center' }}><ChevronRight size={18} /></button>
+            </div>
+
+            {/* Day-of-week headers */}
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: '2px', marginBottom: '4px' }}>
+              {['S','M','T','W','T','F','S'].map((d, i) => (
+                <div key={i} style={{ textAlign: 'center', fontSize: '10px', fontWeight: '700', color: 'var(--theme-text-dim)', textTransform: 'uppercase', padding: '4px 0' }}>{d}</div>
+              ))}
+            </div>
+
+            {/* Day grid */}
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: '2px' }}>
+              {calendarDays.map((day, i) => {
+                if (day === null) return <div key={`e-${i}`} />;
+                const mm = String(pickerMonth + 1).padStart(2, '0');
+                const dd = String(day).padStart(2, '0');
+                const dateStr = `${pickerYear}-${mm}-${dd}`;
+                const isSelected = dateStr === currentDate;
+                const isToday = dateStr === new Date().toISOString().split('T')[0];
+                const hasData = !!(localCache[dateStr]?.foodLog?.length || localCache[dateStr]?.water);
+                return (
+                  <button
+                    key={day}
+                    onClick={() => handlePickDate(day)}
+                    style={{
+                      background: isSelected ? 'var(--theme-accent)' : 'none',
+                      border: isToday && !isSelected ? '1px solid var(--theme-accent)' : '1px solid transparent',
+                      color: isSelected ? '#000' : 'var(--theme-text)',
+                      borderRadius: '12px',
+                      padding: '8px 0',
+                      fontSize: '13px',
+                      fontWeight: isSelected || isToday ? '800' : '500',
+                      cursor: 'pointer',
+                      display: 'flex',
+                      flexDirection: 'column',
+                      alignItems: 'center',
+                      gap: '2px',
+                      outline: 'none',
+                      transition: 'all 0.15s',
+                      WebkitTapHighlightColor: 'transparent'
+                    }}
+                  >
+                    {day}
+                    {hasData && <div style={{ width: '4px', height: '4px', borderRadius: '50%', background: isSelected ? '#000' : 'var(--theme-accent)' }} />}
+                  </button>
+                );
+              })}
+            </div>
+
+            {/* Today shortcut */}
+            <button
+              onClick={() => { goToDate(new Date().toISOString().split('T')[0]); setShowDatePicker(false); }}
+              style={{
+                width: '100%',
+                marginTop: '12px',
+                padding: '10px',
+                background: 'rgba(255, 255, 255, 0.06)',
+                border: '1px solid rgba(255, 255, 255, 0.08)',
+                borderRadius: '12px',
+                color: 'var(--theme-accent)',
+                fontSize: '13px',
+                fontWeight: '700',
+                cursor: 'pointer',
+                outline: 'none',
+                WebkitTapHighlightColor: 'transparent'
+              }}
+            >
+              Go to Today
+            </button>
+          </div>
+        </div>
+      )}
+
       {/* Daily Cheer Banner */}
       <div className="glass-card luminous-breath" style={{ padding: 'var(--space-md)', display: 'flex', alignItems: 'center', gap: 'var(--space-sm)', boxShadow: '0 8px 32px rgba(0,0,0,0.15)' }}>
           <span style={{ fontSize: '18px' }}>✨</span>
@@ -96,9 +219,26 @@ export const DiaryView: React.FC = () => {
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 'var(--space-lg)' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-md)', flex: 1, justifyContent: 'center' }}>
             <button onClick={() => changeDate(-1)} style={{ background: 'var(--theme-panel)', border: 'none', color: 'var(--theme-text)', cursor: 'pointer', padding: '10px', borderRadius: 'var(--radius-md)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><ChevronLeft size={20} /></button>
-            <div style={{ textAlign: 'center' }}>
-              <h2 className="luminous-absolute-white diary-header-text" style={{ fontSize: '18px', fontWeight: '800', margin: 0 }}>{displayDate}</h2>
-              <div className="luminous-absolute-white diary-header-text" style={{ fontSize: '11px', opacity: 0.9, fontWeight: '600', textTransform: 'uppercase', letterSpacing: '0.05em', marginTop: '2px' }}>Personal Diary</div>
+            <div style={{ textAlign: 'center', position: 'relative' }}>
+              <button
+                onClick={() => setShowDatePicker(true)}
+                style={{
+                  background: 'none',
+                  border: 'none',
+                  cursor: 'pointer',
+                  padding: '4px 12px',
+                  borderRadius: '12px',
+                  transition: 'background 0.2s',
+                  outline: 'none',
+                  WebkitTapHighlightColor: 'transparent'
+                }}
+              >
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}>
+                  <h2 className="luminous-absolute-white diary-header-text" style={{ fontSize: '18px', fontWeight: '800', margin: 0 }}>{displayDate}</h2>
+                  <ChevronDown size={16} color="var(--theme-accent)" />
+                </div>
+                <div className="luminous-absolute-white diary-header-text" style={{ fontSize: '11px', opacity: 0.9, fontWeight: '600', textTransform: 'uppercase', letterSpacing: '0.05em', marginTop: '2px' }}>Personal Diary</div>
+              </button>
             </div>
             <button onClick={() => changeDate(1)} style={{ background: 'var(--theme-panel)', border: 'none', color: 'var(--theme-text)', cursor: 'pointer', padding: '10px', borderRadius: 'var(--radius-md)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><ChevronRight size={20} /></button>
           </div>
