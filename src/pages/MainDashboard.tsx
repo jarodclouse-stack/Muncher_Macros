@@ -14,7 +14,7 @@ import { LogOut, Plus, Settings, Sparkles, Trophy, Menu, BookOpen, Apple, Trendi
 
 export const MainDashboard: React.FC = () => {
   const { user, logout } = useAuth();
-  const { localCache, syncStatus, isScannerActive } = useDiary();
+  const { localCache, dataReady, isScannerActive } = useDiary();
   const [activeTab, setActiveTab] = useState<'diary' | 'nutrition' | 'progress' | 'pantry' | 'prestige'>('diary');
   const [showSettingsModal, setShowSettingsModal] = useState(false);
   const [showVaultModal, setShowVaultModal] = useState(false);
@@ -26,12 +26,12 @@ export const MainDashboard: React.FC = () => {
   // Only show onboarding after data has loaded — prevents flash for existing users
   useEffect(() => {
     if (onboardingChecked.current) return;
-    if (syncStatus === 'syncing') return; // still loading, wait
+    if (!dataReady) return; // still loading, wait
     onboardingChecked.current = true;
     if (!localCache.goals?.onboardingComplete && !localCache.goals?.weight) {
       setShowOnboarding(true);
     }
-  }, [syncStatus, localCache.goals]);
+  }, [dataReady, localCache.goals]);
 
   if (showOnboarding) {
     return <OnboardingWizard onComplete={() => setShowOnboarding(false)} />;

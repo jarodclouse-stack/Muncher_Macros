@@ -207,8 +207,10 @@ export const OnboardingWizard: React.FC<{ onComplete: () => void }> = ({ onCompl
         <button
           onClick={finish}
           style={{
-            background: 'none', border: 'none', color: 'var(--theme-text-dim)',
-            fontSize: '13px', cursor: 'pointer', fontFamily: 'inherit',
+            background: 'rgba(255,255,255,0.08)', border: '1px solid var(--theme-border)',
+            color: 'var(--theme-text-dim)', borderRadius: '8px',
+            fontSize: '14px', cursor: 'pointer', fontFamily: 'inherit',
+            padding: '10px 18px', minHeight: '44px',
           }}
         >
           Skip setup →

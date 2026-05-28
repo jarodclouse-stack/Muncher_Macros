@@ -43,6 +43,7 @@ interface DiaryContextState {
   isScannerActive: boolean;
   setIsScannerActive: (val: boolean) => void;
   updateLocalCache: (newCache: LocalCache) => void;
+  dataReady: boolean;
 }
 
 const DiaryContext = createContext<DiaryContextState>({} as DiaryContextState);
@@ -59,7 +60,8 @@ export const DiaryProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   const [syncStatus, setSyncStatus] = useState<'ok' | 'syncing' | 'error' | 'offline'>('ok');
   const [stagingTray, setStagingTray] = useState<StagedFood[]>([]);
   const [isScannerActive, setIsScannerActive] = useState(false);
-  
+  const [dataReady, setDataReady] = useState(false);
+
   const syncTimeoutRef = useRef<number | null>(null);
 
   // Load Initial Data
@@ -71,6 +73,7 @@ export const DiaryProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         const stored = JSON.parse(localStorage.getItem('ft_guest') || '{}');
         setLocalCache(stored);
       } catch (e) {}
+      setDataReady(true);
       return;
     }
 
@@ -101,9 +104,11 @@ export const DiaryProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         setLocalCache(loaded);
         if (loaded.stagingTray) setStagingTray(loaded.stagingTray);
         setSyncStatus('ok');
+        setDataReady(true);
       } catch (err) {
         console.warn('Sync failed:', err);
         setSyncStatus('offline');
+        setDataReady(true);
       }
     };
     
@@ -357,7 +362,8 @@ export const DiaryProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       stagingTray, addToTray, removeFromTray, updateTrayItem, clearTray,
       toggleFavorite, duplicateCustomFood, moveFoodLog,
       isScannerActive, setIsScannerActive,
-      updateLocalCache: updateCacheDebounced
+      updateLocalCache: updateCacheDebounced,
+      dataReady
     }}>
       {children}
     </DiaryContext.Provider>
