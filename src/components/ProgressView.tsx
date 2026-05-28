@@ -236,7 +236,7 @@ export const ProgressView: React.FC = () => {
             }}>
               {ACTIVITY_LEVELS.map((a: { id: string; label: string; tdee: number; ratioKg: number }) => (
                 <option key={a.id} value={a.id}>
-                  {a.label} — ×{a.tdee} PAL · {isMetric ? Math.round(a.ratioKg * 100)/100 : Math.round(a.ratioKg * 0.453592 * 100)/100}g/{unitWeight} protein
+                  {a.label} — {isMetric ? Math.round(a.ratioKg * 100)/100 : Math.round(a.ratioKg * 0.453592 * 100)/100}g/{unitWeight} protein
                 </option>
               ))}
             </select>
