@@ -223,7 +223,7 @@ export const WeightHistoryChart: React.FC<WeightHistoryChartProps> = ({ localCac
     }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
         <h3 style={{ fontSize: '13px', fontWeight: '900', margin: 0, display: 'flex', alignItems: 'center', gap: '8px', color: 'var(--theme-text)', textTransform: 'uppercase', letterSpacing: '1px' }}>
-          <Scale size={18} color="var(--theme-accent)" /> Weight History Record
+          <Scale size={18} color="var(--theme-accent)" /> Weight Log
         </h3>
         <div style={{ display: 'flex', background: 'var(--theme-panel-dim)', borderRadius: '10px', padding: '4px', gap: '4px', border: '1px solid var(--theme-border)' }}>
           {(['7d', '30d', 'all'] as const).map(w => (

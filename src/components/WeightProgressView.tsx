@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { useDiary } from '../context/DiaryContext';
-import { Activity, Scale, Check } from 'lucide-react';
+import { Activity, Scale, Check, Trash2, Calendar } from 'lucide-react';
 import { Toast } from './Toast';
 import { WeightHistoryChart } from './WeightHistoryChart';
 
@@ -21,6 +21,25 @@ export const WeightProgressView: React.FC = () => {
   const [toastMsg, setToastMsg] = useState('');
 
   const unitWeight = localCache.settings?.units?.weight || 'lb';
+
+  const loggedWeights = useMemo(() => {
+    const allDates = Object.keys(localCache)
+      .filter(k => k.match(/^\d{4}-\d{2}-\d{2}$/));
+    return allDates
+      .map(d => ({ date: d, weight: localCache[d].weight }))
+      .filter(e => e.weight !== undefined && e.weight !== null)
+      .sort((a, b) => b.date.localeCompare(a.date));
+  }, [localCache]);
+
+  const handleDeleteWeight = (date: string) => {
+    updateDayData(date, { weight: null });
+    if (date === currentDate) {
+      updateGoals({ weight: null });
+      setWeightLb('');
+      setDailyWeight('');
+    }
+    setToastMsg(`Weight log entry for ${date} removed.`);
+  };
 
   React.useEffect(() => {
     const win = window as unknown as Record<string, string>;
@@ -87,7 +106,7 @@ export const WeightProgressView: React.FC = () => {
       </div>
 
       <div className="card" id="weight-logging" style={{ padding: 'var(--space-xl)' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '18px', fontWeight: '900', marginBottom: 'var(--space-lg)', color: 'var(--theme-accent)', textTransform: 'uppercase', letterSpacing: '1px' }}><Scale size={20} color="var(--theme-accent)" /> Weight Record & History</div>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '18px', fontWeight: '900', marginBottom: 'var(--space-lg)', color: 'var(--theme-accent)', textTransform: 'uppercase', letterSpacing: '1px' }}><Scale size={20} color="var(--theme-accent)" /> Weight Log</div>
         <form onSubmit={handleSaveDailyWeight} style={{ display: 'flex', gap: 'var(--space-md)', flexWrap: 'wrap', alignItems: 'flex-end' }}>
           <div style={{ flex: 1, minWidth: '120px' }}>
             <label className="lbl">Record Date</label>
@@ -102,6 +121,73 @@ export const WeightProgressView: React.FC = () => {
         <div style={{ fontSize: '12px', color: 'var(--theme-accent)', marginTop: '16px', fontWeight: '700', background: 'var(--theme-accent-dim)', padding: '10px', borderRadius: '8px', border: '1px solid var(--theme-accent-dim)' }}>Tip: Logging weight for today updates your body stats & TDEE app-wide. Historical logs update your chart only.</div>
       </div>
 
+      <div className="card" style={{ padding: 'var(--space-xl)' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '18px', fontWeight: '900', marginBottom: 'var(--space-md)', color: 'var(--theme-accent)', textTransform: 'uppercase', letterSpacing: '1px' }}>
+          <Calendar size={20} color="var(--theme-accent)" /> Logged Entries
+        </div>
+        <div style={{ fontSize: '12px', color: 'var(--theme-text-dim)', marginBottom: 'var(--space-md)' }}>
+          Review or remove your past weight logs. Deleting today's log will update your current body stats.
+        </div>
+        
+        {loggedWeights.length === 0 ? (
+          <div style={{ padding: 'var(--space-md)', textAlign: 'center', color: 'var(--theme-text-dim)', fontSize: '13px', fontStyle: 'italic' }}>
+            No weight entries logged yet.
+          </div>
+        ) : (
+          <div style={{ maxHeight: '250px', overflowY: 'auto', border: '1px solid var(--theme-border)', borderRadius: '12px', background: 'var(--theme-panel-dim, rgba(255, 255, 255, 0.01))' }}>
+            <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '13px' }}>
+              <thead>
+                <tr style={{ borderBottom: '1px solid var(--theme-border)', background: 'var(--theme-panel-base, rgba(0,0,0,0.2))', textAlign: 'left' }}>
+                  <th style={{ padding: '12px 16px', color: 'var(--theme-text-dim)', fontWeight: '700' }}>Date</th>
+                  <th style={{ padding: '12px 16px', color: 'var(--theme-text-dim)', fontWeight: '700' }}>Weight</th>
+                  <th style={{ padding: '12px 16px', color: 'var(--theme-text-dim)', fontWeight: '700', textAlign: 'right' }}>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {loggedWeights.map(entry => {
+                  const dateObj = new Date(entry.date + 'T12:00:00');
+                  const formattedDate = dateObj.toLocaleDateString(undefined, { 
+                    weekday: 'short', 
+                    year: 'numeric', 
+                    month: 'short', 
+                    day: 'numeric' 
+                  });
+                  return (
+                    <tr key={entry.date} style={{ borderBottom: '1px solid var(--theme-border-dim, rgba(255,255,255,0.02))' }}>
+                      <td style={{ padding: '12px 16px', color: 'var(--theme-text)', fontWeight: '600' }}>{formattedDate}</td>
+                      <td style={{ padding: '12px 16px', color: 'var(--theme-accent)', fontWeight: '800' }}>
+                        {entry.weight} {unitWeight}
+                      </td>
+                      <td style={{ padding: '12px 16px', textAlign: 'right' }}>
+                        <button 
+                          onClick={() => handleDeleteWeight(entry.date)}
+                          style={{ 
+                            background: 'transparent', 
+                            border: 'none', 
+                            color: 'var(--theme-error, #FF6B6B)', 
+                            cursor: 'pointer',
+                            padding: '4px 8px',
+                            borderRadius: '6px',
+                            display: 'inline-flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            transition: 'all 0.2s'
+                          }}
+                          className="delete-btn"
+                          title="Delete weight entry"
+                        >
+                          <Trash2 size={15} />
+                        </button>
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+        )}
+      </div>
+
       <style>{`
         .card { background: var(--theme-panel, rgba(255,255,255,0.02)); border: 1px solid var(--theme-border, rgba(255,255,255,0.05)); border-radius: 20px; padding: 24px; }
         .lbl { font-size: 12px; color: var(--theme-text-dim, #8b8b9b); margin-bottom: 6px; display: block; font-weight: 500; }
@@ -110,6 +196,7 @@ export const WeightProgressView: React.FC = () => {
         .btn { display: flex; align-items: center; justify-content: center; gap: 8px; background: var(--theme-panel-dim, rgba(255,255,255,0.1)); color: var(--theme-text); border: none; padding: 12px; border-radius: 10px; font-weight: 600; cursor: pointer; transition: background 0.2s; margin-top: 8px; font-family: inherit; }
         .btn:hover:not(:disabled) { background: var(--theme-panel, rgba(255,255,255,0.2)); }
         .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+        .delete-btn:hover { background: rgba(255, 107, 107, 0.1); transform: scale(1.1); }
       `}</style>
       {toastMsg && <Toast message={toastMsg} type="success" onClose={() => setToastMsg('')} />}
     </div>
