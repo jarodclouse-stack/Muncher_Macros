@@ -9,6 +9,7 @@ import { SettingsView } from '../components/SettingsView';
 import { VaultView } from '../components/VaultView';
 import { BadgesView } from '../components/BadgesView';
 import { useDiary } from '../context/DiaryContext';
+import { OnboardingWizard } from '../components/OnboardingWizard';
 import { LogOut, Plus, Settings, Sparkles, Trophy, Menu, BookOpen, Apple, TrendingUp, Target } from 'lucide-react';
 
 export const MainDashboard: React.FC = () => {
@@ -19,6 +20,12 @@ export const MainDashboard: React.FC = () => {
   const [showVaultModal, setShowVaultModal] = useState(false);
   const [showBadgesModal, setShowBadgesModal] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const needsOnboarding = !localCache.goals?.onboardingComplete && !localCache.goals?.weight;
+  const [showOnboarding, setShowOnboarding] = useState(needsOnboarding);
+
+  if (showOnboarding) {
+    return <OnboardingWizard onComplete={() => setShowOnboarding(false)} />;
+  }
 
   return (
     <div style={{ background: 'transparent', minHeight: '100vh', width: '100%', display: 'flex', flexDirection: 'column', color: 'var(--theme-text, #f1f1f1)', fontFamily: 'Inter, sans-serif' }}>
