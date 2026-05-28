@@ -302,7 +302,9 @@ export const ProgressView: React.FC = () => {
               </div>
               {goalType !== 'maintain' && (
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-xs)' }}>
-                  <label className="lbl">Rate ({unitWeight} per week)</label>
+                  <label className="lbl">
+                    {goalType === 'gain' ? 'Weight Gain Rate' : 'Weight Loss Rate'} ({unitWeight} per week)
+                  </label>
                   {goalType === 'gain' ? (
                     <select 
                       className="inp" 
