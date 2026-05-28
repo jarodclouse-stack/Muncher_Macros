@@ -66,7 +66,7 @@ export const ProgressView: React.FC = () => {
   const [activityId, setActivityId] = useState(goals.activityId || 'moderate');
   const [proteinLevelId, setProteinLevelId] = useState(goals.proteinLevelId || 'custom');
   
-  const [customRatioLb, setCustomRatioLb] = useState(goals.customRatioLb || (ACTIVITY_LEVELS.find((a: { id: string; ratioKg: number }) => a.id === 'moderate')?.ratioKg || 1.5) * 0.453592);
+  const customRatioLb = goals.customRatioLb || (ACTIVITY_LEVELS.find((a: { id: string; ratioKg: number }) => a.id === 'moderate')?.ratioKg || 1.5) * 0.453592;
 
   const unitWeight = localCache.settings?.units?.weight || 'lb';
   const unitHeight = localCache.settings?.units?.height || 'in';
@@ -98,12 +98,12 @@ export const ProgressView: React.FC = () => {
 
   const handleSaveBodyAndGoal = (e: React.FormEvent) => {
     e.preventDefault();
-    updateGoals({ sex, age: Number(age), height: Number(heightIn), weight: Number(weightLb), goalType, rate: Number(goalRate), targetWeight: Number(targetWeight), activityId });
+    updateGoals({ sex, age: Number(age), height: Number(heightIn), weight: Number(weightLb), goalType, rate: Number(goalRate), targetWeight: Number(targetWeight), activityId, proteinLevelId: activityId });
   };
 
   const handleSaveMacrosAndWater = () => {
     if (macroP + macroC + macroF !== 100) { setToastMsg('Macros must equal exactly 100%'); return; }
-    updateGoals({ macroC, macroF, waterGoal, proteinLevelId, customRatioLb: proteinLevelId === 'custom' ? parseFloat(customRatioLb.toString()) : undefined });
+    updateGoals({ macroC, macroF, waterGoal });
   };
 
   const handleSaveWaterOnly = () => {
@@ -182,17 +182,6 @@ export const ProgressView: React.FC = () => {
                   </div>
                 </div>
               )}
-              <div style={{ fontWeight: '600', color: 'var(--theme-text)', borderBottom: '1px solid var(--theme-border)', paddingBottom: 'var(--space-xs)', marginTop: 'var(--space-xs)' }}>Activity Level</div>
-              <div>
-                <label className="lbl">Activity Level</label>
-                <select className="inp" value={activityId} onChange={e => setActivityId(e.target.value)}>
-                  {ACTIVITY_LEVELS.map((a: { id: string; label: string; tdee: number }) => (
-                    <option key={a.id} value={a.id}>{a.label} (×{a.tdee} PAL)</option>
-                  ))}
-                </select>
-                <div style={{ fontSize: '11px', color: 'var(--theme-text-dim)', marginTop: '4px' }}>{currentAct?.desc}</div>
-              </div>
-
               <div style={{ marginTop: 'var(--space-md)' }}>
                 <button type="submit" className="btn" style={{ background: 'var(--theme-accent)', color: 'var(--theme-panel-base, black)', width: '100%' }}><Save size={14} /> Update Body & Goal Settings</button>
               </div>
@@ -235,34 +224,41 @@ export const ProgressView: React.FC = () => {
               <div style={{ fontSize: '32px', fontWeight: '800', color: 'var(--theme-success)' }}>{Math.round(computed.targetCal)}</div>
             </div>
           </div>
+
+          {/* Merged Activity & Protein Level Selector */}
+          <div style={{ marginTop: 'var(--space-lg)', borderTop: '1px solid var(--theme-border)', paddingTop: 'var(--space-lg)' }}>
+            <div style={{ fontWeight: '600', color: 'var(--theme-text)', marginBottom: 'var(--space-sm)', fontSize: '14px' }}>Activity & Protein Level</div>
+            <select className="inp" value={activityId} onChange={e => {
+              const id = e.target.value;
+              setActivityId(id);
+              setProteinLevelId(id);
+              updateGoals({ activityId: id, proteinLevelId: id });
+            }}>
+              {ACTIVITY_LEVELS.map((a: { id: string; label: string; tdee: number; ratioKg: number }) => (
+                <option key={a.id} value={a.id}>
+                  {a.label} — ×{a.tdee} PAL · {isMetric ? Math.round(a.ratioKg * 100)/100 : Math.round(a.ratioKg * 0.453592 * 100)/100}g/{unitWeight} protein
+                </option>
+              ))}
+            </select>
+            <div style={{ fontSize: '12px', color: 'var(--theme-text-dim)', marginTop: '8px', padding: '10px 12px', background: 'var(--theme-panel-dim)', borderRadius: 'var(--radius-md)', border: '1px solid var(--theme-border)', lineHeight: '1.5' }}>
+              {currentAct?.desc}
+            </div>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '8px', flexWrap: 'wrap', gap: '4px' }}>
+              <span style={{ fontSize: '11px', color: 'var(--theme-text-dim)' }}>
+                Protein: {isMetric ? Math.round((currentAct as any)?.ratioKg * 100)/100 : Math.round((currentAct as any)?.ratioKg * 0.453592 * 100)/100}g per {unitWeight}
+              </span>
+              <span style={{ fontSize: '12px', color: 'var(--theme-accent)', fontWeight: '800' }}>
+                {Math.round(computed.proteinG)}g / day
+              </span>
+            </div>
+          </div>
         </div>
 
         {/* 5. Macro Split & Water Goal */}
         <div className="card" style={{ gridColumn: '1 / -1', padding: 'var(--space-xl)' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '16px', fontWeight: '700', marginBottom: 'var(--space-lg)', color: 'var(--theme-text)' }}><PieChart size={18} color="var(--theme-accent, #B197FC)" /> Macro Split & Daily Fluids</div>
 
-          <div style={{ marginBottom: 'var(--space-lg)', display: 'flex', flexDirection: 'column', gap: 'var(--space-md)', borderBottom: '1px solid var(--theme-border)', paddingBottom: 'var(--space-lg)' }}>
-            <div>
-              <label className="lbl">Protein Target Level</label>
-              <select className="inp" value={proteinLevelId} onChange={e => setProteinLevelId(e.target.value)}>
-                {ACTIVITY_LEVELS.map((a: { id: string; label: string; ratioKg: number }) => (
-                  <option key={`p-${a.id}`} value={a.id}>{a.label} ({isMetric ? Math.round(a.ratioKg * 100)/100 : Math.round(a.ratioKg * 0.453592 * 100)/100}g / {unitWeight})</option>
-                ))}
-                <option value="custom">Custom target</option>
-              </select>
-            </div>
-            {proteinLevelId === 'custom' && (
-              <div>
-                <label className="lbl">Custom Protein (g per {unitWeight} of bodyweight)</label>
-                <input type="number" step="0.05" className="inp" value={customRatioLb} onChange={e => setCustomRatioLb(parseFloat(e.target.value) || 0)} />
-              </div>
-            )}
-            <div style={{ fontSize: '11px', color: 'var(--theme-accent)', textAlign: 'right', fontWeight: '800' }}>
-              Final Protein Target: {Math.round(computed.proteinG)}g / day
-            </div>
-          </div>
-
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: 'var(--space-lg)', marginTop: 'var(--space-md)' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: 'var(--space-lg)' }}>
 
             <div>
               <div style={{ marginBottom: 'var(--space-md)', fontSize: '13px', color: 'var(--theme-text-dim)' }}>Customize your calorie ratio. Must equal exactly 100%.</div>
