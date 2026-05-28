@@ -3,7 +3,7 @@ import { calculateBMR } from './bmr';
 import { calculateTDEE } from './tdee';
 import { calculateWeightGoalCalories } from './weight-goal';
 
-export function computeNutrientGoals(sex: string, activityId: string) {
+export function computeNutrientGoals(sex: string, activityId: string, age?: number) {
   const tier = ACTIVITY_TIER[activityId] || 'sedentary';
   const am = ACTIVITY_MULTIPLIER[tier] || 1.0;
   const eb = EXERCISE_BONUS[tier] || 1.0;
@@ -12,7 +12,29 @@ export function computeNutrientGoals(sex: string, activityId: string) {
   
   MICRO_CATEGORIES.forEach((cat) => {
     cat.keys.forEach((item) => {
-      const base = isFemale ? item.rda_f : item.rda_m;
+      let base = isFemale ? item.rda_f : item.rda_m;
+      
+      // Dynamic Iron targets based on NIH ODS Guidelines:
+      if (item.k === 'Iron' && age !== undefined) {
+        if (age < 0.5) {
+          base = 0.27;
+        } else if (age < 1.0) {
+          base = 11;
+        } else if (age <= 3) {
+          base = 7;
+        } else if (age <= 8) {
+          base = 10;
+        } else if (age <= 13) {
+          base = 8;
+        } else if (age <= 18) {
+          base = isFemale ? 15 : 11;
+        } else if (age <= 50) {
+          base = isFemale ? 18 : 8;
+        } else { // 51+ years
+          base = 8;
+        }
+      }
+      
       const multiplier = item.exercise_sensitive ? am * eb : am;
       let val = base * multiplier;
       
@@ -70,7 +92,7 @@ export function computeGoals(g: any) {
   const carbG = Math.round((pctC / 100) * targetCal / 4);
   const fatG  = Math.round((pctF / 100) * targetCal / 9);
 
-  const baseMicros = computeNutrientGoals(sex, activityId);
+  const baseMicros = computeNutrientGoals(sex, activityId, g.age ? Number(g.age) : undefined);
   const computedMicros = { ...baseMicros, ...(g.customMicros || {}) };
 
   return { 
