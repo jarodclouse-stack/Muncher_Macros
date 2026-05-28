@@ -7,7 +7,7 @@ export const ACTIVITY_LEVELS = [
   { id: 'moderate', label: 'Moderately active', desc: 'Moderate exercise 3–5 days/week. E.g., jogging, swimming, consistent resistance training.', ratioKg: 1.5, tdee: 1.55 },
   { id: 'active', label: 'Very active', desc: 'Hard exercise 6–7 days/week. E.g., heavy weightlifting, competitive sports, daily intense cardio.', ratioKg: 1.8, tdee: 1.725 },
   { id: 'athlete', label: 'Athlete', desc: 'Twice daily or intense training. E.g., professional athletes, marathon prep, multiple daily sessions.', ratioKg: 2.0, tdee: 1.90 },
-  { id: 'bodybuilder', label: 'Competitive Bodybuilding', desc: 'Advanced resistance training program. Heavy lifting 5–6 days/week tailored for progressive muscle hypertrophy.', ratioKg: 2.2, tdee: 1.90 },
+  { id: 'bodybuilder', label: 'Elite Strength & Hypertrophy', desc: 'Advanced high-volume lifting 5–6 days/week tailored for maximum muscle growth and strength.', ratioKg: 2.2, tdee: 1.90 },
 ];
 
 export const MICRO_CATEGORIES = [
