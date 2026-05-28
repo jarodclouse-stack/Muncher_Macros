@@ -78,7 +78,7 @@ export function computeGoals(g: any) {
     targetCal = tdee + calAdj;
   }
 
-  const pctP = Math.min(60, Math.round(((proteinG * 4) / targetCal) * 100)) || 30;
+  const pctP = Math.min(60, Math.round(((proteinG * 4) / tdee) * 100)) || 30;
   const remainder = 100 - pctP;
   
   let pctC = g.macroC || 45;
@@ -89,8 +89,13 @@ export function computeGoals(g: any) {
     pctF = remainder - pctC;
   }
   
-  const carbG = Math.round((pctC / 100) * targetCal / 4);
-  const fatG  = Math.round((pctF / 100) * targetCal / 9);
+  // Distribute the remaining calories (after keeping protein constant) entirely to carbs and fats
+  const proteinCal = proteinG * 4;
+  const remainingCal = Math.max(0, targetCal - proteinCal);
+  const sumCF = pctC + pctF > 0 ? (pctC + pctF) : 1;
+
+  const carbG = Math.round(((pctC / sumCF) * remainingCal) / 4);
+  const fatG  = Math.round(((pctF / sumCF) * remainingCal) / 9);
 
   const baseMicros = computeNutrientGoals(sex, activityId, g.age ? Number(g.age) : undefined);
   const computedMicros = { ...baseMicros, ...(g.customMicros || {}) };
