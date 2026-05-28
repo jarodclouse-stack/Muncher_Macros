@@ -301,37 +301,18 @@ export const ProgressView: React.FC = () => {
                 </select>
               </div>
               {goalType !== 'maintain' && (
-                <div>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-xs)' }}>
                   <label className="lbl">Rate ({unitWeight} per week)</label>
                   {goalType === 'gain' ? (
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-xs)' }}>
-                      <select 
-                        className="inp" 
-                        value={goalRate} 
-                        onChange={e => setGoalRate(e.target.value)}
-                      >
-                        <option value="0.5">0.5 {unitWeight}/wk</option>
-                        <option value="1.0">1.0 {unitWeight}/wk</option>
-                        <option value="1.5">1.5 {unitWeight}/wk</option>
-                      </select>
-                      <div style={{ 
-                        marginTop: '4px', 
-                        padding: '10px 12px', 
-                        background: 'var(--theme-panel-dim, rgba(255, 255, 255, 0.02))', 
-                        border: '1px solid var(--theme-border)', 
-                        borderRadius: 'var(--radius-sm, 6px)',
-                        fontSize: '12px', 
-                        color: 'var(--theme-accent)', 
-                        lineHeight: '1.4',
-                        fontWeight: '550',
-                        display: 'flex',
-                        gap: '6px',
-                        alignItems: 'center'
-                      }}>
-                        <span>💡</span>
-                        <span>Building quality muscle requires consistent heavy lifting and dedicated effort!</span>
-                      </div>
-                    </div>
+                    <select 
+                      className="inp" 
+                      value={goalRate} 
+                      onChange={e => setGoalRate(e.target.value)}
+                    >
+                      <option value="0.5">0.5 {unitWeight}/wk</option>
+                      <option value="1.0">1.0 {unitWeight}/wk</option>
+                      <option value="1.5">1.5 {unitWeight}/wk</option>
+                    </select>
                   ) : (
                     <select 
                       className="inp" 
@@ -344,6 +325,23 @@ export const ProgressView: React.FC = () => {
                       <option value="2.0">2.0 {unitWeight}/wk</option>
                     </select>
                   )}
+                  <div style={{ 
+                    marginTop: '4px', 
+                    padding: '10px 12px', 
+                    background: 'var(--theme-panel-dim, rgba(255, 255, 255, 0.02))', 
+                    border: '1px solid var(--theme-border)', 
+                    borderRadius: 'var(--radius-sm, 6px)',
+                    fontSize: '12px', 
+                    color: 'var(--theme-accent)', 
+                    lineHeight: '1.4',
+                    fontWeight: '550',
+                    display: 'flex',
+                    gap: '6px',
+                    alignItems: 'center'
+                  }}>
+                    <span>💡</span>
+                    <span>Losing weight or building muscle requires consistent and dedicated effort.</span>
+                  </div>
                 </div>
               )}
               <div style={{ marginTop: 'var(--space-md)' }}>
