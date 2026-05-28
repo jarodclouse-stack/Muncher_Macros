@@ -286,7 +286,15 @@ export const ProgressView: React.FC = () => {
               <div style={{ fontWeight: '600', color: 'var(--theme-text)', borderBottom: '1px solid var(--theme-border)', paddingBottom: 'var(--space-xs)', marginTop: 'var(--space-xs)' }}>Weight Management Goal</div>
               <div>
                 <label className="lbl">Goal Mode</label>
-                <select className="inp" value={goalType} onChange={e => setGoalType(e.target.value)}>
+                <select className="inp" value={goalType} onChange={e => {
+                  const newType = e.target.value;
+                  setGoalType(newType);
+                  if (newType === 'gain' && (goalRate === '2.0' || parseFloat(goalRate) > 1.5)) {
+                    setGoalRate('1.5');
+                  } else if (newType === 'lose' && parseFloat(goalRate) > 2.0) {
+                    setGoalRate('2.0');
+                  }
+                }}>
                   <option value="lose">Lose Weight</option>
                   <option value="maintain">Maintain Weight</option>
                   <option value="gain">Gain Muscle/Weight</option>
@@ -325,12 +333,16 @@ export const ProgressView: React.FC = () => {
                       </div>
                     </div>
                   ) : (
-                    <div style={{ display: 'flex', gap: 'var(--space-xs)', alignItems: 'center' }}>
-                      <input type="number" step={isMetric ? 0.05 : 0.25} min="0" max={isMetric ? 1 : 2} className="inp" value={goalRate} onChange={e => {
-                        setGoalRate(cleanNumInput(e.target.value));
-                      }} />
-                      <span style={{ fontSize: '11px', color: 'var(--theme-text-dim)', fontWeight: '700' }}>{unitWeight}/wk</span>
-                    </div>
+                    <select 
+                      className="inp" 
+                      value={goalRate} 
+                      onChange={e => setGoalRate(e.target.value)}
+                    >
+                      <option value="0.5">0.5 {unitWeight}/wk</option>
+                      <option value="1.0">1.0 {unitWeight}/wk</option>
+                      <option value="1.5">1.5 {unitWeight}/wk</option>
+                      <option value="2.0">2.0 {unitWeight}/wk</option>
+                    </select>
                   )}
                 </div>
               )}
