@@ -342,7 +342,11 @@ export const ProgressView: React.FC = () => {
                     alignItems: 'center'
                   }}>
                     <span>💡</span>
-                    <span>Losing weight or building muscle requires consistent and dedicated effort.</span>
+                    <span>
+                      {goalType === 'gain' 
+                        ? 'Building muscle successfully requires consistent nutrition and dedicated, persistent effort.' 
+                        : 'Losing weight successfully requires consistent nutrition tracking and dedicated daily habits.'}
+                    </span>
                   </div>
                 </div>
               )}
