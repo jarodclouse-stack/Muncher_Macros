@@ -11,6 +11,39 @@ import type { Food } from '../types/food';
 
 ChartJS.register(ArcElement, Tooltip, Legend);
 
+const getNutrientProgress = (val: number, goal: number, label: string) => {
+  const pct = goal ? Math.min(100, (val / goal) * 100) : 0;
+  const lowerLabel = label.toLowerCase();
+  
+  // Identify upper-limit nutrients
+  const isUpperLimit = 
+    lowerLabel.includes('sodium') || 
+    lowerLabel.includes('sugar') || 
+    lowerLabel.includes('saturated') || 
+    lowerLabel.includes('trans') || 
+    lowerLabel.includes('cholesterol') || 
+    lowerLabel.includes('refined carbs') || 
+    lowerLabel.includes('simple carbs');
+  
+  let color = 'var(--theme-accent)';
+  if (val > 0) {
+    if (isUpperLimit) {
+      if (pct >= 100) color = 'var(--theme-error, #FF3E4E)'; // Red (excess)
+      else if (pct >= 80) color = '#FF9F1C'; // Orange (approaching warning)
+      else color = 'var(--theme-success, #92FE9D)'; // Green (safe / under limit)
+    } else {
+      if (pct >= 100) color = 'var(--theme-success, #92FE9D)'; // Green (completed)
+      else if (pct >= 75) color = '#FFD700'; // Bright Gold
+      else if (pct >= 25) color = '#FF6F00'; // Standard Theme Orange
+      else color = '#A75D00'; // Muted Orange
+    }
+  } else {
+    color = 'transparent';
+  }
+  
+  return { pct, color, isUpperLimit };
+};
+
 export const NutritionView: React.FC = () => {
   const { localCache, currentDate } = useDiary();
 
@@ -191,14 +224,27 @@ export const NutritionView: React.FC = () => {
                         const isExpanded = expandedMicro === sub.k;
                         const info = DEFICIENCY_INFO[sub.k as keyof typeof DEFICIENCY_INFO] || NUTRIENT_BENEFITS[sub.k as keyof typeof NUTRIENT_BENEFITS];
                         const defInfo = DEFICIENCY_INFO[sub.k as keyof typeof DEFICIENCY_INFO];
+                        const { pct, color: barColor } = getNutrientProgress(sub.v, sub.g || 0, sub.k);
                         return (
                           <div key={sub.k} className={isExpanded ? "glass-card" : ""} style={{ padding: isExpanded ? 'var(--space-md)' : '0', transition: 'all var(--transition-smooth)', margin: isExpanded ? '0 -16px var(--space-xs)' : '0' }}>
                             <div onClick={() => info && setExpandedMicro(isExpanded ? null : sub.k)} style={{ display: 'flex', justifyContent: 'space-between', fontSize: '10px', cursor: info ? 'pointer' : 'default' }}>
                               <span style={{ color: 'var(--theme-text-dim-on-panel)', display: 'flex', alignItems: 'center', gap: '4px', fontWeight: '900', textTransform: 'uppercase', letterSpacing: '0.5px' }}>{sub.k} {info && <Info size={10} color="color-mix(in srgb, var(--theme-text) 40%, black)" />}</span>
-                              <span style={{ color: 'var(--theme-text-dim-on-panel)', fontWeight: '900' }}>{Math.round(sub.v * 10) / 10}g</span>
+                              <span style={{ color: 'var(--theme-text-dim-on-panel)', fontWeight: '900', display: 'flex', gap: '4px', alignItems: 'center' }}>
+                                {Math.round(sub.v * 10) / 10}g
+                                <span style={{ fontSize: '9px', fontWeight: '800', opacity: 0.85, color: sub.v > 0 ? barColor : 'var(--theme-text-dim)' }}>
+                                  ({Math.round(pct)}%)
+                                </span>
+                              </span>
                             </div>
-                            <div style={{ height: '3px', background: 'var(--theme-panel)', borderRadius: '2px', marginTop: '4px', border: '1px solid var(--theme-border)' }}>
-                              <div style={{ width: `${Math.min(100, (sub.v / sub.g) * 100)}%`, height: '100%', background: sub.c, borderRadius: '2px' }} />
+                            <div style={{ height: '4px', background: 'var(--theme-panel-dim)', borderRadius: '2px', marginTop: '4px', border: '1px solid var(--theme-border)', position: 'relative' }}>
+                              <div style={{ 
+                                width: `${pct}%`, 
+                                height: '100%', 
+                                background: barColor, 
+                                borderRadius: '2px',
+                                boxShadow: pct >= 100 ? `0 0 10px ${barColor}` : 'none',
+                                transition: 'width var(--transition-smooth), background-color 0.3s ease'
+                              }} />
                             </div>
 
                             {isExpanded && info && (
@@ -245,6 +291,7 @@ export const NutritionView: React.FC = () => {
                         { k: 'Refined Carbs', disp: '🍞 Refined Carbs', v: carbBreakdown['refined-carbs'], g: goal * 0.05, c: 'var(--theme-error)' },
                         { k: 'Simple Carbs', disp: '🍭 Simple Carbs', v: carbBreakdown['simple-carbs'], g: goal * 0.05, c: 'var(--theme-error)' }
                       ].map(sub => {
+                        const { pct, color: barColor } = getNutrientProgress(sub.v, sub.g || 0, sub.k);
                         const isExpanded = expandedMicro === sub.k;
                         const info = DEFICIENCY_INFO[sub.k as keyof typeof DEFICIENCY_INFO] || NUTRIENT_BENEFITS[sub.k as keyof typeof NUTRIENT_BENEFITS];
                         const defInfo = DEFICIENCY_INFO[sub.k as keyof typeof DEFICIENCY_INFO];
@@ -252,10 +299,22 @@ export const NutritionView: React.FC = () => {
                           <div key={sub.k} className={isExpanded ? "glass-card" : ""} style={{ padding: isExpanded ? 'var(--space-md)' : '0', transition: 'all var(--transition-smooth)', margin: isExpanded ? '0 -16px var(--space-xs)' : '0' }}>
                             <div onClick={() => info && setExpandedMicro(isExpanded ? null : sub.k)} style={{ display: 'flex', justifyContent: 'space-between', fontSize: '10px', cursor: info ? 'pointer' : 'default' }}>
                               <span style={{ color: 'var(--theme-text-dim-on-panel)', display: 'flex', alignItems: 'center', gap: '4px', fontWeight: '900', textTransform: 'uppercase', letterSpacing: '0.5px' }}>{sub.disp} {info && <Info size={10} color="color-mix(in srgb, var(--theme-text) 40%, black)" />}</span>
-                              <span style={{ color: 'var(--theme-text-dim-on-panel)', fontWeight: '900' }}>{Math.round(sub.v * 10) / 10}g</span>
+                              <span style={{ color: 'var(--theme-text-dim-on-panel)', fontWeight: '900', display: 'flex', gap: '4px', alignItems: 'center' }}>
+                                {Math.round(sub.v * 10) / 10}g
+                                <span style={{ fontSize: '9px', fontWeight: '800', opacity: 0.85, color: sub.v > 0 ? barColor : 'var(--theme-text-dim)' }}>
+                                  ({Math.round(pct)}%)
+                                </span>
+                              </span>
                             </div>
-                            <div style={{ height: '3px', background: 'var(--theme-panel)', borderRadius: '2px', marginTop: '4px', border: '1px solid var(--theme-border)' }}>
-                              <div style={{ width: `${Math.min(100, (sub.v / sub.g) * 100)}%`, height: '100%', background: sub.c, borderRadius: '2px' }} />
+                            <div style={{ height: '4px', background: 'var(--theme-panel-dim)', borderRadius: '2px', marginTop: '4px', border: '1px solid var(--theme-border)', position: 'relative' }}>
+                              <div style={{ 
+                                width: `${pct}%`, 
+                                height: '100%', 
+                                background: barColor, 
+                                borderRadius: '2px',
+                                boxShadow: pct >= 100 ? `0 0 10px ${barColor}` : 'none',
+                                transition: 'width var(--transition-smooth), background-color 0.3s ease'
+                              }} />
                             </div>
 
                             {isExpanded && info && (
@@ -311,7 +370,7 @@ export const NutritionView: React.FC = () => {
                   const unit = nutrient.u;
                   const val = totals[label.toLowerCase()] || totals[label] || 0;
                   const goal = computed.micros ? computed.micros[label] : computed.computedMicros[label];
-                  const pct = goal ? Math.min(100, (val / goal) * 100) : 0;
+                  const { pct, color: barColor } = getNutrientProgress(val, goal || 0, label);
                   const isExpanded = expandedMicro === label;
                   const benefitsInfo = NUTRIENT_BENEFITS[label as keyof typeof NUTRIENT_BENEFITS];
                   const defInfo = DEFICIENCY_INFO[label as keyof typeof DEFICIENCY_INFO];
@@ -321,7 +380,7 @@ export const NutritionView: React.FC = () => {
                     <div key={label} className={isExpanded ? "glass-card" : ""} style={{ padding: isExpanded ? 'var(--space-sm) var(--space-md)' : '0 var(--space-xs)', transition: 'all var(--transition-smooth)', margin: isExpanded ? '0 -4px var(--space-xs)' : '0' }}>
                       <div
                         onClick={() => info && setExpandedMicro(isExpanded ? null : label)}
-                        style={{ display: 'grid', gridTemplateColumns: 'minmax(120px, auto) 1fr 60px', gap: '16px', alignItems: 'center', cursor: info ? 'pointer' : 'default' }}
+                        style={{ display: 'grid', gridTemplateColumns: 'minmax(120px, auto) 1fr 95px', gap: '16px', alignItems: 'center', cursor: info ? 'pointer' : 'default' }}
                       >
                         <div style={{
                           fontSize: '10px',
@@ -341,9 +400,21 @@ export const NutritionView: React.FC = () => {
                           {label} {info && <Info size={10} color="color-mix(in srgb, var(--theme-text) 40%, black)" />}
                         </div>
                         <div style={{ height: '6px', background: 'var(--theme-panel-dim)', borderRadius: '4px', position: 'relative', border: '1px solid var(--theme-border)' }}>
-                          <div style={{ width: `${pct}%`, height: '100%', background: 'var(--theme-accent)', borderRadius: '4px', boxShadow: pct >= 100 ? '0 0 12px var(--theme-accent)' : 'none' }} />
+                          <div style={{ 
+                            width: `${pct}%`, 
+                            height: '100%', 
+                            background: barColor, 
+                            borderRadius: '4px', 
+                            boxShadow: pct >= 100 ? `0 0 12px ${barColor}` : 'none',
+                            transition: 'width var(--transition-smooth), background-color 0.3s ease'
+                          }} />
                         </div>
-                        <div style={{ fontSize: '13px', fontWeight: '900', textAlign: 'right', color: pct >= 100 ? 'var(--theme-success)' : 'var(--theme-text-on-panel)' }}>{Math.round(val)}<span style={{ fontSize: '10px', opacity: 0.8 }}>{unit}</span></div>
+                        <div style={{ fontSize: '13px', fontWeight: '900', textAlign: 'right', color: pct >= 100 ? 'var(--theme-success)' : 'var(--theme-text-on-panel)', whiteSpace: 'nowrap' }}>
+                          {Math.round(val)}<span style={{ fontSize: '10px', opacity: 0.8, marginRight: '4px' }}>{unit}</span>
+                          <span style={{ fontSize: '11px', fontWeight: '800', opacity: 0.85, color: val > 0 ? barColor : 'var(--theme-text-dim)' }}>
+                            ({Math.round(pct)}%)
+                          </span>
+                        </div>
                       </div>
 
                       {isExpanded && info && (

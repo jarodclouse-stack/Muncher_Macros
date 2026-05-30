@@ -228,10 +228,11 @@ B) TOPPING / FILLING INHERITANCE — applies when the meal uses "with" or "toppe
    INHERITANCE never applies to: beverage, dessert, side, snack
    
    CRITICAL TOPPING PORTION SCALING RULE:
-   - When ingredients are toppings/fillings inherited from a main dish count (e.g. 3 tacos), adjust the unit portion size ("sQty" and "sUnit") to represent the amount on exactly ONE single item, not the whole meal.
-   - For example: ground beef on a single taco should be 0.5 oz or 1 oz (NOT 3 oz), and cheese should be 0.25 oz or 0.5 oz.
-   - Ensure the calorie and nutrient estimates in Step 7 match this single-item portion size exactly (e.g., ground beef: 35 kcal per 0.5 oz serving, or 70 kcal per 1 oz serving).
-   - This prevents the final scaled totals from being overwhelmingly large when multiplied by the inherited count.
+   - When ingredients are toppings, fillings, or condiments inherited from a main dish count (e.g., lettuce, cheese, salsa, guacamole, or sour cream on 3 tacos), you MUST use small, realistic minor units (e.g., "tbsp", "tsp", "pinch") and fractional portions rather than large generic ounces (e.g. "oz") or massive standard pieces.
+   - For example, toppings like shredded lettuce, cheese, or salsa on a single taco should be represented as "1 tbsp", "2 tbsp", or fractional ounces like "0.25 oz" (NEVER represent lettuce as "3 oz" or "1 cup", which results in overwhelming totals when multiplied by taco counts).
+   - Adjust the single-unit portion size ("sQty" and "sUnit") to represent the realistic amount on exactly ONE single item, not the whole meal.
+   - Ensure the calorie and nutrient estimates in Step 7 match this single-item minor portion size exactly (e.g., salsa: 4 kcal per 1 tbsp serving, lettuce: 1 kcal per 1 tbsp serving, cheddar cheese: 28 kcal per 1 tbsp / 0.25 oz serving).
+   - This ensures that toppings on multi-item dishes (like 3 tacos) are scaled correctly by the app and do not result in absurdly high volumes like "3 oz of lettuce on 3 tacos".
 
 C) STANDALONE / SIDE ITEMS — never inherit the main dish quantity.
    Listed after a comma OR clearly a separate food type (dessert, drink, side dish).
