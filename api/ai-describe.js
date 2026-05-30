@@ -83,11 +83,23 @@ function normalizeResult(f) {
   // Enforce Macro Integrity
   const cal = Math.round(p * 4 + c * 4 + fat * 9);
 
+  // Safely extract portions
+  const baseQty = Number(f.sQty || f.qty || f.quantity || 1);
+  const count = Number(f.detectedCount || 1);
+  const sUnit = String(f.sUnit || f.unit || 'piece');
+
+  // Compute total portion across the deconstructed/multi-unit meal
+  const totalQty = count * baseQty;
+
+  // Base serving description MUST strictly represent 1 unit of sUnit (or baseQty)
+  // so the client-side computeMultiplier multiplies by totalQty / baseQty.
+  const serving = f.sUnit || f.unit ? `1 ${f.sUnit || f.unit}` : (f.serving || '1 serving');
+
   return {
     name: String(f.name || 'Unknown Item'),
-    serving: String(f.serving || '1 serving'),
-    sQty: Number(f.detectedCount || f.sQty || f.qty || f.quantity || 1),
-    sUnit: String(f.sUnit || f.unit || 'piece'),
+    serving: String(serving),
+    sQty: baseQty,
+    sUnit: sUnit,
     cal,
     p,
     c,
@@ -128,11 +140,9 @@ function normalizeResult(f) {
     Molybdenum: Math.round((Number(f.Molybdenum) || 0) * 10) / 10,
     Fluoride: Math.round((Number(f.Fluoride) || 0) * 10) / 10,
     Fiber: Math.round((Number(f.Fiber || f.fb || f.fiber) || 0) * 10) / 10,
-    // NEW: ontology classification + confidence scoring (Rules 12 & 15)
     category: String(f.category || 'unknown'),
     confidence: String(f.confidence || 'high'),
     _src: f._src || 'ai',
-    // Duplicate keys for legacy compatibility
     calories: cal,
     protein: p,
     carbs: c,
@@ -150,10 +160,8 @@ function normalizeResult(f) {
     chromium: Math.round((Number(f.Chromium) || 0) * 10) / 10,
     molybdenum: Math.round((Number(f.Molybdenum) || 0) * 10) / 10,
     fluoride: Math.round((Number(f.Fluoride) || 0) * 10) / 10,
-    // Staging pre-population - CRITICAL: Preserve natural units from AI
-    // Check multiple possible keys from AI: sQty, qty, quantity
-    stagedQty: String(f.detectedCount || f.sQty || f.qty || f.quantity || 1),
-    stagedUnit: String(f.sUnit || f.unit || 'piece')
+    stagedQty: String(totalQty),
+    stagedUnit: sUnit
   };
 }
 
