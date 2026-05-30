@@ -207,8 +207,12 @@ export const enforceCalorieConsistency = (food: Food): Food => {
   const p = Number(food.p) || 0;
   const c = Number(food.c) || 0;
   const f = Number(food.f) || 0;
-  const macroCals = Math.round(p * 4 + c * 4 + f * 9);
   
+  if (food.cal !== undefined && food.cal !== null && Number(food.cal) > 0) {
+    return food;
+  }
+
+  const macroCals = Math.round(p * 4 + c * 4 + f * 9);
   return {
     ...food,
     cal: macroCals
