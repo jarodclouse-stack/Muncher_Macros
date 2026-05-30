@@ -140,6 +140,10 @@ function normalizeResult(f) {
     Molybdenum: Math.round((Number(f.Molybdenum) || 0) * 10) / 10,
     Fluoride: Math.round((Number(f.Fluoride) || 0) * 10) / 10,
     Fiber: Math.round((Number(f.Fiber || f.fb || f.fiber) || 0) * 10) / 10,
+    'Soluble Fiber': Math.round((Number(f['Soluble Fiber'] || f.solubleFiber || f.soluble_fiber) || 0) * 10) / 10,
+    'Insoluble Fiber': Math.round((Number(f['Insoluble Fiber'] || f.insolubleFiber || f.insoluble_fiber) || 0) * 10) / 10,
+    solubleFiber: Math.round((Number(f['Soluble Fiber'] || f.solubleFiber || f.soluble_fiber) || 0) * 10) / 10,
+    insolubleFiber: Math.round((Number(f['Insoluble Fiber'] || f.insolubleFiber || f.insoluble_fiber) || 0) * 10) / 10,
     category: String(f.category || 'unknown'),
     confidence: String(f.confidence || 'high'),
     _src: f._src || 'ai',
@@ -160,6 +164,8 @@ function normalizeResult(f) {
     chromium: Math.round((Number(f.Chromium) || 0) * 10) / 10,
     molybdenum: Math.round((Number(f.Molybdenum) || 0) * 10) / 10,
     fluoride: Math.round((Number(f.Fluoride) || 0) * 10) / 10,
+    solubleFiber: Math.round((Number(f['Soluble Fiber'] || f.solubleFiber || f.soluble_fiber) || 0) * 10) / 10,
+    insolubleFiber: Math.round((Number(f['Insoluble Fiber'] || f.insolubleFiber || f.insoluble_fiber) || 0) * 10) / 10,
     stagedQty: String(totalQty),
     stagedUnit: sUnit
   };
@@ -318,7 +324,7 @@ Return a JSON array. Every object must contain ALL keys below. No omissions.
   "Vitamin E": number, "Vitamin K": number,
   "Magnesium": number, "Phosphorus": number, "Zinc": number, "Copper": number,
   "Manganese": number, "Selenium": number, "Chloride": number, "Iodine": number,
-  "Chromium": number, "Molybdenum": number, "Fluoride": number, "Fiber": number
+  "Chromium": number, "Molybdenum": number, "Fluoride": number, "Fiber": number, "Soluble Fiber": number, "Insoluble Fiber": number
 }]
 
 CRITICAL REMINDERS:

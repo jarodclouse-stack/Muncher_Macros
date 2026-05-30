@@ -58,6 +58,8 @@ export const MICRO_CATEGORIES = [
   {
     cat: 'Dietary Fiber', keys: [
       { k: 'Fiber', u: 'g', rda_m: 38, rda_f: 25, exercise_sensitive: false },
+      { k: 'Soluble Fiber', u: 'g', rda_m: 10, rda_f: 8, exercise_sensitive: false },
+      { k: 'Insoluble Fiber', u: 'g', rda_m: 28, rda_f: 17, exercise_sensitive: false },
     ]
   },
 ];

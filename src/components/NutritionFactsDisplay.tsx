@@ -14,7 +14,7 @@ interface NutritionFactsDisplayProps {
 export const NutritionFactsDisplay: React.FC<NutritionFactsDisplayProps> = ({ food, multiplier, onEdit }) => {
   const f = food || {};
   
-  const renderRow = (label: string, key: string, unit: string = 'g', isMacro: boolean = false) => {
+  const renderRow = (label: string, key: string, unit: string = 'g', isMacro: boolean = false, isSubRow: boolean = false) => {
     const rawVal = Number(f[key]) || 0;
     const displayVal = Math.round(rawVal * multiplier * 10) / 10;
 
@@ -26,22 +26,23 @@ export const NutritionFactsDisplay: React.FC<NutritionFactsDisplayProps> = ({ fo
           justifyContent: 'space-between', 
           alignItems: 'center', 
           padding: '6px 0', 
+          paddingLeft: isSubRow ? '16px' : '0',
           borderBottom: '1px solid var(--theme-border-dim, rgba(255,255,255,0.05))' 
         }}
       >
         <span className="micro-bubble" style={{ 
           fontSize: '10px', 
-          fontWeight: '900', 
-          color: 'var(--theme-accent)',
-          background: 'var(--theme-panel)',
-          padding: '3px 10px',
-          borderRadius: '20px',
+          fontWeight: isSubRow ? '600' : '900', 
+          color: isSubRow ? 'var(--theme-text-dim, rgba(255,255,255,0.6))' : 'var(--theme-accent)',
+          background: isSubRow ? 'transparent' : 'var(--theme-panel)',
+          padding: isSubRow ? '3px 0' : '3px 10px',
+          borderRadius: isSubRow ? '0' : '20px',
           textTransform: 'uppercase',
           letterSpacing: '0.5px',
-          border: '1px solid var(--theme-border)',
-          boxShadow: '0 2px 8px rgba(0,0,0,0.05)'
+          border: isSubRow ? 'none' : '1px solid var(--theme-border)',
+          boxShadow: isSubRow ? 'none' : '0 2px 8px rgba(0,0,0,0.05)'
         }}>
-          {label}
+          {isSubRow ? `↳ ${label}` : label}
         </span>
 
         
@@ -91,13 +92,15 @@ export const NutritionFactsDisplay: React.FC<NutritionFactsDisplayProps> = ({ fo
       
       {/* Additional Macros */}
       {renderRow('Fiber', 'fb', 'g')}
+      {renderRow('Soluble Fiber', 'solubleFiber', 'g', false, true)}
+      {renderRow('Insoluble Fiber', 'insolubleFiber', 'g', false, true)}
       {renderRow('Sugars', 'sugars', 'g')}
       {renderRow('Sat Fat', 'sat', 'g')}
       {renderRow('Sodium', 'Sodium', 'mg')}
       {renderRow('Potassium', 'Potassium', 'mg')}
       
       {/* Dynamic Micros from Constants */}
-      {ALL_MICRO_KEYS.filter(k => !['Sodium', 'Potassium', 'Fiber'].includes(k)).map(k => (
+      {ALL_MICRO_KEYS.filter(k => !['Sodium', 'Potassium', 'Fiber', 'Soluble Fiber', 'Insoluble Fiber'].includes(k)).map(k => (
         renderRow(k, k, MICRO_UNITS[k] || 'mg')
       ))}
     </div>

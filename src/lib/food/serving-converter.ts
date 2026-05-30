@@ -101,7 +101,11 @@ export function scaleFoodByAmount(food: any, amount: number | string): any {
     transFat: round(safeNum(f.transFat) * multiplier),
     cholesterol: round(safeNum(f.cholesterol) * multiplier),
     sodium: round(safeNum(f.sodium) * multiplier),
-    potassium: round(safeNum(f.potassium) * multiplier)
+    potassium: round(safeNum(f.potassium) * multiplier),
+    solubleFiber: round(safeNum(f.solubleFiber || f['Soluble Fiber']) * multiplier),
+    insolubleFiber: round(safeNum(f.insolubleFiber || f['Insoluble Fiber']) * multiplier),
+    'Soluble Fiber': round(safeNum(f['Soluble Fiber'] || f.solubleFiber) * multiplier),
+    'Insoluble Fiber': round(safeNum(f['Insoluble Fiber'] || f.insolubleFiber) * multiplier)
   };
 }
 
@@ -131,7 +135,7 @@ export function sumFoods(foodEntries: any[]): any {
   
   // Set up dynamic initial object
   const initial: any = { 
-    calories: 0, protein: 0, carbs: 0, fiber: 0, sugar: 0, fat: 0, 
+    calories: 0, protein: 0, carbs: 0, fiber: 0, solubleFiber: 0, insolubleFiber: 0, sugar: 0, fat: 0, 
     saturatedFat: 0, monounsaturatedFat: 0, polyunsaturatedFat: 0, transFat: 0, 
     cholesterol: 0, sodium: 0, potassium: 0 
   };
@@ -146,6 +150,8 @@ export function sumFoods(foodEntries: any[]): any {
     acc.protein += safeNum(item.protein != null ? item.protein : item.p);
     acc.carbs += safeNum(item.carbs != null ? item.carbs : item.c);
     acc.fiber += safeNum(item.fiber != null ? item.fiber : item.fb);
+    acc.solubleFiber += safeNum(item.solubleFiber != null ? item.solubleFiber : (item.soluble_fiber != null ? item.soluble_fiber : item['Soluble Fiber']));
+    acc.insolubleFiber += safeNum(item.insolubleFiber != null ? item.insolubleFiber : (item.insoluble_fiber != null ? item.insoluble_fiber : item['Insoluble Fiber']));
     acc.sugar += safeNum(item.sugar != null ? item.sugar : item.sugars);
     acc.fat += safeNum(item.fat != null ? item.fat : item.f);
     acc.saturatedFat += safeNum(item.saturatedFat != null ? item.saturatedFat : item.sat);
@@ -270,6 +276,10 @@ export const normalizeFoodResult = (food: any): Food => {
     Molybdenum: r(food.Molybdenum || food.molybdenum),
     Fluoride: r(food.Fluoride || food.fluoride),
     Fiber: r(food.Fiber || food.fiber || food.fb),
+    'Soluble Fiber': r(food['Soluble Fiber'] || food.solubleFiber || food.soluble_fiber || 0),
+    'Insoluble Fiber': r(food['Insoluble Fiber'] || food.insolubleFiber || food.insoluble_fiber || 0),
+    solubleFiber: r(food.solubleFiber || food.soluble_fiber || food['Soluble Fiber'] || 0),
+    insolubleFiber: r(food.insolubleFiber || food.insoluble_fiber || food['Insoluble Fiber'] || 0),
   };
 
   return enforceCalorieConsistency(normalized);

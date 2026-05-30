@@ -52,13 +52,15 @@ const LABEL_PROMPT = `GLOBAL DEEP SCAN: Extract EVERY nutritional data point fro
 Return ONLY a strictly valid JSON object. 
 
 Critical Rules:
-1. MANDATORY MACROS: name, brand, serving, sUnit, sQty, cal, p (protein), c (carbs), f (fat).
-2. TOTAL MINERAL SCAN: You must scan the entire label for minerals. 
+1. MANDATORY MACROS: name, brand, serving, sUnit, sQty, cal, p (protein), c (carbs), f (fat), Fiber (Dietary Fiber).
+2. TOTAL MINERAL & FIBER SCAN: You must scan the entire label for minerals and fibers. 
    - SODIUM: Often found in the middle section (near Cholesterol/Fiber). REQUIRED.
    - POTASSIUM: Often found in the bottom footer. REQUIRED.
+   - DIETARY FIBER: Total Fiber or Dietary Fiber. REQUIRED (as "Fiber" key in grams).
+   - SOLUBLE & INSOLUBLE FIBER: If "Soluble Fiber" or "Insoluble Fiber" are explicitly listed on the label below Dietary Fiber, extract them as "Soluble Fiber" and "Insoluble Fiber" in grams.
    - VITAMINS/MINERALS: Look specifically for Calcium, Iron, Vitamin D, Magnesium, Zinc, and Vitamin C.
 3. DATA CROSS-CHECK: If a value is listed both in milligrams (mg) and % Daily Value, prioritize the absolute milligram/mcg value.
-4. KEYS & VALUES: Use EXACT keys (e.g., "Sodium", "Magnesium", "Vitamin D"). Return ONLY the raw number (integer or float). 
+4. KEYS & VALUES: Use EXACT keys (e.g., "Sodium", "Magnesium", "Vitamin D", "Fiber", "Soluble Fiber", "Insoluble Fiber"). Return ONLY the raw number (integer or float). 
 5. ABSENCE: If a nutrient is explicitly not listed on the label, use 0. Do not guess.
 6. FORMAT: Return only the final minified JSON string. No markdown, no conversation.`;
 

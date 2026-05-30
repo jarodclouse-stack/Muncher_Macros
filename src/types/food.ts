@@ -15,6 +15,8 @@ export interface Food {
   c: number;
   f: number;
   fiber?: number;
+  solubleFiber?: number;
+  insolubleFiber?: number;
   sugars?: number;
   sat?: number;
   mono?: number;

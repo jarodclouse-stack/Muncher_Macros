@@ -122,6 +122,10 @@ function normalizeResult(f) {
     Molybdenum: Math.round((Number(f.Molybdenum) || 0) * 10) / 10,
     Fluoride: Math.round((Number(f.Fluoride) || 0) * 10) / 10,
     Fiber: Math.round((Number(f.Fiber || f.fb || f.fiber) || 0) * 10) / 10,
+    'Soluble Fiber': Math.round((Number(f['Soluble Fiber'] || f.solubleFiber || f.soluble_fiber) || 0) * 10) / 10,
+    'Insoluble Fiber': Math.round((Number(f['Insoluble Fiber'] || f.insolubleFiber || f.insoluble_fiber) || 0) * 10) / 10,
+    solubleFiber: Math.round((Number(f['Soluble Fiber'] || f.solubleFiber || f.soluble_fiber) || 0) * 10) / 10,
+    insolubleFiber: Math.round((Number(f['Insoluble Fiber'] || f.insolubleFiber || f.insoluble_fiber) || 0) * 10) / 10,
     _src: 'ai',
     // Legacy support
     calories: cal,
@@ -141,6 +145,8 @@ function normalizeResult(f) {
     chromium: Math.round((Number(f.Chromium) || 0) * 10) / 10,
     molybdenum: Math.round((Number(f.Molybdenum) || 0) * 10) / 10,
     fluoride: Math.round((Number(f.Fluoride) || 0) * 10) / 10,
+    solubleFiber: Math.round((Number(f['Soluble Fiber'] || f.solubleFiber || f.soluble_fiber) || 0) * 10) / 10,
+    insolubleFiber: Math.round((Number(f['Insoluble Fiber'] || f.insolubleFiber || f.insoluble_fiber) || 0) * 10) / 10,
     stagedQty: String(f.detectedCount || f.sQty || f.qty || f.quantity || 1),
     stagedUnit: String(f.sUnit || f.unit || 'serving')
   };
@@ -166,7 +172,7 @@ export default async function handler(req, res) {
   1. ITEM COUNT/WEIGHT: Identify the base serving weight or count (e.g. 174 for a 174g breast).
   2. NUTRITION: Extract nutrition for exactly that quantity. You MUST estimate and populate every single micronutrient and trace mineral key listed below. Do not leave them out or set them all to 0. Realistically estimate each value using scientific nutrition databases (USDA/NCCDB).
   
-  JSON keys: name, serving, detectedCount, sUnit, cal, p, c, f, fb, sat, trans, mono, poly, chol, sugars, Sodium, Potassium, Calcium, Iron, "Vitamin C", "Vitamin A", "Vitamin D", "Vitamin B1", "Vitamin B2", "Vitamin B3", "Vitamin B5", "Vitamin B6", "Vitamin B7", "Vitamin B9", "Vitamin B12", "Vitamin E", "Vitamin K", "Magnesium", "Phosphorus", "Zinc", "Copper", "Manganese", "Selenium", "Chloride", "Iodine", "Chromium", "Molybdenum", "Fluoride", "Fiber".
+  JSON keys: name, serving, detectedCount, sUnit, cal, p, c, f, fb, sat, trans, mono, poly, chol, sugars, Sodium, Potassium, Calcium, Iron, "Vitamin C", "Vitamin A", "Vitamin D", "Vitamin B1", "Vitamin B2", "Vitamin B3", "Vitamin B5", "Vitamin B6", "Vitamin B7", "Vitamin B9", "Vitamin B12", "Vitamin E", "Vitamin K", "Magnesium", "Phosphorus", "Zinc", "Copper", "Manganese", "Selenium", "Chloride", "Iodine", "Chromium", "Molybdenum", "Fluoride", "Fiber", "Soluble Fiber", "Insoluble Fiber".
 
   Rules:
   - Return ONLY raw JSON. No markdown fences.
