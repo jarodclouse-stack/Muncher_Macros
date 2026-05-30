@@ -212,6 +212,12 @@ B) TOPPING / FILLING INHERITANCE — applies when the meal uses "with" or "toppe
    - "2 sandwiches with mayo" → sandwich=2, mayo=2
    INHERITANCE only applies to categories: topping, sauce, condiment, filling, protein, grain, vegetable, dairy
    INHERITANCE never applies to: beverage, dessert, side, snack
+   
+   CRITICAL TOPPING PORTION SCALING RULE:
+   - When ingredients are toppings/fillings inherited from a main dish count (e.g. 3 tacos), adjust the unit portion size ("sQty" and "sUnit") to represent the amount on exactly ONE single item, not the whole meal.
+   - For example: ground beef on a single taco should be 0.5 oz or 1 oz (NOT 3 oz), and cheese should be 0.25 oz or 0.5 oz.
+   - Ensure the calorie and nutrient estimates in Step 7 match this single-item portion size exactly (e.g., ground beef: 35 kcal per 0.5 oz serving, or 70 kcal per 1 oz serving).
+   - This prevents the final scaled totals from being overwhelmingly large when multiplied by the inherited count.
 
 C) STANDALONE / SIDE ITEMS — never inherit the main dish quantity.
    Listed after a comma OR clearly a separate food type (dessert, drink, side dish).

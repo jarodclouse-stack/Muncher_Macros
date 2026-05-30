@@ -22,9 +22,9 @@ export const COMMON_UNITS = [
   { id: 'g', label: 'Grams (g)', weightG: 1 },
   { id: 'oz', label: 'Ounces (oz)', weightG: 28.3495 },
   { id: 'ml', label: 'Milliliters (ml)', weightG: 1 }, // Fallback standard liquid density
-  { id: 'cup', label: 'Cups', weightG: 240 }, // Fallback volume
-  { id: 'tbsp', label: 'Tablespoons', weightG: 15 },
-  { id: 'tsp', label: 'Teaspoons', weightG: 5 },
+  { id: 'cup', label: 'Cups (cup)', weightG: 240 }, // Fallback volume
+  { id: 'tbsp', label: 'Tablespoons (tbsp)', weightG: 15 },
+  { id: 'tsp', label: 'Teaspoons (tsp)', weightG: 5 },
 ];
 
 export function extractBaseGrams(servingStr: string): number | null {

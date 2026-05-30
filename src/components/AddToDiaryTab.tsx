@@ -9,9 +9,9 @@ const COMMON_UNITS = [
   { id: 'serving', label: 'Serving' },
   { id: 'g', label: 'Grams (g)' },
   { id: 'oz', label: 'Ounces (oz)' },
-  { id: 'cup', label: 'Cups' },
-  { id: 'tbsp', label: 'Tablespoons' },
-  { id: 'tsp', label: 'Teaspoons' },
+  { id: 'cup', label: 'Cups (cup)' },
+  { id: 'tbsp', label: 'Tablespoons (tbsp)' },
+  { id: 'tsp', label: 'Teaspoons (tsp)' },
   { id: 'piece', label: 'Pieces/Items' }
 ];
 
