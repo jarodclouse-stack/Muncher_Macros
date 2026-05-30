@@ -57,16 +57,23 @@ export const WeightHistoryChart: React.FC<WeightHistoryChartProps> = ({ localCac
     // 2. Filter by window
     if (windowRange !== 'all') {
       const days = windowRange === '7d' ? 7 : 30;
-      const cutoff = new Date();
-      cutoff.setDate(cutoff.getDate() - days);
-      entries = entries.filter(e => new Date(e.date + 'T12:00:00') >= cutoff);
+      const cutoffDate = new Date();
+      cutoffDate.setHours(0, 0, 0, 0);
+      cutoffDate.setDate(cutoffDate.getDate() - days);
+      
+      entries = entries.filter(e => {
+        const parts = e.date.split('-');
+        const entryDate = new Date(Number(parts[0]), Number(parts[1]) - 1, Number(parts[2]));
+        return entryDate >= cutoffDate;
+      });
     }
 
     if (entries.length === 0) return { chartData: null, trend: null };
 
     // 3. Prepare Chart.js data
     const labels = entries.map(e => {
-        const d = new Date(e.date + 'T12:00:00');
+        const parts = e.date.split('-');
+        const d = new Date(Number(parts[0]), Number(parts[1]) - 1, Number(parts[2]));
         return d.toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
     });
 

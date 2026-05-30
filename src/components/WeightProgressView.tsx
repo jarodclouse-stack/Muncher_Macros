@@ -1,6 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import { useDiary } from '../context/DiaryContext';
-import { Activity, Scale, Check, Trash2, Calendar } from 'lucide-react';
+import { Activity, Scale, Check, Trash2, Calendar, Edit2, X } from 'lucide-react';
 import { Toast } from './Toast';
 import { WeightHistoryChart } from './WeightHistoryChart';
 
@@ -19,6 +19,11 @@ export const WeightProgressView: React.FC = () => {
   const [weightLb, setWeightLb] = useState(goals.weight?.toString() || '175');
   const [targetWeight, setTargetWeight] = useState(goals.targetWeight?.toString() || '165');
   const [toastMsg, setToastMsg] = useState('');
+
+  // Editing entries states
+  const [editingDate, setEditingDate] = useState<string | null>(null);
+  const [editWeight, setEditWeight] = useState<string>('');
+  const [editDateInput, setEditDateInput] = useState<string>('');
 
   const unitWeight = localCache.settings?.units?.weight || 'lb';
 
@@ -39,6 +44,45 @@ export const WeightProgressView: React.FC = () => {
       setDailyWeight('');
     }
     setToastMsg(`Weight log entry for ${date} removed.`);
+  };
+
+  const handleSaveEdit = (oldDate: string) => {
+    const w = parseFloat(editWeight);
+    if (isNaN(w) || w <= 0) {
+      setToastMsg('Please enter a valid weight');
+      return;
+    }
+    if (!editDateInput.match(/^\d{4}-\d{2}-\d{2}$/)) {
+      setToastMsg('Please enter a valid date');
+      return;
+    }
+
+    if (editDateInput !== oldDate) {
+      // 1. Delete weight log on oldDate
+      updateDayData(oldDate, { weight: null });
+      if (oldDate === currentDate) {
+        updateGoals({ weight: null });
+      }
+
+      // 2. Set weight log on new date
+      updateDayData(editDateInput, { weight: w });
+      if (editDateInput === currentDate) {
+        updateGoals({ weight: w });
+        setWeightLb(w.toString());
+        setDailyWeight(w.toString());
+      }
+    } else {
+      // Just update weight on the same date
+      updateDayData(oldDate, { weight: w });
+      if (oldDate === currentDate) {
+        updateGoals({ weight: w });
+        setWeightLb(w.toString());
+        setDailyWeight(w.toString());
+      }
+    }
+
+    setEditingDate(null);
+    setToastMsg('Weight log entry updated successfully.');
   };
 
   React.useEffect(() => {
@@ -145,39 +189,111 @@ export const WeightProgressView: React.FC = () => {
               </thead>
               <tbody>
                 {loggedWeights.map(entry => {
-                  const dateObj = new Date(entry.date + 'T12:00:00');
+                  const parts = entry.date.split('-');
+                  const dateObj = new Date(Number(parts[0]), Number(parts[1]) - 1, Number(parts[2]));
                   const formattedDate = dateObj.toLocaleDateString(undefined, { 
                     weekday: 'short', 
                     year: 'numeric', 
                     month: 'short', 
                     day: 'numeric' 
                   });
+                  const isEditing = editingDate === entry.date;
                   return (
-                    <tr key={entry.date} style={{ borderBottom: '1px solid var(--theme-border-dim, rgba(255,255,255,0.02))' }}>
-                      <td style={{ padding: '12px 16px', color: 'var(--theme-text)', fontWeight: '600' }}>{formattedDate}</td>
-                      <td style={{ padding: '12px 16px', color: 'var(--theme-accent)', fontWeight: '800' }}>
-                        {entry.weight} {unitWeight}
+                    <tr key={entry.date} style={{ borderBottom: '1px solid var(--theme-border-dim, rgba(255,255,255,0.02))', background: isEditing ? 'rgba(0, 201, 255, 0.03)' : 'transparent' }}>
+                      <td style={{ padding: '8px 16px', color: 'var(--theme-text)', fontWeight: '600' }}>
+                        {isEditing ? (
+                          <input 
+                            type="date" 
+                            className="inp" 
+                            style={{ padding: '6px 10px', fontSize: '12px', width: 'auto', background: 'rgba(0,0,0,0.5)', border: '1px solid var(--theme-accent)' }} 
+                            value={editDateInput} 
+                            onChange={e => setEditDateInput(e.target.value)} 
+                          />
+                        ) : (
+                          formattedDate
+                        )}
                       </td>
-                      <td style={{ padding: '12px 16px', textAlign: 'right' }}>
-                        <button 
-                          onClick={() => handleDeleteWeight(entry.date)}
-                          style={{ 
-                            background: 'transparent', 
-                            border: 'none', 
-                            color: 'var(--theme-error, #FF6B6B)', 
-                            cursor: 'pointer',
-                            padding: '4px 8px',
-                            borderRadius: '6px',
-                            display: 'inline-flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            transition: 'all 0.2s'
-                          }}
-                          className="delete-btn"
-                          title="Delete weight entry"
-                        >
-                          <Trash2 size={15} />
-                        </button>
+                      <td style={{ padding: '8px 16px', color: 'var(--theme-accent)', fontWeight: '800' }}>
+                        {isEditing ? (
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                            <input 
+                              type="number" 
+                              step="0.1" 
+                              className="inp" 
+                              style={{ padding: '6px 10px', fontSize: '12px', width: '80px', background: 'rgba(0,0,0,0.5)', border: '1px solid var(--theme-accent)' }} 
+                              value={editWeight} 
+                              onChange={e => setEditWeight(cleanNumInput(e.target.value))} 
+                            />
+                            <span style={{ fontSize: '11px', color: 'var(--theme-text-dim)' }}>{unitWeight}</span>
+                          </div>
+                        ) : (
+                          `${entry.weight} ${unitWeight}`
+                        )}
+                      </td>
+                      <td style={{ padding: '8px 16px', textAlign: 'right' }}>
+                        {isEditing ? (
+                          <div style={{ display: 'inline-flex', gap: '8px' }}>
+                            <button 
+                              onClick={() => handleSaveEdit(entry.date)} 
+                              style={{ background: 'var(--theme-accent, #00C9FF)', color: '#000', padding: '6px 8px', borderRadius: '6px', border: 'none', cursor: 'pointer', display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}
+                              title="Save Changes"
+                            >
+                              <Check size={14} />
+                            </button>
+                            <button 
+                              onClick={() => setEditingDate(null)} 
+                              style={{ background: 'rgba(255,255,255,0.06)', color: 'var(--theme-text)', padding: '6px 8px', borderRadius: '6px', border: '1px solid var(--theme-border)', cursor: 'pointer', display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}
+                              title="Discard Changes"
+                            >
+                              <X size={14} />
+                            </button>
+                          </div>
+                        ) : (
+                          <div style={{ display: 'inline-flex', gap: '4px' }}>
+                            <button 
+                              onClick={() => {
+                                setEditingDate(entry.date);
+                                setEditWeight(entry.weight.toString());
+                                setEditDateInput(entry.date);
+                              }}
+                              style={{ 
+                                background: 'transparent', 
+                                border: 'none', 
+                                color: 'var(--theme-accent, #00C9FF)', 
+                                cursor: 'pointer',
+                                padding: '4px 8px',
+                                borderRadius: '6px',
+                                display: 'inline-flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                transition: 'all 0.2s'
+                              }}
+                              className="edit-action-btn"
+                              title="Edit weight entry"
+                            >
+                              <Edit2 size={14} />
+                            </button>
+                            <button 
+                              onClick={() => handleDeleteWeight(entry.date)}
+                              style={{ 
+                                background: 'transparent', 
+                                border: 'none', 
+                                color: 'var(--theme-error, #FF6B6B)', 
+                                cursor: 'pointer',
+                                padding: '4px 8px',
+                                borderRadius: '6px',
+                                display: 'inline-flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                transition: 'all 0.2s'
+                              }}
+                              className="delete-btn"
+                              title="Delete weight entry"
+                            >
+                              <Trash2 size={14} />
+                            </button>
+                          </div>
+                        )}
                       </td>
                     </tr>
                   );
@@ -197,6 +313,7 @@ export const WeightProgressView: React.FC = () => {
         .btn:hover:not(:disabled) { background: var(--theme-panel, rgba(255,255,255,0.2)); }
         .btn:disabled { opacity: 0.5; cursor: not-allowed; }
         .delete-btn:hover { background: rgba(255, 107, 107, 0.1); transform: scale(1.1); }
+        .edit-action-btn:hover { background: rgba(0, 201, 255, 0.15); transform: scale(1.1); }
       `}</style>
       {toastMsg && <Toast message={toastMsg} type="success" onClose={() => setToastMsg('')} />}
     </div>

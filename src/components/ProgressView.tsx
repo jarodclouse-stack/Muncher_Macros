@@ -65,6 +65,12 @@ export const ProgressView: React.FC = () => {
     win.__lastUnitHeight = unitHeight;
   }, [localCache.settings?.units?.weight, localCache.settings?.units?.height]);
 
+  React.useEffect(() => {
+    if (goals.weight) {
+      setWeightLb(goals.weight.toString());
+    }
+  }, [goals.weight]);
+
 
   const [activityId, setActivityId] = useState(goals.activityId || 'moderate');
   const [proteinLevelId, setProteinLevelId] = useState(goals.proteinLevelId || goals.activityId || 'moderate');
@@ -101,7 +107,7 @@ export const ProgressView: React.FC = () => {
 
   const handleSaveBodyAndGoal = (e: React.FormEvent) => {
     e.preventDefault();
-    updateGoals({ sex, age: Number(age), height: Number(heightIn), weight: Number(weightLb), goalType, rate: Number(goalRate), targetWeight: Number(targetWeight), activityId, proteinLevelId });
+    updateGoals({ sex, age: Number(age), height: Number(heightIn), goalType, rate: Number(goalRate), targetWeight: Number(targetWeight), activityId, proteinLevelId });
     setIsBioEditing(false);
   };
 
@@ -136,15 +142,9 @@ export const ProgressView: React.FC = () => {
             <form onSubmit={handleSaveBodyAndGoal} style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-md)' }}>
               <div style={{ fontWeight: '600', color: 'var(--theme-text)', borderBottom: '1px solid var(--theme-border)', paddingBottom: 'var(--space-xs)' }}>Your physical details</div>
               
-              <div style={{ display: 'flex', gap: 'var(--space-sm)' }}>
-                <div style={{ flex: 1 }}>
-                  <label className="lbl">Current Weight ({unitWeight})</label>
-                  <input type="number" className="inp" value={weightLb} onChange={e => setWeightLb(cleanNumInput(e.target.value))} />
-                </div>
-                <div style={{ flex: 1 }}>
-                  <label className="lbl">Goal Weight (Target)</label>
-                  <input type="number" step="0.1" className="inp" value={targetWeight} onChange={e => setTargetWeight(cleanNumInput(e.target.value))} />
-                </div>
+              <div>
+                <label className="lbl">Goal Weight (Target)</label>
+                <input type="number" step="0.1" className="inp" value={targetWeight} onChange={e => setTargetWeight(cleanNumInput(e.target.value))} />
               </div>
 
               {/* Collapsible Biological Profile */}
