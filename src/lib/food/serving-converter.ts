@@ -21,8 +21,6 @@ export const COMMON_UNITS = [
   { id: 'serving', label: 'Serving(s)', weightG: null },
   { id: 'g', label: 'Grams (g)', weightG: 1 },
   { id: 'oz', label: 'Ounces (oz)', weightG: 28.3495 },
-  { id: 'lb', label: 'Pounds (lb)', weightG: 453.592 },
-  { id: 'kg', label: 'Kilograms (kg)', weightG: 1000 },
   { id: 'ml', label: 'Milliliters (ml)', weightG: 1 }, // Fallback standard liquid density
   { id: 'cup', label: 'Cups', weightG: 240 }, // Fallback volume
   { id: 'tbsp', label: 'Tablespoons', weightG: 15 },

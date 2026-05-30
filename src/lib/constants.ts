@@ -87,7 +87,7 @@ MICRO_CATEGORIES.forEach((c) => {
 export const ALL_MICRO_KEYS = Object.keys(DEFAULT_MICRO);
 
 export const SERVING_UNITS = [
-  { v: 'g', factor: 1 }, { v: 'oz', factor: 28.3495 }, { v: 'lb', factor: 453.592 }, { v: 'kg', factor: 1000 },
+  { v: 'g', factor: 1 }, { v: 'oz', factor: 28.3495 },
   { v: 'mL', factor: 1 }, { v: 'L', factor: 1000 }, { v: 'fl oz', factor: 29.5735 }, { v: 'cup', factor: 240 },
   { v: 'tbsp', factor: 14.7868 }, { v: 'tsp', factor: 4.92892 }, { v: 'pint', factor: 473.176 },
   { v: 'quart', factor: 946.353 }, { v: 'gallon', factor: 3785.41 }, { v: 'pinch', factor: 0.36 }, { v: 'dash', factor: 0.62 },
