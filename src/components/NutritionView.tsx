@@ -1,6 +1,6 @@
 import React, { useMemo, useState } from 'react';
 import { useDiary } from '../context/DiaryContext';
-import { sumFoods } from '../lib/food/serving-converter';
+import { sumFoods, getCarbClassification } from '../lib/food/serving-converter';
 import { computeGoals } from '../lib/goals/compute';
 import { MICRO_CATEGORIES } from '../lib/constants';
 import { DEFICIENCY_INFO, NUTRIENT_BENEFITS } from '../lib/nutrient-info';
@@ -20,6 +20,35 @@ export const NutritionView: React.FC = () => {
     const dayData = localCache[currentDate] || {};
     const foodLog = dayData.foodLog || [];
     return sumFoods(foodLog.map((l: { f: Food }) => l.f));
+  }, [localCache, currentDate]);
+
+  const carbBreakdown = useMemo(() => {
+    const dayData = localCache[currentDate] || {};
+    const foodLog = dayData.foodLog || [];
+    const breakdown = {
+      'simple-carbs': 0,
+      'refined-carbs': 0,
+      'steady-starches': 0,
+      'sustained-energy': 0,
+      'natural-carbs': 0,
+      'hybrid-bites': 0,
+    };
+    
+    foodLog.forEach((l: { f: Food }) => {
+      const f = l.f;
+      if (!f) return;
+      
+      // Determine the scaled carb amount from today's logged portions
+      const carbs = Number(f.c != null ? f.c : (f.carbs != null ? f.carbs : 0)) || 0;
+      if (carbs <= 0) return;
+      
+      const classification = getCarbClassification(f);
+      if (classification.key !== 'none') {
+        breakdown[classification.key as keyof typeof breakdown] += carbs;
+      }
+    });
+    
+    return breakdown;
   }, [localCache, currentDate]);
 
   const [expandedMicro, setExpandedMicro] = useState<string | null>(null);
@@ -209,8 +238,12 @@ export const NutritionView: React.FC = () => {
                   {label === 'Carbs' && (
                     <div style={{ paddingLeft: 'var(--space-sm)', display: 'flex', flexDirection: 'column', gap: 'var(--space-xs)', borderLeft: '2px solid var(--theme-border)', marginBottom: 'var(--space-sm)' }}>
                       {[
-                        { k: 'Complex Carbs', v: Math.max(0, totals.carbs - (totals.sugars || 0)), g: goal * 0.9, c: 'var(--theme-accent)' },
-                        { k: 'Simple (Sugars)', v: totals.sugars || 0, g: goal * 0.1, c: 'var(--theme-error)' }
+                        { k: 'Sustained Energy', disp: '🌾 Sustained Energy', v: carbBreakdown['sustained-energy'], g: goal * 0.4, c: 'var(--theme-success)' },
+                        { k: 'Natural Carbs', disp: '🍇 Natural Carbs', v: carbBreakdown['natural-carbs'], g: goal * 0.25, c: 'var(--theme-accent)' },
+                        { k: 'Steady Starches', disp: '🌾 Steady Starches', v: carbBreakdown['steady-starches'], g: goal * 0.2, c: 'var(--theme-accent)' },
+                        { k: 'Hybrid Bites', disp: '🍩 Hybrid Bites', v: carbBreakdown['hybrid-bites'], g: goal * 0.1, c: 'var(--theme-warning)' },
+                        { k: 'Refined Carbs', disp: '🍞 Refined Carbs', v: carbBreakdown['refined-carbs'], g: goal * 0.05, c: 'var(--theme-error)' },
+                        { k: 'Simple Carbs', disp: '🍭 Simple Carbs', v: carbBreakdown['simple-carbs'], g: goal * 0.05, c: 'var(--theme-error)' }
                       ].map(sub => {
                         const isExpanded = expandedMicro === sub.k;
                         const info = DEFICIENCY_INFO[sub.k as keyof typeof DEFICIENCY_INFO] || NUTRIENT_BENEFITS[sub.k as keyof typeof NUTRIENT_BENEFITS];
@@ -218,7 +251,7 @@ export const NutritionView: React.FC = () => {
                         return (
                           <div key={sub.k} className={isExpanded ? "glass-card" : ""} style={{ padding: isExpanded ? 'var(--space-md)' : '0', transition: 'all var(--transition-smooth)', margin: isExpanded ? '0 -16px var(--space-xs)' : '0' }}>
                             <div onClick={() => info && setExpandedMicro(isExpanded ? null : sub.k)} style={{ display: 'flex', justifyContent: 'space-between', fontSize: '10px', cursor: info ? 'pointer' : 'default' }}>
-                              <span style={{ color: 'var(--theme-text-dim-on-panel)', display: 'flex', alignItems: 'center', gap: '4px', fontWeight: '900', textTransform: 'uppercase', letterSpacing: '0.5px' }}>{sub.k} {info && <Info size={10} color="color-mix(in srgb, var(--theme-text) 40%, black)" />}</span>
+                              <span style={{ color: 'var(--theme-text-dim-on-panel)', display: 'flex', alignItems: 'center', gap: '4px', fontWeight: '900', textTransform: 'uppercase', letterSpacing: '0.5px' }}>{sub.disp} {info && <Info size={10} color="color-mix(in srgb, var(--theme-text) 40%, black)" />}</span>
                               <span style={{ color: 'var(--theme-text-dim-on-panel)', fontWeight: '900' }}>{Math.round(sub.v * 10) / 10}g</span>
                             </div>
                             <div style={{ height: '3px', background: 'var(--theme-panel)', borderRadius: '2px', marginTop: '4px', border: '1px solid var(--theme-border)' }}>

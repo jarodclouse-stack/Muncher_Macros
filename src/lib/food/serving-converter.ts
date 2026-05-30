@@ -284,3 +284,80 @@ export const normalizeFoodResult = (food: any): Food => {
 
   return enforceCalorieConsistency(normalized);
 };
+
+export interface CarbCategory {
+  key: 'simple-carbs' | 'refined-carbs' | 'steady-starches' | 'sustained-energy' | 'natural-carbs' | 'hybrid-bites' | 'none';
+  emoji: string;
+  name: string;
+  desc: string;
+}
+
+export function getCarbClassification(food: any): CarbCategory {
+  const c = Number(food.c != null ? food.c : (food.carbs != null ? food.carbs : 0)) || 0;
+  const s = Number(food.sugars != null ? food.sugars : (food.sugar != null ? food.sugar : 0)) || 0;
+  const fb = Number(food.fb != null ? food.fb : (food.fiber != null ? food.fiber : (food.Fiber != null ? food.Fiber : 0))) || 0;
+  const f = Number(food.f != null ? food.f : (food.fat != null ? food.fat : 0)) || 0;
+  const p = Number(food.p != null ? food.p : (food.protein != null ? food.protein : 0)) || 0;
+
+  if (c <= 0) {
+    return { key: 'none', emoji: '🥗', name: 'Low Carb', desc: 'Minimal carbohydrate content.' };
+  }
+
+  const isSugary = s >= 0.15 * c;
+  const carbToFiberRatio = fb > 0 ? c / fb : 999;
+  const passesShield = carbToFiberRatio <= 10 && fb >= 1.5;
+
+  if (isSugary) {
+    if (passesShield) {
+      const isProcessed = f >= 1.5 || p >= 2.0;
+      if (isProcessed) {
+        return {
+          key: 'hybrid-bites',
+          emoji: '🍩',
+          name: 'Hybrid Bites',
+          desc: 'Sweet processed foods or snacks buffered with dietary fiber to slow sugar digestion.'
+        };
+      } else {
+        return {
+          key: 'natural-carbs',
+          emoji: '🍇',
+          name: 'Natural Carbs',
+          desc: 'Whole, fiber-shielded plant sugars (fruits and sweet vegetables) that digest smoothly.'
+        };
+      }
+    } else {
+      return {
+        key: 'simple-carbs',
+        emoji: '🍭',
+        name: 'Simple Carbs',
+        desc: 'Fast-digesting, high-sugar refined foods (sodas, candies, syrup) with no fiber buffer.'
+      };
+    }
+  } else {
+    if (passesShield) {
+      const isVeryHighFiber = fb >= 3.0;
+      if (isVeryHighFiber) {
+        return {
+          key: 'sustained-energy',
+          emoji: '🌾',
+          name: 'Sustained Energy',
+          desc: 'Slow-digesting, fiber-rich superfoods (oats, quinoa, lentils) offering long-lasting fuel.'
+        };
+      } else {
+        return {
+          key: 'steady-starches',
+          emoji: '🌾',
+          name: 'Steady Starches',
+          desc: 'Moderate-digesting starchy grains and tubers (white rice, potatoes, standard pasta).'
+        };
+      }
+    } else {
+      return {
+        key: 'refined-carbs',
+        emoji: '🍞',
+        name: 'Refined Carbs',
+        desc: 'Fast-digesting processed starches (white bread, bagels, pretzels) stripped of their natural fiber.'
+      };
+    }
+  }
+}

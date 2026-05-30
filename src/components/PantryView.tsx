@@ -7,7 +7,7 @@ import {
 } from 'lucide-react';
 import { ALL_MICRO_KEYS, MICRO_UNITS, SERVING_UNITS, MICRO_CATEGORIES } from '../lib/constants';
 import { getNutrientDescriptions } from '../lib/nutrient-info';
-import { computeMultiplier, normalizeFoodResult, scaleLegacyFoodByAmount, calculateMacroBalance, scaleToTarget } from '../lib/food/serving-converter';
+import { computeMultiplier, normalizeFoodResult, scaleLegacyFoodByAmount, calculateMacroBalance, scaleToTarget, getCarbClassification } from '../lib/food/serving-converter';
 import { getPairingSuggestions } from '../lib/food/smart-pairing';
 
 import { SearchCoaster, type SearchTab } from './SearchCoaster';
@@ -1750,16 +1750,46 @@ export const PantryView: React.FC<PantryViewProps> = ({ initialMeal, onClose, is
                 const p = (Number(configuringFood.p) || 0) * multiplier;
                 const c = (Number(configuringFood.c) || 0) * multiplier;
                 const f = (Number(configuringFood.f) || 0) * multiplier;
+                const fb = (Number(configuringFood.fb || configuringFood.fiber || configuringFood.Fiber) || 0) * multiplier;
+                const sugars = (Number(configuringFood.sugars) || 0) * multiplier;
                 const totalCal = (Number(configuringFood.cal) || 0) * multiplier;
                 
                 const isHighProtein = (p * 4) / (totalCal || 1) > 0.35;
                 const isHighCarb = (c * 4) / (totalCal || 1) > 0.6;
                 const isHighFat = (f * 9) / (totalCal || 1) > 0.5;
 
+                const carbClass = getCarbClassification({ c, sugars, fb, f, p, cal: totalCal });
+
                 return (
                   <div style={{ display: 'flex', gap: '6px', marginBottom: '24px', flexWrap: 'wrap' }}>
                     {isHighProtein && <div style={{ padding: '4px 10px', background: 'rgba(146, 254, 157, 0.1)', border: '1px solid var(--theme-success)', borderRadius: '10px', color: 'var(--theme-success)', fontSize: '10px', fontWeight: '800' }}>⚡ PROTEIN POWERHOUSE</div>}
-                    {isHighCarb && <div style={{ padding: '4px 10px', background: 'rgba(252, 196, 25, 0.1)', border: '1px solid #FCC419', borderRadius: '10px', color: '#FCC419', fontSize: '10px', fontWeight: '800' }}>🥗 HIGH ENERGY CARBS</div>}
+                    {isHighCarb && carbClass.key !== 'none' && (
+                      <div style={{ 
+                        padding: '4px 10px', 
+                        background: carbClass.key === 'sustained-energy' 
+                          ? 'rgba(146, 254, 157, 0.1)' 
+                          : (carbClass.key === 'refined-carbs' || carbClass.key === 'simple-carbs' 
+                            ? 'rgba(255, 107, 107, 0.1)' 
+                            : (carbClass.key === 'hybrid-bites' ? 'rgba(252, 196, 25, 0.1)' : 'rgba(0, 201, 255, 0.1)')), 
+                        border: `1px solid ${
+                          carbClass.key === 'sustained-energy' 
+                            ? 'var(--theme-success)' 
+                            : (carbClass.key === 'refined-carbs' || carbClass.key === 'simple-carbs' 
+                              ? '#FF6B6B' 
+                              : (carbClass.key === 'hybrid-bites' ? '#FCC419' : 'var(--theme-accent)'))
+                        }`, 
+                        borderRadius: '10px', 
+                        color: carbClass.key === 'sustained-energy' 
+                          ? 'var(--theme-success)' 
+                          : (carbClass.key === 'refined-carbs' || carbClass.key === 'simple-carbs' 
+                            ? '#FF6B6B' 
+                            : (carbClass.key === 'hybrid-bites' ? '#FCC419' : 'var(--theme-accent)')), 
+                        fontSize: '10px', 
+                        fontWeight: '800' 
+                      }}>
+                        {carbClass.emoji} {carbClass.name.toUpperCase()}
+                      </div>
+                    )}
                     {isHighFat && <div style={{ padding: '4px 10px', background: 'rgba(255, 107, 107, 0.1)', border: '1px solid #FF6B6B', borderRadius: '10px', color: '#FF6B6B', fontSize: '10px', fontWeight: '800' }}>🥑 HIGH FAT CONTENT</div>}
                     {totalCal > 500 && <div style={{ padding: '4px 10px', background: 'rgba(255, 255, 255, 0.05)', border: '1px solid rgba(255,255,255,0.2)', borderRadius: '10px', color: '#fff', fontSize: '10px', fontWeight: '800' }}>🍽️ HEAVY MEAL</div>}
                   </div>

@@ -119,6 +119,36 @@ export const DEFICIENCY_INFO: Record<string, { name: string; sources: string; de
     sources: "Wheat bran, whole grains, nuts, seeds, vegetable skins",
     desc: "Provides mechanical stool bulk to trigger bowel peristalsis and sweep cellular waste from the colon. Chronic deficiency is a primary driver of constipation, hemorrhoidal strain, and diverticular disease."
   },
+  'Sustained Energy': {
+    name: "Beta-Glucan & Starch-Complex Motility (PMID: 29099763)",
+    sources: "Oats, steel-cut oats, quinoa, black beans, lentils, wild rice, farro",
+    desc: "Slow-digesting complex grains and legumes packed with beta-glucans and slow-burning fibers. Lacking sustained energy carbs can lead to chronic afternoon slumps, low physical endurance, and sudden glycogen depletion during high-intensity training."
+  },
+  'Natural Carbs': {
+    name: "Fiber-Buffered Cellular Hydration (PMID: 29099763)",
+    sources: "Apples, strawberries, blueberries, sweet potatoes, carrots, peaches",
+    desc: "Naturally occurring sweet sugars structurally bound in a whole-food fiber matrix. Deficiency removes raw cell-hydrating vitamins and cellular minerals, causing sugar cravings and a lack of quick, metabolically healthy clean fuel."
+  },
+  'Steady Starches': {
+    name: "Glycogen Synthesis & Clean Fuel (PMID: 29301074)",
+    sources: "White rice, baked potatoes, standard wheat pasta, couscous",
+    desc: "Moderate-digesting clean starches that serve as primary raw materials for muscle glycogen replenishment. A deficiency can cause muscle flatness, slow post-workout recovery, and poor anaerobic power."
+  },
+  'Hybrid Bites': {
+    name: "Glycemic-Buffered Snack Moderation (PMID: 31991823)",
+    sources: "Fiber cookies, protein-fiber bars, whole-grain sweet muffins, low-carb sweet snacks",
+    desc: "Sweet processed treat formulations featuring an active fiber brake to dampen glucose entrance. Lacking these can lead to dietary restriction burnout and a higher risk of turning to unbuffered, high-glycemic treats."
+  },
+  'Refined Carbs': {
+    name: "Milled Flour Sugar Surges (PMID: 24778671)",
+    sources: "White bread, bagels, white crackers, pretzels, croissants, white flour pastries",
+    desc: "Fast-digesting starches stripped of their natural germ, bran, and fiber buffer. Lacking these is actually highly beneficial for metabolic health; however, relying on them as primary fuel sources leads to rapid blood sugar crashes, insulin resistance, and visceral fat storage."
+  },
+  'Simple Carbs': {
+    name: "Rapid Osmotic Fructose Bomb (PMID: 28403157)",
+    sources: "Soda, candy, table syrup, fruit juice, sports drinks",
+    desc: "Fast-digesting refined simple sugars that hit the bloodstream instantly. Lacking simple sugars is highly protective against insulin resistance; consuming them in excess without a muscle-depleted state causes severe liver fat accumulation, vascular inflammation, and rapid fatigue."
+  },
   'Protein': {
     name: "Amino Recovery Protocol (PMID: 29187311)",
     sources: "Eggs, meat, legumes, Greek yogurt, fish, tofu",
@@ -407,6 +437,55 @@ export const NUTRIENT_BENEFITS: Record<string, { summary: string; points: string
       'Structural Protection: Lowers intra-colon pressure to reduce risks of developing painful diverticular pockets.',
       'Intestinal Sweep: Acts as a physical sweep to bind and clear out dietary toxins, heavy metals, and waste.',
       'Downside / Excess Intake: Excess consumption with insufficient water intake can act like a "cement plug" in the gut, causing severe constipation, hard stools, bloating, and painful gas.'
+    ]
+  },
+  'Sustained Energy': {
+    summary: '🌾 Slow-Burning Glycogen & Beta-Glucan Fuel',
+    points: [
+      'Appetite Regulation: High soluble and beta-glucan fibers slow down gastric emptying to prolong fullness.',
+      'Stable Energy Curve: Provides hours of steady glucose release, completely avoiding insulin peaks and crashes.',
+      'Colonic Health: Heavily fermented in the colon to yield gut-barrier healing short-chain fatty acids.',
+      'Cholesterol Defense: Soluble complex fibers bind bile acids to lower systemic circulating cholesterol.'
+    ]
+  },
+  'Natural Carbs': {
+    summary: '🍇 Cellular Vitamin Buffers & Natural Fructose Matrix',
+    points: [
+      'Fiber Shield: Sugar absorption is slowed down by intact cell walls and pectin, preventing rapid liver fat accumulation.',
+      'Vitamins & Hydration: Rich in active bio-available minerals, potassium, Vitamin C, and natural cellular water.',
+      'Quick Clean Energy: Great for muscle recovery and quick refueling without taxing the pancreas.'
+    ]
+  },
+  'Steady Starches': {
+    summary: '🌾 Clean Anaerobic Fuel & Glycogen Replenishment',
+    points: [
+      'Glycogen Saturation: Best source of rapid, clean glucose to saturate muscle glycogen after training.',
+      'Hypoallergenic Base: Highly digestible starches like white rice are incredibly easy on the gut under high caloric demands.',
+      'Anaerobic Support: Crucial for high-intensity, short-burst athletic performance.'
+    ]
+  },
+  'Hybrid Bites': {
+    summary: '🍩 Smart Treat Moderation & Glycemic Braking',
+    points: [
+      'Fiber Speed Brake: Standard sugar components are moderated by a fiber shield to prevent massive blood sugar spikes.',
+      'Dietary Compliance: Offers sweet satisfaction for long-term psychological compliance without breaking metabolic goals.',
+      'Steady Release: Digests significantly slower than standard refined sweets.'
+    ]
+  },
+  'Refined Carbs': {
+    summary: '🍞 Rapid Starchy Energy (Stripped Grain Flours)',
+    points: [
+      'Instant Fuel: Devoid of fiber, these milled starches break down into glucose almost instantly in the mouth and duodenum.',
+      'Exercise Utility: Very effective for rapid energy when consumed immediately before or during strenuous lifting sessions.',
+      'Metabolic Danger: Consumed during sedentary hours, they cause massive blood sugar spikes, insulin resistance, and systemic sluggishness.'
+    ]
+  },
+  'Simple Carbs': {
+    summary: '🍭 High-Speed Sugar Energy (Liquid & Refined Sweets)',
+    points: [
+      'Mitochondrial Ignition: Rapidly absorbed simple fructose and glucose for immediate cell combustion.',
+      'Intra-Workout Fuel: Perfect for rapidly elevating blood glucose and stopping muscle catabolism during high-intensity training.',
+      'Fructose Alert: When eaten in excess without exercise, the liver converts unbuffered simple sugars directly into triglycerides (liver fat).'
     ]
   }
 };
