@@ -284,3 +284,34 @@ export const normalizeFoodResult = (food: any): Food => {
 
   return enforceCalorieConsistency(normalized);
 };
+
+export interface MacroTraits {
+  isHighProtein: boolean;
+  isHighCarb: boolean;
+  isLowCarb: boolean;
+  isHighFat: boolean;
+  isHighFiber: boolean;
+}
+
+export function getMacroTraits(food: any): MacroTraits {
+  const p = Number(food.p != null ? food.p : food.protein) || 0;
+  const c = Number(food.c != null ? food.c : food.carbs) || 0;
+  const f = Number(food.f != null ? food.f : food.fat) || 0;
+  const cal = Number(food.cal != null ? food.cal : food.calories) || 0;
+
+  const proteinCal = p * 4;
+  const carbCal = c * 4;
+  const fatCal = f * 9;
+  const totalMacroCal = proteinCal + carbCal + fatCal;
+  const calToUse = cal || totalMacroCal || 1;
+
+  const fiberVal = Number(food.fb != null ? food.fb : (food.fiber != null ? food.fiber : food.Fiber)) || 0;
+
+  return {
+    isHighProtein: (proteinCal / calToUse) >= 0.30,
+    isHighCarb: (carbCal / calToUse) >= 0.55,
+    isLowCarb: (carbCal / calToUse) <= 0.20 || (c <= 5 && calToUse > 0),
+    isHighFat: (fatCal / calToUse) >= 0.45,
+    isHighFiber: fiberVal >= 5
+  };
+}

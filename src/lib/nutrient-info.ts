@@ -109,6 +109,16 @@ export const DEFICIENCY_INFO: Record<string, { name: string; sources: string; de
     sources: "Oats, beans, chia seeds, fruit skins",
     desc: "Controls blood sugar response and feeds beneficial gut bacteria. Regulates lipid profiles and prevents systemic inflammation. Low fiber leads to digestive sluggishness and insulin spikes."
   },
+  'Soluble Fiber': {
+    name: "Dysbiosis & Lipid Surges (PMID: 29099763)",
+    sources: "Oats, barley, beans, lentils, apples, citrus, psyllium",
+    desc: "Forms a viscous gel slowing glucose entry and binding intestinal bile acids to lower circulating LDL. Deficiency increases blood sugar swings, raises cholesterol, and limits production of gut-healing short-chain fatty acids (SCFAs)."
+  },
+  'Insoluble Fiber': {
+    name: "Bowel Motility Delay & Constipation (PMID: 30909645)",
+    sources: "Wheat bran, whole grains, nuts, seeds, vegetable skins",
+    desc: "Provides mechanical stool bulk to trigger bowel peristalsis and sweep cellular waste from the colon. Chronic deficiency is a primary driver of constipation, hemorrhoidal strain, and diverticular disease."
+  },
   'Protein': {
     name: "Amino Recovery Protocol (PMID: 29187311)",
     sources: "Eggs, meat, legumes, Greek yogurt, fish, tofu",
@@ -377,6 +387,26 @@ export const NUTRIENT_BENEFITS: Record<string, { summary: string; points: string
       'Remineralization: Accelerates the repair of micro-porosity in teeth.',
       'Antibacterial: Interferes with the metabolism of plaque-causing bacteria.',
       'Skeletal Stability: Can influence the rate of bone mineral density flux.'
+    ]
+  },
+  'Soluble Fiber': {
+    summary: '💧 Viscous Gel & Metabolic Stabilizer (Prebiotic)',
+    points: [
+      'Viscous Gel: Attracts water to form a gel in the gut, slowing digestion and gastric emptying.',
+      'Cholesterol Management: Binds to bile acids in the intestines, prompting the liver to draw LDL cholesterol from blood to rebuild them.',
+      'Blood Sugar Stability: Flattens the postprandial glucose curve by delaying carbohydrate absorption.',
+      'Gut Microbiome Fuel: Highly fermented by beneficial bacteria into Short-Chain Fatty Acids (SCFAs like butyrate, acetate, propionate) that fuel colon cells.',
+      'Downside / Excess Intake: Consuming too much too quickly can cause rapid gas production, bloating, abdominal cramping, and in rare cases, loose stools or diarrhea as water is pulled into the bowel.'
+    ]
+  },
+  'Insoluble Fiber': {
+    summary: '🌾 Laxative Bulk & Intestinal Peristalsis Broom',
+    points: [
+      'Bowel Motility: Adds mechanical bulk to stool and stretches intestinal walls, triggering muscular contractions (peristalsis) to speed up transit.',
+      'Bowel Regularity: Prevents constipation and reduces transit time, keeping waste moving efficiently.',
+      'Structural Protection: Lowers intra-colon pressure to reduce risks of developing painful diverticular pockets.',
+      'Intestinal Sweep: Acts as a physical sweep to bind and clear out dietary toxins, heavy metals, and waste.',
+      'Downside / Excess Intake: Excess consumption with insufficient water intake can act like a "cement plug" in the gut, causing severe constipation, hard stools, bloating, and painful gas.'
     ]
   }
 };

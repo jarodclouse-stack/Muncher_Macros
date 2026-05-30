@@ -7,7 +7,7 @@ import {
 } from 'lucide-react';
 import { ALL_MICRO_KEYS, MICRO_UNITS, SERVING_UNITS, MICRO_CATEGORIES } from '../lib/constants';
 import { getNutrientDescriptions } from '../lib/nutrient-info';
-import { computeMultiplier, normalizeFoodResult, scaleLegacyFoodByAmount, calculateMacroBalance, scaleToTarget } from '../lib/food/serving-converter';
+import { computeMultiplier, normalizeFoodResult, scaleLegacyFoodByAmount, calculateMacroBalance, scaleToTarget, getMacroTraits } from '../lib/food/serving-converter';
 import { getPairingSuggestions } from '../lib/food/smart-pairing';
 
 import { SearchCoaster, type SearchTab } from './SearchCoaster';
@@ -1625,17 +1625,20 @@ export const PantryView: React.FC<PantryViewProps> = ({ initialMeal, onClose, is
           </button>
 
           {/* Filters from Image 2 */}
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '8px', marginBottom: '8px' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: '6px', marginBottom: '8px' }}>
             <PantryFilter label="All" active={filterType === 'all'} onClick={() => setFilterType('all')} />
-            <PantryFilter label="Favorites" active={filterType === 'fav'} onClick={() => setFilterType('fav')} />
+            <PantryFilter label="Favs" active={filterType === 'fav'} onClick={() => setFilterType('fav')} />
             <PantryFilter label="Protein" active={filterType === 'high-p'} onClick={() => setFilterType('high-p')} />
+            <PantryFilter label="Low Carb" active={filterType === 'low-c'} onClick={() => setFilterType('low-c')} />
             <PantryFilter label="Recipes" active={filterType === 'recipe'} onClick={() => setFilterType('recipe')} />
           </div>
 
           {[...customFoods]
             .filter((f: Food) => {
+              const traits = getMacroTraits(f);
               if (filterType === 'fav') return f.favorite;
-              if (filterType === 'high-p') return (f.p * 4) / (f.cal || 1) > 0.3;
+              if (filterType === 'high-p') return traits.isHighProtein;
+              if (filterType === 'low-c') return traits.isLowCarb;
               if (filterType === 'recipe') return (f.ingredientItems?.length || 0) > 0 || (f as Food & { type?: string }).type === 'recipe';
               return true;
             })
@@ -1665,6 +1668,18 @@ export const PantryView: React.FC<PantryViewProps> = ({ initialMeal, onClose, is
                   <div style={{ flex: 1 }}>
                     <div style={{ fontWeight: '700', fontSize: '14px', color: 'var(--theme-text-on-panel)' }}>{f.name}</div>
                     <div style={{ fontSize: '11px', color: 'var(--theme-text-dim-on-panel)', marginTop: '2px' }}>{f.serving} • {f.cal} kcal • P:{f.p}g C:{f.c}g F:{f.f}g</div>
+                    {(() => {
+                      const traits = getMacroTraits(f);
+                      return (
+                        <div style={{ display: 'flex', gap: '4px', marginTop: '6px', flexWrap: 'wrap' }}>
+                          {traits.isHighProtein && <span style={{ fontSize: '8px', padding: '1px 5px', background: 'rgba(146, 254, 157, 0.1)', border: '1px solid var(--theme-success)', color: 'var(--theme-success)', borderRadius: '4px', fontWeight: '800' }}>PROTEIN</span>}
+                          {traits.isHighCarb && <span style={{ fontSize: '8px', padding: '1px 5px', background: 'rgba(252, 196, 25, 0.1)', border: '1px solid #FCC419', color: '#FCC419', borderRadius: '4px', fontWeight: '800' }}>HIGH CARB</span>}
+                          {traits.isLowCarb && <span style={{ fontSize: '8px', padding: '1px 5px', background: 'rgba(0, 201, 255, 0.1)', border: '1px solid var(--theme-accent)', color: 'var(--theme-accent)', borderRadius: '4px', fontWeight: '800' }}>LOW CARB</span>}
+                          {traits.isHighFat && <span style={{ fontSize: '8px', padding: '1px 5px', background: 'rgba(255, 107, 107, 0.1)', border: '1px solid #FF6B6B', color: '#FF6B6B', borderRadius: '4px', fontWeight: '800' }}>HIGH FAT</span>}
+                          {traits.isHighFiber && <span style={{ fontSize: '8px', padding: '1px 5px', background: 'rgba(255, 255, 255, 0.05)', border: '1px solid rgba(255, 255, 255, 0.2)', color: '#fff', borderRadius: '4px', fontWeight: '800' }}>HIGH FIBER</span>}
+                        </div>
+                      );
+                    })()}
                   </div>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
                     <button 
@@ -1750,17 +1765,19 @@ export const PantryView: React.FC<PantryViewProps> = ({ initialMeal, onClose, is
                 const p = (Number(configuringFood.p) || 0) * multiplier;
                 const c = (Number(configuringFood.c) || 0) * multiplier;
                 const f = (Number(configuringFood.f) || 0) * multiplier;
-                const totalCal = (Number(configuringFood.cal) || 0) * multiplier;
+                const cal = (Number(configuringFood.cal) || 0) * multiplier;
+                const fb = (Number(configuringFood.fb || configuringFood.fiber || configuringFood.Fiber) || 0) * multiplier;
                 
-                const isHighProtein = (p * 4) / (totalCal || 1) > 0.35;
-                const isHighCarb = (c * 4) / (totalCal || 1) > 0.6;
-                const isHighFat = (f * 9) / (totalCal || 1) > 0.5;
+                const traits = getMacroTraits({ p, c, f, cal, fb });
+                const totalCal = cal;
 
                 return (
                   <div style={{ display: 'flex', gap: '6px', marginBottom: '24px', flexWrap: 'wrap' }}>
-                    {isHighProtein && <div style={{ padding: '4px 10px', background: 'rgba(146, 254, 157, 0.1)', border: '1px solid var(--theme-success)', borderRadius: '10px', color: 'var(--theme-success)', fontSize: '10px', fontWeight: '800' }}>⚡ PROTEIN POWERHOUSE</div>}
-                    {isHighCarb && <div style={{ padding: '4px 10px', background: 'rgba(252, 196, 25, 0.1)', border: '1px solid #FCC419', borderRadius: '10px', color: '#FCC419', fontSize: '10px', fontWeight: '800' }}>🥗 HIGH ENERGY CARBS</div>}
-                    {isHighFat && <div style={{ padding: '4px 10px', background: 'rgba(255, 107, 107, 0.1)', border: '1px solid #FF6B6B', borderRadius: '10px', color: '#FF6B6B', fontSize: '10px', fontWeight: '800' }}>🥑 HIGH FAT CONTENT</div>}
+                    {traits.isHighProtein && <div style={{ padding: '4px 10px', background: 'rgba(146, 254, 157, 0.1)', border: '1px solid var(--theme-success)', borderRadius: '10px', color: 'var(--theme-success)', fontSize: '10px', fontWeight: '800' }}>⚡ PROTEIN POWERHOUSE</div>}
+                    {traits.isHighCarb && <div style={{ padding: '4px 10px', background: 'rgba(252, 196, 25, 0.1)', border: '1px solid #FCC419', borderRadius: '10px', color: '#FCC419', fontSize: '10px', fontWeight: '800' }}>🥗 HIGH ENERGY CARBS</div>}
+                    {traits.isLowCarb && <div style={{ padding: '4px 10px', background: 'rgba(0, 201, 255, 0.1)', border: '1px solid var(--theme-accent)', borderRadius: '10px', color: 'var(--theme-accent)', fontSize: '10px', fontWeight: '800' }}>🥗 LOW CARB TARGET</div>}
+                    {traits.isHighFat && <div style={{ padding: '4px 10px', background: 'rgba(255, 107, 107, 0.1)', border: '1px solid #FF6B6B', borderRadius: '10px', color: '#FF6B6B', fontSize: '10px', fontWeight: '800' }}>🥑 HIGH FAT CONTENT</div>}
+                    {traits.isHighFiber && <div style={{ padding: '4px 10px', background: 'rgba(255, 255, 255, 0.05)', border: '1px solid rgba(255,255,255,0.2)', borderRadius: '10px', color: '#fff', fontSize: '10px', fontWeight: '800' }}>🌾 HIGH FIBER BOOST</div>}
                     {totalCal > 500 && <div style={{ padding: '4px 10px', background: 'rgba(255, 255, 255, 0.05)', border: '1px solid rgba(255,255,255,0.2)', borderRadius: '10px', color: '#fff', fontSize: '10px', fontWeight: '800' }}>🍽️ HEAVY MEAL</div>}
                   </div>
                 );
