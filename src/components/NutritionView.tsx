@@ -385,119 +385,28 @@ export const NutritionView: React.FC = () => {
         <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '16px' }}>
           <span style={{ fontSize: '20px' }}>🧂</span>
           <h2 style={{ fontSize: '18px', fontWeight: '800', margin: 0, color: 'var(--theme-text-on-panel)' }}>
-            Cardiovascular Ratio (Sodium : Potassium)
+            Cardiovascular Sodium-Potassium Balance
           </h2>
         </div>
 
-        {/* Current status row */}
-        {(() => {
-          const sodiumVal = Math.round(totals.Sodium || totals.sodium || 0);
-          const potassiumVal = Math.round(totals.Potassium || totals.potassium || 0);
-          const ratioNum = potassiumVal > 0 ? (sodiumVal / potassiumVal) : 0;
-          
-          let statusText = 'Excellent';
-          let statusColor = 'var(--theme-success, #92FE9D)';
-          let adviceText = 'Your Sodium and Potassium intake are beautifully balanced. This 1:1 ratio is ideal for maintaining optimal blood pressure and arterial elasticity!';
-          
-          if (sodiumVal === 0 && potassiumVal === 0) {
-            statusText = 'No Logs Yet';
-            statusColor = 'var(--theme-text-dim)';
-            adviceText = 'Log foods to see your cardiovascular balance card calculate in real-time.';
-          } else if (ratioNum > 1.5) {
-            statusText = 'Sodium Heavy';
-            statusColor = '#FF9F1C'; // Warm Orange
-            adviceText = 'Sodium levels are elevated compared to Potassium. Increasing Potassium-rich foods (e.g. spinach, avocado, banana) helps buffer and counteract the hypertensive strain of sodium.';
-          } else if (ratioNum > 1.1) {
-            statusText = 'Moderate Balance';
-            statusColor = 'var(--theme-accent)'; // Cyan
-            adviceText = 'Aim to increase Potassium slightly or moderate Sodium to nudge closer to a heart-healthy 1:1 ratio.';
-          } else if (ratioNum < 0.6) {
-            statusText = 'Potassium Dominant';
-            statusColor = 'var(--theme-success, #92FE9D)';
-            adviceText = 'Highly cardiovasculary protective. High Potassium intakes active the body\'s natural defenses against high blood pressure.';
-          }
+        {/* Short & simple explanation on Potassium buffering high Sodium */}
+        <p style={{ fontSize: '13px', color: 'var(--theme-text-dim-on-panel)', lineHeight: '1.6', margin: '0 0 16px 0', fontWeight: '500' }}>
+          Achieving a healthy balance of Sodium and Potassium is vital for your heart and blood vessels. When Sodium intake is high, <strong style={{ color: 'var(--theme-success, #92FE9D)' }}>eating plenty of Potassium acts as a natural buffer</strong>—helping your kidneys excrete excess sodium and relaxing blood vessels to lessen the cardiovascular strain. Aiming for a 1:1 dietary ratio is highly protective.
+        </p>
 
-          // Calculate visual balance bar percentage
-          const totalMin = sodiumVal + potassiumVal || 1;
-          const sodiumPct = (sodiumVal / totalMin) * 100;
-          const potassiumPct = (potassiumVal / totalMin) * 100;
-
-          return (
-            <div>
-              {/* Main numbers row */}
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px', marginBottom: '20px' }}>
-                <div style={{ background: 'rgba(255, 255, 255, 0.02)', padding: '16px', borderRadius: '16px', border: '1px solid rgba(255, 255, 255, 0.05)', textAlign: 'center' }}>
-                  <div style={{ fontSize: '10px', fontWeight: '800', color: 'var(--theme-text-dim)', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '6px' }}>Sodium (Na)</div>
-                  <div style={{ fontSize: '24px', fontWeight: '900', color: sodiumVal > 2300 ? '#FF6B6B' : 'var(--theme-text-on-panel)' }}>
-                    {sodiumVal}<span style={{ fontSize: '12px', fontWeight: '500', opacity: 0.8 }}> mg</span>
-                  </div>
-                  <div style={{ fontSize: '9px', color: 'var(--theme-text-dim)', marginTop: '4px' }}>Target: &lt; 2,300mg</div>
-                </div>
-
-                <div style={{ background: 'rgba(255, 255, 255, 0.02)', padding: '16px', borderRadius: '16px', border: '1px solid rgba(255, 255, 255, 0.05)', textAlign: 'center' }}>
-                  <div style={{ fontSize: '10px', fontWeight: '800', color: 'var(--theme-text-dim)', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '6px' }}>Potassium (K)</div>
-                  <div style={{ fontSize: '24px', fontWeight: '900', color: 'var(--theme-success, #92FE9D)' }}>
-                    {potassiumVal}<span style={{ fontSize: '12px', fontWeight: '500', opacity: 0.8 }}> mg</span>
-                  </div>
-                  <div style={{ fontSize: '9px', color: 'var(--theme-text-dim)', marginTop: '4px' }}>Target: ~ 3,400mg</div>
-                </div>
-              </div>
-
-              {/* Visual Balance Bar */}
-              <div style={{ marginBottom: '20px' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '10px', fontWeight: '800', color: 'var(--theme-text-dim)', marginBottom: '8px' }}>
-                  <span>SODIUM ({Math.round(sodiumPct)}%)</span>
-                  <span style={{ color: statusColor, textTransform: 'uppercase' }}>{statusText} ({ratioNum > 0 ? `${ratioNum.toFixed(1)}:1` : '1:1 Target'})</span>
-                  <span>POTASSIUM ({Math.round(potassiumPct)}%)</span>
-                </div>
-                
-                {/* Horizontal segmented progress bar */}
-                <div style={{ height: '8px', width: '100%', background: 'var(--theme-panel-dim)', borderRadius: '4px', display: 'flex', overflow: 'hidden', border: '1px solid var(--theme-border)' }}>
-                  {sodiumVal === 0 && potassiumVal === 0 ? (
-                    <div style={{ width: '100%', height: '100%', background: 'rgba(255,255,255,0.05)' }} />
-                  ) : (
-                    <>
-                      <div style={{ width: `${sodiumPct}%`, height: '100%', background: 'linear-gradient(90deg, #FF6B6B, #FCC419)', transition: 'width 0.5s ease' }} />
-                      <div style={{ width: `${potassiumPct}%`, height: '100%', background: 'linear-gradient(90deg, #92FE9D, #00C9FF)', transition: 'width 0.5s ease' }} />
-                    </>
-                  )}
-                </div>
-              </div>
-
-              {/* Explanatory Coping Card */}
-              <div style={{ 
-                background: 'rgba(255,255,255,0.02)', 
-                padding: '16px', 
-                borderRadius: '16px', 
-                border: '1px solid var(--theme-border)',
-                marginBottom: '16px',
-                lineHeight: '1.5'
-              }}>
-                <div style={{ fontSize: '13px', fontWeight: '700', color: '#fff', display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '8px' }}>
-                  <Sparkles size={14} color="var(--theme-accent)" /> 
-                  Why the Ratio Matters
-                </div>
-                <p style={{ fontSize: '12px', color: 'var(--theme-text-dim-on-panel)', margin: 0 }}>
-                  {adviceText} <strong style={{ color: '#fff' }}>Potassium acts as a natural vascular buffer:</strong> it relaxes blood vessel walls and prompts your kidneys to excrete sodium, mitigating high blood pressure risks even on higher-sodium days.
-                </p>
-              </div>
-
-              {/* Clinical/Medical Disclaimer */}
-              <div style={{ 
-                fontSize: '10px', 
-                color: 'rgba(255, 107, 107, 0.85)', 
-                fontStyle: 'italic', 
-                lineHeight: '1.4', 
-                background: 'rgba(255, 107, 107, 0.05)', 
-                padding: '12px', 
-                borderRadius: '12px', 
-                border: '1px solid rgba(255, 107, 107, 0.15)' 
-              }}>
-                <strong>⚠️ Clinical Disclaimer:</strong> This cardiovascular balance ratio is provided purely for educational tracking and wellness insights. This is not medical or professional doctor's advice. If you are managing hypertension, cardiovascular conditions, or chronic kidney disease, always consult a licensed medical physician or cardiologist for clinical guidance.
-              </div>
-            </div>
-          );
-        })()}
+        {/* Combined clinical & legal disclaimer */}
+        <div style={{ 
+          fontSize: '10px', 
+          color: 'rgba(255, 107, 107, 0.9)', 
+          fontStyle: 'italic', 
+          lineHeight: '1.5', 
+          background: 'rgba(255, 107, 107, 0.05)', 
+          padding: '12px', 
+          borderRadius: '12px', 
+          border: '1px solid rgba(255, 107, 107, 0.15)' 
+        }}>
+          <strong>⚠️ Legal & Clinical Disclaimer:</strong> This Sodium-Potassium information is for general educational and informational purposes only. It is not medical or professional advice, nor is it a substitute for diagnosis or treatment. Always consult a licensed medical doctor or cardiologist before making significant changes to your diet or if you are managing hypertension, heart, or kidney conditions.
+        </div>
       </div>
 
       {/* Micronutrients */}
