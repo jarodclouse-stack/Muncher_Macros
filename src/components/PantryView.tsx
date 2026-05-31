@@ -1128,7 +1128,7 @@ export const PantryView: React.FC<PantryViewProps> = ({ initialMeal, onClose, is
           {!isSearching && hasSearched && searchQuery && searchResults.length === 0 && !isAiReviewing && (
             <div className="glass-card" style={{ textAlign: 'center', padding: 'var(--space-xl)', marginTop: 'var(--space-md)', borderStyle: 'dashed' }}>
               <div style={{ color: 'var(--theme-text-dim)', fontSize: '12px', fontWeight: '900', marginBottom: '16px', letterSpacing: '1px' }}>NO FOODS FOUND IN DATABASE</div>
-              <div style={{ fontSize: '11px', color: 'var(--theme-text-dim)', fontWeight: '600' }}>Try a broader search or add it manually in the Kitchen Lab</div>
+              <div style={{ fontSize: '11px', color: 'var(--theme-text-dim)', fontWeight: '600' }}>Try a broader search or add it manually in The Lab</div>
             </div>
           )}
           
@@ -1666,7 +1666,7 @@ export const PantryView: React.FC<PantryViewProps> = ({ initialMeal, onClose, is
           <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '16px' }}>
             <button onClick={() => setPantryMode('list')} style={{ background: 'var(--theme-panel-dim)', border: 'none', borderRadius: '50%', width: '36px', height: '36px', color: 'rgba(255,255,255,0.9)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><ChevronDown size={20} style={{ transform: 'rotate(90deg)' }} /></button>
             <div style={{ background: 'var(--theme-panel-dim)', padding: '6px 16px', borderRadius: '20px' }}>
-              <h2 style={{ fontSize: '18px', fontWeight: '800', margin: 0, color: 'rgba(255,255,255,0.9)' }}>{editingIndex !== null ? 'EDIT KITCHEN ITEM' : 'KITCHEN LAB'}</h2>
+              <h2 style={{ fontSize: '18px', fontWeight: '800', margin: 0, color: 'rgba(255,255,255,0.9)' }}>{editingIndex !== null ? 'EDIT ITEM' : 'THE LAB'}</h2>
             </div>
           </div>
 

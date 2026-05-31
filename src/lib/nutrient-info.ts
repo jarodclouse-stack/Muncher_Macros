@@ -435,7 +435,7 @@ export const NUTRIENT_BENEFITS: Record<string, { summary: string; points: string
       'Bowel Motility: Adds mechanical bulk to stool and stretches intestinal walls, triggering muscular contractions (peristalsis) to speed up transit.',
       'Bowel Regularity: Prevents constipation and reduces transit time, keeping waste moving efficiently.',
       'Structural Protection: Lowers intra-colon pressure to reduce risks of developing painful diverticular pockets.',
-      'Intestinal Sweep: Acts as a physical sweep to bind and clear out dietary toxins, heavy metals, and waste.',
+      'Intestinal Sweep: Acts as a physical sweep to bind and clear out dietary toxins, excess minerals, and waste.',
       'Downside / Excess Intake: Excess consumption with insufficient water intake can act like a "cement plug" in the gut, causing severe constipation, hard stools, bloating, and painful gas.'
     ]
   },
