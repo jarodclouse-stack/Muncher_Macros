@@ -231,9 +231,11 @@ export const NutritionView: React.FC = () => {
                               <span style={{ color: 'var(--theme-text-dim-on-panel)', display: 'flex', alignItems: 'center', gap: '4px', fontWeight: '900', textTransform: 'uppercase', letterSpacing: '0.5px' }}>{sub.k} {info && <Info size={10} color="color-mix(in srgb, var(--theme-text) 40%, black)" />}</span>
                               <span style={{ color: 'var(--theme-text-dim-on-panel)', fontWeight: '900', display: 'flex', gap: '4px', alignItems: 'center' }}>
                                 {Math.round(sub.v * 10) / 10}g
-                                <span style={{ fontSize: '9px', fontWeight: '800', opacity: 0.85, color: sub.v > 0 ? barColor : 'var(--theme-text-dim)' }}>
-                                  ({Math.round(pct)}%)
-                                </span>
+                                {sub.v > 0 && (
+                                  <span style={{ fontSize: '9px', fontWeight: '800', opacity: 0.85, color: barColor }}>
+                                    ({Math.round(pct)}%)
+                                  </span>
+                                )}
                               </span>
                             </div>
                             <div style={{ height: '4px', background: 'var(--theme-panel-dim)', borderRadius: '2px', marginTop: '4px', border: '1px solid var(--theme-border)', position: 'relative' }}>
@@ -301,9 +303,11 @@ export const NutritionView: React.FC = () => {
                               <span style={{ color: 'var(--theme-text-dim-on-panel)', display: 'flex', alignItems: 'center', gap: '4px', fontWeight: '900', textTransform: 'uppercase', letterSpacing: '0.5px' }}>{sub.disp} {info && <Info size={10} color="color-mix(in srgb, var(--theme-text) 40%, black)" />}</span>
                               <span style={{ color: 'var(--theme-text-dim-on-panel)', fontWeight: '900', display: 'flex', gap: '4px', alignItems: 'center' }}>
                                 {Math.round(sub.v * 10) / 10}g
-                                <span style={{ fontSize: '9px', fontWeight: '800', opacity: 0.85, color: sub.v > 0 ? barColor : 'var(--theme-text-dim)' }}>
-                                  ({Math.round(pct)}%)
-                                </span>
+                                {sub.v > 0 && (
+                                  <span style={{ fontSize: '9px', fontWeight: '800', opacity: 0.85, color: barColor }}>
+                                    ({Math.round(pct)}%)
+                                  </span>
+                                )}
                               </span>
                             </div>
                             <div style={{ height: '4px', background: 'var(--theme-panel-dim)', borderRadius: '2px', marginTop: '4px', border: '1px solid var(--theme-border)', position: 'relative' }}>
