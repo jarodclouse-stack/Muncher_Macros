@@ -761,6 +761,28 @@ export const PantryView: React.FC<PantryViewProps> = ({ initialMeal, onClose, is
                     <span style={{ letterSpacing: '1.5px' }}>{isSearching ? 'ANALYZING MEAL...' : 'ANALYZE MEAL DESCRIPTION'}</span>
                   </button>
 
+                  {isSearching && (
+                    <div style={{ 
+                      display: 'flex', 
+                      flexDirection: 'column', 
+                      alignItems: 'center', 
+                      justifyContent: 'center', 
+                      padding: '20px', 
+                      borderRadius: '16px', 
+                      background: 'var(--theme-panel-dim, rgba(255,255,255,0.02))', 
+                      border: '1px dashed var(--theme-border, rgba(255,255,255,0.15))',
+                      textAlign: 'center'
+                    }}>
+                      <Loader2 className="spin" size={20} color="var(--theme-accent)" style={{ marginBottom: '8px' }} />
+                      <div style={{ fontSize: '11px', fontWeight: '900', color: 'var(--theme-accent)', marginBottom: '4px', letterSpacing: '1px', textTransform: 'uppercase' }}>
+                        Gemini AI Parsing Meal
+                      </div>
+                      <div style={{ fontSize: '11px', color: 'var(--theme-text-dim, rgba(255,255,255,0.6))', fontWeight: '600', lineHeight: '1.4', maxWidth: '320px' }}>
+                        Gemini is deconstructing your meal description into separate ingredient logs with precise macro breakdowns. This can take a few seconds...
+                      </div>
+                    </div>
+                  )}
+
                   <textarea 
                     className="force-white-placeholder"
                     placeholder="Describe your whole meal here... (e.g. '3 scrambled eggs with spinach and a cup of black coffee')"
@@ -885,6 +907,31 @@ export const PantryView: React.FC<PantryViewProps> = ({ initialMeal, onClose, is
                     {isSearching ? <Loader2 className="spin" size={20} /> : <Search size={20} />}
                   </button>
                 </form>
+
+                {isSearching && (
+                  <div style={{ 
+                    display: 'flex', 
+                    flexDirection: 'column', 
+                    alignItems: 'center', 
+                    justifyContent: 'center', 
+                    padding: '20px', 
+                    marginTop: '20px', 
+                    borderRadius: '16px', 
+                    background: 'var(--theme-panel-dim, rgba(255,255,255,0.02))', 
+                    border: '1px dashed var(--theme-border, rgba(255,255,255,0.15))',
+                    textAlign: 'center'
+                  }}>
+                    <Loader2 className="spin" size={20} color="var(--theme-accent)" style={{ marginBottom: '8px' }} />
+                    <div style={{ fontSize: '11px', fontWeight: '900', color: 'var(--theme-accent)', marginBottom: '4px', letterSpacing: '1px', textTransform: 'uppercase' }}>
+                      {innerGlobalSearchTab === 'search' ? 'Searching Database' : 'Gemini AI Thinking'}
+                    </div>
+                    <div style={{ fontSize: '11px', color: 'var(--theme-text-dim, rgba(255,255,255,0.6))', fontWeight: '600', lineHeight: '1.4', maxWidth: '320px' }}>
+                      {innerGlobalSearchTab === 'search' 
+                        ? 'Fetching nutrition records from the global database. This will only take a quick moment...' 
+                        : 'Gemini AI is parsing your request to construct mathematically accurate macro & calorie breakdowns...'}
+                    </div>
+                  </div>
+                )}
             </div>
           )}
 
