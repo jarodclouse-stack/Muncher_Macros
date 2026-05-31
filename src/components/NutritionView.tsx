@@ -12,7 +12,8 @@ import type { Food } from '../types/food';
 ChartJS.register(ArcElement, Tooltip, Legend);
 
 const getNutrientProgress = (val: number, goal: number, label: string) => {
-  const pct = goal ? Math.min(100, (val / goal) * 100) : 0;
+  const actualPct = goal ? (val / goal) * 100 : 0;
+  const pct = Math.min(100, actualPct);
   const lowerLabel = label.toLowerCase();
   
   // Identify upper-limit nutrients
@@ -41,7 +42,7 @@ const getNutrientProgress = (val: number, goal: number, label: string) => {
     color = 'transparent';
   }
   
-  return { pct, color, isUpperLimit };
+  return { pct, actualPct, color, isUpperLimit };
 };
 
 export const NutritionView: React.FC = () => {
@@ -224,7 +225,7 @@ export const NutritionView: React.FC = () => {
                         const isExpanded = expandedMicro === sub.k;
                         const info = DEFICIENCY_INFO[sub.k as keyof typeof DEFICIENCY_INFO] || NUTRIENT_BENEFITS[sub.k as keyof typeof NUTRIENT_BENEFITS];
                         const defInfo = DEFICIENCY_INFO[sub.k as keyof typeof DEFICIENCY_INFO];
-                        const { pct, color: barColor } = getNutrientProgress(sub.v, sub.g || 0, sub.k);
+                        const { pct, actualPct, color: barColor } = getNutrientProgress(sub.v, sub.g || 0, sub.k);
                         return (
                           <div key={sub.k} className={isExpanded ? "glass-card" : ""} style={{ padding: isExpanded ? 'var(--space-md)' : '0', transition: 'all var(--transition-smooth)', margin: isExpanded ? '0 -16px var(--space-xs)' : '0' }}>
                             <div onClick={() => info && setExpandedMicro(isExpanded ? null : sub.k)} style={{ display: 'flex', justifyContent: 'space-between', fontSize: '10px', cursor: info ? 'pointer' : 'default' }}>
@@ -233,7 +234,7 @@ export const NutritionView: React.FC = () => {
                                 {Math.round(sub.v * 10) / 10}g
                                 {sub.v > 0 && (
                                   <span style={{ fontSize: '9px', fontWeight: '800', opacity: 0.85, color: barColor }}>
-                                    ({Math.round(pct)}%)
+                                    ({Math.round(actualPct)}%)
                                   </span>
                                 )}
                               </span>
@@ -293,7 +294,7 @@ export const NutritionView: React.FC = () => {
                         { k: 'Refined Carbs', disp: '🍞 Refined Carbs', v: carbBreakdown['refined-carbs'], g: goal * 0.05, c: 'var(--theme-error)' },
                         { k: 'Simple Carbs', disp: '🍭 Simple Carbs', v: carbBreakdown['simple-carbs'], g: goal * 0.05, c: 'var(--theme-error)' }
                       ].map(sub => {
-                        const { pct, color: barColor } = getNutrientProgress(sub.v, sub.g || 0, sub.k);
+                        const { pct, actualPct, color: barColor } = getNutrientProgress(sub.v, sub.g || 0, sub.k);
                         const isExpanded = expandedMicro === sub.k;
                         const info = DEFICIENCY_INFO[sub.k as keyof typeof DEFICIENCY_INFO] || NUTRIENT_BENEFITS[sub.k as keyof typeof NUTRIENT_BENEFITS];
                         const defInfo = DEFICIENCY_INFO[sub.k as keyof typeof DEFICIENCY_INFO];
@@ -305,7 +306,7 @@ export const NutritionView: React.FC = () => {
                                 {Math.round(sub.v * 10) / 10}g
                                 {sub.v > 0 && (
                                   <span style={{ fontSize: '9px', fontWeight: '800', opacity: 0.85, color: barColor }}>
-                                    ({Math.round(pct)}%)
+                                    ({Math.round(actualPct)}%)
                                   </span>
                                 )}
                               </span>
@@ -374,7 +375,7 @@ export const NutritionView: React.FC = () => {
                   const unit = nutrient.u;
                   const val = totals[label.toLowerCase()] || totals[label] || 0;
                   const goal = computed.computedMicros?.[label] || (computed.micros ? computed.micros[label] : 0);
-                  const { pct, color: barColor } = getNutrientProgress(val, goal || 0, label);
+                  const { pct, actualPct, color: barColor } = getNutrientProgress(val, goal || 0, label);
                   const isExpanded = expandedMicro === label;
                   const benefitsInfo = NUTRIENT_BENEFITS[label as keyof typeof NUTRIENT_BENEFITS];
                   const defInfo = DEFICIENCY_INFO[label as keyof typeof DEFICIENCY_INFO];
@@ -416,7 +417,7 @@ export const NutritionView: React.FC = () => {
                         <div style={{ fontSize: '13px', fontWeight: '900', textAlign: 'right', color: pct >= 100 ? 'var(--theme-success)' : 'var(--theme-text-on-panel)', whiteSpace: 'nowrap' }}>
                           {Math.round(val)}<span style={{ fontSize: '10px', opacity: 0.8, marginRight: '4px' }}>{unit}</span>
                           <span style={{ fontSize: '11px', fontWeight: '800', opacity: 0.85, color: val > 0 ? barColor : 'var(--theme-text-dim)' }}>
-                            ({Math.round(pct)}%)
+                            ({Math.round(actualPct)}%)
                           </span>
                         </div>
                       </div>

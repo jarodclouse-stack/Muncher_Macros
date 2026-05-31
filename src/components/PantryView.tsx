@@ -428,18 +428,68 @@ export const PantryView: React.FC<PantryViewProps> = ({ initialMeal, onClose, is
     setConfiguringFood(food);
     setEditName(food.name || '');
     
-    // SMART PORTIONING: Try to extract weight (e.g. 174g) from serving string
-    const weightMatch = (food.serving || '').match(/(\d+)\s?(g|oz)/i);
-    if (weightMatch) {
-      setServingQty(weightMatch[1]);
-      setServingUnit(weightMatch[2].toLowerCase());
+    // SMART PORTIONING: Try to extract quantity and unit from serving string
+    let parsedQty = '';
+    let parsedUnit = '';
+
+    const matchUnit = (unitStr: string): string | null => {
+      const normalized = unitStr.toLowerCase().trim();
+      let target = normalized;
+      if (normalized === 'ml' || normalized === 'milliliter' || normalized === 'milliliters') target = 'ml';
+      else if (normalized === 'g' || normalized === 'gram' || normalized === 'grams') target = 'g';
+      else if (normalized === 'cup' || normalized === 'cups') target = 'cup';
+      else if (normalized === 'serving' || normalized === 'servings') target = 'serving';
+      else if (normalized === 'piece' || normalized === 'pieces') target = 'piece';
+      else if (normalized === 'slice' || normalized === 'slices') target = 'slice';
+      else if (normalized === 'tbsp' || normalized === 'tablespoon' || normalized === 'tablespoons') target = 'tbsp';
+      else if (normalized === 'tsp' || normalized === 'teaspoon' || normalized === 'teaspoons') target = 'tsp';
+      else if (normalized === 'oz' || normalized === 'ounce' || normalized === 'ounces') target = 'oz';
+
+      const found = SERVING_UNITS.find(u => u.v.toLowerCase() === target);
+      return found ? found.v : null;
+    };
+
+    const servingStr = food.serving || '';
+    
+    // 1. Try parentheses first (e.g. "1 cup (240ml)")
+    const parenMatch = servingStr.match(/\(([^)]+)\)/);
+    if (parenMatch) {
+      const inside = parenMatch[1];
+      const match = inside.match(/(\d+(?:\.\d+)?)\s*([a-zA-Z\s]+)/);
+      if (match) {
+        const mapped = matchUnit(match[2]);
+        if (mapped) {
+          parsedQty = match[1];
+          parsedUnit = mapped;
+        }
+      }
+    }
+
+    // 2. If no valid match in parentheses, search whole serving string (e.g. "1 cup")
+    if (!parsedQty || !parsedUnit) {
+      const match = servingStr.match(/(\d+(?:\.\d+)?)\s*([a-zA-Z\s]+)/);
+      if (match) {
+        const mapped = matchUnit(match[2]);
+        if (mapped) {
+          parsedQty = match[1];
+          parsedUnit = mapped;
+        }
+      }
+    }
+
+    // 3. Fallback to food.sQty and food.sUnit if extraction failed
+    if (parsedQty && parsedUnit) {
+      setServingQty(parsedQty);
+      setServingUnit(parsedUnit);
     } else {
       setServingQty(String(food.sQty || '1'));
-      setServingUnit(food.sUnit || 'serving');
+      const fallbackUnit = food.sUnit ? matchUnit(food.sUnit) : null;
+      setServingUnit(fallbackUnit || 'serving');
     }
 
     setShowFullNutrition(false);
   };
+
 
   const handleConfirmAddPantry = (e: React.FormEvent) => {
     e.preventDefault();
@@ -1118,8 +1168,18 @@ export const PantryView: React.FC<PantryViewProps> = ({ initialMeal, onClose, is
                           <select 
                             value={f.stagedUnit} 
                             onChange={(e) => {
+                              const newUnit = e.target.value;
+                              const oldUnit = f.stagedUnit || 'g';
+                              const oldQty = parseFloat(f.stagedQty || '') || 1;
+                              
+                              const oldUnitDef = SERVING_UNITS.find(u => u.v === oldUnit) || { factor: 1 };
+                              const newUnitDef = SERVING_UNITS.find(u => u.v === newUnit) || { factor: 1 };
+                              
+                              const newQtyVal = oldQty * (oldUnitDef.factor / newUnitDef.factor);
+                              const roundedQty = Math.round(newQtyVal * 100) / 100;
+
                               const next = [...aiStagedResults];
-                              next[i] = { ...f, stagedUnit: e.target.value };
+                              next[i] = { ...f, stagedQty: roundedQty.toString(), stagedUnit: newUnit };
                               setAiStagedResults(next);
                             }}
                             style={{ flex: 1, background: 'rgba(0,0,0,0.06)', border: '1px solid var(--theme-border)', borderRadius: '12px', color: 'var(--theme-text)', fontSize: '13px', padding: '12px', outline: 'none', fontWeight: '800' }}>
@@ -1382,7 +1442,23 @@ export const PantryView: React.FC<PantryViewProps> = ({ initialMeal, onClose, is
                 <select 
                   className="inp"
                   value={form.sUnit}
-                  onChange={e => setForm({...form, sUnit: e.target.value})}
+                  onChange={e => {
+                    const newUnit = e.target.value;
+                    const oldUnit = form.sUnit || 'g';
+                    const oldQty = form.sQty || 100;
+                    
+                    const oldUnitDef = SERVING_UNITS.find(u => u.v === oldUnit) || { factor: 1 };
+                    const newUnitDef = SERVING_UNITS.find(u => u.v === newUnit) || { factor: 1 };
+                    
+                    const newQtyVal = oldQty * (oldUnitDef.factor / newUnitDef.factor);
+                    const roundedQty = Math.round(newQtyVal * 100) / 100;
+                    
+                    setForm({
+                      ...form,
+                      sQty: roundedQty,
+                      sUnit: newUnit
+                    });
+                  }}
                   style={{ padding: '10px 12px', fontSize: '13px', background: 'var(--theme-panel-dim)', border: '1px solid var(--theme-border)', borderRadius: '12px', color: 'var(--theme-text)', fontWeight: '800' }}>
                   {SERVING_UNITS.map(u => <option key={u.v} value={u.v} style={{background: 'var(--theme-panel)'}}>{u.v}</option>)}
                 </select>
@@ -1578,8 +1654,18 @@ export const PantryView: React.FC<PantryViewProps> = ({ initialMeal, onClose, is
                     <select 
                       value={item.unit}
                       onChange={e => {
+                        const newUnit = e.target.value;
+                        const oldUnit = item.unit || 'g';
+                        const oldQty = parseFloat(item.qty) || 0;
+                        
+                        const oldUnitDef = SERVING_UNITS.find(u => u.v === oldUnit) || { factor: 1 };
+                        const newUnitDef = SERVING_UNITS.find(u => u.v === newUnit) || { factor: 1 };
+                        
+                        const newQtyVal = oldQty * (oldUnitDef.factor / newUnitDef.factor);
+                        const roundedQty = Math.round(newQtyVal * 100) / 100;
+
                         const newItems = [...(form.ingredientItems || [])];
-                        newItems[i] = { ...item, unit: e.target.value };
+                        newItems[i] = { ...item, qty: roundedQty.toString(), unit: newUnit };
                         calculateRecipeTotals(newItems);
                       }}
                       style={{ padding: '4px 6px', fontSize: '11px', background: 'rgba(0,0,0,0.3)', color: '#fff', border: 'none', borderRadius: '6px' }}>
@@ -1917,7 +2003,20 @@ export const PantryView: React.FC<PantryViewProps> = ({ initialMeal, onClose, is
                     <select 
                       className="config-input"
                       value={servingUnit}
-                      onChange={(e) => setServingUnit(e.target.value)}
+                      onChange={(e) => {
+                        const newUnit = e.target.value;
+                        const oldUnit = servingUnit || 'g';
+                        const oldQty = parseFloat(servingQty) || 1;
+                        
+                        const oldUnitDef = SERVING_UNITS.find(u => u.v === oldUnit) || { factor: 1 };
+                        const newUnitDef = SERVING_UNITS.find(u => u.v === newUnit) || { factor: 1 };
+                        
+                        const newQtyVal = oldQty * (oldUnitDef.factor / newUnitDef.factor);
+                        const roundedQty = Math.round(newQtyVal * 100) / 100;
+
+                        setServingQty(roundedQty.toString());
+                        setServingUnit(newUnit);
+                      }}
                       style={{ width: '100%', background: 'var(--theme-panel, rgba(0,0,0,0.2))', border: '1px solid var(--theme-border)', borderRadius: '12px', padding: '12px', outline: 'none' }}>
                       {SERVING_UNITS.map(u => <option key={u.v} value={u.v}>{u.v}</option>)}
                     </select>
