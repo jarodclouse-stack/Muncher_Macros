@@ -85,7 +85,7 @@ export const SearchCoaster: React.FC<SearchCoasterProps> = ({ activeTab, onTabCh
           active={activeTab === 'describe'} 
           onClick={() => onTabChange('describe')} 
           icon={<FileText size={18} />} 
-          label="Describe" 
+          label="Muncher" 
         />
         <TabBtn 
           active={activeTab === 'scan'} 
@@ -125,10 +125,12 @@ const TabBtn: React.FC<TabBtnProps> = ({ active, onClick, icon, label }) => {
         padding: '12px 0',
         borderRadius: '16px',
         cursor: 'pointer',
-        border: active ? '1.5px solid var(--theme-border)' : '1px solid transparent',
+        border: active
+          ? '1.5px solid var(--theme-accent, #00F5D4)'
+          : '1.5px solid rgba(255, 255, 255, 0.13)',
         background: active ? 'var(--theme-accent-dim, rgba(0, 245, 212, 0.12))' : 'var(--theme-panel-dim, rgba(18, 21, 32, 0.4))',
         color: active ? 'var(--theme-accent, #00F5D4)' : 'var(--theme-text-dim-on-panel, #BDC4C6)',
-        boxShadow: active ? '0 0 12px var(--theme-accent-dim)' : 'none',
+        boxShadow: active ? '0 0 12px var(--theme-accent-dim)' : '0 0 0 1px rgba(255,255,255,0.04) inset',
         transition: 'all var(--transition-smooth, 0.25s)',
         fontFamily: 'inherit',
         fontSize: '10px',
