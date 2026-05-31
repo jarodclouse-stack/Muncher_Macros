@@ -1700,21 +1700,26 @@ export const PantryView: React.FC<PantryViewProps> = ({ initialMeal, onClose, is
                 <div 
                   key={originalIdx} 
                   onClick={() => handleAddPreviewClick(f)}
-                  className="glass-card luminous-breath"
                   style={{ 
+                    background: 'rgba(0,0,0,0.3)', 
                     padding: '16px', 
-                    cursor: 'pointer', 
-                    borderLeft: '4px solid var(--theme-accent, #00C9FF)', 
-                    display: 'flex', 
-                    justifyContent: 'space-between', 
-                    alignItems: 'center',
-                    marginBottom: '4px'
-                  }}>
+                    borderRadius: '18px',
+                    border: '1px solid rgba(255,255,255,0.08)',
+                    borderLeft: '4px solid var(--theme-success)', 
+                    cursor: 'pointer',
+                    transition: 'transform 0.2s',
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'center'
+                  } as React.CSSProperties}>
                   <div style={{ flex: 1 }}>
-                    <div style={{ fontWeight: '700', fontSize: '14px', color: 'var(--theme-text-on-panel)' }}>{f.name}</div>
-                    <div style={{ fontSize: '11px', color: 'var(--theme-text-dim-on-panel)', marginTop: '2px' }}>{f.serving} • {Math.round(Number(f.cal) || 0)} kcal • P:{f.p}g C:{f.c}g F:{f.f}g</div>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                      <div style={{ fontWeight: '900', fontSize: '14px', color: 'var(--theme-text, #fff)' }}>{f.name}</div>
+                      {f.brand && <div style={{ fontSize: '10px', color: 'var(--theme-text-dim, rgba(255,255,255,0.6))', opacity: 0.6, fontWeight: '700' }}>• {f.brand}</div>}
+                    </div>
+                    <div style={{ fontSize: '11px', color: 'var(--theme-text-dim, rgba(255,255,255,0.6))', marginTop: '4px', fontWeight: '600' }}>{f.serving} • {Math.round(Number(f.cal) || 0)} kcal • P:{f.p}g C:{f.c}g F:{f.f}g</div>
                   </div>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
                     <button 
                       onClick={(e) => {
                         e.stopPropagation();
@@ -1723,7 +1728,8 @@ export const PantryView: React.FC<PantryViewProps> = ({ initialMeal, onClose, is
                         setPantryMode('create');
                         setCreateTab('basics');
                       }}
-                      style={{ background: 'none', border: 'none', color: 'var(--theme-text-dim)', cursor: 'pointer', padding: '4px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                      style={{ background: 'none', border: 'none', color: 'var(--theme-text-dim, rgba(255,255,255,0.6))', cursor: 'pointer', padding: '4px', display: 'flex', alignItems: 'center', justifyContent: 'center', opacity: 0.7 }}
+                    >
                       <Edit2 size={16} />
                     </button>
                     <button 
@@ -1731,10 +1737,11 @@ export const PantryView: React.FC<PantryViewProps> = ({ initialMeal, onClose, is
                         e.stopPropagation();
                         setConfirmDialog({ title: 'Delete Food', message: `Are you sure you want to delete "${f.name}" from your Pantry?`, onConfirm: () => { setConfirmDialog(null); deleteCustomFood(originalIdx); } });
                       }}
-                      style={{ background: 'none', border: 'none', color: 'rgba(255,107,107,0.5)', cursor: 'pointer', padding: '4px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                      <Trash2 size={18} />
+                      style={{ background: 'none', border: 'none', color: 'rgba(255,107,107,0.6)', cursor: 'pointer', padding: '4px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                    >
+                      <Trash2 size={16} />
                     </button>
-                    <Plus size={18} color="var(--theme-accent)" />
+                    <Plus size={18} color="var(--theme-success)" />
                   </div>
                 </div>
               );
