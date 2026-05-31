@@ -12,97 +12,49 @@ interface SearchCoasterProps {
 export const SearchCoaster: React.FC<SearchCoasterProps> = ({ activeTab, onTabChange, style }) => {
   return (
     <div style={{ 
-      position: 'relative', 
-      width: '100%', 
+      display: 'flex', 
+      background: 'var(--theme-panel-dim, rgba(18, 21, 32, 0.4))', 
+      padding: '4px', 
+      borderRadius: '999px', 
+      border: '1px solid var(--theme-border)',
+      width: '100%',
       boxSizing: 'border-box',
-      padding: '16px',
-      background: 'var(--theme-panel, rgba(18, 21, 32, 0.8))',
-      borderRadius: '24px',
-      border: '1.5px solid var(--theme-border, rgba(255, 255, 255, 0.08))',
-      backdropFilter: 'blur(18px)',
-      boxShadow: 'var(--theme-shadow, 0 15px 45px rgba(0,0,0,0.3))',
       margin: '0 0 16px 0',
-      overflow: 'hidden', // Contain the heartbeat
-      flexShrink: 0
+      position: 'relative',
+      zIndex: 1,
+      flexShrink: 0,
+      gap: '2px',
+      ...style
     }}>
-      {/* Secret Heartbeat Glow */}
-      <div style={{
-        position: 'absolute',
-        top: '50%',
-        left: '50%',
-        width: '120px',
-        height: '80px',
-        transform: 'translate(-50%, -50%)',
-        background: 'radial-gradient(ellipse at center, var(--theme-accent-dim, rgba(0, 245, 212, 0.15)) 0%, transparent 70%)',
-        filter: 'blur(25px)',
-        zIndex: 0,
-        animation: 'heartbeat-flow 8s infinite alternate ease-in-out',
-        pointerEvents: 'none',
-        opacity: 0.5
-      }} />
-
-      <style>{`
-        @keyframes heartbeat-flow {
-          0% { 
-            transform: translate(-55%, -45%) scale(1); 
-            background: radial-gradient(ellipse at center, var(--theme-accent-dim, rgba(0, 245, 212, 0.15)) 0%, transparent 70%);
-          }
-          33% { 
-            transform: translate(-45%, -55%) scale(1.1); 
-            background: radial-gradient(ellipse at center, var(--theme-accent-dim, rgba(0, 245, 212, 0.15)) 0%, transparent 70%);
-          }
-          66% { 
-            transform: translate(-50%, -50%) scale(0.95); 
-            background: radial-gradient(ellipse at center, var(--theme-accent-dim, rgba(0, 245, 212, 0.15)) 0%, transparent 70%);
-          }
-          100% { 
-            transform: translate(-52%, -48%) scale(1.05); 
-            background: radial-gradient(ellipse at center, var(--theme-accent-dim, rgba(0, 245, 212, 0.15)) 0%, transparent 70%);
-          }
-        }
-        :root {
-          --heartbeat-color: var(--theme-accent, #00C9FF);
-        }
-      `}</style>
-
-      <div className="actions-grid" style={{ 
-        position: 'relative',
-        zIndex: 1,
-        display: 'grid',
-        gridTemplateColumns: 'repeat(4, 1fr)',
-        gap: '6px',
-        ...style 
-      }}>
-        <TabBtn 
-          active={activeTab === 'search'} 
-          onClick={() => onTabChange('search')} 
-          icon={<Search size={18} />} 
-          label="Search" 
-        />
-        <TabBtn 
-          active={activeTab === 'ai-search'} 
-          onClick={() => onTabChange('ai-search')} 
-          icon={<Sparkles size={18} />} 
-          label="Ask AI" 
-        />
-        <TabBtn 
-          active={activeTab === 'describe'} 
-          onClick={() => onTabChange('describe')} 
-          icon={<FileText size={18} />} 
-          label="Describe" 
-        />
-        <TabBtn 
-          active={activeTab === 'scan'} 
-          onClick={() => onTabChange('scan')} 
-          icon={(
-            <div style={{ display: 'flex', gap: '2px', alignItems: 'center' }}>
-              <Barcode size={14} />
-              <FileText size={14} />
-            </div>
-          )} 
-          label="Scan" 
-        />
-      </div>
+      <TabBtn 
+        active={activeTab === 'search'} 
+        onClick={() => onTabChange('search')} 
+        icon={<Search size={13} />} 
+        label="Search" 
+      />
+      <TabBtn 
+        active={activeTab === 'ai-search'} 
+        onClick={() => onTabChange('ai-search')} 
+        icon={<Sparkles size={13} />} 
+        label="Ask AI" 
+      />
+      <TabBtn 
+        active={activeTab === 'describe'} 
+        onClick={() => onTabChange('describe')} 
+        icon={<FileText size={13} />} 
+        label="Describe" 
+      />
+      <TabBtn 
+        active={activeTab === 'scan'} 
+        onClick={() => onTabChange('scan')} 
+        icon={(
+          <div style={{ display: 'flex', gap: '2px', alignItems: 'center' }}>
+            <Barcode size={11} />
+            <FileText size={11} />
+          </div>
+        )} 
+        label="Scan" 
+      />
     </div>
   );
 };
@@ -122,31 +74,28 @@ const TabBtn: React.FC<TabBtnProps> = ({ active, onClick, icon, label }) => {
       style={{
         flex: 1,
         display: 'flex',
-        flexDirection: 'column',
         alignItems: 'center',
         justifyContent: 'center',
-        gap: '4px',
-        padding: '12px 0',
-        borderRadius: '16px',
+        gap: '6px',
+        padding: '8px 4px',
+        borderRadius: '999px',
         cursor: 'pointer',
-        border: active ? '1.5px solid var(--theme-border)' : '1px solid transparent',
-        background: active ? 'var(--theme-accent-dim, rgba(0, 245, 212, 0.12))' : 'var(--theme-panel-dim, rgba(18, 21, 32, 0.4))',
-        color: active ? 'var(--theme-accent, #00F5D4)' : 'var(--theme-text-dim-on-panel, #BDC4C6)',
-        boxShadow: active ? '0 0 12px var(--theme-accent-dim)' : 'none',
-        transition: 'all var(--transition-smooth, 0.25s)',
+        border: 'none',
+        background: active ? 'var(--theme-accent)' : 'transparent',
+        color: active ? '#000' : 'var(--theme-text-dim-on-panel, #BDC4C6)',
+        transition: 'all 0.2s ease',
         fontFamily: 'inherit',
-        fontSize: '10px',
-        fontWeight: '900',
-        textTransform: 'uppercase',
-        letterSpacing: '0.8px',
+        fontSize: '11px',
+        fontWeight: '800',
         outline: 'none',
-        WebkitTapHighlightColor: 'transparent'
+        WebkitTapHighlightColor: 'transparent',
+        whiteSpace: 'nowrap'
       }}
     >
-      <div className="coaster-icon-container" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+      <div className="coaster-icon-container" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', opacity: active ? 1 : 0.8 }}>
         {icon}
       </div>
-      <span className="coaster-label" style={{ marginTop: '2px' }}>
+      <span className="coaster-label" style={{ fontWeight: '800' }}>
         {label}
       </span>
     </button>
