@@ -88,13 +88,13 @@ export const NutritionFactsDisplay: React.FC<NutritionFactsDisplayProps> = ({ fo
       {renderRow('Calories', 'cal', ' kcal', true)}
       {renderRow('Protein', 'p', 'g', true)}
       {renderRow('Carbs', 'c', 'g', true)}
+      {renderRow('Sugars', 'sugars', 'g', false, true)}
       {renderRow('Fat', 'f', 'g', true)}
       
       {/* Additional Macros */}
       {renderRow('Fiber', 'fb', 'g')}
       {renderRow('Soluble Fiber', 'solubleFiber', 'g', false, true)}
       {renderRow('Insoluble Fiber', 'insolubleFiber', 'g', false, true)}
-      {renderRow('Sugars', 'sugars', 'g')}
       {renderRow('Sat Fat', 'sat', 'g')}
       {renderRow('Sodium', 'Sodium', 'mg')}
       {renderRow('Potassium', 'Potassium', 'mg')}
