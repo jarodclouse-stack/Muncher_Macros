@@ -373,7 +373,7 @@ export const NutritionView: React.FC = () => {
                   const label = nutrient.k;
                   const unit = nutrient.u;
                   const val = totals[label.toLowerCase()] || totals[label] || 0;
-                  const goal = computed.micros ? computed.micros[label] : computed.computedMicros[label];
+                  const goal = computed.computedMicros?.[label] || (computed.micros ? computed.micros[label] : 0);
                   const { pct, color: barColor } = getNutrientProgress(val, goal || 0, label);
                   const isExpanded = expandedMicro === label;
                   const benefitsInfo = NUTRIENT_BENEFITS[label as keyof typeof NUTRIENT_BENEFITS];
