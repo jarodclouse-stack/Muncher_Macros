@@ -166,7 +166,7 @@ export const PantryView: React.FC<PantryViewProps> = ({ initialMeal, onClose, is
     return localStorage.getItem('mm_pantry_guide_expanded') === 'true';
   });
   const [pantryMode, setPantryMode] = useState<'list' | 'create'>('list');
-  const [createTab, setCreateTab] = useState<'basics' | 'micros' | 'recipe'>('basics');
+  const [createTab, setCreateTab] = useState<'basics' | 'micros' | 'recipe'>('recipe');
   
   const [sortBy] = useState<'recent' | 'name' | 'cal' | 'p'>('recent');
   const [filterType, setFilterType] = useState<'all' | 'fav' | 'high-p' | 'low-c' | 'recipe'>('all');
@@ -1670,15 +1670,14 @@ export const PantryView: React.FC<PantryViewProps> = ({ initialMeal, onClose, is
             </div>
           </div>
 
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '8px', marginBottom: '16px' }}>
-            <button onClick={() => setCreateTab('basics')} style={{ padding: '10px', borderRadius: '12px', border: createTab === 'basics' ? '1.5px solid var(--theme-accent)' : '1.5px solid rgba(255,255,255,0.13)', background: createTab === 'basics' ? 'var(--theme-accent-dim)' : 'var(--theme-panel-dim)', color: createTab === 'basics' ? 'var(--theme-accent)' : 'rgba(255,255,255,0.9)', fontWeight: '800', fontSize: '10px', textTransform: 'uppercase', cursor: 'pointer', transition: 'all 0.2s' }}>Basics</button>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '8px', marginBottom: '16px' }}>
+            <button onClick={() => setCreateTab('recipe')} style={{ padding: '10px', borderRadius: '12px', border: createTab === 'recipe' || createTab === 'basics' ? '1.5px solid var(--theme-accent)' : '1.5px solid rgba(255,255,255,0.13)', background: createTab === 'recipe' || createTab === 'basics' ? 'var(--theme-accent-dim)' : 'var(--theme-panel-dim)', color: createTab === 'recipe' || createTab === 'basics' ? 'var(--theme-accent)' : 'rgba(255,255,255,0.9)', fontWeight: '800', fontSize: '10px', textTransform: 'uppercase', cursor: 'pointer', transition: 'all 0.2s' }}>Recipe Builder</button>
             <button onClick={() => setCreateTab('micros')} style={{ padding: '10px', borderRadius: '12px', border: createTab === 'micros' ? '1.5px solid var(--theme-accent)' : '1.5px solid rgba(255,255,255,0.13)', background: createTab === 'micros' ? 'var(--theme-accent-dim)' : 'var(--theme-panel-dim)', color: createTab === 'micros' ? 'var(--theme-accent)' : 'rgba(255,255,255,0.9)', fontWeight: '800', fontSize: '10px', textTransform: 'uppercase', cursor: 'pointer', transition: 'all 0.2s' }}>Micros & Health</button>
-            <button onClick={() => setCreateTab('recipe')} style={{ padding: '10px', borderRadius: '12px', border: createTab === 'recipe' ? '1.5px solid var(--theme-accent)' : '1.5px solid rgba(255,255,255,0.13)', background: createTab === 'recipe' ? 'var(--theme-accent-dim)' : 'var(--theme-panel-dim)', color: createTab === 'recipe' ? 'var(--theme-accent)' : 'rgba(255,255,255,0.9)', fontWeight: '800', fontSize: '10px', textTransform: 'uppercase', cursor: 'pointer', transition: 'all 0.2s' }}>Recipe Builder</button>
           </div>
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-md)' }}>
             
-            <div style={{ display: createTab === 'basics' ? 'flex' : 'none', flexDirection: 'column', gap: 'var(--space-md)' }}>
+            <div style={{ display: (createTab === 'recipe' || createTab === 'basics') ? 'flex' : 'none', flexDirection: 'column', gap: 'var(--space-md)' }}>
               <EntryField label="Food Name" value={form.name} onChange={v => setForm({...form, name: v})} placeholder="e.g. Grilled Chicken" />
             
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 'var(--space-sm)' }}>
@@ -1774,7 +1773,7 @@ export const PantryView: React.FC<PantryViewProps> = ({ initialMeal, onClose, is
 
             </div>
 
-            <div style={{ display: createTab === 'recipe' ? 'flex' : 'none', flexDirection: 'column', gap: 'var(--space-md)' }}>
+            <div style={{ display: (createTab === 'recipe' || createTab === 'basics') ? 'flex' : 'none', flexDirection: 'column', gap: 'var(--space-md)' }}>
               <div style={{ background: 'rgba(255,255,255,0.03)', borderRadius: '16px', padding: '16px', border: '1px solid var(--theme-border)' }}>
                 <label style={{ fontSize: '10px', fontWeight: '800', color: 'var(--theme-accent)', marginBottom: '8px', display: 'block' }}>ADD INGREDIENTS</label>
               <form onSubmit={handleIngSearch} style={{ display: 'flex', gap: '8px', marginBottom: '8px' }}>

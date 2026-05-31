@@ -1304,7 +1304,7 @@ nav.glass-nav{
   /* Premium Filter Bubbles (The Text Bubbles from user request) */
   .pantry-filter-chip {
     background: rgba(255,255,255,0.03);
-    border: 1px solid var(--theme-border, rgba(255,255,255,0.08));
+    border: 1.5px solid rgba(255,255,255,0.18);
     box-shadow: 0 4px 12px rgba(0,0,0,0.12);
     transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1) !important;
   }
