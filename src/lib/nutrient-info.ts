@@ -302,7 +302,7 @@ export const NUTRIENT_BENEFITS: Record<string, { summary: string; points: string
       'Fluid Balance: Helps regulate sodium/potassium levels across cell membranes.'
     ]
   },
-  'Vitamin B7 (Biotin)': {
+  'Vitamin B7': {
     summary: '💅 Carbon Selection & Keratin Flux',
     points: [
       'Gluconeogenesis: A vital cofactor for enzymes that create glucose from protein.',
