@@ -74,11 +74,39 @@ async function anthropicJson(prompt, apiKey, maxTokens = 4000) {
   throw new Error(lastError);
 }
 
+function parseNum(val) {
+  if (val == null) return 0;
+  if (typeof val === 'number') return val;
+  const cleaned = String(val).replace(/[^\d.-]/g, '');
+  const n = parseFloat(cleaned);
+  return isNaN(n) ? 0 : n;
+}
+
 function normalizeResult(f) {
-  const p = Math.round((Number(f.p) || 0) * 10) / 10;
-  const c = Math.round((Number(f.c) || 0) * 10) / 10;
-  const fat = Math.round((Number(f.f) || 0) * 10) / 10;
-  const cal = Math.round(p * 4 + c * 4 + fat * 9);
+  const p = Math.round(parseNum(f.p != null ? f.p : f.protein) * 10) / 10;
+  const sugars = Math.round(parseNum(f.sugars != null ? f.sugars : f.sugar) * 10) / 10;
+  const fb = Math.round(parseNum(f.fb != null ? f.fb : (f.fiber != null ? f.fiber : f.Fiber)) * 10) / 10;
+  
+  let c = Math.round(parseNum(f.c != null ? f.c : (f.carbs != null ? f.carbs : f.carbohydrates)) * 10) / 10;
+  // Enforce Carbohydrates >= sugars + fiber
+  if (c < sugars + fb) {
+    c = Math.round((sugars + fb) * 10) / 10;
+  }
+
+  const fat = Math.round(parseNum(f.f != null ? f.f : f.fat) * 10) / 10;
+  
+  // Calculate macro-based calories
+  let cal = Math.round(p * 4 + c * 4 + fat * 9);
+  
+  // Self-Healing Macro Reconstructor
+  if (cal === 0) {
+    const rawCal = Math.round(parseNum(f.cal != null ? f.cal : f.calories));
+    if (rawCal > 0) {
+      // Set carbs to explain calories, e.g. for sugary/fat-free drinks/beverages
+      c = Math.round((rawCal / 4) * 10) / 10;
+      cal = rawCal;
+    }
+  }
 
   return {
     name: String(f.name || 'Unknown Item'),
@@ -86,69 +114,69 @@ function normalizeResult(f) {
     sQty: Number(f.detectedCount || f.sQty || f.qty || f.quantity || 1),
     sUnit: String(f.sUnit || f.unit || 'piece'),
     cal, p, c, f: fat,
-    fb: Math.round((Number(f.fb || f.Fiber || f.fiber) || 0) * 10) / 10,
-    sat: Math.round((Number(f.sat) || 0) * 10) / 10,
-    trans: Math.round((Number(f.trans) || 0) * 10) / 10,
-    mono: Math.round((Number(f.mono) || 0) * 10) / 10,
-    poly: Math.round((Number(f.poly) || 0) * 10) / 10,
-    chol: Math.round(Number(f.chol) || 0),
-    sugars: Math.round((Number(f.sugars) || 0) * 10) / 10,
-    Sodium: Math.round(Number(f.Sodium) || 0),
-    Potassium: Math.round(Number(f.Potassium) || 0),
-    Calcium: Math.round(Number(f.Calcium) || 0),
-    Iron: Math.round((Number(f.Iron) || 0) * 10) / 10,
-    'Vitamin C': Math.round((Number(f['Vitamin C']) || 0) * 10) / 10,
-    'Vitamin A': Math.round(Number(f['Vitamin A']) || 0),
-    'Vitamin D': Math.round((Number(f['Vitamin D']) || 0) * 10) / 10,
-    'Vitamin B1': Math.round((Number(f['Vitamin B1']) || 0) * 100) / 100,
-    'Vitamin B2': Math.round((Number(f['Vitamin B2']) || 0) * 100) / 100,
-    'Vitamin B3': Math.round((Number(f['Vitamin B3']) || 0) * 100) / 100,
-    'Vitamin B5': Math.round((Number(f['Vitamin B5']) || 0) * 100) / 100,
-    'Vitamin B6': Math.round((Number(f['Vitamin B6']) || 0) * 100) / 100,
-    'Vitamin B7': Math.round((Number(f['Vitamin B7']) || 0) * 100) / 100,
-    'Vitamin B9': Math.round((Number(f['Vitamin B9']) || 0) * 100) / 100,
-    'Vitamin B12': Math.round((Number(f['Vitamin B12']) || 0) * 100) / 100,
-    'Vitamin E': Math.round((Number(f['Vitamin E']) || 0) * 10) / 10,
-    'Vitamin K': Math.round((Number(f['Vitamin K']) || 0) * 10) / 10,
-    Magnesium: Math.round(Number(f.Magnesium) || 0),
-    Phosphorus: Math.round(Number(f.Phosphorus) || 0),
-    Zinc: Math.round((Number(f.Zinc) || 0) * 10) / 10,
-    Copper: Math.round((Number(f.Copper) || 0) * 1000) / 1000,
-    Manganese: Math.round((Number(f.Manganese) || 0) * 100) / 100,
-    Selenium: Math.round((Number(f.Selenium) || 0) * 10) / 10,
-    Chloride: Math.round(Number(f.Chloride) || 0),
-    Iodine: Math.round((Number(f.Iodine) || 0) * 10) / 10,
-    Chromium: Math.round((Number(f.Chromium) || 0) * 10) / 10,
-    Molybdenum: Math.round((Number(f.Molybdenum) || 0) * 10) / 10,
-    Fluoride: Math.round((Number(f.Fluoride) || 0) * 10) / 10,
-    Fiber: Math.round((Number(f.Fiber || f.fb || f.fiber) || 0) * 10) / 10,
-    'Soluble Fiber': Math.round((Number(f['Soluble Fiber'] || f.solubleFiber || f.soluble_fiber) || 0) * 10) / 10,
-    'Insoluble Fiber': Math.round((Number(f['Insoluble Fiber'] || f.insolubleFiber || f.insoluble_fiber) || 0) * 10) / 10,
-    solubleFiber: Math.round((Number(f['Soluble Fiber'] || f.solubleFiber || f.soluble_fiber) || 0) * 10) / 10,
-    insolubleFiber: Math.round((Number(f['Insoluble Fiber'] || f.insolubleFiber || f.insoluble_fiber) || 0) * 10) / 10,
+    fb,
+    sat: Math.round(parseNum(f.sat) * 10) / 10,
+    trans: Math.round(parseNum(f.trans) * 10) / 10,
+    mono: Math.round(parseNum(f.mono) * 10) / 10,
+    poly: Math.round(parseNum(f.poly) * 10) / 10,
+    chol: Math.round(parseNum(f.chol || f.cholesterol)),
+    sugars,
+    Sodium: Math.round(parseNum(f.Sodium || f.sodium)),
+    Potassium: Math.round(parseNum(f.Potassium || f.potassium)),
+    Calcium: Math.round(parseNum(f.Calcium || f.calcium)),
+    Iron: Math.round(parseNum(f.Iron || f.iron) * 10) / 10,
+    'Vitamin C': Math.round(parseNum(f['Vitamin C'] || f.vitamin_c) * 10) / 10,
+    'Vitamin A': Math.round(parseNum(f['Vitamin A'] || f.vitamin_a)),
+    'Vitamin D': Math.round(parseNum(f['Vitamin D'] || f.vitamin_d) * 10) / 10,
+    'Vitamin B1': Math.round(parseNum(f['Vitamin B1'] || f.vitamin_b1) * 100) / 100,
+    'Vitamin B2': Math.round(parseNum(f['Vitamin B2'] || f.vitamin_b2) * 100) / 100,
+    'Vitamin B3': Math.round(parseNum(f['Vitamin B3'] || f.vitamin_b3) * 100) / 100,
+    'Vitamin B5': Math.round(parseNum(f['Vitamin B5'] || f.vitamin_b5) * 100) / 100,
+    'Vitamin B6': Math.round(parseNum(f['Vitamin B6'] || f.vitamin_b6) * 100) / 100,
+    'Vitamin B7': Math.round(parseNum(f['Vitamin B7'] || f.vitamin_b7) * 100) / 100,
+    'Vitamin B9': Math.round(parseNum(f['Vitamin B9'] || f.vitamin_b9) * 100) / 100,
+    'Vitamin B12': Math.round(parseNum(f['Vitamin B12'] || f.vitamin_b12) * 100) / 100,
+    'Vitamin E': Math.round(parseNum(f['Vitamin E'] || f.vitamin_e) * 10) / 10,
+    'Vitamin K': Math.round(parseNum(f['Vitamin K'] || f.vitamin_k) * 10) / 10,
+    Magnesium: Math.round(parseNum(f.Magnesium || f.magnesium)),
+    Phosphorus: Math.round(parseNum(f.Phosphorus || f.phosphorus)),
+    Zinc: Math.round(parseNum(f.Zinc || f.zinc) * 10) / 10,
+    Copper: Math.round(parseNum(f.Copper || f.copper) * 1000) / 1000,
+    Manganese: Math.round(parseNum(f.Manganese || f.manganese) * 100) / 100,
+    Selenium: Math.round(parseNum(f.Selenium || f.selenium) * 10) / 10,
+    Chloride: Math.round(parseNum(f.Chloride || f.chloride)),
+    Iodine: Math.round(parseNum(f.Iodine || f.iodine) * 10) / 10,
+    Chromium: Math.round(parseNum(f.Chromium || f.chromium) * 10) / 10,
+    Molybdenum: Math.round(parseNum(f.Molybdenum || f.molybdenum) * 10) / 10,
+    Fluoride: Math.round(parseNum(f.Fluoride || f.fluoride) * 10) / 10,
+    Fiber: fb,
+    'Soluble Fiber': Math.round(parseNum(f['Soluble Fiber'] || f.solubleFiber || f.soluble_fiber) * 10) / 10,
+    'Insoluble Fiber': Math.round(parseNum(f['Insoluble Fiber'] || f.insolubleFiber || f.insoluble_fiber) * 10) / 10,
+    solubleFiber: Math.round(parseNum(f['Soluble Fiber'] || f.solubleFiber || f.soluble_fiber) * 10) / 10,
+    insolubleFiber: Math.round(parseNum(f['Insoluble Fiber'] || f.insolubleFiber || f.insoluble_fiber) * 10) / 10,
     _src: 'ai',
     // Legacy support
     calories: cal,
     protein: p,
     carbs: c,
     fat: fat,
-    fiber: Math.round((Number(f.fb || f.Fiber || f.fiber) || 0) * 10) / 10,
-    sugar: Math.round((Number(f.sugars) || 0) * 10) / 10,
-    sodium: Math.round(Number(f.Sodium) || 0),
-    potassium: Math.round(Number(f.Potassium) || 0),
-    cholesterol: Math.round(Number(f.chol) || 0),
-    saturatedFat: Math.round((Number(f.sat) || 0) * 10) / 10,
-    monounsaturatedFat: Math.round((Number(f.mono) || 0) * 10) / 10,
-    polyunsaturatedFat: Math.round((Number(f.poly) || 0) * 10) / 10,
-    chloride: Math.round(Number(f.Chloride) || 0),
-    iodine: Math.round((Number(f.Iodine) || 0) * 10) / 10,
-    chromium: Math.round((Number(f.Chromium) || 0) * 10) / 10,
-    molybdenum: Math.round((Number(f.Molybdenum) || 0) * 10) / 10,
-    fluoride: Math.round((Number(f.Fluoride) || 0) * 10) / 10,
-    solubleFiber: Math.round((Number(f['Soluble Fiber'] || f.solubleFiber || f.soluble_fiber) || 0) * 10) / 10,
-    insolubleFiber: Math.round((Number(f['Insoluble Fiber'] || f.insolubleFiber || f.insoluble_fiber) || 0) * 10) / 10,
+    fiber: fb,
+    sugar: sugars,
+    sodium: Math.round(parseNum(f.Sodium || f.sodium)),
+    potassium: Math.round(parseNum(f.Potassium || f.potassium)),
+    cholesterol: Math.round(parseNum(f.chol || f.cholesterol)),
+    saturatedFat: Math.round(parseNum(f.sat || f.saturatedFat) * 10) / 10,
+    monounsaturatedFat: Math.round(parseNum(f.mono || f.monounsaturatedFat) * 10) / 10,
+    polyunsaturatedFat: Math.round(parseNum(f.poly || f.polyunsaturatedFat) * 10) / 10,
+    chloride: Math.round(parseNum(f.Chloride || f.chloride)),
+    iodine: Math.round(parseNum(f.Iodine || f.iodine) * 10) / 10,
+    chromium: Math.round(parseNum(f.Chromium || f.chromium) * 10) / 10,
+    molybdenum: Math.round(parseNum(f.Molybdenum || f.molybdenum) * 10) / 10,
+    fluoride: Math.round(parseNum(f.Fluoride || f.fluoride) * 10) / 10,
+    solubleFiber: Math.round(parseNum(f['Soluble Fiber'] || f.solubleFiber || f.soluble_fiber) * 10) / 10,
+    insolubleFiber: Math.round(parseNum(f['Insoluble Fiber'] || f.insolubleFiber || f.insoluble_fiber) * 10) / 10,
     stagedQty: String(f.detectedCount || f.sQty || f.qty || f.quantity || 1),
-    stagedUnit: String(f.sUnit || f.unit || 'serving')
+    stagedUnit: String(f.sUnit || f.unit || 'piece')
   };
 }
 
@@ -169,8 +197,11 @@ export default async function handler(req, res) {
   For each match, provide a complete nutrient breakdown scaled to its standard "BASE" serving.
 
   DIETARY PERCEPTION PROTOCOL:
-  1. ITEM COUNT/WEIGHT: Identify the base serving weight or count (e.g. 174 for a 174g breast).
-  2. NUTRITION: Extract nutrition for exactly that quantity. You MUST estimate and populate every single micronutrient and trace mineral key listed below. Do not leave them out or set them all to 0. Realistically estimate each value using scientific nutrition databases (USDA/NCCDB).
+  1. BRANDED & COMMERCIAL PRODUCTS: For widely known commercial products (e.g. "Pepsi", "Coca-Cola", "Oreo", "Big Mac"), you MUST use their exact, real-world manufacturer nutrition label facts. A standard 12 fl oz (355ml) regular Pepsi has exactly 150 kcal, 41g carbohydrates (all sugars), 0g protein, and 0g fat. Regular Coca-Cola has 140 kcal, 39g carbs. Do not guess or hallucinate generic or blank numbers (like 0g carbs for regular Pepsi) for standard commercial items.
+  2. TOTAL CARBOHYDRATES RULE: The "c" (carbs) key represents TOTAL carbohydrates. Total carbohydrates MUST include all simple sugars ("sugars") and dietary fiber ("fb"). Therefore, it is a mathematical requirement that: c >= sugars + fb. For example, if a beverage has 41g of sugars, its "c" value MUST be at least 41g. Never set "c" to 0 if "sugars" is non-zero.
+  3. MACRO-CALORIE ALIGNMENT: Stated calories ("cal") must be mathematically aligned with the macronutrients: cal = p * 4 + c * 4 + f * 9. Stating a positive calorie count (like 150 kcal) while setting all macros (protein, carbs, fat) to 0 is an extreme error. If a food has calories, it MUST have the corresponding macros that produce those calories.
+  4. ITEM COUNT/WEIGHT: Identify the base serving weight or count (e.g. 174 for a 174g breast).
+  5. NUTRITION: Extract nutrition for exactly that quantity. You MUST estimate and populate every single micronutrient and trace mineral key listed below. Do not leave them out or set them all to 0. Realistically estimate each value using scientific nutrition databases (USDA/NCCDB).
   
   JSON keys: name, serving, detectedCount, sUnit, cal, p, c, f, fb, sat, trans, mono, poly, chol, sugars, Sodium, Potassium, Calcium, Iron, "Vitamin C", "Vitamin A", "Vitamin D", "Vitamin B1", "Vitamin B2", "Vitamin B3", "Vitamin B5", "Vitamin B6", "Vitamin B7", "Vitamin B9", "Vitamin B12", "Vitamin E", "Vitamin K", "Magnesium", "Phosphorus", "Zinc", "Copper", "Manganese", "Selenium", "Chloride", "Iodine", "Chromium", "Molybdenum", "Fluoride", "Fiber", "Soluble Fiber", "Insoluble Fiber".
 

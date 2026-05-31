@@ -104,7 +104,7 @@ export function computeGoals(g: any) {
   const computedMicros = { ...baseMicros, ...(g.customMicros || {}) };
 
   return { 
-    proteinG, targetCal, carbG, fatG, tdee, bmr, 
+    proteinG, targetCal: Math.round(targetCal), carbG, fatG, tdee: Math.round(tdee), bmr: Math.round(bmr), 
     macroP: pctP, macroC: pctC, macroF: pctF,
     computedMicros, micros: g.customMicros || null 
   };

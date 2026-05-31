@@ -89,7 +89,7 @@ export function scaleFoodByAmount(food: any, amount: number | string): any {
   return {
     ...f,
     amount: multiplier,
-    calories: round(safeNum(f.calories) * multiplier),
+    calories: Math.round(safeNum(f.calories) * multiplier),
     protein: round(safeNum(f.protein) * multiplier),
     carbs: round(safeNum(f.carbs) * multiplier),
     fiber: round(safeNum(f.fiber) * multiplier),
@@ -121,9 +121,17 @@ export function scaleLegacyFoodByAmount(food: any, amount: number | string): any
     
     const value = f[key];
     if (typeof value === 'number') {
-      scaled[key] = round(value * multiplier);
+      if (key === 'calories' || key === 'cal') {
+        scaled[key] = Math.round(value * multiplier);
+      } else {
+        scaled[key] = round(value * multiplier);
+      }
     } else if (typeof value === 'string' && !isNaN(Number(value)) && value.trim() !== '') {
-      scaled[key] = round(Number(value) * multiplier);
+      if (key === 'calories' || key === 'cal') {
+        scaled[key] = Math.round(Number(value) * multiplier);
+      } else {
+        scaled[key] = round(Number(value) * multiplier);
+      }
     }
   });
 
@@ -172,7 +180,13 @@ export function sumFoods(foodEntries: any[]): any {
     return acc;
   }, initial);
   
-  Object.keys(totals).forEach((k) => { totals[k] = round(totals[k]); });
+  Object.keys(totals).forEach((k) => {
+    if (k === 'calories' || k === 'cal') {
+      totals[k] = Math.round(totals[k]);
+    } else {
+      totals[k] = round(totals[k]);
+    }
+  });
   return totals;
 }
 
@@ -213,7 +227,10 @@ export const enforceCalorieConsistency = (food: Food): Food => {
   const f = Number(food.f) || 0;
   
   if (food.cal !== undefined && food.cal !== null && Number(food.cal) > 0) {
-    return food;
+    return {
+      ...food,
+      cal: Math.round(Number(food.cal))
+    };
   }
 
   const macroCals = Math.round(p * 4 + c * 4 + f * 9);

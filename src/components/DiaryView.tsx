@@ -247,12 +247,12 @@ export const DiaryView: React.FC = () => {
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 'var(--space-md)', marginBottom: 'var(--space-md)' }}>
           <div className="glass-card" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', padding: 'var(--space-md)', boxShadow: '0 8px 32px rgba(0,0,0,0.1)' }}>
             <span className="luminous-absolute-white" style={{ opacity: 0.8, fontSize: '11px', marginBottom: '4px', fontWeight: '900', textTransform: 'uppercase', letterSpacing: '1px' }}>Consumed</span>
-            <span className="luminous-absolute-white" style={{ fontSize: '32px', fontWeight: '900', textShadow: '0 0 15px rgba(255,255,255,0.4)', lineHeight: '1' }}>{totals.calories}</span>
+            <span className="luminous-absolute-white" style={{ fontSize: '32px', fontWeight: '900', textShadow: '0 0 15px rgba(255,255,255,0.4)', lineHeight: '1' }}>{Math.round(totals.calories)}</span>
             <span className="luminous-absolute-white" style={{ opacity: 0.6, fontSize: '10px', marginTop: '6px', fontWeight: '900', letterSpacing: '1.5px', textTransform: 'uppercase' }}>kcal</span>
           </div>
           <div className="glass-card" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', padding: 'var(--space-md)', boxShadow: '0 8px 32px rgba(0,0,0,0.1)' }}>
             <span className="luminous-absolute-white" style={{ opacity: 0.8, fontSize: '11px', marginBottom: '4px', fontWeight: '900', textTransform: 'uppercase', letterSpacing: '1px' }}>Remaining</span>
-            <span className="luminous-absolute-white" style={{ fontSize: '32px', fontWeight: '900', textShadow: '0 0 15px rgba(255,255,255,0.4)', lineHeight: '1' }}>{Math.abs(remainingCals)}</span>
+            <span className="luminous-absolute-white" style={{ fontSize: '32px', fontWeight: '900', textShadow: '0 0 15px rgba(255,255,255,0.4)', lineHeight: '1' }}>{Math.round(Math.abs(remainingCals))}</span>
             <span className="luminous-absolute-white" style={{ fontSize: '10px', marginTop: '6px', fontWeight: '900', letterSpacing: '1.5px', textTransform: 'uppercase' }}>{remainingCals < 0 ? 'OVER' : 'TARGET'}</span>
           </div>
         </div>
@@ -295,7 +295,7 @@ export const DiaryView: React.FC = () => {
       {MEALS.map(meal => {
         const mealFoods = foodLog.filter((l: any) => l.meal === meal);
         const mealTotals = sumFoods(mealFoods.map((l:any) => l.f));
-        const mealCals = mealTotals.calories;
+        const mealCals = Math.round(mealTotals.calories);
         
 
 

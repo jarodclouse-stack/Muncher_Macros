@@ -906,7 +906,7 @@ export const PantryView: React.FC<PantryViewProps> = ({ initialMeal, onClose, is
                       <div style={{ fontWeight: '900', fontSize: '14px', color: 'var(--theme-text)' }}>{f.name}</div>
                       {f.brand && <div style={{ fontSize: '10px', color: 'var(--theme-text-dim)', opacity: 0.6, fontWeight: '700' }}>• {f.brand}</div>}
                     </div>
-                    <div style={{ fontSize: '11px', color: 'var(--theme-text-dim)', marginTop: '4px', fontWeight: '600' }}>{f.serving} • {f.cal} kcal • P:{f.p}g C:{f.c}g F:{f.f}g</div>
+                    <div style={{ fontSize: '11px', color: 'var(--theme-text-dim)', marginTop: '4px', fontWeight: '600' }}>{f.serving} • {Math.round(Number(f.cal) || 0)} kcal • P:{f.p}g C:{f.c}g F:{f.f}g</div>
                   </div>
                   {f.isLocal && <BookmarkCheck size={18} color="var(--theme-success)" />}
                 </div>
@@ -1455,7 +1455,7 @@ export const PantryView: React.FC<PantryViewProps> = ({ initialMeal, onClose, is
                             fontSize: '11px', fontWeight: '800', color: '#fff', marginBottom: '2px',
                             overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap'
                           }}>{f.name}</div>
-                          <div style={{ fontSize: '9px', color: 'var(--theme-text-dim)' }}>{f.cal} kcal</div>
+                          <div style={{ fontSize: '9px', color: 'var(--theme-text-dim)' }}>{Math.round(Number(f.cal) || 0)} kcal</div>
                         </button>
                       ))
                     )}
@@ -1712,7 +1712,7 @@ export const PantryView: React.FC<PantryViewProps> = ({ initialMeal, onClose, is
                   }}>
                   <div style={{ flex: 1 }}>
                     <div style={{ fontWeight: '700', fontSize: '14px', color: 'var(--theme-text-on-panel)' }}>{f.name}</div>
-                    <div style={{ fontSize: '11px', color: 'var(--theme-text-dim-on-panel)', marginTop: '2px' }}>{f.serving} • {f.cal} kcal • P:{f.p}g C:{f.c}g F:{f.f}g</div>
+                    <div style={{ fontSize: '11px', color: 'var(--theme-text-dim-on-panel)', marginTop: '2px' }}>{f.serving} • {Math.round(Number(f.cal) || 0)} kcal • P:{f.p}g C:{f.c}g F:{f.f}g</div>
                   </div>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
                     <button 
