@@ -2191,6 +2191,18 @@ export const PantryView: React.FC<PantryViewProps> = ({ initialMeal, onClose, is
                 const isHighCarb = (c * 4) / (totalCal || 1) > 0.6;
                 const isHighFat = (f * 9) / (totalCal || 1) > 0.5;
 
+                // Mineral density flags — named specifically so user knows which mineral
+                const ironMg = (Number((configuringFood as any).Iron) || 0) * multiplier;
+                const sodiumMg = (Number((configuringFood as any).Sodium || (configuringFood as any).sodium) || 0) * multiplier;
+                const calciumMg = (Number((configuringFood as any).Calcium || (configuringFood as any).calcium) || 0) * multiplier;
+                const potassiumMg = (Number((configuringFood as any).Potassium || (configuringFood as any).potassium) || 0) * multiplier;
+
+                const mineralBadges: { label: string; emoji: string }[] = [];
+                if (ironMg > 4) mineralBadges.push({ label: 'Dense in Iron', emoji: '🔩' });
+                if (sodiumMg > 600) mineralBadges.push({ label: 'Dense in Sodium', emoji: '🧂' });
+                if (calciumMg > 300) mineralBadges.push({ label: 'Dense in Calcium', emoji: '🦴' });
+                if (potassiumMg > 400) mineralBadges.push({ label: 'Dense in Potassium', emoji: '⚡' });
+
                 const carbClass = getCarbClassification({ c, sugars, fb, f, p, cal: totalCal });
 
                 return (
@@ -2225,6 +2237,11 @@ export const PantryView: React.FC<PantryViewProps> = ({ initialMeal, onClose, is
                     )}
                     {isHighFat && <div style={{ padding: '4px 10px', background: 'rgba(255, 107, 107, 0.1)', border: '1px solid #FF6B6B', borderRadius: '10px', color: '#FF6B6B', fontSize: '10px', fontWeight: '800' }}>🥑 HIGH FAT CONTENT</div>}
                     {totalCal > 500 && <div style={{ padding: '4px 10px', background: 'rgba(255, 255, 255, 0.05)', border: '1px solid rgba(255,255,255,0.2)', borderRadius: '10px', color: '#fff', fontSize: '10px', fontWeight: '800' }}>🍽️ HEAVY MEAL</div>}
+                    {mineralBadges.map(b => (
+                      <div key={b.label} style={{ padding: '4px 10px', background: 'rgba(0, 201, 255, 0.08)', border: '1px solid rgba(0,201,255,0.35)', borderRadius: '10px', color: 'var(--theme-accent)', fontSize: '10px', fontWeight: '800' }}>
+                        {b.emoji} {b.label.toUpperCase()}
+                      </div>
+                    ))}
                   </div>
                 );
               })()}
