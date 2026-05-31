@@ -14,7 +14,7 @@ import { LogOut, Plus, Settings, Sparkles, Trophy, Menu, BookOpen, Apple, Trendi
 
 export const MainDashboard: React.FC = () => {
   const { user, logout } = useAuth();
-  const { localCache, dataReady, isScannerActive } = useDiary();
+  const { localCache, dataReady } = useDiary();
   const [activeTab, setActiveTab] = useState<'diary' | 'nutrition' | 'progress' | 'pantry' | 'prestige'>('diary');
   const [showSettingsModal, setShowSettingsModal] = useState(false);
   const [showVaultModal, setShowVaultModal] = useState(false);
@@ -175,7 +175,7 @@ export const MainDashboard: React.FC = () => {
       {/* Main Content Area */}
       <main className="app-container" style={{ 
         paddingTop: activeTab === 'pantry' ? 'calc(56px + env(safe-area-inset-top))' : 'calc(56px + env(safe-area-inset-top) + var(--space-xl))', 
-        paddingBottom: isScannerActive ? '0' : 'calc(80px + max(12px, env(safe-area-inset-bottom)))',
+        paddingBottom: 'calc(80px + max(12px, env(safe-area-inset-bottom)))',
         background: 'transparent'
       }}>
         {activeTab === 'diary' && <DiaryView />}
@@ -190,7 +190,6 @@ export const MainDashboard: React.FC = () => {
       {showBadgesModal && <BadgesView onClose={() => setShowBadgesModal(false)} />}
 
       {/* Bottom Navigation */}
-      {!isScannerActive && (
         <div style={{
           position: 'fixed',
           bottom: 0,
@@ -252,7 +251,6 @@ export const MainDashboard: React.FC = () => {
             <NavItem active={activeTab === 'progress'} onClick={() => setActiveTab('progress')} label="Goals" icon={<Target size={18} />} />
           </nav>
         </div>
-      )}
 
     </div>
   );

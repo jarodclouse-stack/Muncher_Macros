@@ -15,12 +15,12 @@ export const SearchCoaster: React.FC<SearchCoasterProps> = ({ activeTab, onTabCh
       position: 'relative', 
       width: '100%', 
       boxSizing: 'border-box',
-      padding: '8px 16px 24px',
-      background: 'linear-gradient(135deg, rgba(255,255,255,0.03) 0%, rgba(0, 201, 255, 0.04) 50%, rgba(146, 254, 157, 0.04) 100%)',
+      padding: '16px',
+      background: 'var(--theme-panel, rgba(18, 21, 32, 0.8))',
       borderRadius: '24px',
-      border: '1px solid rgba(255,255,255,0.08)',
+      border: '1.5px solid var(--theme-border, rgba(255, 255, 255, 0.08))',
       backdropFilter: 'blur(18px)',
-      boxShadow: '0 15px 45px rgba(0,0,0,0.3)',
+      boxShadow: 'var(--theme-shadow, 0 15px 45px rgba(0,0,0,0.3))',
       margin: '0 0 16px 0',
       overflow: 'hidden', // Contain the heartbeat
       flexShrink: 0
@@ -33,31 +33,31 @@ export const SearchCoaster: React.FC<SearchCoasterProps> = ({ activeTab, onTabCh
         width: '120px',
         height: '80px',
         transform: 'translate(-50%, -50%)',
-        background: 'radial-gradient(ellipse at center, var(--heartbeat-color, rgba(138, 43, 226, 0.15)) 0%, transparent 70%)',
+        background: 'radial-gradient(ellipse at center, var(--theme-accent-dim, rgba(0, 245, 212, 0.15)) 0%, transparent 70%)',
         filter: 'blur(25px)',
         zIndex: 0,
         animation: 'heartbeat-flow 8s infinite alternate ease-in-out',
         pointerEvents: 'none',
-        opacity: 0.6
+        opacity: 0.5
       }} />
 
       <style>{`
         @keyframes heartbeat-flow {
           0% { 
             transform: translate(-55%, -45%) scale(1); 
-            background: radial-gradient(ellipse at center, rgba(138, 43, 226, 0.2) 0%, transparent 70%);
+            background: radial-gradient(ellipse at center, var(--theme-accent-dim, rgba(0, 245, 212, 0.15)) 0%, transparent 70%);
           }
           33% { 
             transform: translate(-45%, -55%) scale(1.1); 
-            background: radial-gradient(ellipse at center, rgba(102, 51, 153, 0.18) 0%, transparent 70%);
+            background: radial-gradient(ellipse at center, var(--theme-accent-dim, rgba(0, 245, 212, 0.15)) 0%, transparent 70%);
           }
           66% { 
             transform: translate(-50%, -50%) scale(0.95); 
-            background: radial-gradient(ellipse at center, rgba(199, 21, 133, 0.15) 0%, transparent 70%);
+            background: radial-gradient(ellipse at center, var(--theme-accent-dim, rgba(0, 245, 212, 0.15)) 0%, transparent 70%);
           }
           100% { 
             transform: translate(-52%, -48%) scale(1.05); 
-            background: radial-gradient(ellipse at center, rgba(75, 0, 130, 0.2) 0%, transparent 70%);
+            background: radial-gradient(ellipse at center, var(--theme-accent-dim, rgba(0, 245, 212, 0.15)) 0%, transparent 70%);
           }
         }
         :root {
@@ -126,15 +126,27 @@ const TabBtn: React.FC<TabBtnProps> = ({ active, onClick, icon, label }) => {
         alignItems: 'center',
         justifyContent: 'center',
         gap: '4px',
-        padding: '10px 0',
-        borderRadius: '18px',
+        padding: '12px 0',
+        borderRadius: '16px',
         cursor: 'pointer',
+        border: active ? '1.5px solid var(--theme-border)' : '1px solid transparent',
+        background: active ? 'var(--theme-accent-dim, rgba(0, 245, 212, 0.12))' : 'var(--theme-panel-dim, rgba(18, 21, 32, 0.4))',
+        color: active ? 'var(--theme-accent, #00F5D4)' : 'var(--theme-text-dim-on-panel, #BDC4C6)',
+        boxShadow: active ? '0 0 12px var(--theme-accent-dim)' : 'none',
+        transition: 'all var(--transition-smooth, 0.25s)',
+        fontFamily: 'inherit',
+        fontSize: '10px',
+        fontWeight: '900',
+        textTransform: 'uppercase',
+        letterSpacing: '0.8px',
+        outline: 'none',
+        WebkitTapHighlightColor: 'transparent'
       }}
     >
-      <div className="coaster-icon-container">
+      <div className="coaster-icon-container" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
         {icon}
       </div>
-      <span className="coaster-label">
+      <span className="coaster-label" style={{ marginTop: '2px' }}>
         {label}
       </span>
     </button>
