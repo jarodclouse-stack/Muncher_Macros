@@ -1670,10 +1670,7 @@ export const PantryView: React.FC<PantryViewProps> = ({ initialMeal, onClose, is
             </div>
           </div>
 
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '8px', marginBottom: '16px' }}>
-            <button onClick={() => setCreateTab('recipe')} style={{ padding: '10px', borderRadius: '12px', border: createTab === 'recipe' || createTab === 'basics' ? '1.5px solid var(--theme-accent)' : '1.5px solid rgba(255,255,255,0.13)', background: createTab === 'recipe' || createTab === 'basics' ? 'var(--theme-accent-dim)' : 'var(--theme-panel-dim)', color: createTab === 'recipe' || createTab === 'basics' ? 'var(--theme-accent)' : 'rgba(255,255,255,0.9)', fontWeight: '800', fontSize: '10px', textTransform: 'uppercase', cursor: 'pointer', transition: 'all 0.2s' }}>Recipe Builder</button>
-            <button onClick={() => setCreateTab('micros')} style={{ padding: '10px', borderRadius: '12px', border: createTab === 'micros' ? '1.5px solid var(--theme-accent)' : '1.5px solid rgba(255,255,255,0.13)', background: createTab === 'micros' ? 'var(--theme-accent-dim)' : 'var(--theme-panel-dim)', color: createTab === 'micros' ? 'var(--theme-accent)' : 'rgba(255,255,255,0.9)', fontWeight: '800', fontSize: '10px', textTransform: 'uppercase', cursor: 'pointer', transition: 'all 0.2s' }}>Micros & Health</button>
-          </div>
+
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-md)' }}>
             
@@ -1927,7 +1924,8 @@ export const PantryView: React.FC<PantryViewProps> = ({ initialMeal, onClose, is
             </div>
             </div>
 
-            <div style={{ display: createTab === 'micros' ? 'flex' : 'none', flexDirection: 'column', gap: 'var(--space-md)' }}>
+            <CollapsibleEntrySection title="Micros & Health" isOpen={openSection === 'micros-health'} onToggle={() => setOpenSection(openSection === 'micros-health' ? null : 'micros-health')}>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-md)' }}>
               {/* Collapsible Sections */}
               <CollapsibleEntrySection 
                 title="Fats & Fiber" 
@@ -1972,7 +1970,8 @@ export const PantryView: React.FC<PantryViewProps> = ({ initialMeal, onClose, is
                 value={form.ingredients}
                 onChange={e => setForm({...form, ingredients: e.target.value})}
               />
-            </div>
+              </div>
+            </CollapsibleEntrySection>
             
             <hr style={{ border: 'none', borderTop: '1px solid var(--theme-border)', opacity: 0.3, margin: '8px 0' }} />
 
