@@ -857,7 +857,7 @@ export const PantryView: React.FC<PantryViewProps> = ({ initialMeal, onClose, is
                   <div style={{ position: 'relative', flex: 1 }}>
                     <input 
                       type="text" 
-                      placeholder={innerGlobalSearchTab === 'search' ? "Search for foods, brands..." : "explain food"}
+                      placeholder={innerGlobalSearchTab === 'search' ? "Search for foods, brands..." : "Search any food..."}
                       value={searchQuery}
                       onChange={(e) => { setSearchQuery(e.target.value); setHasSearched(false); }}
                       style={{ width: '100%', background: 'var(--theme-input-bg)', border: '1px solid var(--theme-border)', borderRadius: 'var(--radius-md)', padding: '12px 12px 12px 40px', color: 'var(--theme-text)', fontSize: '14px', outline: 'none' }}

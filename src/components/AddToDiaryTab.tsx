@@ -1,19 +1,10 @@
 import React, { useState } from 'react';
 import { useDiary } from '../context/DiaryContext';
 import { Search, Plus, Check, Scale, ChevronDown, Utensils } from 'lucide-react';
-import { computeMultiplier, scaleLegacyFoodByAmount } from '../lib/food/serving-converter';
+import { computeMultiplier, scaleLegacyFoodByAmount, getQuantityForUnit, COMMON_UNITS } from '../lib/food/serving-converter';
 
 
 const MEALS = ['Breakfast', 'Lunch', 'Dinner', 'Snacks'];
-const COMMON_UNITS = [
-  { id: 'serving', label: 'Serving' },
-  { id: 'g', label: 'Grams (g)' },
-  { id: 'oz', label: 'Ounces (oz)' },
-  { id: 'cup', label: 'Cups (cup)' },
-  { id: 'tbsp', label: 'Tablespoons (tbsp)' },
-  { id: 'tsp', label: 'Teaspoons (tsp)' },
-  { id: 'piece', label: 'Pieces/Items' }
-];
 
 export const AddToDiaryTab: React.FC<{ customFoods: any[] }> = ({ customFoods }) => {
   const { addFoodLog } = useDiary();
@@ -121,7 +112,19 @@ export const AddToDiaryTab: React.FC<{ customFoods: any[] }> = ({ customFoods })
                   
                   <div>
                     <label style={{ fontSize: '11px', color: 'var(--theme-text-dim, #8b8b9b)', display: 'block', marginBottom: '4px' }}>Unit</label>
-                    <select className="inp" value={unit} onChange={e => setUnit(e.target.value)} style={{ padding: '10px' }}>
+                    <select 
+                      className="inp" 
+                      value={unit} 
+                      onChange={e => {
+                        const newUnit = e.target.value;
+                        const currentMult = computeMultiplier(selectedFood.serving || '1 serving', unit, parseFloat(qty) || 0);
+                        const newQtyVal = getQuantityForUnit(selectedFood.serving || '1 serving', currentMult, newUnit);
+                        const roundedQty = Math.round(newQtyVal * 100) / 100;
+                        setQty(roundedQty.toString());
+                        setUnit(newUnit);
+                      }} 
+                      style={{ padding: '10px' }}
+                    >
                       {COMMON_UNITS.map(u => <option key={u.id} value={u.id} style={{ color: '#000' }}>{u.label}</option>)}
                     </select>
                   </div>

@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import ReactDOM from 'react-dom';
 import { useDiary } from '../context/DiaryContext';
-import { computeMultiplier, scaleLegacyFoodByAmount, COMMON_UNITS } from '../lib/food/serving-converter';
+import { computeMultiplier, scaleLegacyFoodByAmount, COMMON_UNITS, getQuantityForUnit } from '../lib/food/serving-converter';
 import { Check, X, Scale } from 'lucide-react';
 
 interface PortionEditModalProps {
@@ -75,7 +75,14 @@ export const PortionEditModal: React.FC<PortionEditModalProps> = ({ meal, idx, o
               <select 
                 className="mm-select"
                 value={unit}
-                onChange={e => setUnit(e.target.value)}
+                onChange={e => {
+                  const newUnit = e.target.value;
+                  const currentMult = computeMultiplier(base.serving || '', unit, parseFloat(qty) || 0);
+                  const newQtyVal = getQuantityForUnit(base.serving || '', currentMult, newUnit);
+                  const roundedQty = Math.round(newQtyVal * 100) / 100;
+                  setQty(roundedQty.toString());
+                  setUnit(newUnit);
+                }}
               >
                 {COMMON_UNITS.map(u => <option key={u.id} value={u.id} style={{ background: 'var(--theme-panel-base)', color: 'var(--theme-text)' }}>{u.label}</option>)}
               </select>

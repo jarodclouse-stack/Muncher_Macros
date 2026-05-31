@@ -20,11 +20,8 @@ export function sanitizeServingAmount(input: number | string, fallback: number =
 export const COMMON_UNITS = [
   { id: 'serving', label: 'Serving(s)', weightG: null },
   { id: 'g', label: 'Grams (g)', weightG: 1 },
-  { id: 'oz', label: 'Ounces (oz)', weightG: 28.3495 },
   { id: 'ml', label: 'Milliliters (ml)', weightG: 1 }, // Fallback standard liquid density
-  { id: 'cup', label: 'Cups (cup)', weightG: 240 }, // Fallback volume
   { id: 'tbsp', label: 'Tablespoons (tbsp)', weightG: 15 },
-  { id: 'tsp', label: 'Teaspoons (tsp)', weightG: 5 },
 ];
 
 export function extractBaseGrams(servingStr: string): number | null {
@@ -81,6 +78,20 @@ export function computeMultiplier(baseServingStr: string, targetUnit: string, ta
   // If user picks grams, assume they mean "X grams of this food's density".
   // Fallback to 100g standard density for AI results.
   return (qty * targetUnitDef.weightG) / 100;
+}
+
+export function getQuantityForUnit(baseServingStr: string, currentMultiplier: number, targetUnit: string): number {
+  if (targetUnit === 'serving') {
+    return currentMultiplier;
+  }
+  const baseGrams = extractBaseGrams(baseServingStr) || 100;
+  const targetUnitDef = COMMON_UNITS.find(u => u.id === targetUnit.toLowerCase());
+  
+  if (!targetUnitDef || !targetUnitDef.weightG) {
+    return currentMultiplier;
+  }
+  
+  return (currentMultiplier * baseGrams) / targetUnitDef.weightG;
 }
 
 export function scaleFoodByAmount(food: any, amount: number | string): any {
