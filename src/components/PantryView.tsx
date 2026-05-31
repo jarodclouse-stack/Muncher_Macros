@@ -803,6 +803,54 @@ export const PantryView: React.FC<PantryViewProps> = ({ initialMeal, onClose, is
             </div>
           ) : (
             <div className="card" style={{ padding: 'var(--space-lg)', marginBottom: 'var(--space-xl)' }}>
+                {(innerGlobalSearchTab === 'search' || innerGlobalSearchTab === 'ai-search') && (
+                  <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '16px' }}>
+                    <div style={{ display: 'flex', background: 'var(--theme-panel-dim, rgba(18, 21, 32, 0.4))', padding: '4px', borderRadius: '999px', border: '1px solid var(--theme-border)' }}>
+                      <button 
+                        type="button"
+                        onClick={() => { setInnerGlobalSearchTab('search'); clearSearchState(); }}
+                        style={{ 
+                          padding: '6px 16px', 
+                          border: 'none', 
+                          borderRadius: '999px', 
+                          background: innerGlobalSearchTab === 'search' ? 'var(--theme-accent)' : 'transparent', 
+                          color: innerGlobalSearchTab === 'search' ? '#000' : 'var(--theme-text-dim-on-panel, #BDC4C6)', 
+                          fontSize: '12px', 
+                          fontWeight: '800', 
+                          cursor: 'pointer', 
+                          transition: 'all 0.2s',
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: '6px',
+                          outline: 'none',
+                          WebkitTapHighlightColor: 'transparent'
+                        }}>
+                        <Search size={12} /> Search
+                      </button>
+                      <button 
+                        type="button"
+                        onClick={() => { setInnerGlobalSearchTab('ai-search'); clearSearchState(); }}
+                        style={{ 
+                          padding: '6px 16px', 
+                          border: 'none', 
+                          borderRadius: '999px', 
+                          background: innerGlobalSearchTab === 'ai-search' ? 'var(--theme-accent)' : 'transparent', 
+                          color: innerGlobalSearchTab === 'ai-search' ? '#000' : 'var(--theme-text-dim-on-panel, #BDC4C6)', 
+                          fontSize: '12px', 
+                          fontWeight: '800', 
+                          cursor: 'pointer', 
+                          transition: 'all 0.2s',
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: '6px',
+                          outline: 'none',
+                          WebkitTapHighlightColor: 'transparent'
+                        }}>
+                        <Sparkles size={12} /> AI Search
+                      </button>
+                    </div>
+                  </div>
+                )}
                 <form 
                   className="search-bar-wrap" 
                   onSubmit={innerGlobalSearchTab === 'search' ? handleGlobalSearch : handleGlobalAISearch}>
