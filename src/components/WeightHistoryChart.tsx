@@ -28,7 +28,7 @@ interface WeightHistoryChartProps {
 }
 
 export const WeightHistoryChart: React.FC<WeightHistoryChartProps> = ({ localCache, targetWeight }) => {
-  const [windowRange, setWindow] = useState<'7d' | '30d' | 'all'>('30d');
+  const [windowRange, setWindow] = useState<'7d' | '30d' | 'all'>('all');
   const unitWeight = localCache.settings?.units?.weight || 'lb';
 
   // Helper to resolve CSS variables to actual color strings
