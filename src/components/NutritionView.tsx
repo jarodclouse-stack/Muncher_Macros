@@ -6,7 +6,7 @@ import { MICRO_CATEGORIES } from '../lib/constants';
 import { DEFICIENCY_INFO, NUTRIENT_BENEFITS } from '../lib/nutrient-info';
 import { Doughnut } from 'react-chartjs-2';
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js';
-import { Info, Sparkles } from 'lucide-react';
+import { Info, Sparkles, ChevronDown } from 'lucide-react';
 import type { Food } from '../types/food';
 
 ChartJS.register(ArcElement, Tooltip, Legend);
@@ -229,7 +229,19 @@ export const NutritionView: React.FC = () => {
                         return (
                           <div key={sub.k} className={isExpanded ? "glass-card" : ""} style={{ padding: isExpanded ? 'var(--space-md)' : '0', transition: 'all var(--transition-smooth)', margin: isExpanded ? '0 -16px var(--space-xs)' : '0' }}>
                             <div onClick={() => info && setExpandedMicro(isExpanded ? null : sub.k)} style={{ display: 'flex', justifyContent: 'space-between', fontSize: '10px', cursor: info ? 'pointer' : 'default' }}>
-                              <span style={{ color: 'var(--theme-text-dim-on-panel)', display: 'flex', alignItems: 'center', gap: '4px', fontWeight: '900', textTransform: 'uppercase', letterSpacing: '0.5px' }}>{sub.k} {info && <Info size={10} color="color-mix(in srgb, var(--theme-text) 40%, black)" />}</span>
+                              <span style={{ color: 'var(--theme-text-dim-on-panel)', display: 'flex', alignItems: 'center', gap: '4px', fontWeight: '900', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                                {sub.k} 
+                                {info && (
+                                  <ChevronDown 
+                                    size={12} 
+                                    style={{ 
+                                      transform: isExpanded ? 'rotate(180deg)' : 'none', 
+                                      transition: 'transform 0.2s', 
+                                      color: isExpanded ? 'var(--theme-accent)' : 'var(--theme-text-dim-on-panel)' 
+                                    }} 
+                                  />
+                                )}
+                              </span>
                               <span style={{ color: 'var(--theme-text-dim-on-panel)', fontWeight: '900', display: 'flex', gap: '4px', alignItems: 'center' }}>
                                 {Math.round(sub.v * 10) / 10}g
                                 {sub.v > 0 && (
@@ -301,7 +313,19 @@ export const NutritionView: React.FC = () => {
                         return (
                           <div key={sub.k} className={isExpanded ? "glass-card" : ""} style={{ padding: isExpanded ? 'var(--space-md)' : '0', transition: 'all var(--transition-smooth)', margin: isExpanded ? '0 -16px var(--space-xs)' : '0' }}>
                             <div onClick={() => info && setExpandedMicro(isExpanded ? null : sub.k)} style={{ display: 'flex', justifyContent: 'space-between', fontSize: '10px', cursor: info ? 'pointer' : 'default' }}>
-                              <span style={{ color: 'var(--theme-text-dim-on-panel)', display: 'flex', alignItems: 'center', gap: '4px', fontWeight: '900', textTransform: 'uppercase', letterSpacing: '0.5px' }}>{sub.disp} {info && <Info size={10} color="color-mix(in srgb, var(--theme-text) 40%, black)" />}</span>
+                              <span style={{ color: 'var(--theme-text-dim-on-panel)', display: 'flex', alignItems: 'center', gap: '4px', fontWeight: '900', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                                {sub.disp} 
+                                {info && (
+                                  <ChevronDown 
+                                    size={12} 
+                                    style={{ 
+                                      transform: isExpanded ? 'rotate(180deg)' : 'none', 
+                                      transition: 'transform 0.2s', 
+                                      color: isExpanded ? 'var(--theme-accent)' : 'var(--theme-text-dim-on-panel)' 
+                                    }} 
+                                  />
+                                )}
+                              </span>
                               <span style={{ color: 'var(--theme-text-dim-on-panel)', fontWeight: '900', display: 'flex', gap: '4px', alignItems: 'center' }}>
                                 {Math.round(sub.v * 10) / 10}g
                                 {sub.v > 0 && (
@@ -447,9 +471,20 @@ export const NutritionView: React.FC = () => {
                           textTransform: 'uppercase',
                           letterSpacing: '0.8px',
                           border: '1px solid var(--theme-border)',
-                          boxShadow: '0 2px 8px rgba(0,0,0,0.05)'
+                          boxShadow: '0 2px 8px rgba(0,0,0,0.05)',
+                          transition: 'all 0.2s'
                         }}>
-                          {label} {info && <Info size={10} color="color-mix(in srgb, var(--theme-text) 40%, black)" />}
+                          {label} 
+                          {info && (
+                            <ChevronDown 
+                              size={12} 
+                              style={{ 
+                                transform: isExpanded ? 'rotate(180deg)' : 'none', 
+                                transition: 'transform 0.2s', 
+                                color: isExpanded ? 'var(--theme-accent)' : 'var(--theme-text-dim)' 
+                              }} 
+                            />
+                          )}
                         </div>
                         <div style={{ height: '6px', background: 'var(--theme-panel-dim)', borderRadius: '4px', position: 'relative', border: '1px solid var(--theme-border)' }}>
                           <div style={{ 
