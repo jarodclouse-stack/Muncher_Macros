@@ -6,7 +6,7 @@ import { MICRO_CATEGORIES } from '../lib/constants';
 import { DEFICIENCY_INFO, NUTRIENT_BENEFITS } from '../lib/nutrient-info';
 import { Doughnut } from 'react-chartjs-2';
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js';
-import { Info, Sparkles, ChevronDown } from 'lucide-react';
+import { Info, Sparkles } from 'lucide-react';
 import type { Food } from '../types/food';
 
 ChartJS.register(ArcElement, Tooltip, Legend);
@@ -232,14 +232,22 @@ export const NutritionView: React.FC = () => {
                               <span style={{ color: 'var(--theme-text-dim-on-panel)', display: 'flex', alignItems: 'center', gap: '4px', fontWeight: '900', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
                                 {sub.k} 
                                 {info && (
-                                  <ChevronDown 
-                                    size={12} 
-                                    style={{ 
-                                      transform: isExpanded ? 'rotate(180deg)' : 'none', 
-                                      transition: 'transform 0.2s', 
-                                      color: isExpanded ? 'var(--theme-accent)' : 'var(--theme-text-dim-on-panel)' 
-                                    }} 
-                                  />
+                                  <span style={{
+                                    background: isExpanded ? 'var(--theme-accent)' : 'rgba(255, 255, 255, 0.05)',
+                                    border: '1px solid rgba(255, 255, 255, 0.1)',
+                                    borderRadius: '6px',
+                                    color: isExpanded ? '#000000' : 'var(--theme-accent)',
+                                    padding: '2px 6px',
+                                    fontSize: '8px',
+                                    fontWeight: '900',
+                                    textTransform: 'uppercase',
+                                    transition: 'all 0.2s',
+                                    marginLeft: '6px',
+                                    display: 'inline-flex',
+                                    alignItems: 'center'
+                                  }}>
+                                    info
+                                  </span>
                                 )}
                               </span>
                               <span style={{ color: 'var(--theme-text-dim-on-panel)', fontWeight: '900', display: 'flex', gap: '4px', alignItems: 'center' }}>
@@ -316,14 +324,22 @@ export const NutritionView: React.FC = () => {
                               <span style={{ color: 'var(--theme-text-dim-on-panel)', display: 'flex', alignItems: 'center', gap: '4px', fontWeight: '900', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
                                 {sub.disp} 
                                 {info && (
-                                  <ChevronDown 
-                                    size={12} 
-                                    style={{ 
-                                      transform: isExpanded ? 'rotate(180deg)' : 'none', 
-                                      transition: 'transform 0.2s', 
-                                      color: isExpanded ? 'var(--theme-accent)' : 'var(--theme-text-dim-on-panel)' 
-                                    }} 
-                                  />
+                                  <span style={{
+                                    background: isExpanded ? 'var(--theme-accent)' : 'rgba(255, 255, 255, 0.05)',
+                                    border: '1px solid rgba(255, 255, 255, 0.1)',
+                                    borderRadius: '6px',
+                                    color: isExpanded ? '#000000' : 'var(--theme-accent)',
+                                    padding: '2px 6px',
+                                    fontSize: '8px',
+                                    fontWeight: '900',
+                                    textTransform: 'uppercase',
+                                    transition: 'all 0.2s',
+                                    marginLeft: '6px',
+                                    display: 'inline-flex',
+                                    alignItems: 'center'
+                                  }}>
+                                    info
+                                  </span>
                                 )}
                               </span>
                               <span style={{ color: 'var(--theme-text-dim-on-panel)', fontWeight: '900', display: 'flex', gap: '4px', alignItems: 'center' }}>
@@ -476,14 +492,22 @@ export const NutritionView: React.FC = () => {
                         }}>
                           {label} 
                           {info && (
-                            <ChevronDown 
-                              size={12} 
-                              style={{ 
-                                transform: isExpanded ? 'rotate(180deg)' : 'none', 
-                                transition: 'transform 0.2s', 
-                                color: isExpanded ? 'var(--theme-accent)' : 'var(--theme-text-dim)' 
-                              }} 
-                            />
+                            <span style={{
+                              background: isExpanded ? 'var(--theme-accent)' : 'rgba(255, 255, 255, 0.05)',
+                              border: '1px solid rgba(255, 255, 255, 0.1)',
+                              borderRadius: '6px',
+                              color: isExpanded ? '#000000' : 'var(--theme-accent)',
+                              padding: '2px 6px',
+                              fontSize: '8px',
+                              fontWeight: '900',
+                              textTransform: 'uppercase',
+                              transition: 'all 0.2s',
+                              marginLeft: '6px',
+                              display: 'inline-flex',
+                              alignItems: 'center'
+                            }}>
+                              info
+                            </span>
                           )}
                         </div>
                         <div style={{ height: '6px', background: 'var(--theme-panel-dim)', borderRadius: '4px', position: 'relative', border: '1px solid var(--theme-border)' }}>

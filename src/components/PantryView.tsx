@@ -988,7 +988,13 @@ export const PantryView: React.FC<PantryViewProps> = ({ initialMeal, onClose, is
           {searchResults.length > 0 && !isAiReviewing && (
             <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-xs)', marginTop: 'var(--space-md)', maxHeight: '400px', overflowY: 'auto', paddingRight: '4px' }}>
               {searchResults.map((f: Food, i) => (
-                <div key={i} onClick={() => handleAddPreviewClick(f)} style={{ 
+                <div key={i} 
+                  onClick={() => handleAddPreviewClick(f)} 
+                  onMouseDown={(e) => {
+                    e.preventDefault();
+                    handleAddPreviewClick(f);
+                  }}
+                  style={{ 
                   background: 'rgba(0,0,0,0.3)', 
                   padding: '16px', 
                   borderRadius: '18px',
