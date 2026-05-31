@@ -3,7 +3,7 @@ import { useDiary } from '../context/DiaryContext';
 import { 
   Plus, Check, X, Search, Sparkles, ChevronDown, 
   Flame, Activity, Trash2, Loader2, BookmarkCheck,
-  Info, FileText, Edit2, Camera
+  Info, Edit2, Camera
 } from 'lucide-react';
 import { ALL_MICRO_KEYS, MICRO_UNITS, SERVING_UNITS, MICRO_CATEGORIES } from '../lib/constants';
 import { getNutrientDescriptions } from '../lib/nutrient-info';
@@ -263,6 +263,16 @@ export const PantryView: React.FC<PantryViewProps> = ({ initialMeal, onClose, is
   
   const [scanningIngredients, setScanningIngredients] = useState<number | null>(null);
 
+  // Photo verification state
+  const [isVerifyingPhoto, setIsVerifyingPhoto] = useState(false);
+  const [verifyResult, setVerifyResult] = useState<{
+    summary: string;
+    portionAssessment: string;
+    confidence: string;
+    significantDifference: boolean;
+    adjustedItems: Array<{ name: string; adjustedQty: number; adjustedUnit: string; adjustedCal: number; adjustedP: number; adjustedC: number; adjustedF: number; reason: string }>;
+  } | null>(null);
+
   const handleIngredientScan = async (e: React.ChangeEvent<HTMLInputElement>, index: number) => {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -291,6 +301,53 @@ export const PantryView: React.FC<PantryViewProps> = ({ initialMeal, onClose, is
       setScanningIngredients(null);
     }
   };
+
+  const handleVerifyWithPhoto = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    // Reset so the same photo can be re-selected
+    e.target.value = '';
+    setIsVerifyingPhoto(true);
+    setVerifyResult(null);
+    try {
+      const reader = new FileReader();
+      reader.onloadend = async () => {
+        const base64 = (reader.result as string).split(',')[1];
+        const res = await fetch('/api/ai-verify-meal', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            base64,
+            mediaType: file.type,
+            originalItems: aiStagedResults.map(f => ({
+              name: f.name,
+              stagedQty: f.stagedQty,
+              stagedUnit: f.stagedUnit,
+              sQty: f.sQty,
+              sUnit: f.sUnit,
+              cal: f.cal,
+              p: f.p,
+              c: f.c,
+              f: f.f
+            }))
+          })
+        });
+        const data = await res.json();
+        if (data.summary) {
+          setVerifyResult(data);
+        } else {
+          showNotification('Could not verify photo. Try again.');
+        }
+        setIsVerifyingPhoto(false);
+      };
+      reader.readAsDataURL(file);
+    } catch (err) {
+      console.error(err);
+      showNotification('Photo verification failed.');
+      setIsVerifyingPhoto(false);
+    }
+  };
+
   const [isPantryPickerOpen, setIsPantryPickerOpen] = useState(false);
   
   const customFoods: Food[] = localCache.customFoods || [];
@@ -720,10 +777,10 @@ export const PantryView: React.FC<PantryViewProps> = ({ initialMeal, onClose, is
                   </div>
                   <div style={{ display: 'flex', gap: '10px', alignItems: 'flex-start' }}>
                     <span style={{ color: 'var(--theme-accent)', fontWeight: '800', display: 'inline-flex', alignItems: 'center', gap: '6px', width: '105px', flexShrink: 0 }}>
-                      <span style={{ fontSize: '16px' }}>📝</span> Describe:
+                      <span style={{ fontSize: '16px' }}>🧠</span> Muncher:
                     </span>
                     <span style={{ lineHeight: '1.5', flex: 1 }}>
-                      Allows you to describe <strong>whole multi-ingredient meals</strong> in natural language (e.g., <em>"two scrambled eggs with spinach and toast"</em>), automatically breakdown into macros!
+                      Describe <strong>whole multi-ingredient meals</strong> in natural language and Muncher Meal Intelligence automatically breaks them down into macros!
                     </span>
                   </div>
                 </div>
@@ -780,9 +837,9 @@ export const PantryView: React.FC<PantryViewProps> = ({ initialMeal, onClose, is
                     </div>
                     <div>
                         <h3 style={{ margin: 0, fontSize: '15px', fontWeight: '900', color: '#FFFFFF', textTransform: 'uppercase', letterSpacing: '1.5px' }}>
-                        Analyze Meal Intelligence
-                      </h3>
-                      <div style={{ fontSize: '10px', color: 'color-mix(in srgb, var(--theme-accent) 70%, white)', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.5px', marginTop: '2px' }}>AI-Powered Complex Parsing</div>
+                          Muncher Meal Intelligence
+                        </h3>
+                        <div style={{ fontSize: '10px', color: 'color-mix(in srgb, var(--theme-accent) 70%, white)', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.5px', marginTop: '2px' }}>AI-Powered Complex Parsing</div>
                     </div>
                   </div>
 
@@ -807,8 +864,8 @@ export const PantryView: React.FC<PantryViewProps> = ({ initialMeal, onClose, is
                       boxShadow: '0 8px 32px rgba(0, 201, 255, 0.2)',
                       opacity: isSearching || !searchQuery.trim() ? 0.5 : 1
                     }}>
-                    {isSearching ? <Loader2 className="spin" size={20} /> : <FileText size={20} />}
-                    <span style={{ letterSpacing: '1.5px' }}>{isSearching ? 'ANALYZING MEAL...' : 'ANALYZE MEAL DESCRIPTION'}</span>
+                    {isSearching ? <Loader2 className="spin" size={20} /> : <Sparkles size={20} />}
+                    <span style={{ letterSpacing: '1.5px' }}>{isSearching ? 'MUNCHER IS THINKING...' : 'ASK MUNCHER'}</span>
                   </button>
 
                   {isSearching && (
@@ -825,11 +882,11 @@ export const PantryView: React.FC<PantryViewProps> = ({ initialMeal, onClose, is
                     }}>
                       <Loader2 className="spin" size={20} color="var(--theme-accent)" style={{ marginBottom: '8px' }} />
                       <div style={{ fontSize: '11px', fontWeight: '900', color: 'var(--theme-accent)', marginBottom: '4px', letterSpacing: '1px', textTransform: 'uppercase' }}>
-                        Gemini AI Parsing Meal
-                      </div>
-                      <div style={{ fontSize: '11px', color: 'var(--theme-text-dim, rgba(255,255,255,0.6))', fontWeight: '600', lineHeight: '1.4', maxWidth: '320px' }}>
-                        Gemini is deconstructing your meal description into separate ingredient logs with precise macro breakdowns. This can take a few seconds...
-                      </div>
+                          Muncher Meal Intelligence
+                        </div>
+                        <div style={{ fontSize: '11px', color: 'var(--theme-text-dim, rgba(255,255,255,0.6))', fontWeight: '600', lineHeight: '1.4', maxWidth: '320px' }}>
+                          Muncher is breaking down your meal into individual ingredients with precise macro breakdowns. This can take a few seconds...
+                        </div>
                     </div>
                   )}
 
@@ -1031,7 +1088,7 @@ export const PantryView: React.FC<PantryViewProps> = ({ initialMeal, onClose, is
                 <div className="card" style={{ marginTop: 'var(--space-md)', padding: 'var(--space-md)', border: '1px solid var(--theme-accent)', width: '100%', boxSizing: 'border-box' }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
                     <div style={{ fontSize: '13px', fontWeight: '900', color: 'var(--theme-text)', display: 'flex', alignItems: 'center', gap: '8px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
-                      <Sparkles size={18} color="var(--theme-accent)" /> REVIEW DETECTED MEAL
+                      <Sparkles size={18} color="var(--theme-accent)" /> MUNCHER MEAL INTELLIGENCE
                     </div>
                     <button onClick={() => { setIsAiReviewing(false); setAiStagedResults([]); }} style={{ background: 'rgba(255,255,255,0.05)', border: 'none', color: 'var(--theme-text-dim)', cursor: 'pointer', padding: '6px', borderRadius: '50%' }}><X size={18} /></button>
                   </div>
@@ -1321,6 +1378,137 @@ export const PantryView: React.FC<PantryViewProps> = ({ initialMeal, onClose, is
                   </div>
 
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', width: '100%' }}>
+                    {/* Photo Verify Button */}
+                    <div style={{ marginBottom: '0' }}>
+                      <input
+                        type="file"
+                        accept="image/*"
+                        capture="environment"
+                        id="meal-verify-photo-input"
+                        style={{ display: 'none' }}
+                        onChange={handleVerifyWithPhoto}
+                      />
+                      <label
+                        htmlFor="meal-verify-photo-input"
+                        style={{
+                          width: '100%',
+                          padding: '13px',
+                          background: isVerifyingPhoto
+                            ? 'rgba(255,255,255,0.05)'
+                            : 'rgba(0, 201, 255, 0.06)',
+                          border: '1px solid var(--theme-accent)',
+                          borderRadius: '16px',
+                          color: 'var(--theme-accent)',
+                          fontWeight: '900',
+                          fontSize: '13px',
+                          cursor: isVerifyingPhoto ? 'default' : 'pointer',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          gap: '8px',
+                          boxSizing: 'border-box',
+                          opacity: isVerifyingPhoto ? 0.6 : 1,
+                          transition: 'all 0.2s',
+                          letterSpacing: '0.5px'
+                        }}
+                      >
+                        {isVerifyingPhoto
+                          ? <><Loader2 size={16} className="spin" /> VERIFYING PHOTO...</>
+                          : <><Camera size={16} /> 📷 VERIFY WITH PHOTO</>
+                        }
+                      </label>
+                    </div>
+
+                    {/* Photo Verify Result Card */}
+                    {verifyResult && (
+                      <div style={{
+                        marginBottom: '16px',
+                        background: verifyResult.significantDifference
+                          ? 'rgba(255, 107, 107, 0.07)'
+                          : 'rgba(146, 254, 157, 0.06)',
+                        border: `1px solid ${verifyResult.significantDifference ? 'rgba(255,107,107,0.4)' : 'rgba(146,254,157,0.35)'}`,
+                        borderRadius: '18px',
+                        padding: '16px',
+                        animation: 'slideDown 0.25s ease-out'
+                      }}>
+                        {/* Header */}
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '10px', gap: '10px' }}>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                            <span style={{ fontSize: '16px' }}>
+                              {verifyResult.portionAssessment === 'accurate' ? '✅' :
+                               verifyResult.portionAssessment === 'too_large' ? '⚠️' :
+                               verifyResult.portionAssessment === 'too_small' ? '📉' : '🔍'}
+                            </span>
+                            <span style={{ fontSize: '11px', fontWeight: '900', color: verifyResult.significantDifference ? 'var(--theme-error)' : 'var(--theme-success)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                              {verifyResult.significantDifference ? 'Adjustment Suggested' : 'Looks Good!'}
+                            </span>
+                          </div>
+                          <button
+                            onClick={() => setVerifyResult(null)}
+                            style={{ background: 'none', border: 'none', color: 'var(--theme-text-dim)', cursor: 'pointer', padding: '2px', lineHeight: 1 }}
+                          >
+                            <X size={14} />
+                          </button>
+                        </div>
+
+                        {/* Claude's Summary */}
+                        <p style={{ fontSize: '13px', color: 'var(--theme-text)', lineHeight: '1.5', margin: '0 0 12px 0' }}>
+                          {verifyResult.summary}
+                        </p>
+
+                        {/* Per-item breakdown if differences found */}
+                        {verifyResult.significantDifference && verifyResult.adjustedItems.some(a => a.reason !== 'Looks accurate') && (
+                          <div style={{ marginBottom: '14px', display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                            {verifyResult.adjustedItems
+                              .filter(a => a.reason !== 'Looks accurate')
+                              .map((item, idx) => (
+                                <div key={idx} style={{ fontSize: '11px', color: 'var(--theme-text-dim)', background: 'rgba(255,255,255,0.04)', padding: '8px 12px', borderRadius: '10px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '8px' }}>
+                                  <span style={{ fontWeight: '700', color: 'var(--theme-text)' }}>{item.name}</span>
+                                  <span style={{ textAlign: 'right' }}>{item.adjustedQty} {item.adjustedUnit} · {item.adjustedCal} kcal</span>
+                                </div>
+                              ))
+                            }
+                          </div>
+                        )}
+
+                        {/* Action buttons */}
+                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
+                          <button
+                            onClick={() => setVerifyResult(null)}
+                            style={{ padding: '10px', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.12)', borderRadius: '12px', color: 'var(--theme-text)', fontSize: '11px', fontWeight: '800', cursor: 'pointer' }}
+                          >
+                            Keep Original
+                          </button>
+                          <button
+                            onClick={() => {
+                              if (!verifyResult.adjustedItems) return;
+                              const updated = aiStagedResults.map(original => {
+                                const match = verifyResult.adjustedItems.find(a =>
+                                  a.name.toLowerCase() === original.name.toLowerCase()
+                                );
+                                if (!match || match.reason === 'Looks accurate') return original;
+                                return {
+                                  ...original,
+                                  stagedQty: String(match.adjustedQty),
+                                  stagedUnit: match.adjustedUnit,
+                                  cal: match.adjustedCal,
+                                  p: match.adjustedP,
+                                  c: match.adjustedC,
+                                  f: match.adjustedF,
+                                };
+                              });
+                              setAiStagedResults(updated);
+                              setVerifyResult(null);
+                              showNotification('Meal updated with photo verification! 📷');
+                            }}
+                            style={{ padding: '10px', background: verifyResult.significantDifference ? 'rgba(255,107,107,0.15)' : 'rgba(146,254,157,0.15)', border: `1px solid ${verifyResult.significantDifference ? 'rgba(255,107,107,0.4)' : 'rgba(146,254,157,0.4)'}`, borderRadius: '12px', color: verifyResult.significantDifference ? 'var(--theme-error)' : 'var(--theme-success)', fontSize: '11px', fontWeight: '800', cursor: 'pointer' }}
+                          >
+                            Accept Adjustment
+                          </button>
+                        </div>
+                      </div>
+                    )}
+
                     <button 
                       onClick={() => {
                         aiStagedResults.forEach(f => {
@@ -1330,6 +1518,7 @@ export const PantryView: React.FC<PantryViewProps> = ({ initialMeal, onClose, is
                         });
                         setIsAiReviewing(false);
                         setAiStagedResults([]);
+                        setVerifyResult(null);
                         showNotification(`Entire meal logged to ${targetMeal}!`);
                       }}
                       style={{ width: '100%', padding: '14px', background: 'var(--theme-accent)', border: 'none', borderRadius: '16px', color: '#000000', fontWeight: '900', fontSize: '13px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', boxShadow: '0 4px 15px var(--theme-accent-dim)' }}>
