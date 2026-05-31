@@ -48,25 +48,56 @@ export default async function handler(req, res) {
         productsToProcess = [data.product];
       }
     } else {
-      // Text search
+      // Text search — retry up to 3 times on failure or empty results
       const offUrl = 'https://world.openfoodfacts.org/cgi/search.pl'
         + '?search_terms=' + encodeURIComponent(query)
         + '&search_simple=1&action=process&json=1&page_size=50'
         + '&lc=en&cc=us'
         + '&fields=product_name,product_name_en,serving_size,serving_quantity,'
         + 'serving_quantity_unit,serving_size_unit,nutriments,brands,lang';
+      let data = null;
+      for (let attempt = 1; attempt <= 3; attempt++) {
+        try {
+          const offRes = await fetch(offUrl, {
+            headers: { 'User-Agent': 'MuncherMacros/1.0' },
+            signal: AbortSignal.timeout(8000)
+          });
+          if (!offRes.ok) {
+            if (attempt < 3) { await new Promise(r => setTimeout(r, 400 * attempt)); continue; }
+            return res.status(offRes.status).json({ error: 'OFF error ' + offRes.status });
+          }
+          const parsed = await offRes.json();
+          if ((parsed.products || []).length > 0 || attempt === 3) {
+            data = parsed;
+            break;
+          }
+          // Empty result on attempt 1 or 2 — retry
+          await new Promise(r => setTimeout(r, 400 * attempt));
+        } catch (fetchErr) {
+          if (attempt === 3) throw fetchErr;
+          await new Promise(r => setTimeout(r, 400 * attempt));
+        }
+      }
+      productsToProcess = (data && data.products) || [];
 
-      const offRes = await fetch(offUrl, {
-        headers: { 'User-Agent': 'MuncherMacros/1.0' }
-      });
-      if (!offRes.ok) return res.status(offRes.status).json({ error: 'OFF error ' + offRes.status });
-      
-      const data = await offRes.json();
-      productsToProcess = data.products || [];
     }
 
-    // Filter server-side to English only (unless barcode match), return top 20
-    const filtered = (isBarcode ? productsToProcess : productsToProcess.filter(isEnglish)).slice(0, 20);
+    // Filter server-side to English only (unless barcode match)
+    const englishOnly = isBarcode ? productsToProcess : productsToProcess.filter(isEnglish);
+
+    // Relevance sort: exact name match first, then starts-with, then contains, then rest
+    const ql = query.toLowerCase();
+    const scored = englishOnly.map(p => {
+      const name = (p.product_name_en || p.product_name || '').toLowerCase().trim();
+      let score = 0;
+      if (name === ql) score = 4;
+      else if (name.startsWith(ql)) score = 3;
+      else if (name.includes(ql)) score = 2;
+      else score = 1; // brand-only or indirect match
+      return { p, score };
+    });
+    scored.sort((a, b) => b.score - a.score);
+    const filtered = scored.slice(0, 20).map(s => s.p);
 
     const foods = filtered.map(p => {
       const n = p.nutriments || {};
