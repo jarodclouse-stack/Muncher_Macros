@@ -956,6 +956,11 @@ export const PantryView: React.FC<PantryViewProps> = ({ initialMeal, onClose, is
                     </label>
                   </div>
 
+                  {/* Photo mode disclaimer */}
+                  <p style={{ margin: '0', fontSize: '11px', color: 'var(--theme-text-dim)', textAlign: 'center', lineHeight: '1.5', fontWeight: '500' }}>
+                    📌 <strong style={{ color: 'rgba(255,255,255,0.5)' }}>Best used after typing your meal above.</strong> The photo helps Muncher <em>verify your portion sizes</em> — it's not a meal identifier.
+                  </p>
+
                   {/* Simplified serving size reminder */}
                   <div style={{ 
                     background: 'rgba(255, 193, 7, 0.08)', 
