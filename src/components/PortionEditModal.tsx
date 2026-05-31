@@ -94,7 +94,7 @@ export const PortionEditModal: React.FC<PortionEditModalProps> = ({ meal, idx, o
             <div className="portion-result-value" style={{ fontSize: '24px', fontWeight: '800' }}>{previewCals} <span style={{ fontSize: '14px', fontWeight: 'normal' }}>kcal</span></div>
           </div>
 
-          <button type="submit" style={{ width: '100%', padding: '16px', background: 'var(--theme-accent, #00C9FF)', color: 'var(--theme-bg, #000)', borderRadius: '16px', border: 'none', fontWeight: '900', fontSize: '16px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', boxShadow: '0 8px 24px rgba(0,201,255,0.2)' }}>
+          <button type="submit" style={{ width: '100%', padding: '16px', background: 'var(--theme-accent, #00C9FF)', color: '#000000', borderRadius: '16px', border: 'none', fontWeight: '900', fontSize: '16px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', boxShadow: '0 8px 24px rgba(0,201,255,0.2)' }}>
             <Check size={18} /> Update Log
           </button>
         </form>

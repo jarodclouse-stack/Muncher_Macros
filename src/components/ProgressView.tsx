@@ -540,7 +540,7 @@ export const ProgressView: React.FC = () => {
                 <span style={{ color: (macroP + macroC + macroF) === 100 ? 'var(--theme-success)' : 'var(--theme-error)', fontWeight: 'bold' }}>
                   Total: {macroP + macroC + macroF}%
                 </span>
-                <button onClick={handleSaveMacrosAndWater} className="btn" style={{ padding: '8px 16px', marginTop: '0', background: 'var(--theme-accent)', color: 'var(--theme-bg, #000)' }} disabled={(macroP + macroC + macroF) !== 100}>
+                <button onClick={handleSaveMacrosAndWater} className="btn" style={{ padding: '8px 16px', marginTop: '0', background: 'var(--theme-accent)', color: '#000000' }} disabled={(macroP + macroC + macroF) !== 100}>
                   <Check size={14} /> Apply Macros
                 </button>
               </div>
@@ -555,7 +555,7 @@ export const ProgressView: React.FC = () => {
                   <input type="range" min="0" max="250" step="5" value={waterGoal} onChange={e => setWaterGoal(Number(e.target.value))} className="custom-range" style={{ '--thumb-color': 'var(--theme-accent)', background: `linear-gradient(to right, var(--theme-accent) ${Math.min(100, (waterGoal / 250) * 100)}%, rgba(255,255,255,0.1) ${Math.min(100, (waterGoal / 250) * 100)}%)` } as React.CSSProperties} />
                 </div>
                 <div style={{ flex: 1 }}>
-                  <button onClick={handleSaveWaterOnly} className="btn" style={{ width: '100%', marginTop: '0', background: 'var(--theme-accent)', color: 'var(--theme-bg, #000)' }}>
+                  <button onClick={handleSaveWaterOnly} className="btn" style={{ width: '100%', marginTop: '0', background: 'var(--theme-accent)', color: '#000000' }}>
                     <Check size={14} /> Apply Water
                   </button>
                 </div>
@@ -609,7 +609,7 @@ export const ProgressView: React.FC = () => {
                             onKeyDown={e => e.key === 'Enter' && saveCustomMicro(nutrient.k)}
                             style={{ width: '80px', padding: '4px 8px' }} 
                           />
-                          <button onClick={() => saveCustomMicro(nutrient.k)} className="btn" style={{ margin: 0, padding: '4px 8px', background: 'var(--theme-accent)', color: 'var(--theme-bg, #000)' }}><Check size={14} /></button>
+                          <button onClick={() => saveCustomMicro(nutrient.k)} className="btn" style={{ margin: 0, padding: '4px 8px', background: 'var(--theme-accent)', color: '#000000' }}><Check size={14} /></button>
                         </div>
                       ) : (
                         <span 

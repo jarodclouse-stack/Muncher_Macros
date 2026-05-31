@@ -895,7 +895,7 @@ export const PantryView: React.FC<PantryViewProps> = ({ initialMeal, onClose, is
                       background: 'var(--theme-accent)', 
                       border: 'none', 
                       borderRadius: 'var(--radius-md)', 
-                      color: 'var(--theme-bg)', 
+                      color: '#000000', 
                       cursor: 'pointer', 
                       display: 'flex', 
                       alignItems: 'center', 
@@ -1266,7 +1266,7 @@ export const PantryView: React.FC<PantryViewProps> = ({ initialMeal, onClose, is
                         setAiStagedResults([]);
                         showNotification(`Entire meal logged to ${targetMeal}!`);
                       }}
-                      style={{ width: '100%', padding: '14px', background: 'var(--theme-accent)', border: 'none', borderRadius: '16px', color: 'var(--theme-bg)', fontWeight: '900', fontSize: '13px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', boxShadow: '0 4px 15px var(--theme-accent-dim)' }}>
+                      style={{ width: '100%', padding: '14px', background: 'var(--theme-accent)', border: 'none', borderRadius: '16px', color: '#000000', fontWeight: '900', fontSize: '13px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', boxShadow: '0 4px 15px var(--theme-accent-dim)' }}>
                       <Check size={18} /> CONFIRM ALL TO FOOD LOG
                     </button>
                     
@@ -1674,7 +1674,7 @@ export const PantryView: React.FC<PantryViewProps> = ({ initialMeal, onClose, is
                     ingredientItems: []
                   });
                 }}
-                style={{ flex: 2, padding: '14px', background: 'var(--theme-accent)', border: 'none', borderRadius: '12px', color: 'var(--theme-bg, #000)', fontWeight: '800', cursor: 'pointer' }}>
+                style={{ flex: 2, padding: '14px', background: 'var(--theme-accent)', border: 'none', borderRadius: '12px', color: '#000000', fontWeight: '800', cursor: 'pointer' }}>
                 {editingIndex !== null ? 'Update Food' : 'Save to Pantry'}
               </button>
               <button 
@@ -1715,7 +1715,7 @@ export const PantryView: React.FC<PantryViewProps> = ({ initialMeal, onClose, is
               setPantryMode('create');
               setCreateTab('basics');
             }}
-            style={{ width: '100%', padding: '12px 16px', background: 'var(--theme-accent)', border: 'none', borderRadius: '16px', color: 'var(--theme-bg, #000)', fontWeight: '900', fontSize: '13px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', boxShadow: '0 8px 24px rgba(0,201,255,0.2)' }}>
+            style={{ width: '100%', padding: '12px 16px', background: 'var(--theme-accent)', border: 'none', borderRadius: '16px', color: '#000000', fontWeight: '900', fontSize: '13px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', boxShadow: '0 8px 24px rgba(0,201,255,0.2)' }}>
             <Plus size={16} /> CREATE NEW FOOD OR RECIPE
           </button>
 
@@ -2004,7 +2004,7 @@ export const PantryView: React.FC<PantryViewProps> = ({ initialMeal, onClose, is
                     setConfiguringFood(null);
                     showNotification(`Added to ${targetMeal}!`);
                   }}
-                  style={{ width: '100%', padding: '16px', background: 'var(--theme-success, #92FE9D)', border: 'none', borderRadius: '16px', color: 'var(--theme-bg, #000)', fontWeight: '900', fontSize: '15px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px', boxShadow: '0 8px 24px rgba(146,254,157,0.15)' }}>
+                  style={{ width: '100%', padding: '16px', background: 'var(--theme-success, #92FE9D)', border: 'none', borderRadius: '16px', color: '#000000', fontWeight: '900', fontSize: '15px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px', boxShadow: '0 8px 24px rgba(146,254,157,0.15)' }}>
                   <Plus size={20} /> ADD TO FOOD LOG
                 </button>
 
