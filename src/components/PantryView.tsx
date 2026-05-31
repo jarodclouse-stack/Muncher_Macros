@@ -529,56 +529,28 @@ export const PantryView: React.FC<PantryViewProps> = ({ initialMeal, onClose, is
       )}
 
       {/* Tab Switcher */}
-      <div style={{ padding: isModal ? '8px 20px 16px 20px' : '24px 20px 16px 20px', position: 'sticky', top: 0, zIndex: 100, background: 'var(--theme-bg, #080A0F)' }}>
-        <div 
-          style={{ 
-            display: 'grid', 
-            gridTemplateColumns: 'repeat(2, 1fr)',
-            gap: '8px', 
-            background: 'var(--theme-panel-dim, rgba(18, 21, 32, 0.4))', 
-            padding: '6px', 
-            borderRadius: '24px', 
-            border: '1px solid var(--theme-border, rgba(255,255,255,0.08))'
-          }}>
-          <button onClick={() => { setActiveTab('search'); clearSearchState(); }} 
-            className={`pantry-main-tab ${activeTab === 'search' ? 'active' : ''}`}
-            style={{ 
-              padding: '12px 4px', 
-              borderRadius: '18px', 
-              border: 'none', 
-              background: activeTab === 'search' ? 'var(--theme-text, #fff)' : 'transparent',
-              color: activeTab === 'search' ? 'var(--theme-bg, #000)' : 'var(--theme-text-dim, rgba(255,255,255,0.7))', 
-              fontWeight: '900', 
-              fontSize: '11px', 
-              textTransform: 'uppercase', 
-              cursor: 'pointer', 
-              textAlign: 'center',
-              transition: 'all 0.2s cubic-bezier(0.4, 0, 0.2, 1)',
-              outline: 'none',
-              WebkitTapHighlightColor: 'transparent'
-            }}>
-            Discover
-          </button>
-          <button onClick={() => setActiveTab('saved')}
-            className={`pantry-main-tab ${activeTab === 'saved' ? 'active' : ''}`}
-            style={{ 
-              padding: '12px 4px', 
-              borderRadius: '18px', 
-              border: 'none', 
-              background: activeTab === 'saved' ? 'var(--theme-text, #fff)' : 'transparent',
-              color: activeTab === 'saved' ? 'var(--theme-bg, #000)' : 'var(--theme-text-dim, rgba(255,255,255,0.7))', 
-              fontWeight: '900', 
-              fontSize: '11px', 
-              textTransform: 'uppercase', 
-              cursor: 'pointer', 
-              textAlign: 'center',
-              transition: 'all 0.2s cubic-bezier(0.4, 0, 0.2, 1)',
-              outline: 'none',
-              WebkitTapHighlightColor: 'transparent'
-            }}>
-            My Pantry
-          </button>
-        </div>
+      <div 
+        style={{ 
+          display: 'grid', 
+          gridTemplateColumns: 'repeat(2, 1fr)',
+          gap: '8px', 
+          marginBottom: '20px', 
+          position: 'sticky', 
+          top: '0', 
+          zIndex: 100, 
+          background: 'transparent',
+          padding: isModal ? '8px 20px 16px 20px' : '24px 20px 16px 20px'
+        }}>
+        <button onClick={() => { setActiveTab('search'); clearSearchState(); }} 
+          className={`pantry-main-tab ${activeTab === 'search' ? 'active' : ''}`}
+          style={{ padding: '12px 4px', borderRadius: '14px', border: 'none', color: activeTab === 'search' ? '#fff' : 'rgba(255,255,255,0.7)', fontWeight: '800', fontSize: '11px', textTransform: 'uppercase', cursor: 'pointer', textAlign: 'center' }}>
+          Discover
+        </button>
+        <button onClick={() => setActiveTab('saved')}
+          className={`pantry-main-tab ${activeTab === 'saved' ? 'active' : ''}`}
+          style={{ padding: '12px 4px', borderRadius: '14px', border: 'none', color: activeTab === 'saved' ? '#fff' : 'rgba(255,255,255,0.7)', fontWeight: '800', fontSize: '11px', textTransform: 'uppercase', cursor: 'pointer', textAlign: 'center' }}>
+          My Pantry
+        </button>
       </div>
 
       {activeTab === 'search' && (
