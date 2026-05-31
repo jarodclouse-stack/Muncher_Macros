@@ -476,6 +476,7 @@ export const PantryView: React.FC<PantryViewProps> = ({ initialMeal, onClose, is
   };
   
   const [configuringFood, setConfiguringFood] = useState<Food | null>(null);
+  const [configuringFromRecipe, setConfiguringFromRecipe] = useState(false);
   const [editName, setEditName] = useState('');
   const [servingQty, setServingQty] = useState('1');
   const [servingUnit, setServingUnit] = useState('serving');
@@ -1813,7 +1814,7 @@ export const PantryView: React.FC<PantryViewProps> = ({ initialMeal, onClose, is
                       customFoods.map((f: Food, i: number) => (
                         <button 
                           key={i}
-                          onClick={() => handleAddPreviewClick(f)}
+                          onClick={() => { setConfiguringFromRecipe(true); handleAddPreviewClick(f); }}
                           style={{ 
                             padding: '10px 14px', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', 
                             borderRadius: '12px', whiteSpace: 'nowrap', cursor: 'pointer', textAlign: 'left', minWidth: '140px', maxWidth: '200px', flexShrink: 0,
@@ -1851,7 +1852,7 @@ export const PantryView: React.FC<PantryViewProps> = ({ initialMeal, onClose, is
                   {ingResults.map((r, i) => (
                     <div 
                       key={i} 
-                      onClick={() => handleAddPreviewClick(r)}
+                      onClick={() => { setConfiguringFromRecipe(true); handleAddPreviewClick(r); }}
                       style={{ 
                         display: 'flex', 
                         justifyContent: 'space-between', 
@@ -2166,7 +2167,7 @@ export const PantryView: React.FC<PantryViewProps> = ({ initialMeal, onClose, is
                     </div>
                   </div>
                 </div>
-                <button onClick={() => setConfiguringFood(null)} style={{ background: 'rgba(255,255,255,0.05)', border: 'none', borderRadius: '50%', width: '32px', height: '32px', color: '#fff', cursor: 'pointer' }}><X size={18} /></button>
+                <button onClick={() => { setConfiguringFood(null); setConfiguringFromRecipe(false); }} style={{ background: 'rgba(255,255,255,0.05)', border: 'none', borderRadius: '50%', width: '32px', height: '32px', color: '#fff', cursor: 'pointer' }}><X size={18} /></button>
               </div>
 
               {/* Nutrition Summary */}
@@ -2340,6 +2341,7 @@ export const PantryView: React.FC<PantryViewProps> = ({ initialMeal, onClose, is
               </div>
 
               <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                {!configuringFromRecipe && (
                 <button 
                   onClick={() => {
                     const mult = computeMultiplier(configuringFood.serving || '', servingUnit, parseFloat(servingQty) || 1);
@@ -2351,6 +2353,7 @@ export const PantryView: React.FC<PantryViewProps> = ({ initialMeal, onClose, is
                   style={{ width: '100%', padding: '16px', background: 'var(--theme-success, #92FE9D)', border: 'none', borderRadius: '16px', color: '#000000', fontWeight: '900', fontSize: '15px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px', boxShadow: '0 8px 24px rgba(146,254,157,0.15)' }}>
                   <Plus size={20} /> ADD TO FOOD LOG
                 </button>
+                )}
 
                 <button 
                   onClick={() => {
@@ -2358,6 +2361,7 @@ export const PantryView: React.FC<PantryViewProps> = ({ initialMeal, onClose, is
                     const newItems = [...(form.ingredientItems || []), { food: configuringFood, qty: qty.toString(), unit: servingUnit }];
                     calculateRecipeTotals(newItems);
                     setConfiguringFood(null);
+                    setConfiguringFromRecipe(false);
                     setIngResults([]);
                     setIngQuery('');
                     setActiveTab('saved');
@@ -2368,11 +2372,13 @@ export const PantryView: React.FC<PantryViewProps> = ({ initialMeal, onClose, is
                   <Sparkles size={18} color="var(--theme-accent)" /> USE AS INGREDIENT
                 </button>
 
+                {!configuringFromRecipe && (
                 <button 
                   onClick={handleConfirmAddPantry}
                   style={{ width: '100%', padding: '14px', background: 'none', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '16px', color: 'var(--theme-text-dim)', fontWeight: '700', fontSize: '13px', cursor: 'pointer', marginTop: '4px' }}>
                   RE-SAVE TO PANTRY
                 </button>
+                )}
               </div>
           </div>
         </div>
