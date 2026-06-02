@@ -138,10 +138,9 @@ export const DiaryProvider: React.FC<{ children: React.ReactNode }> = ({ childre
 
   const updateCacheDebounced = useCallback((newCache: LocalCache) => {
     setLocalCache(newCache);
-    if (syncStatus === 'syncing') return; // Don't interrupt
     if (syncTimeoutRef.current) clearTimeout(syncTimeoutRef.current);
     syncTimeoutRef.current = setTimeout(() => saveCloudData(newCache), 1500) as any;
-  }, [saveCloudData, syncStatus]);
+  }, [saveCloudData]);
 
   const updateStagingTray = useCallback((newTray: StagedFood[]) => {
     setStagingTray(newTray);
