@@ -86,6 +86,7 @@ export const NutritionView: React.FC = () => {
   const [expandedMicro, setExpandedMicro] = useState<string | null>(null);
   const [showDisclaimer, setShowDisclaimer] = useState<boolean>(false);
   const [showCardioBalance, setShowCardioBalance] = useState<boolean>(false);
+  const [showMicroDetails, setShowMicroDetails] = useState<boolean>(false);
 
   const resolvedColors = useMemo(() => {
     void localCache.theme;
@@ -178,7 +179,12 @@ export const NutritionView: React.FC = () => {
               return (
                 <div key={label}>
                   <div
-                    onClick={() => (label === 'Protein' || label === 'Fat') && setExpandedMicro(expandedMicro === label ? null : label)}
+                    onClick={() => {
+                      if (label === 'Protein' || label === 'Fat') {
+                        setExpandedMicro(expandedMicro === label ? null : label);
+                        setShowMicroDetails(false);
+                      }
+                    }}
                     style={{ display: 'flex', justifyContent: 'space-between', fontSize: '12px', cursor: (label === 'Protein' || label === 'Fat') ? 'pointer' : 'default' }}
                   >
                     <span style={{ fontWeight: '600', display: 'flex', alignItems: 'center', gap: '4px', color: 'var(--theme-text-on-panel)' }}>
@@ -218,9 +224,34 @@ export const NutritionView: React.FC = () => {
                         </div>
                         <div style={{ lineHeight: '1.5', color: '#FFFFFF' }}>{(NUTRIENT_BENEFITS as Record<string, { summary?: string, points?: string[] }>).Protein?.summary || 'The building block of all human tissue.'}</div>
                         {(NUTRIENT_BENEFITS as Record<string, { summary?: string, points?: string[] }>).Protein?.points && (
-                          <ul style={{ paddingLeft: '18px', margin: '8px 0 0 0', color: '#FFFFFF', display: 'flex', flexDirection: 'column', gap: '4px' }}>
-                            {(NUTRIENT_BENEFITS as Record<string, { summary?: string, points?: string[] }>).Protein.points!.map((p: string, i: number) => <li key={i}>{p}</li>)}
-                          </ul>
+                          <div style={{ marginTop: '8px' }}>
+                            <span 
+                              onClick={() => setShowMicroDetails(!showMicroDetails)}
+                              style={{
+                                fontSize: '9px',
+                                fontWeight: '900',
+                                color: 'var(--theme-accent)',
+                                cursor: 'pointer',
+                                textTransform: 'uppercase',
+                                letterSpacing: '0.5px',
+                                userSelect: 'none',
+                                display: 'inline-flex',
+                                alignItems: 'center',
+                                gap: '4px',
+                                background: 'rgba(255, 255, 255, 0.05)',
+                                padding: '2px 8px',
+                                borderRadius: '6px',
+                                border: '1px solid rgba(255, 255, 255, 0.1)'
+                              }}
+                            >
+                              {showMicroDetails ? 'Hide Details ▲' : 'Show Details ▼'}
+                            </span>
+                            {showMicroDetails && (
+                              <ul style={{ paddingLeft: '18px', margin: '8px 0 0 0', color: '#FFFFFF', display: 'flex', flexDirection: 'column', gap: '4px', fontSize: '11px', lineHeight: '1.4' }}>
+                                {(NUTRIENT_BENEFITS as Record<string, { summary?: string, points?: string[] }>).Protein.points!.map((p: string, i: number) => <li key={i}>{p}</li>)}
+                              </ul>
+                            )}
+                          </div>
                         )}
                       </div>
                       {(DEFICIENCY_INFO as Record<string, { desc?: string }>).Protein && (
@@ -242,9 +273,34 @@ export const NutritionView: React.FC = () => {
                         </div>
                         <div style={{ lineHeight: '1.5', color: '#FFFFFF' }}>{(NUTRIENT_BENEFITS as Record<string, { summary?: string, points?: string[] }>).Fat?.summary || 'Essential healthy fats for optimal body function.'}</div>
                         {(NUTRIENT_BENEFITS as Record<string, { summary?: string, points?: string[] }>).Fat?.points && (
-                          <ul style={{ paddingLeft: '18px', margin: '8px 0 0 0', color: '#FFFFFF', display: 'flex', flexDirection: 'column', gap: '4px' }}>
-                            {(NUTRIENT_BENEFITS as Record<string, { summary?: string, points?: string[] }>).Fat.points!.map((p: string, i: number) => <li key={i}>{p}</li>)}
-                          </ul>
+                          <div style={{ marginTop: '8px' }}>
+                            <span 
+                              onClick={() => setShowMicroDetails(!showMicroDetails)}
+                              style={{
+                                fontSize: '9px',
+                                fontWeight: '900',
+                                color: 'var(--theme-accent)',
+                                cursor: 'pointer',
+                                textTransform: 'uppercase',
+                                letterSpacing: '0.5px',
+                                userSelect: 'none',
+                                display: 'inline-flex',
+                                alignItems: 'center',
+                                gap: '4px',
+                                background: 'rgba(255, 255, 255, 0.05)',
+                                padding: '2px 8px',
+                                borderRadius: '6px',
+                                border: '1px solid rgba(255, 255, 255, 0.1)'
+                              }}
+                            >
+                              {showMicroDetails ? 'Hide Details ▲' : 'Show Details ▼'}
+                            </span>
+                            {showMicroDetails && (
+                              <ul style={{ paddingLeft: '18px', margin: '8px 0 0 0', color: '#FFFFFF', display: 'flex', flexDirection: 'column', gap: '4px', fontSize: '11px', lineHeight: '1.4' }}>
+                                {(NUTRIENT_BENEFITS as Record<string, { summary?: string, points?: string[] }>).Fat.points!.map((p: string, i: number) => <li key={i}>{p}</li>)}
+                              </ul>
+                            )}
+                          </div>
                         )}
                       </div>
                       {(DEFICIENCY_INFO as Record<string, { desc?: string }>).Fat && (
@@ -272,7 +328,12 @@ export const NutritionView: React.FC = () => {
                         const { pct, actualPct, color: barColor } = getNutrientProgress(sub.v, sub.g || 0, sub.k);
                         return (
                           <div key={sub.k} className={isExpanded ? "glass-card" : ""} style={{ padding: isExpanded ? 'var(--space-md)' : '0', transition: 'all var(--transition-smooth)', margin: isExpanded ? '0 -16px var(--space-xs)' : '0' }}>
-                            <div onClick={() => info && setExpandedMicro(isExpanded ? null : sub.k)} style={{ display: 'flex', justifyContent: 'space-between', fontSize: '10px', cursor: info ? 'pointer' : 'default' }}>
+                            <div onClick={() => {
+                              if (info) {
+                                setExpandedMicro(isExpanded ? null : sub.k);
+                                setShowMicroDetails(false);
+                              }
+                            }} style={{ display: 'flex', justifyContent: 'space-between', fontSize: '10px', cursor: info ? 'pointer' : 'default' }}>
                               <span style={{ color: 'var(--theme-text-dim-on-panel)', display: 'flex', alignItems: 'center', gap: '4px', fontWeight: '900', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
                                 {sub.k} 
                                 {info && (
@@ -363,7 +424,12 @@ export const NutritionView: React.FC = () => {
                         const info = benefitsInfo || defInfo;
                         return (
                           <div key={sub.k} className={isExpanded ? "glass-card" : ""} style={{ padding: isExpanded ? 'var(--space-md)' : '0', transition: 'all var(--transition-smooth)', margin: isExpanded ? '0 -16px var(--space-xs)' : '0' }}>
-                            <div onClick={() => info && setExpandedMicro(isExpanded ? null : sub.k)} style={{ display: 'flex', justifyContent: 'space-between', fontSize: '10px', cursor: info ? 'pointer' : 'default' }}>
+                            <div onClick={() => {
+                              if (info) {
+                                setExpandedMicro(isExpanded ? null : sub.k);
+                                setShowMicroDetails(false);
+                              }
+                            }} style={{ display: 'flex', justifyContent: 'space-between', fontSize: '10px', cursor: info ? 'pointer' : 'default' }}>
                               <span style={{ color: 'var(--theme-text-dim-on-panel)', display: 'flex', alignItems: 'center', gap: '4px', fontWeight: '900', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
                                 {sub.disp} 
                                 {info && (
@@ -416,9 +482,37 @@ export const NutritionView: React.FC = () => {
                                     </div>
                                     <div style={{ lineHeight: '1.5', color: '#FFFFFF' }}>{benefitsInfo.summary}</div>
                                     {benefitsInfo.points && (
-                                      <ul style={{ paddingLeft: '18px', margin: '8px 0 0 0', color: '#FFFFFF', display: 'flex', flexDirection: 'column', gap: '4px', fontSize: '11px' }}>
-                                        {benefitsInfo.points.map((p: string, i: number) => <li key={i}>{p}</li>)}
-                                      </ul>
+                                      <div style={{ marginTop: '8px' }}>
+                                        <span 
+                                          onClick={(e) => {
+                                            e.stopPropagation();
+                                            setShowMicroDetails(!showMicroDetails);
+                                          }}
+                                          style={{
+                                            fontSize: '9px',
+                                            fontWeight: '900',
+                                            color: 'var(--theme-accent)',
+                                            cursor: 'pointer',
+                                            textTransform: 'uppercase',
+                                            letterSpacing: '0.5px',
+                                            userSelect: 'none',
+                                            display: 'inline-flex',
+                                            alignItems: 'center',
+                                            gap: '4px',
+                                            background: 'rgba(255, 255, 255, 0.05)',
+                                            padding: '2px 8px',
+                                            borderRadius: '6px',
+                                            border: '1px solid rgba(255, 255, 255, 0.1)'
+                                          }}
+                                        >
+                                          {showMicroDetails ? 'Hide Details ▲' : 'Show Details ▼'}
+                                        </span>
+                                        {showMicroDetails && (
+                                          <ul style={{ paddingLeft: '18px', margin: '8px 0 0 0', color: '#FFFFFF', display: 'flex', flexDirection: 'column', gap: '4px', fontSize: '11px', lineHeight: '1.4' }}>
+                                            {benefitsInfo.points.map((p: string, i: number) => <li key={i}>{p}</li>)}
+                                          </ul>
+                                        )}
+                                      </div>
                                     )}
                                   </div>
                                 )}
@@ -557,7 +651,12 @@ export const NutritionView: React.FC = () => {
                   return (
                     <div key={label} className={isExpanded ? "glass-card" : ""} style={{ padding: isExpanded ? 'var(--space-sm) var(--space-md)' : '0 var(--space-xs)', transition: 'all var(--transition-smooth)', margin: isExpanded ? '0 -4px var(--space-xs)' : '0' }}>
                       <div
-                        onClick={() => info && setExpandedMicro(isExpanded ? null : label)}
+                        onClick={() => {
+                          if (info) {
+                            setExpandedMicro(isExpanded ? null : label);
+                            setShowMicroDetails(false);
+                          }
+                        }}
                         style={{ display: 'grid', gridTemplateColumns: 'minmax(120px, auto) 1fr 95px', gap: '16px', alignItems: 'center', cursor: info ? 'pointer' : 'default' }}
                       >
                         <div style={{
@@ -624,9 +723,37 @@ export const NutritionView: React.FC = () => {
                             </div>
                             <div style={{ marginBottom: '10px', lineHeight: '1.5', color: '#FFFFFF' }}>{benefitsInfo?.summary || 'Vital biological support for systemic homeostatis.'}</div>
                             {benefitsInfo?.points && (
-                              <ul style={{ paddingLeft: '18px', margin: '0', color: '#FFFFFF', display: 'flex', flexDirection: 'column', gap: '4px' }}>
-                                {benefitsInfo.points.map((p: string, i: number) => <li key={i}>{p}</li>)}
-                              </ul>
+                              <div style={{ marginTop: '8px' }}>
+                                <span 
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    setShowMicroDetails(!showMicroDetails);
+                                  }}
+                                  style={{
+                                    fontSize: '9px',
+                                    fontWeight: '900',
+                                    color: 'var(--theme-accent)',
+                                    cursor: 'pointer',
+                                    textTransform: 'uppercase',
+                                    letterSpacing: '0.5px',
+                                    userSelect: 'none',
+                                    display: 'inline-flex',
+                                    alignItems: 'center',
+                                    gap: '4px',
+                                    background: 'rgba(255, 255, 255, 0.05)',
+                                    padding: '2px 8px',
+                                    borderRadius: '6px',
+                                    border: '1px solid rgba(255, 255, 255, 0.1)'
+                                  }}
+                                >
+                                  {showMicroDetails ? 'Hide Details ▲' : 'Show Details ▼'}
+                                </span>
+                                {showMicroDetails && (
+                                  <ul style={{ paddingLeft: '18px', margin: '8px 0 0 0', color: '#FFFFFF', display: 'flex', flexDirection: 'column', gap: '4px', fontSize: '11px', lineHeight: '1.4' }}>
+                                    {benefitsInfo.points.map((p: string, i: number) => <li key={i}>{p}</li>)}
+                                  </ul>
+                                )}
+                              </div>
                             )}
                           </div>
 
