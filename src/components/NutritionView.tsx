@@ -6,7 +6,7 @@ import { MICRO_CATEGORIES } from '../lib/constants';
 import { DEFICIENCY_INFO, NUTRIENT_BENEFITS } from '../lib/nutrient-info';
 import { Doughnut } from 'react-chartjs-2';
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js';
-import { Info, Sparkles } from 'lucide-react';
+import { Sparkles } from 'lucide-react';
 import type { Food } from '../types/food';
 
 ChartJS.register(ArcElement, Tooltip, Legend);
@@ -176,11 +176,31 @@ export const NutritionView: React.FC = () => {
               return (
                 <div key={label}>
                   <div
-                    onClick={() => label === 'Protein' && setExpandedMicro(expandedMicro === 'Protein' ? null : 'Protein')}
-                    style={{ display: 'flex', justifyContent: 'space-between', fontSize: '12px', cursor: label === 'Protein' ? 'pointer' : 'default' }}
+                    onClick={() => (label === 'Protein' || label === 'Fat') && setExpandedMicro(expandedMicro === label ? null : label)}
+                    style={{ display: 'flex', justifyContent: 'space-between', fontSize: '12px', cursor: (label === 'Protein' || label === 'Fat') ? 'pointer' : 'default' }}
                   >
                     <span style={{ fontWeight: '600', display: 'flex', alignItems: 'center', gap: '4px', color: 'var(--theme-text-on-panel)' }}>
-                      {label} {label === 'Protein' && <Info size={10} color="color-mix(in srgb, var(--theme-text) 40%, black)" />}
+                      {label}
+                      {(label === 'Protein' || label === 'Fat') && (
+                        <span style={{
+                          background: expandedMicro === label ? color : 'rgba(255, 255, 255, 0.05)',
+                          border: `1px solid ${expandedMicro === label ? color : 'rgba(255, 255, 255, 0.15)'}`,
+                          borderRadius: '6px',
+                          color: expandedMicro === label ? '#000000' : color,
+                          padding: '2px 6px',
+                          fontSize: '8px',
+                          fontWeight: '950',
+                          textTransform: 'uppercase',
+                          boxShadow: expandedMicro === label ? `0 0 8px ${color}` : 'none',
+                          transition: 'all 0.2s ease-in-out',
+                          marginLeft: '6px',
+                          display: 'inline-flex',
+                          alignItems: 'center',
+                          letterSpacing: '0.5px'
+                        }}>
+                          INFO
+                        </span>
+                      )}
                     </span>
                     <span style={{ color: 'var(--theme-text-dim-on-panel)', fontWeight: '800' }}>{Math.round(val)} <span style={{ fontSize: '10px' }}>/ {Math.round(goal)}g</span></span>
                   </div>
@@ -207,6 +227,30 @@ export const NutritionView: React.FC = () => {
                             ⚠️ Deficiency Risks
                           </div>
                           <div style={{ lineHeight: '1.5', color: '#FFFFFF', fontWeight: '600' }}>{(DEFICIENCY_INFO as Record<string, { desc?: string }>).Protein.desc}</div>
+                        </div>
+                      )}
+                    </div>
+                  )}
+
+                  {label === 'Fat' && expandedMicro === 'Fat' && (
+                    <div className="glass-card" style={{ background: 'rgba(0, 0, 0, 0.85)', marginTop: 'var(--space-md)', padding: 'var(--space-md)', borderLeft: '3px solid var(--theme-warning)', marginBottom: 'var(--space-sm)' }}>
+                      <div style={{ marginBottom: '16px' }}>
+                        <div style={{ fontWeight: '900', color: 'color-mix(in srgb, var(--theme-success), white 70%)', marginBottom: '8px', fontSize: '11px', textTransform: 'uppercase', letterSpacing: '1px' }}>
+                          ✨ Performance Benefits
+                        </div>
+                        <div style={{ lineHeight: '1.5', color: '#FFFFFF' }}>{(NUTRIENT_BENEFITS as Record<string, { summary?: string, points?: string[] }>).Fat?.summary || 'Essential healthy fats for optimal body function.'}</div>
+                        {(NUTRIENT_BENEFITS as Record<string, { summary?: string, points?: string[] }>).Fat?.points && (
+                          <ul style={{ paddingLeft: '18px', margin: '8px 0 0 0', color: '#FFFFFF', display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                            {(NUTRIENT_BENEFITS as Record<string, { summary?: string, points?: string[] }>).Fat.points!.map((p: string, i: number) => <li key={i}>{p}</li>)}
+                          </ul>
+                        )}
+                      </div>
+                      {(DEFICIENCY_INFO as Record<string, { desc?: string }>).Fat && (
+                        <div style={{ borderTop: '1px solid var(--theme-border)', paddingTop: '12px' }}>
+                          <div style={{ fontWeight: '900', color: 'color-mix(in srgb, var(--theme-warning), white 70%)', marginBottom: '8px', fontSize: '11px', textTransform: 'uppercase', letterSpacing: '1px' }}>
+                            ⚠️ Deficiency Risks
+                          </div>
+                          <div style={{ lineHeight: '1.5', color: '#FFFFFF', fontWeight: '600' }}>{(DEFICIENCY_INFO as Record<string, { desc?: string }>).Fat.desc}</div>
                         </div>
                       )}
                     </div>
@@ -373,7 +417,7 @@ export const NutritionView: React.FC = () => {
                                 {defInfo && (
                                   <div style={{ borderTop: '1px solid var(--theme-border, rgba(255,255,255,0.05))', paddingTop: '12px' }}>
                                     <div style={{ fontWeight: '800', color: 'color-mix(in srgb, var(--theme-warning), white 70%)', marginBottom: '6px', fontSize: '12px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-                                      ⚠️ Deficiency Risks
+                                      {sub.k === 'Simple Carbs' ? '⚠️ Consumption Warnings' : '⚠️ Deficiency Risks'}
                                     </div>
                                     <div style={{ lineHeight: '1.5', color: '#FFFFFF' }}>{defInfo.desc}</div>
                                     {defInfo.sources && (

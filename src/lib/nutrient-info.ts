@@ -129,30 +129,25 @@ export const DEFICIENCY_INFO: Record<string, { name: string; sources: string; de
     sources: "Apples, strawberries, blueberries, sweet potatoes, carrots, peaches",
     desc: "Naturally occurring sweet sugars structurally bound in a whole-food fiber matrix. Deficiency removes raw cell-hydrating vitamins and cellular minerals, causing sugar cravings and a lack of quick, metabolically healthy clean fuel."
   },
-  'Steady Starches': {
-    name: "Glycogen Synthesis & Clean Fuel (PMID: 29301074)",
-    sources: "White rice, baked potatoes, standard wheat pasta, couscous",
-    desc: "Moderate-digesting clean starches that serve as primary raw materials for muscle glycogen replenishment. A deficiency can cause muscle flatness, slow post-workout recovery, and poor anaerobic power."
-  },
-  'Hybrid Bites': {
-    name: "Glycemic-Buffered Snack Moderation (PMID: 31991823)",
-    sources: "Fiber cookies, protein-fiber bars, whole-grain sweet muffins, low-carb sweet snacks",
-    desc: "Sweet processed treat formulations featuring an active fiber brake to dampen glucose entrance. Lacking these can lead to dietary restriction burnout and a higher risk of turning to unbuffered, high-glycemic treats."
-  },
   'Refined Carbs': {
-    name: "Milled Flour Sugar Surges (PMID: 24778671)",
-    sources: "White bread, bagels, white crackers, pretzels, croissants, white flour pastries",
-    desc: "Fast-digesting starches stripped of their natural germ, bran, and fiber buffer. Lacking these is actually highly beneficial for metabolic health; however, relying on them as primary fuel sources leads to rapid blood sugar crashes, insulin resistance, and visceral fat storage."
+    name: "Processed Flour & Milled Starches",
+    sources: "White bread, bagels, white crackers, pretzels, croissants, pastries",
+    desc: "Milled starches stripped of their natural fiber. While alright in moderate amounts for a quick energy boost, relying on them too much can lead to quick blood sugar crashes and low stamina."
   },
   'Simple Carbs': {
-    name: "Rapid Osmotic Fructose Bomb (PMID: 28403157)",
-    sources: "Soda, candy, table syrup, fruit juice, sports drinks",
-    desc: "Fast-digesting refined simple sugars that hit the bloodstream instantly. Lacking simple sugars is highly protective against insulin resistance; consuming them in excess without a muscle-depleted state causes severe liver fat accumulation, vascular inflammation, and rapid fatigue."
+    name: "Refined Sugars & Sweet Additions",
+    sources: "Soda, candy, table syrup, fruit juice, sports drinks, sweets",
+    desc: "Fast-digesting simple sugars that enter the bloodstream almost instantly. Cutting back on these is highly beneficial; consuming them in too much quantity causes sugar spikes, crashes, and excess liver/visceral fat storage."
   },
   'Protein': {
     name: "Amino Recovery Protocol (PMID: 29187311)",
     sources: "Eggs, meat, legumes, Greek yogurt, fish, tofu",
     desc: "Provides essential amino acids for tissue repair and enzyme production. The primary driver of lean muscle growth and immune defense. Deficiency causes muscle wasting and fatigue."
+  },
+  'Fat': {
+    name: "Lipid Balance & Hormone Protocol",
+    sources: "Avocados, olive oil, nuts, seeds, fatty fish, egg yolks",
+    desc: "Provides essential fatty acids for brain function, hormone production, and cell membrane integrity. Essential for absorbing fat-soluble vitamins (A, D, E, K). Deficiency can cause dry skin, hormonal imbalances, chronic fatigue, and poor vitamin absorption."
   }
 };
 
@@ -456,36 +451,38 @@ export const NUTRIENT_BENEFITS: Record<string, { summary: string; points: string
       'Quick Clean Energy: Great for muscle recovery and quick refueling without taxing the pancreas.'
     ]
   },
-  'Steady Starches': {
-    summary: '🌾 Clean Anaerobic Fuel & Glycogen Replenishment',
-    points: [
-      'Glycogen Saturation: Best source of rapid, clean glucose to saturate muscle glycogen after training.',
-      'Hypoallergenic Base: Highly digestible starches like white rice are incredibly easy on the gut under high caloric demands.',
-      'Anaerobic Support: Crucial for high-intensity, short-burst athletic performance.'
-    ]
-  },
-  'Hybrid Bites': {
-    summary: '🍩 Smart Treat Moderation & Glycemic Braking',
-    points: [
-      'Fiber Speed Brake: Standard sugar components are moderated by a fiber shield to prevent massive blood sugar spikes.',
-      'Dietary Compliance: Offers sweet satisfaction for long-term psychological compliance without breaking metabolic goals.',
-      'Steady Release: Digests significantly slower than standard refined sweets.'
-    ]
-  },
   'Refined Carbs': {
-    summary: '🍞 Rapid Starchy Energy (Stripped Grain Flours)',
+    summary: '🍞 Alright in moderation, but not the best',
     points: [
-      'Instant Fuel: Devoid of fiber, these milled starches break down into glucose almost instantly in the mouth and duodenum.',
-      'Exercise Utility: Very effective for rapid energy when consumed immediately before or during strenuous lifting sessions.',
-      'Metabolic Danger: Consumed during sedentary hours, they cause massive blood sugar spikes, insulin resistance, and systemic sluggishness.'
+      'Quick Energy Boost: Can be useful when you need fast, immediate energy before intense physical training.',
+      'Low Fiber Warning: Stripped of natural fibers, meaning they digest very rapidly and shouldn\'t be your main carb source.',
+      'Stamina Impact: Over-consuming refined carbs during sedentary hours can cause quick blood sugar crashes and low energy.'
     ]
   },
   'Simple Carbs': {
-    summary: '🍭 High-Speed Sugar Energy (Liquid & Refined Sweets)',
+    summary: '🍭 Not the best and should be limited/avoided in large amounts',
     points: [
-      'Mitochondrial Ignition: Rapidly absorbed simple fructose and glucose for immediate cell combustion.',
-      'Intra-Workout Fuel: Perfect for rapidly elevating blood glucose and stopping muscle catabolism during high-intensity training.',
-      'Fructose Alert: When eaten in excess without exercise, the liver converts unbuffered simple sugars directly into triglycerides (liver fat).'
+      'Fast Sugar Spikes: Enter the bloodstream almost immediately, causing rapid insulin spikes followed by sharp crashes.',
+      'Liver & Visceral Fat: In large quantities, excess simple sugars are easily converted by the liver into stored visceral fat.',
+      'Optimal Timing: Best avoided unless needed immediately during or after extreme physical endurance efforts.'
+    ]
+  },
+  'Protein': {
+    summary: '💪 Muscle Repair & Body Reconstruction',
+    points: [
+      'Muscle Growth & Repair: Supplies the essential amino acid building blocks to repair and build lean muscle tissue.',
+      'Satiety Booster: Digests slowly to keep you feeling full and satisfied, reducing cravings between meals.',
+      'Immune Defense: Essential for producing antibodies and immune cells that protect your body from illness.',
+      'Enzymes & Hormones: Powers the biological catalysts and signals that keep your metabolism running smoothly.'
+    ]
+  },
+  'Fat': {
+    summary: '🥑 Cell Protection & Hormone Support',
+    points: [
+      'Hormone Production: The foundational building blocks for creating key regulatory hormones like testosterone.',
+      'Vitamin Absorber: Necessary for absorbing essential fat-soluble vitamins (A, D, E, and K) from your diet.',
+      'Brain & Nerve Fuel: Provides myelin protection for your nerves and vital healthy fats that compose 60% of your brain.',
+      'Cell Membrane Support: Strengthens cellular structures to keep your skin healthy and cellular barriers resilient.'
     ]
   }
 };
