@@ -314,7 +314,18 @@ export default async function handler(req, res) {
       };
     });
 
-    return res.status(200).json({ foods });
+    const activeFoods = foods.filter(f => {
+      const isZero = f.cal === 0 && f.p === 0 && f.c === 0 && f.f === 0;
+      if (!isZero) return true;
+      const name = f.name.toLowerCase();
+      const allowedZeroKeywords = [
+        'water', 'diet', 'zero', 'tea', 'coffee', 'mustard', 'vinegar', 'spice', 
+        'salt', 'stevia', 'splenda', 'sweetener', 'seasoning', 'coke 0', 'pepsi 0'
+      ];
+      return allowedZeroKeywords.some(kw => name.includes(kw));
+    });
+
+    return res.status(200).json({ foods: activeFoods });
 
   } catch (err) {
     return res.status(500).json({ error: err.message });
