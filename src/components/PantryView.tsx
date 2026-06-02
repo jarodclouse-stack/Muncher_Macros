@@ -191,7 +191,7 @@ export const PantryView: React.FC<PantryViewProps> = ({ initialMeal, onClose, is
 
   // New states for descriptive overall physical portions and dual-unit toggles
   const [aiTotalServingQty, setAiTotalServingQty] = useState<number>(1);
-  const [aiTotalServingUnit, setAiTotalServingUnit] = useState<string>('meal');
+  const [aiTotalServingUnit, setAiTotalServingUnit] = useState<string>('serving');
   const [selectedServingUnitToggle, setSelectedServingUnitToggle] = useState<'meal' | 'physical'>('meal');
   const [loggedPortionsVal, setLoggedPortionsVal] = useState<string>('1');
 
@@ -519,7 +519,11 @@ export const PantryView: React.FC<PantryViewProps> = ({ initialMeal, onClose, is
       const detected = (body.foods || []) as Food[];
       
       const qty = Number(body.totalServingQty || 1);
-      const unit = String(body.totalServingUnit || 'meal');
+      let unit = String(body.totalServingUnit || 'serving');
+      const lowerUnit = unit.toLowerCase().trim();
+      if (lowerUnit === 'meal' || lowerUnit === 'meals' || lowerUnit === 'plate' || lowerUnit === 'plates') {
+        unit = 'serving';
+      }
       setAiTotalServingQty(qty);
       setAiTotalServingUnit(unit);
 
@@ -1214,65 +1218,67 @@ export const PantryView: React.FC<PantryViewProps> = ({ initialMeal, onClose, is
                     padding: '14px', 
                     marginBottom: '16px' 
                   }}>
-                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '8px' }}>
-                      <span style={{ fontSize: '11px', color: 'var(--theme-text-dim)', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
-                        📋 Portion Unit
-                      </span>
-                      <div style={{ display: 'flex', background: 'rgba(0,0,0,0.3)', padding: '2px', borderRadius: '10px', border: '1px solid rgba(255,255,255,0.05)' }}>
-                        <button
-                          type="button"
-                          onClick={() => {
-                            if (selectedServingUnitToggle !== 'meal') {
-                              const oldQty = parseFloat(loggedPortionsVal);
-                              const baseQty = Math.max(0.1, aiTotalServingQty || 1);
-                              const convertedQty = isNaN(oldQty) ? 1 : oldQty / baseQty;
-                              const roundedQty = Math.round(convertedQty * 100) / 100;
-                              setLoggedPortionsVal(roundedQty.toString());
-                            }
-                            setSelectedServingUnitToggle('meal');
-                          }}
-                          style={{
-                            padding: '5px 12px',
-                            border: 'none',
-                            borderRadius: '8px',
-                            fontSize: '11px',
-                            fontWeight: '800',
-                            cursor: 'pointer',
-                            transition: 'all 0.2s',
-                            background: selectedServingUnitToggle === 'meal' ? 'var(--theme-accent)' : 'transparent',
-                            color: selectedServingUnitToggle === 'meal' ? '#000' : 'var(--theme-text-dim)'
-                          }}
-                        >
-                          1 Meal
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() => {
-                            if (selectedServingUnitToggle !== 'physical') {
-                              const oldQty = parseFloat(loggedPortionsVal);
-                              const baseQty = Math.max(0.1, aiTotalServingQty || 1);
-                              const convertedQty = isNaN(oldQty) ? baseQty : oldQty * baseQty;
-                              const roundedQty = Math.round(convertedQty * 100) / 100;
-                              setLoggedPortionsVal(roundedQty.toString());
-                            }
-                            setSelectedServingUnitToggle('physical');
-                          }}
-                          style={{
-                            padding: '5px 12px',
-                            border: 'none',
-                            borderRadius: '8px',
-                            fontSize: '11px',
-                            fontWeight: '800',
-                            cursor: 'pointer',
-                            transition: 'all 0.2s',
-                            background: selectedServingUnitToggle === 'physical' ? 'var(--theme-accent)' : 'transparent',
-                            color: selectedServingUnitToggle === 'physical' ? '#000' : 'var(--theme-text-dim)'
-                          }}
-                        >
-                          {aiTotalServingQty} {aiTotalServingUnit}
-                        </button>
+                    {aiTotalServingUnit !== 'serving' && (
+                      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '8px' }}>
+                        <span style={{ fontSize: '11px', color: 'var(--theme-text-dim)', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                          📋 Portion Unit
+                        </span>
+                        <div style={{ display: 'flex', background: 'rgba(0,0,0,0.3)', padding: '2px', borderRadius: '10px', border: '1px solid rgba(255,255,255,0.05)' }}>
+                          <button
+                            type="button"
+                            onClick={() => {
+                              if (selectedServingUnitToggle !== 'meal') {
+                                const oldQty = parseFloat(loggedPortionsVal);
+                                const baseQty = Math.max(0.1, aiTotalServingQty || 1);
+                                const convertedQty = isNaN(oldQty) ? 1 : oldQty / baseQty;
+                                const roundedQty = Math.round(convertedQty * 100) / 100;
+                                setLoggedPortionsVal(roundedQty.toString());
+                              }
+                              setSelectedServingUnitToggle('meal');
+                            }}
+                            style={{
+                              padding: '5px 12px',
+                              border: 'none',
+                              borderRadius: '8px',
+                              fontSize: '11px',
+                              fontWeight: '800',
+                              cursor: 'pointer',
+                              transition: 'all 0.2s',
+                              background: selectedServingUnitToggle === 'meal' ? 'var(--theme-accent)' : 'transparent',
+                              color: selectedServingUnitToggle === 'meal' ? '#000' : 'var(--theme-text-dim)'
+                            }}
+                          >
+                            1 Serving
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => {
+                              if (selectedServingUnitToggle !== 'physical') {
+                                const oldQty = parseFloat(loggedPortionsVal);
+                                const baseQty = Math.max(0.1, aiTotalServingQty || 1);
+                                const convertedQty = isNaN(oldQty) ? baseQty : oldQty * baseQty;
+                                const roundedQty = Math.round(convertedQty * 100) / 100;
+                                setLoggedPortionsVal(roundedQty.toString());
+                              }
+                              setSelectedServingUnitToggle('physical');
+                            }}
+                            style={{
+                              padding: '5px 12px',
+                              border: 'none',
+                              borderRadius: '8px',
+                              fontSize: '11px',
+                              fontWeight: '800',
+                              cursor: 'pointer',
+                              transition: 'all 0.2s',
+                              background: selectedServingUnitToggle === 'physical' ? 'var(--theme-accent)' : 'transparent',
+                              color: selectedServingUnitToggle === 'physical' ? '#000' : 'var(--theme-text-dim)'
+                            }}
+                          >
+                            {aiTotalServingQty} {aiTotalServingUnit}
+                          </button>
+                        </div>
                       </div>
-                    </div>
+                    )}
 
                     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '12px' }}>
                       <span style={{ fontSize: '12px', color: 'rgba(255,255,255,0.85)', fontWeight: '600' }}>
@@ -1299,7 +1305,7 @@ export const PantryView: React.FC<PantryViewProps> = ({ initialMeal, onClose, is
                           }}
                         />
                         <span style={{ fontSize: '12px', color: 'var(--theme-accent)', fontWeight: '700', textTransform: 'lowercase' }}>
-                          {selectedServingUnitToggle === 'meal' ? (parseFloat(loggedPortionsVal) === 1 ? 'meal' : 'meals') : aiTotalServingUnit}
+                          {selectedServingUnitToggle === 'meal' ? (parseFloat(loggedPortionsVal) === 1 ? 'serving' : 'servings') : aiTotalServingUnit}
                         </span>
                       </div>
                     </div>
@@ -1771,7 +1777,7 @@ export const PantryView: React.FC<PantryViewProps> = ({ initialMeal, onClose, is
                           // Pre-fill recipe serving fields based on currently toggled unit
                           if (selectedServingUnitToggle === 'meal') {
                             setRecipeServingQty(loggedPortionsVal);
-                            setRecipeServingUnit('meal');
+                            setRecipeServingUnit('serving');
                             setRecipeTotalServings('1');
                           } else {
                             setRecipeServingQty(loggedPortionsVal);
