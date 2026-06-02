@@ -224,21 +224,42 @@ export const PantryView: React.FC<PantryViewProps> = ({ initialMeal, onClose, is
     }
 
     try {
-      const res = await fetch('/api/off-search', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ query: q })
-      });
-      if (res.ok) {
-        const body = await res.json();
-        const globalRes = (body.foods || body.results || []).map(normalizeFoodResult);
-        
-        // Cache the global results
-        searchCache.current[q.toLowerCase()] = globalRes;
-        
-        const combined = [...localMatches, ...globalRes];
-        setIngResults(combined.slice(0, 30));
+      // Tier 1: Search our own database (fast, fuzzy matching)
+      let globalRes = [];
+      try {
+        const dbRes = await fetch('/api/db-search', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ query: q })
+        });
+        if (dbRes.ok) {
+          const dbBody = await dbRes.json();
+          globalRes = (dbBody.foods || []).map(normalizeFoodResult);
+        }
+      } catch {
+        // DB search unavailable — fall through to OFF
       }
+
+      // Tier 2: Fall back to Open Food Facts if DB returned nothing
+      if (globalRes.length === 0) {
+        try {
+          const offRes = await fetch('/api/off-search', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ query: q })
+          });
+          if (offRes.ok) {
+            const offBody = await offRes.json();
+            globalRes = (offBody.foods || offBody.results || []).map(normalizeFoodResult);
+          }
+        } catch {
+          // OFF also failed — keep local matches only
+        }
+      }
+
+      // Cache whichever results came back
+      searchCache.current[q.toLowerCase()] = globalRes;
+      setIngResults([...localMatches, ...globalRes].slice(0, 30));
     } catch {
       // Keep displaying the immediate local matches
     }
@@ -392,22 +413,42 @@ export const PantryView: React.FC<PantryViewProps> = ({ initialMeal, onClose, is
     }
 
     try {
-      const res = await fetch('/api/off-search', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ query: q })
-      });
-      if (res.ok) {
-        const body = await res.json();
-        const globalRes = (body.foods || body.results || []).map(normalizeFoodResult);
-        
-        // Cache the global results for this query
-        searchCache.current[q.toLowerCase()] = globalRes;
-        
-        setSearchResults([...localMatches, ...globalRes].slice(0, 50));
-      } else {
-        setSearchResults(localMatches.slice(0, 50));
+      // Tier 1: Search our own database (fast, fuzzy matching)
+      let globalRes = [];
+      try {
+        const dbRes = await fetch('/api/db-search', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ query: q })
+        });
+        if (dbRes.ok) {
+          const dbBody = await dbRes.json();
+          globalRes = (dbBody.foods || []).map(normalizeFoodResult);
+        }
+      } catch {
+        // DB search unavailable — fall through to OFF
       }
+
+      // Tier 2: Fall back to Open Food Facts if DB returned nothing
+      if (globalRes.length === 0) {
+        try {
+          const offRes = await fetch('/api/off-search', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ query: q })
+          });
+          if (offRes.ok) {
+            const offBody = await offRes.json();
+            globalRes = (offBody.foods || offBody.results || []).map(normalizeFoodResult);
+          }
+        } catch {
+          // OFF also failed — keep local matches only
+        }
+      }
+
+      // Cache whichever results came back
+      searchCache.current[q.toLowerCase()] = globalRes;
+      setSearchResults([...localMatches, ...globalRes].slice(0, 50));
     } catch {
       setSearchResults(localMatches.slice(0, 50));
     }
