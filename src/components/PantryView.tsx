@@ -5,8 +5,7 @@ import {
   Flame, Activity, Trash2, Loader2, BookmarkCheck,
   Info, Edit2, Camera
 } from 'lucide-react';
-import { ALL_MICRO_KEYS, MICRO_UNITS, SERVING_UNITS, MICRO_CATEGORIES } from '../lib/constants';
-import { getNutrientDescriptions } from '../lib/nutrient-info';
+import { ALL_MICRO_KEYS, SERVING_UNITS, MICRO_CATEGORIES } from '../lib/constants';
 import { computeMultiplier, normalizeFoodResult, scaleLegacyFoodByAmount, calculateMacroBalance, scaleToTarget, getCarbClassification } from '../lib/food/serving-converter';
 import { getPairingSuggestions } from '../lib/food/smart-pairing';
 
@@ -60,39 +59,6 @@ const MacroPill = ({ label, val, unit, color }: { label: string, val: string | n
   </div>
 );
 
-const NutrientDetailRow = ({ label, value, unit, benefit }: { label: string, value: string | number, unit: string, benefit?: string | { summary?: string } }) => {
-  const [showBenefit, setShowBenefit] = useState(false);
-  return (
-    <div style={{ padding: '6px 12px', background: 'var(--theme-panel-dim)', borderRadius: '12px', border: '1px solid var(--theme-border)', marginBottom: '6px' }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-          <span className="nutrient-label-bubble" style={{ 
-            fontSize: '10px', 
-            fontWeight: '900', 
-            color: 'var(--theme-text)', 
-            background: 'var(--theme-panel)', 
-            padding: '3px 10px', 
-            borderRadius: '20px',
-            textTransform: 'uppercase',
-            letterSpacing: '0.5px',
-            border: '1px solid var(--theme-border)'
-          }}>{label}</span>
-          {benefit && (
-            <button onClick={() => setShowBenefit(!showBenefit)} style={{ background: 'none', border: 'none', color: showBenefit ? 'var(--theme-accent)' : 'var(--theme-text-dim)', cursor: 'pointer', padding: 2 }}>
-              <Info size={12} />
-            </button>
-          )}
-        </div>
-        <span style={{ fontSize: '13px', fontWeight: '900', color: 'var(--theme-accent)' }}>{value}<span style={{fontSize:'10px', opacity:0.8, marginLeft: '2px'}}>{unit}</span></span>
-      </div>
-      {showBenefit && benefit && (
-        <div style={{ marginTop: '10px', fontSize: '11px', color: '#FFF', fontStyle: 'italic', borderTop: '1px solid var(--theme-border)', paddingTop: '10px', fontWeight: '600', lineHeight: '1.4' }}>
-           {typeof benefit === 'string' ? benefit : benefit.summary}
-        </div>
-      )}
-    </div>
-  );
-};
 
 const EntryField = ({ label, value, onChange, placeholder }: { label: string, value: string, onChange: (v: string) => void, placeholder?: string }) => (
   <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
@@ -2460,23 +2426,11 @@ export const PantryView: React.FC<PantryViewProps> = ({ initialMeal, onClose, is
                 </div>
 
                 {showFullNutrition && (
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', padding: '12px', background: 'var(--theme-panel-dim)', borderRadius: '16px' }}>
-                    <div style={{ fontSize: '10px', fontWeight: '800', color: 'var(--theme-accent, #00C9FF)', borderBottom: '1px solid rgba(255,255,255,0.05)', paddingBottom: '8px', marginBottom: '4px' }}>NUTRITION INTELLIGENCE (Per Logged Amount)</div>
-                    {[...ALL_MICRO_KEYS].map(k => {
-                      const val = (Number((configuringFood as Food)[k as keyof Food]) || 0) * computeMultiplier(configuringFood.serving || '', servingUnit, parseFloat(servingQty) || 1);
-                      if (!val && val !== 0) return null;
-                      const descriptions = getNutrientDescriptions();
-                      const benefit = descriptions[k] || descriptions[k.toLowerCase()];
-                      return (
-                        <NutrientDetailRow 
-                          key={k} 
-                          label={k} 
-                          value={val.toFixed(val < 1 ? 2 : 1)} 
-                          unit={MICRO_UNITS[k] || ''} 
-                          benefit={benefit}
-                        />
-                      );
-                    })}
+                  <div style={{ marginTop: '12px' }}>
+                    <NutritionFactsDisplay 
+                      food={configuringFood} 
+                      multiplier={computeMultiplier(configuringFood.serving || '', servingUnit, parseFloat(servingQty) || 1)} 
+                    />
                   </div>
                 )}
               </div>
