@@ -377,6 +377,16 @@ export const normalizeFoodResult = (food: any): Food => {
     'Insoluble Fiber': r(food['Insoluble Fiber'] || food.insolubleFiber || food.insoluble_fiber || 0),
     solubleFiber: r(food.solubleFiber || food.soluble_fiber || food['Soluble Fiber'] || 0),
     insolubleFiber: r(food.insolubleFiber || food.insoluble_fiber || food['Insoluble Fiber'] || 0),
+    // Preserve Nutri-Score and Nutrient Levels — never drop these
+    nutriscore_grade: food.nutriscore_grade
+      ? String(food.nutriscore_grade).toLowerCase().trim()
+      : undefined,
+    nutrient_levels: (typeof food.nutrient_levels === 'object' && food.nutrient_levels)
+      ? food.nutrient_levels
+      : undefined,
+    nutrient_percentages: (typeof food.nutrient_percentages === 'object' && food.nutrient_percentages)
+      ? food.nutrient_percentages
+      : undefined,
   };
 
   return enforceCalorieConsistency(normalized);
