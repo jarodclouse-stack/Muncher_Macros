@@ -84,6 +84,7 @@ export const NutritionView: React.FC = () => {
   }, [localCache, currentDate]);
 
   const [expandedMicro, setExpandedMicro] = useState<string | null>(null);
+  const [showDisclaimer, setShowDisclaimer] = useState<boolean>(false);
 
   const resolvedColors = useMemo(() => {
     void localCache.theme;
@@ -483,17 +484,32 @@ export const NutritionView: React.FC = () => {
         </p>
 
         {/* Combined clinical & legal disclaimer */}
-        <div style={{ 
-          fontSize: '10px', 
-          color: 'rgba(255, 107, 107, 0.9)', 
-          fontStyle: 'italic', 
-          lineHeight: '1.5', 
-          background: 'rgba(255, 107, 107, 0.05)', 
-          padding: '12px', 
-          borderRadius: '12px', 
-          border: '1px solid rgba(255, 107, 107, 0.15)' 
-        }}>
-          <strong>⚠️ Legal & Clinical Disclaimer:</strong> This Sodium-Potassium information is for general educational and informational purposes only. It is not medical or professional advice, nor is it a substitute for diagnosis or treatment. Always consult a licensed medical doctor or cardiologist before making significant changes to your diet or if you are managing hypertension, heart, or kidney conditions.
+        <div 
+          onClick={() => setShowDisclaimer(!showDisclaimer)}
+          style={{ 
+            fontSize: '10px', 
+            color: 'rgba(255, 107, 107, 0.9)', 
+            lineHeight: '1.5', 
+            background: 'rgba(255, 107, 107, 0.05)', 
+            padding: '12px', 
+            borderRadius: '12px', 
+            border: '1px solid rgba(255, 107, 107, 0.15)',
+            cursor: 'pointer',
+            userSelect: 'none',
+            transition: 'all 0.2s ease'
+          }}
+        >
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontWeight: '800' }}>
+            <span>⚠️ Legal & Clinical Disclaimer</span>
+            <span style={{ fontSize: '9px', textTransform: 'uppercase', letterSpacing: '0.5px', color: 'rgba(255, 107, 107, 0.7)', fontWeight: '900' }}>
+              {showDisclaimer ? 'Collapse ▲' : 'Expand ▼'}
+            </span>
+          </div>
+          {showDisclaimer && (
+            <div style={{ marginTop: '8px', borderTop: '1px solid rgba(255, 107, 107, 0.15)', paddingTop: '8px', fontStyle: 'italic' }}>
+              This Sodium-Potassium information is for general educational and informational purposes only. It is not medical or professional advice, nor is it a substitute for diagnosis or treatment. Always consult a licensed medical doctor or cardiologist before making significant changes to your diet or if you are managing hypertension, heart, or kidney conditions.
+            </div>
+          )}
         </div>
       </div>
 

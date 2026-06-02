@@ -581,7 +581,7 @@ const WeeklyReport = ({ localCache, currentDate, targetCal }: any) => {
           <span className="this-week-title" style={{ fontSize: '15px', fontWeight: '800', color: 'var(--theme-text-on-panel)' }}>This Week</span>
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-          {!isOpen && <span style={{ fontSize: '11px', color: 'var(--theme-accent, #00C9FF)', fontWeight: '700', textTransform: 'uppercase' }}>{avgCal} kcal Avg</span>}
+          {!isOpen && <span style={{ fontSize: '11px', color: 'var(--theme-accent, #00C9FF)', fontWeight: '700', textTransform: 'uppercase' }}>{avgCal} kcal Weekly Avg</span>}
           {isOpen ? <ChevronUp size={18} color="var(--theme-text-dim, #8b8b9b)" /> : <ChevronDown size={18} color="var(--theme-text-dim, #8b8b9b)" />}
         </div>
       </div>
