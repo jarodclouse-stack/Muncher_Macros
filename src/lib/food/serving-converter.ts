@@ -445,3 +445,53 @@ export function getCarbClassification(food: any): CarbCategory {
     }
   }
 }
+
+/**
+ * Estimate a Nutri-Score grade (a–e) from any food object.
+ * Returns the stored nutriscore_grade if already present (authoritative).
+ * Otherwise derives it from fat, saturated fat, sugars, sodium, fiber, protein
+ * using the official Santé publique France / FSA scoring model.
+ *
+ * `estimated: true` means it was computed — show a "~" prefix to signal approximation.
+ */
+export function estimateNutriScore(food: any): { grade: string; estimated: boolean } {
+  if (food?.nutriscore_grade) {
+    const g = String(food.nutriscore_grade).toLowerCase().trim();
+    if ('abcde'.includes(g) && g.length === 1) return { grade: g, estimated: false };
+  }
+
+  const cal = Number(food?.cal ?? food?.calories ?? 0);
+  if (cal <= 0) return { grade: '', estimated: true };
+
+  // Scale values to per-100g
+  const sQty = Number(food?.sQty ?? food?.stagedQty ?? 1) || 1;
+  const sUnit = String(food?.sUnit ?? food?.stagedUnit ?? 'g').toLowerCase();
+  let gramsPerServing = 100;
+  if (sUnit === 'g' || sUnit === 'ml') gramsPerServing = sQty;
+  else if (sUnit === 'oz') gramsPerServing = sQty * 28.3495;
+  else if (sUnit === 'lb') gramsPerServing = sQty * 453.592;
+  else if (sUnit === 'kg') gramsPerServing = sQty * 1000;
+  const scale = gramsPerServing > 0 ? (100 / gramsPerServing) : 1;
+
+  const kcal100   = cal * scale;
+  const sat100    = Number(food?.sat ?? food?.saturatedFat ?? 0) * scale;
+  const sugar100  = Number(food?.sugars ?? food?.sugar ?? 0) * scale;
+  const sodium100 = Number(food?.Sodium ?? food?.sodium ?? 0) * scale; // mg
+  const fiber100  = Number(food?.fb ?? food?.fiber ?? food?.Fiber ?? 0) * scale;
+  const prot100   = Number(food?.p ?? food?.protein ?? 0) * scale;
+  const kj100     = kcal100 * 4.184;
+
+  // Negative points (0–10 each)
+  const eP  = kj100   < 335  ? 0 : kj100   < 670  ? 1 : kj100   < 1005 ? 2 : kj100   < 1340 ? 3 : kj100   < 1675 ? 4 : kj100   < 2010 ? 5 : kj100   < 2345 ? 6 : kj100   < 2680 ? 7 : kj100   < 3015 ? 8 : kj100   < 3350 ? 9 : 10;
+  const sP  = sat100  < 1    ? 0 : sat100  < 2    ? 1 : sat100  < 3    ? 2 : sat100  < 4    ? 3 : sat100  < 5    ? 4 : sat100  < 6    ? 5 : sat100  < 7    ? 6 : sat100  < 8    ? 7 : sat100  < 9    ? 8 : sat100  < 10   ? 9 : 10;
+  const suP = sugar100 < 4.5 ? 0 : sugar100 < 9   ? 1 : sugar100 < 13.5? 2 : sugar100 < 18  ? 3 : sugar100 < 22.5? 4 : sugar100 < 27  ? 5 : sugar100 < 31  ? 6 : sugar100 < 36  ? 7 : sugar100 < 40  ? 8 : sugar100 < 45  ? 9 : 10;
+  const naP = sodium100 < 90 ? 0 : sodium100 < 180 ? 1 : sodium100 < 270? 2 : sodium100 < 360? 3 : sodium100 < 450? 4 : sodium100 < 540? 5 : sodium100 < 630? 6 : sodium100 < 720? 7 : sodium100 < 810? 8 : sodium100 < 900? 9 : 10;
+
+  // Positive points (0–5 each)
+  const fbP = fiber100 < 0.9 ? 0 : fiber100 < 1.9 ? 1 : fiber100 < 2.8 ? 2 : fiber100 < 3.7 ? 3 : fiber100 < 4.7 ? 4 : 5;
+  const prP = prot100  < 1.6 ? 0 : prot100  < 3.2 ? 1 : prot100  < 4.8 ? 2 : prot100  < 6.4 ? 3 : prot100  < 8   ? 4 : 5;
+
+  const score = (eP + sP + suP + naP) - (fbP + prP);
+  const grade = score <= -1 ? 'a' : score <= 2 ? 'b' : score <= 10 ? 'c' : score <= 18 ? 'd' : 'e';
+  return { grade, estimated: true };
+}

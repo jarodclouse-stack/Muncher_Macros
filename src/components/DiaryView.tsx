@@ -1,6 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import { useDiary } from '../context/DiaryContext';
-import { sumFoods } from '../lib/food/serving-converter';
+import { sumFoods, estimateNutriScore } from '../lib/food/serving-converter';
 import { computeGoals } from '../lib/goals/compute';
 import { Utensils, Trash2, Sparkles, Droplets, ChevronLeft, ChevronRight, ChevronDown, ChevronUp, Scale, Dumbbell } from 'lucide-react';
 import { MEALS, ALL_MICRO_KEYS, MICRO_UNITS } from '../lib/constants';
@@ -408,14 +408,15 @@ const DiaryEntryItem = ({ log, onRemove, onEditPortion, onMove }: any) => {
         {/* Serving + Portion Button */}
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
           <div style={{ fontSize: '12px', color: 'rgba(255,255,255,0.7)', fontWeight: '700', flex: 1 }}>{f.serving}</div>
-          {/* Nutri-Score badge */}
-          {f.nutriscore_grade && (() => {
-            const g = String(f.nutriscore_grade).toLowerCase().trim();
+          {/* Nutri-Score badge — uses official grade or estimates from macros */}
+          {(() => {
+            const { grade: g, estimated } = estimateNutriScore(f);
+            if (!g) return null;
             const nsColor: Record<string,string> = { a: '#038141', b: '#85bb2f', c: '#fecb02', d: '#ee8100', e: '#e63e11' };
             const bg = nsColor[g] || '#888';
             return (
               <div
-                title={`Nutri-Score ${g.toUpperCase()}`}
+                title={`Nutri-Score ${g.toUpperCase()}${estimated ? ' (estimated from macros)' : ''}`}
                 style={{
                   display: 'flex', alignItems: 'center', gap: '4px',
                   background: 'rgba(255,255,255,0.05)',
@@ -425,7 +426,7 @@ const DiaryEntryItem = ({ log, onRemove, onEditPortion, onMove }: any) => {
                   boxShadow: `0 0 8px ${bg}40`,
                 }}
               >
-                <span style={{ fontSize: '8px', fontWeight: '900', color: 'rgba(255,255,255,0.5)', letterSpacing: '0.5px', textTransform: 'uppercase' }}>NUTRI</span>
+                <span style={{ fontSize: '8px', fontWeight: '900', color: 'rgba(255,255,255,0.5)', letterSpacing: '0.5px', textTransform: 'uppercase' }}>{estimated ? '~NUTRI' : 'NUTRI'}</span>
                 <span style={{
                   width: '20px', height: '20px', borderRadius: '6px',
                   background: bg,

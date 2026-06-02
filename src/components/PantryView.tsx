@@ -6,7 +6,7 @@ import {
   Info, Edit2, Camera
 } from 'lucide-react';
 import { ALL_MICRO_KEYS, SERVING_UNITS, MICRO_CATEGORIES } from '../lib/constants';
-import { computeMultiplier, normalizeFoodResult, scaleLegacyFoodByAmount, calculateMacroBalance, scaleToTarget, getCarbClassification } from '../lib/food/serving-converter';
+import { computeMultiplier, normalizeFoodResult, scaleLegacyFoodByAmount, calculateMacroBalance, scaleToTarget, getCarbClassification, estimateNutriScore } from '../lib/food/serving-converter';
 import { getPairingSuggestions } from '../lib/food/smart-pairing';
 
 import { SearchCoaster, type SearchTab } from './SearchCoaster';
@@ -1148,7 +1148,21 @@ export const PantryView: React.FC<PantryViewProps> = ({ initialMeal, onClose, is
                     </div>
                     <div style={{ fontSize: '11px', color: 'var(--theme-text-dim)', marginTop: '4px', fontWeight: '600' }}>{f.serving} • {Math.round(Number(f.cal) || 0)} kcal • P:{f.p}g C:{f.c}g F:{f.f}g</div>
                   </div>
-                  {f.isLocal && <BookmarkCheck size={18} color="var(--theme-success)" />}
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    {(() => {
+                      const { grade: g, estimated } = estimateNutriScore(f);
+                      if (!g) return null;
+                      const nsColor: Record<string,string> = { a: '#038141', b: '#85bb2f', c: '#fecb02', d: '#ee8100', e: '#e63e11' };
+                      const bg = nsColor[g] || '#888';
+                      return (
+                        <div title={`Nutri-Score ${g.toUpperCase()}${estimated ? ' (est.)' : ''}`} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '1px' }}>
+                          <span style={{ fontSize: '6px', fontWeight: '900', color: 'rgba(255,255,255,0.4)', letterSpacing: '0.3px' }}>{estimated ? '~' : ''}NUTRI</span>
+                          <span style={{ width: '22px', height: '22px', borderRadius: '6px', background: bg, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '11px', fontWeight: '900', color: '#000', boxShadow: `0 0 8px ${bg}70` }}>{g.toUpperCase()}</span>
+                        </div>
+                      );
+                    })()}
+                    {f.isLocal && <BookmarkCheck size={18} color="var(--theme-success)" />}
+                  </div>
                 </div>
               ))}
             </div>
@@ -2216,7 +2230,19 @@ export const PantryView: React.FC<PantryViewProps> = ({ initialMeal, onClose, is
                     </div>
                     <div style={{ fontSize: '11px', color: 'var(--theme-text-dim, rgba(255,255,255,0.6))', marginTop: '4px', fontWeight: '600' }}>{f.serving} • {Math.round(Number(f.cal) || 0)} kcal • P:{f.p}g C:{f.c}g F:{f.f}g</div>
                   </div>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                    {(() => {
+                      const { grade: g, estimated } = estimateNutriScore(f);
+                      if (!g) return null;
+                      const nsColor: Record<string,string> = { a: '#038141', b: '#85bb2f', c: '#fecb02', d: '#ee8100', e: '#e63e11' };
+                      const bg = nsColor[g] || '#888';
+                      return (
+                        <div title={`Nutri-Score ${g.toUpperCase()}${estimated ? ' (est.)' : ''}`} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '1px' }}>
+                          <span style={{ fontSize: '6px', fontWeight: '900', color: 'rgba(255,255,255,0.4)', letterSpacing: '0.3px' }}>{estimated ? '~' : ''}NUTRI</span>
+                          <span style={{ width: '22px', height: '22px', borderRadius: '6px', background: bg, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '11px', fontWeight: '900', color: '#000', boxShadow: `0 0 8px ${bg}70` }}>{g.toUpperCase()}</span>
+                        </div>
+                      );
+                    })()}
                     <button 
                       onClick={(e) => {
                         e.stopPropagation();
