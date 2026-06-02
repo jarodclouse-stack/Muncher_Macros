@@ -480,7 +480,7 @@ export const NutritionView: React.FC = () => {
 
         {/* Short & simple explanation on Potassium buffering high Sodium */}
         <p style={{ fontSize: '13px', color: 'var(--theme-text-dim-on-panel)', lineHeight: '1.6', margin: '0 0 16px 0', fontWeight: '500' }}>
-          Achieving a healthy balance of Sodium and Potassium is vital for your heart and blood vessels. When Sodium intake is high, <strong style={{ color: 'var(--theme-success, #92FE9D)' }}>eating plenty of Potassium acts as a natural buffer</strong>—helping your kidneys excrete excess sodium and relaxing blood vessels to lessen the cardiovascular strain. Aiming for a 1:1 dietary ratio is highly protective.
+          Achieving a healthy balance of Sodium and Potassium is vital for your heart and blood vessels. When Sodium intake is high, <strong style={{ color: 'var(--theme-success, #92FE9D)' }}>eating plenty of Potassium acts as a natural buffer</strong>—relaxing blood vessels and promoting healthy circulation to lessen the cardiovascular strain. Aiming for a 1:1 dietary ratio is highly protective.
         </p>
 
         {/* Combined clinical & legal disclaimer */}
