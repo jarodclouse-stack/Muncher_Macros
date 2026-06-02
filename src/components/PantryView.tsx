@@ -908,55 +908,7 @@ export const PantryView: React.FC<PantryViewProps> = ({ initialMeal, onClose, is
                     }}
                   />
 
-                  {/* OR divider + Photo Upload */}
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                    <div style={{ flex: 1, height: '1px', background: 'rgba(255,255,255,0.08)' }} />
-                    <span style={{ fontSize: '11px', color: 'var(--theme-text-dim)', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '1px' }}>or</span>
-                    <div style={{ flex: 1, height: '1px', background: 'rgba(255,255,255,0.08)' }} />
-                  </div>
 
-                  <div>
-                    <input
-                      type="file"
-                      accept="image/*"
-                      capture="environment"
-                      id="muncher-photo-input"
-                      style={{ display: 'none' }}
-                      onChange={handleVerifyWithPhoto}
-                    />
-                    <label
-                      htmlFor="muncher-photo-input"
-                      style={{
-                        width: '100%',
-                        padding: '14px',
-                        background: isVerifyingPhoto ? 'rgba(255,255,255,0.03)' : 'rgba(255,255,255,0.04)',
-                        border: '1.5px dashed rgba(255,255,255,0.2)',
-                        borderRadius: '18px',
-                        color: 'var(--theme-text-dim)',
-                        fontWeight: '800',
-                        fontSize: '13px',
-                        cursor: isVerifyingPhoto ? 'default' : 'pointer',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        gap: '10px',
-                        boxSizing: 'border-box',
-                        opacity: isVerifyingPhoto ? 0.6 : 1,
-                        transition: 'all 0.2s',
-                        letterSpacing: '0.5px'
-                      }}
-                    >
-                      {isVerifyingPhoto
-                        ? <><Loader2 size={18} className="spin" /> <span>Muncher is reading your photo...</span></>
-                        : <><Camera size={18} /> <span>📷 Upload a Photo of Your Meal</span></>
-                      }
-                    </label>
-                  </div>
-
-                  {/* Photo mode disclaimer */}
-                  <p style={{ margin: '0', fontSize: '11px', color: 'var(--theme-text-dim)', textAlign: 'center', lineHeight: '1.5', fontWeight: '500' }}>
-                    📌 <strong style={{ color: 'rgba(255,255,255,0.5)' }}>Best used after typing your meal above.</strong> The photo helps Muncher <em>verify your portion sizes</em> — it's not a meal identifier.
-                  </p>
 
                   {/* Simplified serving size reminder */}
                   <div style={{ 
