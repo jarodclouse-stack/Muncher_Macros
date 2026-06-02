@@ -393,9 +393,6 @@ const DiaryEntryItem = ({ log, onRemove, onEditPortion, onMove }: any) => {
             {f.brand && <div style={{ fontSize: '10px', color: 'rgba(255,255,255,0.45)', fontWeight: '600' }}>• {f.brand}</div>}
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <div style={{ fontSize: '10px', fontWeight: '800', color: 'var(--theme-accent)', background: 'rgba(0,201,255,0.08)', border: '1px solid rgba(0,201,255,0.25)', borderRadius: '8px', padding: '5px 10px', letterSpacing: '0.5px' }}>
-              {isOpen ? 'LESS INFO' : 'MORE INFO'}
-            </div>
             <button 
               onClick={(e) => { e.stopPropagation(); onRemove(); }} 
               style={{ background: 'rgba(255,107,107,0.1)', border: '1px solid rgba(255,107,107,0.2)', color: '#FF6B6B', cursor: 'pointer', padding: '8px', borderRadius: '10px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
@@ -427,13 +424,19 @@ const DiaryEntryItem = ({ log, onRemove, onEditPortion, onMove }: any) => {
 
         {/* Serving + Portion Button */}
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-          <div style={{ fontSize: '12px', color: 'rgba(255,255,255,0.7)', fontWeight: '700' }}>{f.serving}</div>
+          <div style={{ fontSize: '12px', color: 'rgba(255,255,255,0.7)', fontWeight: '700', flex: 1 }}>{f.serving}</div>
           <button 
             onClick={(e) => { e.stopPropagation(); onEditPortion(); }} 
             style={{ background: 'rgba(0,201,255,0.08)', border: '1px solid rgba(0,201,255,0.25)', color: 'var(--theme-accent, #00C9FF)', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '4px', padding: '8px 14px', borderRadius: '12px', boxShadow: '0 2px 8px rgba(0,0,0,0.3)', fontSize: '11px', fontWeight: '800' }}
           >
             <Scale size={16} /> ADJUST
           </button>
+          <div
+            onClick={(e) => { e.stopPropagation(); setIsOpen(!isOpen); }}
+            style={{ fontSize: '10px', fontWeight: '800', color: 'var(--theme-accent)', background: 'rgba(0,201,255,0.08)', border: '1px solid rgba(0,201,255,0.25)', borderRadius: '12px', padding: '8px 14px', letterSpacing: '0.5px', cursor: 'pointer' }}
+          >
+            {isOpen ? 'LESS INFO' : 'MORE INFO'}
+          </div>
         </div>
       </div>
       
