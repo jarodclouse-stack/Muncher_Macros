@@ -85,6 +85,7 @@ export const NutritionView: React.FC = () => {
 
   const [expandedMicro, setExpandedMicro] = useState<string | null>(null);
   const [showDisclaimer, setShowDisclaimer] = useState<boolean>(false);
+  const [showCardioBalance, setShowCardioBalance] = useState<boolean>(false);
 
   const resolvedColors = useMemo(() => {
     void localCache.theme;
@@ -471,46 +472,61 @@ export const NutritionView: React.FC = () => {
           pointerEvents: 'none'
         }} />
 
-        <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '16px' }}>
-          <span style={{ fontSize: '20px' }}>🧂</span>
-          <h2 style={{ fontSize: '18px', fontWeight: '800', margin: 0, color: 'var(--theme-text-on-panel)' }}>
-            Cardiovascular Sodium-Potassium Balance
-          </h2>
-        </div>
-
-        {/* Short & simple explanation on Potassium buffering high Sodium */}
-        <p style={{ fontSize: '13px', color: 'var(--theme-text-dim-on-panel)', lineHeight: '1.6', margin: '0 0 16px 0', fontWeight: '500' }}>
-          Achieving a healthy balance of Sodium and Potassium is vital for your heart and blood vessels. When Sodium intake is high, <strong style={{ color: 'var(--theme-success, #92FE9D)' }}>eating plenty of Potassium acts as a natural buffer</strong>—relaxing blood vessels and promoting healthy circulation to lessen the cardiovascular strain. Aiming for a 1:1 dietary ratio is highly protective.
-        </p>
-
-        {/* Combined clinical & legal disclaimer */}
         <div 
-          onClick={() => setShowDisclaimer(!showDisclaimer)}
-          style={{ 
-            fontSize: '10px', 
-            color: 'rgba(255, 107, 107, 0.9)', 
-            lineHeight: '1.5', 
-            background: 'rgba(255, 107, 107, 0.05)', 
-            padding: '12px', 
-            borderRadius: '12px', 
-            border: '1px solid rgba(255, 107, 107, 0.15)',
-            cursor: 'pointer',
-            userSelect: 'none',
-            transition: 'all 0.2s ease'
-          }}
+          onClick={() => setShowCardioBalance(!showCardioBalance)}
+          style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', cursor: 'pointer', userSelect: 'none', marginBottom: showCardioBalance ? '16px' : '0' }}
         >
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontWeight: '800' }}>
-            <span>⚠️ Legal & Clinical Disclaimer</span>
-            <span style={{ fontSize: '9px', textTransform: 'uppercase', letterSpacing: '0.5px', color: 'rgba(255, 107, 107, 0.7)', fontWeight: '900' }}>
-              {showDisclaimer ? 'Collapse ▲' : 'Expand ▼'}
-            </span>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+            <span style={{ fontSize: '20px' }}>🧂</span>
+            <h2 style={{ fontSize: '18px', fontWeight: '800', margin: 0, color: 'var(--theme-text-on-panel)' }}>
+              Cardiovascular Sodium-Potassium Balance
+            </h2>
           </div>
-          {showDisclaimer && (
-            <div style={{ marginTop: '8px', borderTop: '1px solid rgba(255, 107, 107, 0.15)', paddingTop: '8px', fontStyle: 'italic' }}>
-              This Sodium-Potassium information is for general educational and informational purposes only. It is not medical or professional advice, nor is it a substitute for diagnosis or treatment. Always consult a licensed medical doctor or cardiologist before making significant changes to your diet or if you are managing hypertension, heart, or kidney conditions.
-            </div>
-          )}
+          <span style={{ fontSize: '11px', textTransform: 'uppercase', letterSpacing: '0.5px', color: 'var(--theme-accent)', fontWeight: '900' }}>
+            {showCardioBalance ? 'Hide Details ▲' : 'Show Details ▼'}
+          </span>
         </div>
+
+        {showCardioBalance && (
+          <div style={{ borderTop: '1px solid rgba(255, 255, 255, 0.08)', paddingTop: '16px' }}>
+            {/* Short & simple explanation on Potassium buffering high Sodium */}
+            <p style={{ fontSize: '13px', color: 'var(--theme-text-dim-on-panel)', lineHeight: '1.6', margin: '0 0 16px 0', fontWeight: '500' }}>
+              Achieving a healthy balance of Sodium and Potassium is vital for your heart and blood vessels. When Sodium intake is high, <strong style={{ color: 'var(--theme-success, #92FE9D)' }}>eating plenty of Potassium acts as a natural buffer</strong>—relaxing blood vessels and promoting healthy circulation to lessen the cardiovascular strain. Aiming for a 2:3 (Sodium to Potassium) dietary ratio is highly protective.
+            </p>
+
+            {/* Combined clinical & legal disclaimer */}
+            <div 
+              onClick={(e) => {
+                e.stopPropagation();
+                setShowDisclaimer(!showDisclaimer);
+              }}
+              style={{ 
+                fontSize: '10px', 
+                color: 'rgba(255, 107, 107, 0.9)', 
+                lineHeight: '1.5', 
+                background: 'rgba(255, 107, 107, 0.05)', 
+                padding: '12px', 
+                borderRadius: '12px', 
+                border: '1px solid rgba(255, 107, 107, 0.15)',
+                cursor: 'pointer',
+                userSelect: 'none',
+                transition: 'all 0.2s ease'
+              }}
+            >
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontWeight: '800' }}>
+                <span>⚠️ Legal & Clinical Disclaimer</span>
+                <span style={{ fontSize: '9px', textTransform: 'uppercase', letterSpacing: '0.5px', color: 'rgba(255, 107, 107, 0.7)', fontWeight: '900' }}>
+                  {showDisclaimer ? 'Collapse ▲' : 'Expand ▼'}
+                </span>
+              </div>
+              {showDisclaimer && (
+                <div style={{ marginTop: '8px', borderTop: '1px solid rgba(255, 107, 107, 0.15)', paddingTop: '8px', fontStyle: 'italic' }}>
+                  This Sodium-Potassium information is for general educational and informational purposes only. It is not medical or professional advice, nor is it a substitute for diagnosis or treatment. Always consult a licensed medical doctor or cardiologist before making significant changes to your diet or if you are managing hypertension, heart, or kidney conditions.
+                </div>
+              )}
+            </div>
+          </div>
+        )}
       </div>
 
       {/* Micronutrients */}
