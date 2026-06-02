@@ -369,13 +369,37 @@ const DiaryEntryItem = ({ log, onRemove, onEditPortion, onMove }: any) => {
         onMouseEnter={e => (e.currentTarget.style.transform = 'translateY(-1px)')}
         onMouseLeave={e => (e.currentTarget.style.transform = 'translateY(0)')}
       >
-        {/* Top Row: Name + Actions */}
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flex: 1 }}>
-            <div style={{ fontWeight: '800', color: 'var(--theme-accent)', fontSize: '15px' }}>{f.name}</div>
-            {f.brand && <div style={{ fontSize: '10px', color: 'rgba(255,255,255,0.45)', fontWeight: '600' }}>• {f.brand}</div>}
+        {/* Top Row: Name + Nutri-Score badge + Trash */}
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '10px', gap: '8px' }}>
+          <div style={{ flex: 1, minWidth: 0 }}>
+            <div style={{ fontWeight: '800', color: 'var(--theme-accent)', fontSize: '15px', lineHeight: '1.3', wordBreak: 'break-word' }}>{f.name}</div>
+            {f.brand && <div style={{ fontSize: '10px', color: 'rgba(255,255,255,0.45)', fontWeight: '600', marginTop: '2px' }}>• {f.brand}</div>}
           </div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flexShrink: 0 }}>
+            {/* Nutri-Score badge in top row */}
+            {(() => {
+              const { grade: g, estimated } = estimateNutriScore(f);
+              if (!g) return null;
+              const nsColor: Record<string,string> = { a: '#038141', b: '#85bb2f', c: '#fecb02', d: '#ee8100', e: '#e63e11' };
+              const bg = nsColor[g] || '#888';
+              return (
+                <div
+                  title={`Nutri-Score ${g.toUpperCase()}${estimated ? ' (estimated from macros)' : ''}`}
+                  style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '1px' }}
+                >
+                  <span style={{ fontSize: '6px', fontWeight: '900', color: 'rgba(255,255,255,0.4)', letterSpacing: '0.5px', textTransform: 'uppercase' }}>{estimated ? '~' : ''}NUTRI</span>
+                  <span style={{
+                    width: '24px', height: '24px', borderRadius: '7px',
+                    background: bg,
+                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    fontSize: '12px', fontWeight: '900', color: '#000',
+                    boxShadow: `0 0 10px ${bg}80`,
+                  }}>
+                    {g.toUpperCase()}
+                  </span>
+                </div>
+              );
+            })()}
             <button 
               onClick={(e) => { e.stopPropagation(); onRemove(); }} 
               style={{ background: 'rgba(255,107,107,0.1)', border: '1px solid rgba(255,107,107,0.2)', color: '#FF6B6B', cursor: 'pointer', padding: '8px', borderRadius: '10px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
@@ -405,51 +429,20 @@ const DiaryEntryItem = ({ log, onRemove, onEditPortion, onMove }: any) => {
           </div>
         </div>
 
-        {/* Serving + Portion Button */}
+        {/* Serving + Action Buttons (clean row — nutri-score moved to top) */}
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-          <div style={{ fontSize: '12px', color: 'rgba(255,255,255,0.7)', fontWeight: '700', flex: 1 }}>{f.serving}</div>
-          {/* Nutri-Score badge — uses official grade or estimates from macros */}
-          {(() => {
-            const { grade: g, estimated } = estimateNutriScore(f);
-            if (!g) return null;
-            const nsColor: Record<string,string> = { a: '#038141', b: '#85bb2f', c: '#fecb02', d: '#ee8100', e: '#e63e11' };
-            const bg = nsColor[g] || '#888';
-            return (
-              <div
-                title={`Nutri-Score ${g.toUpperCase()}${estimated ? ' (estimated from macros)' : ''}`}
-                style={{
-                  display: 'flex', alignItems: 'center', gap: '4px',
-                  background: 'rgba(255,255,255,0.05)',
-                  border: `1px solid ${bg}55`,
-                  borderRadius: '10px',
-                  padding: '5px 9px',
-                  boxShadow: `0 0 8px ${bg}40`,
-                }}
-              >
-                <span style={{ fontSize: '8px', fontWeight: '900', color: 'rgba(255,255,255,0.5)', letterSpacing: '0.5px', textTransform: 'uppercase' }}>{estimated ? '~NUTRI' : 'NUTRI'}</span>
-                <span style={{
-                  width: '20px', height: '20px', borderRadius: '6px',
-                  background: bg,
-                  display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  fontSize: '11px', fontWeight: '900', color: '#000',
-                  boxShadow: `0 0 10px ${bg}80`,
-                }}>
-                  {g.toUpperCase()}
-                </span>
-              </div>
-            );
-          })()}
+          <div style={{ fontSize: '12px', color: 'rgba(255,255,255,0.7)', fontWeight: '700', flex: 1, minWidth: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{f.serving}</div>
           <button 
             onClick={(e) => { e.stopPropagation(); onEditPortion(); }} 
-            style={{ background: 'rgba(0,201,255,0.08)', border: '1px solid rgba(0,201,255,0.25)', color: 'var(--theme-accent, #00C9FF)', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '4px', padding: '8px 14px', borderRadius: '12px', boxShadow: '0 2px 8px rgba(0,0,0,0.3)', fontSize: '11px', fontWeight: '800' }}
+            style={{ background: 'rgba(0,201,255,0.08)', border: '1px solid rgba(0,201,255,0.25)', color: 'var(--theme-accent, #00C9FF)', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '4px', padding: '8px 12px', borderRadius: '12px', boxShadow: '0 2px 8px rgba(0,0,0,0.3)', fontSize: '11px', fontWeight: '800', flexShrink: 0 }}
           >
-            <Scale size={16} /> ADJUST
+            <Scale size={14} /> ADJUST
           </button>
           <div
             onClick={(e) => { e.stopPropagation(); setIsOpen(!isOpen); }}
-            style={{ fontSize: '10px', fontWeight: '800', color: 'var(--theme-accent)', background: 'rgba(0,201,255,0.08)', border: '1px solid rgba(0,201,255,0.25)', borderRadius: '12px', padding: '8px 14px', letterSpacing: '0.5px', cursor: 'pointer' }}
+            style={{ fontSize: '10px', fontWeight: '800', color: 'var(--theme-accent)', background: 'rgba(0,201,255,0.08)', border: '1px solid rgba(0,201,255,0.25)', borderRadius: '12px', padding: '8px 12px', letterSpacing: '0.5px', cursor: 'pointer', flexShrink: 0, whiteSpace: 'nowrap' }}
           >
-            {isOpen ? 'LESS INFO' : 'MORE INFO'}
+            {isOpen ? 'LESS' : 'MORE'}
           </div>
         </div>
       </div>
