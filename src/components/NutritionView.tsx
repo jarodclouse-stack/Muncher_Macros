@@ -472,26 +472,32 @@ export const NutritionView: React.FC = () => {
           pointerEvents: 'none'
         }} />
 
-        <div 
-          onClick={() => setShowCardioBalance(!showCardioBalance)}
-          style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', cursor: 'pointer', userSelect: 'none', marginBottom: showCardioBalance ? '16px' : '0' }}
-        >
-          <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-            <span style={{ fontSize: '20px' }}>🧂</span>
-            <h2 style={{ fontSize: '18px', fontWeight: '800', margin: 0, color: 'var(--theme-text-on-panel)' }}>
-              Cardiovascular Sodium-Potassium Balance
-            </h2>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginBottom: showCardioBalance ? '16px' : '0' }}>
+          <div 
+            onClick={() => setShowCardioBalance(!showCardioBalance)}
+            style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', cursor: 'pointer', userSelect: 'none' }}
+          >
+            <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+              <span style={{ fontSize: '20px' }}>🧂</span>
+              <h2 style={{ fontSize: '18px', fontWeight: '800', margin: 0, color: 'var(--theme-text-on-panel)' }}>
+                Cardiovascular Sodium-Potassium Balance
+              </h2>
+            </div>
+            <span style={{ fontSize: '11px', textTransform: 'uppercase', letterSpacing: '0.5px', color: 'var(--theme-accent)', fontWeight: '900' }}>
+              {showCardioBalance ? 'Hide Details ▲' : 'Show Details ▼'}
+            </span>
           </div>
-          <span style={{ fontSize: '11px', textTransform: 'uppercase', letterSpacing: '0.5px', color: 'var(--theme-accent)', fontWeight: '900' }}>
-            {showCardioBalance ? 'Hide Details ▲' : 'Show Details ▼'}
-          </span>
+
+          <p style={{ fontSize: '13px', color: 'var(--theme-text-dim-on-panel)', margin: '4px 0 0 0', lineHeight: '1.5', fontWeight: '500' }}>
+            Achieving a healthy balance of Sodium and Potassium is vital for your heart and blood vessels.
+          </p>
         </div>
 
         {showCardioBalance && (
-          <div style={{ borderTop: '1px solid rgba(255, 255, 255, 0.08)', paddingTop: '16px' }}>
+          <div style={{ borderTop: '1px solid rgba(255, 255, 255, 0.08)', paddingTop: '16px', display: 'flex', flexDirection: 'column', gap: '16px' }}>
             {/* Short & simple explanation on Potassium buffering high Sodium */}
-            <p style={{ fontSize: '13px', color: 'var(--theme-text-dim-on-panel)', lineHeight: '1.6', margin: '0 0 16px 0', fontWeight: '500' }}>
-              Achieving a healthy balance of Sodium and Potassium is vital for your heart and blood vessels. When Sodium intake is high, <strong style={{ color: 'var(--theme-success, #92FE9D)' }}>eating plenty of Potassium acts as a natural buffer</strong>—relaxing blood vessels and promoting healthy circulation to lessen the cardiovascular strain. Aiming for a 2:3 (Sodium to Potassium) dietary ratio is highly protective.
+            <p style={{ fontSize: '13px', color: 'var(--theme-text-dim-on-panel)', lineHeight: '1.6', margin: 0, fontWeight: '500' }}>
+              When Sodium intake is high, <strong style={{ color: 'var(--theme-success, #92FE9D)' }}>eating plenty of Potassium acts as a natural buffer</strong>—relaxing blood vessels and promoting healthy circulation to lessen the cardiovascular strain. Aiming for a 2:3 (Sodium to Potassium) dietary ratio is highly protective.
             </p>
 
             {/* Combined clinical & legal disclaimer */}
