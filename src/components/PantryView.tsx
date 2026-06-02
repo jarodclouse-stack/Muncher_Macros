@@ -1181,8 +1181,14 @@ export const PantryView: React.FC<PantryViewProps> = ({ initialMeal, onClose, is
                         <button
                           type="button"
                           onClick={() => {
+                            if (selectedServingUnitToggle !== 'meal') {
+                              const oldQty = parseFloat(loggedPortionsVal);
+                              const baseQty = Math.max(0.1, aiTotalServingQty || 1);
+                              const convertedQty = isNaN(oldQty) ? 1 : oldQty / baseQty;
+                              const roundedQty = Math.round(convertedQty * 100) / 100;
+                              setLoggedPortionsVal(roundedQty.toString());
+                            }
                             setSelectedServingUnitToggle('meal');
-                            setLoggedPortionsVal('1');
                           }}
                           style={{
                             padding: '5px 12px',
@@ -1201,8 +1207,14 @@ export const PantryView: React.FC<PantryViewProps> = ({ initialMeal, onClose, is
                         <button
                           type="button"
                           onClick={() => {
+                            if (selectedServingUnitToggle !== 'physical') {
+                              const oldQty = parseFloat(loggedPortionsVal);
+                              const baseQty = Math.max(0.1, aiTotalServingQty || 1);
+                              const convertedQty = isNaN(oldQty) ? baseQty : oldQty * baseQty;
+                              const roundedQty = Math.round(convertedQty * 100) / 100;
+                              setLoggedPortionsVal(roundedQty.toString());
+                            }
                             setSelectedServingUnitToggle('physical');
-                            setLoggedPortionsVal(aiTotalServingQty.toString());
                           }}
                           style={{
                             padding: '5px 12px',
