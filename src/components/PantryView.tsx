@@ -1207,6 +1207,139 @@ export const PantryView: React.FC<PantryViewProps> = ({ initialMeal, onClose, is
                     <button onClick={() => { setIsAiReviewing(false); setAiStagedResults([]); }} style={{ background: 'rgba(255,255,255,0.05)', border: 'none', color: 'var(--theme-text-dim)', cursor: 'pointer', padding: '6px', borderRadius: '50%' }}><X size={18} /></button>
                   </div>
 
+                  {/* Photo Verify Section at the Top */}
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', width: '100%', marginBottom: '16px' }}>
+                    {/* Photo Verify Button */}
+                    <div>
+                      <input
+                        type="file"
+                        accept="image/*"
+                        capture="environment"
+                        id="meal-verify-photo-input"
+                        style={{ display: 'none' }}
+                        onChange={handleVerifyWithPhoto}
+                      />
+                      <label
+                        htmlFor="meal-verify-photo-input"
+                        style={{
+                          width: '100%',
+                          padding: '13px',
+                          background: isVerifyingPhoto
+                            ? 'rgba(255,255,255,0.05)'
+                            : 'rgba(0, 201, 255, 0.06)',
+                          border: '1px solid var(--theme-accent)',
+                          borderRadius: '16px',
+                          color: 'var(--theme-accent)',
+                          fontWeight: '900',
+                          fontSize: '13px',
+                          cursor: isVerifyingPhoto ? 'default' : 'pointer',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          gap: '8px',
+                          boxSizing: 'border-box',
+                          opacity: isVerifyingPhoto ? 0.6 : 1,
+                          transition: 'all 0.2s',
+                          letterSpacing: '0.5px'
+                        }}
+                      >
+                        {isVerifyingPhoto
+                          ? <><Loader2 size={16} className="spin" /> VERIFYING PHOTO...</>
+                          : <><Camera size={16} /> 📷 VERIFY WITH PHOTO</>
+                        }
+                      </label>
+                    </div>
+
+                    {/* Photo Verify Result Card */}
+                    {verifyResult && (
+                      <div style={{
+                        background: verifyResult.significantDifference
+                          ? 'rgba(255, 107, 107, 0.07)'
+                          : 'rgba(146, 254, 157, 0.06)',
+                        border: `1px solid ${verifyResult.significantDifference ? 'rgba(255,107,107,0.4)' : 'rgba(146,254,157,0.35)'}`,
+                        borderRadius: '18px',
+                        padding: '16px',
+                        animation: 'slideDown 0.25s ease-out'
+                      }}>
+                        {/* Header */}
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '10px', gap: '10px' }}>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                            <span style={{ fontSize: '16px' }}>
+                              {verifyResult.portionAssessment === 'accurate' ? '✅' :
+                               verifyResult.portionAssessment === 'too_large' ? '⚠️' :
+                               verifyResult.portionAssessment === 'too_small' ? '📉' : '🔍'}
+                            </span>
+                            <span style={{ fontSize: '11px', fontWeight: '900', color: verifyResult.significantDifference ? 'var(--theme-error)' : 'var(--theme-success)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                              {verifyResult.significantDifference ? 'Adjustment Suggested' : 'Looks Good!'}
+                            </span>
+                          </div>
+                          <button
+                            onClick={() => setVerifyResult(null)}
+                            style={{ background: 'none', border: 'none', color: 'var(--theme-text-dim)', cursor: 'pointer', padding: '2px', lineHeight: 1 }}
+                          >
+                            <X size={14} />
+                          </button>
+                        </div>
+
+                        {/* Claude's Summary */}
+                        <p style={{ fontSize: '13px', color: 'var(--theme-text)', lineHeight: '1.5', margin: '0 0 12px 0' }}>
+                          {verifyResult.summary}
+                        </p>
+
+                        {/* Per-item breakdown if differences found */}
+                        {verifyResult.significantDifference && verifyResult.adjustedItems.some(a => a.reason !== 'Looks accurate') && (
+                          <div style={{ marginBottom: '14px', display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                            {verifyResult.adjustedItems
+                              .filter(a => a.reason !== 'Looks accurate')
+                              .map((item, idx) => (
+                                <div key={idx} style={{ fontSize: '11px', color: 'var(--theme-text-dim)', background: 'rgba(255,255,255,0.04)', padding: '8px 12px', borderRadius: '10px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '8px' }}>
+                                  <span style={{ fontWeight: '700', color: 'var(--theme-text)' }}>{item.name}</span>
+                                  <span style={{ textAlign: 'right' }}>{item.adjustedQty} {item.adjustedUnit} · {item.adjustedCal} kcal</span>
+                                </div>
+                              ))
+                            }
+                          </div>
+                        )}
+
+                        {/* Action buttons */}
+                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
+                          <button
+                            onClick={() => setVerifyResult(null)}
+                            style={{ padding: '10px', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.12)', borderRadius: '12px', color: 'var(--theme-text)', fontSize: '11px', fontWeight: '800', cursor: 'pointer' }}
+                          >
+                            Keep Original
+                          </button>
+                          <button
+                            onClick={() => {
+                              if (!verifyResult.adjustedItems) return;
+                              const updated = aiStagedResults.map(original => {
+                                const match = verifyResult.adjustedItems.find(a =>
+                                  a.name.toLowerCase() === original.name.toLowerCase()
+                                );
+                                if (!match || match.reason === 'Looks accurate') return original;
+                                return {
+                                  ...original,
+                                  stagedQty: String(match.adjustedQty),
+                                  stagedUnit: match.adjustedUnit,
+                                  cal: match.adjustedCal,
+                                  p: match.adjustedP,
+                                  c: match.adjustedC,
+                                  f: match.adjustedF,
+                                };
+                              });
+                              setAiStagedResults(updated);
+                              setVerifyResult(null);
+                              showNotification('Meal updated with photo verification! 📷');
+                            }}
+                            style={{ padding: '10px', background: verifyResult.significantDifference ? 'rgba(255,107,107,0.15)' : 'rgba(146,254,157,0.15)', border: `1px solid ${verifyResult.significantDifference ? 'rgba(255,107,107,0.4)' : 'rgba(146,254,157,0.4)'}`, borderRadius: '12px', color: verifyResult.significantDifference ? 'var(--theme-error)' : 'var(--theme-success)', fontSize: '11px', fontWeight: '800', cursor: 'pointer' }}
+                          >
+                            Accept Adjustment
+                          </button>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+
                   {/* Physical serving size toggle & amount selection */}
                   <div style={{ 
                     display: 'flex', 
@@ -1599,136 +1732,6 @@ export const PantryView: React.FC<PantryViewProps> = ({ initialMeal, onClose, is
                   </div>
 
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', width: '100%' }}>
-                    {/* Photo Verify Button */}
-                    <div style={{ marginBottom: '0' }}>
-                      <input
-                        type="file"
-                        accept="image/*"
-                        capture="environment"
-                        id="meal-verify-photo-input"
-                        style={{ display: 'none' }}
-                        onChange={handleVerifyWithPhoto}
-                      />
-                      <label
-                        htmlFor="meal-verify-photo-input"
-                        style={{
-                          width: '100%',
-                          padding: '13px',
-                          background: isVerifyingPhoto
-                            ? 'rgba(255,255,255,0.05)'
-                            : 'rgba(0, 201, 255, 0.06)',
-                          border: '1px solid var(--theme-accent)',
-                          borderRadius: '16px',
-                          color: 'var(--theme-accent)',
-                          fontWeight: '900',
-                          fontSize: '13px',
-                          cursor: isVerifyingPhoto ? 'default' : 'pointer',
-                          display: 'flex',
-                          alignItems: 'center',
-                          justifyContent: 'center',
-                          gap: '8px',
-                          boxSizing: 'border-box',
-                          opacity: isVerifyingPhoto ? 0.6 : 1,
-                          transition: 'all 0.2s',
-                          letterSpacing: '0.5px'
-                        }}
-                      >
-                        {isVerifyingPhoto
-                          ? <><Loader2 size={16} className="spin" /> VERIFYING PHOTO...</>
-                          : <><Camera size={16} /> 📷 VERIFY WITH PHOTO</>
-                        }
-                      </label>
-                    </div>
-
-                    {/* Photo Verify Result Card */}
-                    {verifyResult && (
-                      <div style={{
-                        marginBottom: '16px',
-                        background: verifyResult.significantDifference
-                          ? 'rgba(255, 107, 107, 0.07)'
-                          : 'rgba(146, 254, 157, 0.06)',
-                        border: `1px solid ${verifyResult.significantDifference ? 'rgba(255,107,107,0.4)' : 'rgba(146,254,157,0.35)'}`,
-                        borderRadius: '18px',
-                        padding: '16px',
-                        animation: 'slideDown 0.25s ease-out'
-                      }}>
-                        {/* Header */}
-                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '10px', gap: '10px' }}>
-                          <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                            <span style={{ fontSize: '16px' }}>
-                              {verifyResult.portionAssessment === 'accurate' ? '✅' :
-                               verifyResult.portionAssessment === 'too_large' ? '⚠️' :
-                               verifyResult.portionAssessment === 'too_small' ? '📉' : '🔍'}
-                            </span>
-                            <span style={{ fontSize: '11px', fontWeight: '900', color: verifyResult.significantDifference ? 'var(--theme-error)' : 'var(--theme-success)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
-                              {verifyResult.significantDifference ? 'Adjustment Suggested' : 'Looks Good!'}
-                            </span>
-                          </div>
-                          <button
-                            onClick={() => setVerifyResult(null)}
-                            style={{ background: 'none', border: 'none', color: 'var(--theme-text-dim)', cursor: 'pointer', padding: '2px', lineHeight: 1 }}
-                          >
-                            <X size={14} />
-                          </button>
-                        </div>
-
-                        {/* Claude's Summary */}
-                        <p style={{ fontSize: '13px', color: 'var(--theme-text)', lineHeight: '1.5', margin: '0 0 12px 0' }}>
-                          {verifyResult.summary}
-                        </p>
-
-                        {/* Per-item breakdown if differences found */}
-                        {verifyResult.significantDifference && verifyResult.adjustedItems.some(a => a.reason !== 'Looks accurate') && (
-                          <div style={{ marginBottom: '14px', display: 'flex', flexDirection: 'column', gap: '6px' }}>
-                            {verifyResult.adjustedItems
-                              .filter(a => a.reason !== 'Looks accurate')
-                              .map((item, idx) => (
-                                <div key={idx} style={{ fontSize: '11px', color: 'var(--theme-text-dim)', background: 'rgba(255,255,255,0.04)', padding: '8px 12px', borderRadius: '10px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '8px' }}>
-                                  <span style={{ fontWeight: '700', color: 'var(--theme-text)' }}>{item.name}</span>
-                                  <span style={{ textAlign: 'right' }}>{item.adjustedQty} {item.adjustedUnit} · {item.adjustedCal} kcal</span>
-                                </div>
-                              ))
-                            }
-                          </div>
-                        )}
-
-                        {/* Action buttons */}
-                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
-                          <button
-                            onClick={() => setVerifyResult(null)}
-                            style={{ padding: '10px', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.12)', borderRadius: '12px', color: 'var(--theme-text)', fontSize: '11px', fontWeight: '800', cursor: 'pointer' }}
-                          >
-                            Keep Original
-                          </button>
-                          <button
-                            onClick={() => {
-                              if (!verifyResult.adjustedItems) return;
-                              const updated = aiStagedResults.map(original => {
-                                const match = verifyResult.adjustedItems.find(a =>
-                                  a.name.toLowerCase() === original.name.toLowerCase()
-                                );
-                                if (!match || match.reason === 'Looks accurate') return original;
-                                return {
-                                  ...original,
-                                  stagedQty: String(match.adjustedQty),
-                                  stagedUnit: match.adjustedUnit,
-                                  cal: match.adjustedCal,
-                                  p: match.adjustedP,
-                                  c: match.adjustedC,
-                                  f: match.adjustedF,
-                                };
-                              });
-                              setAiStagedResults(updated);
-                              setVerifyResult(null);
-                              showNotification('Meal updated with photo verification! 📷');
-                            }}
-                            style={{ padding: '10px', background: verifyResult.significantDifference ? 'rgba(255,107,107,0.15)' : 'rgba(146,254,157,0.15)', border: `1px solid ${verifyResult.significantDifference ? 'rgba(255,107,107,0.4)' : 'rgba(146,254,157,0.4)'}`, borderRadius: '12px', color: verifyResult.significantDifference ? 'var(--theme-error)' : 'var(--theme-success)', fontSize: '11px', fontWeight: '800', cursor: 'pointer' }}
-                          >
-                            Accept Adjustment
-                          </button>
-                        </div>
-                      </div>
-                    )}
 
                     <button 
                       onClick={() => {
