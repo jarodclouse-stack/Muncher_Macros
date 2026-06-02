@@ -2,7 +2,7 @@ import React, { useState, useMemo } from 'react';
 import ReactDOM from 'react-dom';
 import { useDiary } from '../context/DiaryContext';
 import { computeMultiplier, scaleLegacyFoodByAmount, getQuantityForUnit } from '../lib/food/serving-converter';
-import { Check, X, Scale, ChevronDown } from 'lucide-react';
+import { Check, X, Scale } from 'lucide-react';
 
 interface PortionEditModalProps {
   meal: string;
