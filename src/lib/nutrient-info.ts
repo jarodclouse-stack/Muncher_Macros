@@ -134,10 +134,10 @@ export const DEFICIENCY_INFO: Record<string, { name: string; sources: string; de
     sources: "White bread, bagels, white crackers, pretzels, croissants, pastries",
     desc: "Milled starches stripped of their natural fiber. While alright in moderate amounts for a quick energy boost, relying on them too much can lead to quick blood sugar crashes and low stamina."
   },
-  'Simple Carbs': {
-    name: "Refined Sugars & Sweet Additions",
+  'Simple Carbs': { 
+    name: "Refined Sugars & Sweet Additions", 
     sources: "Soda, candy, table syrup, fruit juice, sports drinks, sweets",
-    desc: "Fast-digesting simple sugars that enter the bloodstream almost instantly. Cutting back on these is highly beneficial; consuming them in too much quantity causes sugar spikes, crashes, and excess liver/visceral fat storage."
+    desc: "These sugars are absorbed quickly and can cause blood sugar spikes if consumed in excess" 
   },
   'Protein': {
     name: "Amino Recovery Protocol (PMID: 29187311)",

@@ -356,8 +356,9 @@ export const NutritionView: React.FC = () => {
                       ].map(sub => {
                         const { pct, actualPct, color: barColor } = getNutrientProgress(sub.v, sub.g || 0, sub.k);
                         const isExpanded = expandedMicro === sub.k;
-                        const info = DEFICIENCY_INFO[sub.k as keyof typeof DEFICIENCY_INFO] || NUTRIENT_BENEFITS[sub.k as keyof typeof NUTRIENT_BENEFITS];
+                        const benefitsInfo = NUTRIENT_BENEFITS[sub.k as keyof typeof NUTRIENT_BENEFITS];
                         const defInfo = DEFICIENCY_INFO[sub.k as keyof typeof DEFICIENCY_INFO];
+                        const info = benefitsInfo || defInfo;
                         return (
                           <div key={sub.k} className={isExpanded ? "glass-card" : ""} style={{ padding: isExpanded ? 'var(--space-md)' : '0', transition: 'all var(--transition-smooth)', margin: isExpanded ? '0 -16px var(--space-xs)' : '0' }}>
                             <div onClick={() => info && setExpandedMicro(isExpanded ? null : sub.k)} style={{ display: 'flex', justifyContent: 'space-between', fontSize: '10px', cursor: info ? 'pointer' : 'default' }}>
@@ -406,23 +407,30 @@ export const NutritionView: React.FC = () => {
                               <div className="glass" style={{ background: 'rgba(0, 0, 0, 0.85)', marginTop: 'var(--space-md)', padding: 'var(--space-md)', borderLeft: `2px solid ${sub.c}`, marginBottom: 'var(--space-sm)' }}>
 
                                 {/* Benefits Section */}
-                                <div style={{ marginBottom: '16px' }}>
-                                  <div style={{ fontWeight: '800', color: 'color-mix(in srgb, var(--theme-success), white 70%)', marginBottom: '6px', fontSize: '12px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-                                    ✨ Performance Benefits
+                                {benefitsInfo && sub.k !== 'Simple Carbs' && (
+                                  <div style={{ marginBottom: '16px' }}>
+                                    <div style={{ fontWeight: '800', color: 'color-mix(in srgb, var(--theme-success), white 70%)', marginBottom: '6px', fontSize: '12px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                                      ✨ Performance Benefits
+                                    </div>
+                                    <div style={{ lineHeight: '1.5', color: '#FFFFFF' }}>{benefitsInfo.summary}</div>
+                                    {benefitsInfo.points && (
+                                      <ul style={{ paddingLeft: '18px', margin: '8px 0 0 0', color: '#FFFFFF', display: 'flex', flexDirection: 'column', gap: '4px', fontSize: '11px' }}>
+                                        {benefitsInfo.points.map((p: string, i: number) => <li key={i}>{p}</li>)}
+                                      </ul>
+                                    )}
                                   </div>
-                                  <div style={{ lineHeight: '1.5', color: '#FFFFFF' }}>{(info as { summary?: string }).summary || 'Vital fuel source for metabolic energy.'}</div>
-                                </div>
+                                )}
 
                                 {/* Deficiency Section */}
                                 {defInfo && (
-                                  <div style={{ borderTop: '1px solid var(--theme-border, rgba(255,255,255,0.05))', paddingTop: '12px' }}>
+                                  <div style={{ borderTop: (benefitsInfo && sub.k !== 'Simple Carbs') ? '1px solid var(--theme-border, rgba(255,255,255,0.05))' : 'none', paddingTop: (benefitsInfo && sub.k !== 'Simple Carbs') ? '12px' : '0' }}>
                                     <div style={{ fontWeight: '800', color: 'color-mix(in srgb, var(--theme-warning), white 70%)', marginBottom: '6px', fontSize: '12px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
                                       {sub.k === 'Simple Carbs' ? '⚠️ Consumption Warnings' : '⚠️ Deficiency Risks'}
                                     </div>
                                     <div style={{ lineHeight: '1.5', color: '#FFFFFF' }}>{defInfo.desc}</div>
                                     {defInfo.sources && (
                                       <div style={{ marginTop: '8px', fontSize: '11px', color: '#FFFFFF', fontStyle: 'italic' }}>
-                                        Best Sources: {defInfo.sources}
+                                        {sub.k === 'Simple Carbs' ? 'Sources:' : 'Best Sources:'} {defInfo.sources}
                                       </div>
                                     )}
                                   </div>
