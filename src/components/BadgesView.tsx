@@ -118,9 +118,15 @@ export const BadgesView: React.FC<BadgesViewProps> = ({ onClose }) => {
           </div>
 
           <div style={{ borderTop: '1px solid var(--theme-border, rgba(255,255,255,0.1))', paddingTop: '20px' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '14px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
               <Trophy size={16} color="var(--theme-accent)" />
               <h3 style={{ fontSize: '13px', fontWeight: '900', margin: 0, color: 'var(--theme-text)', textTransform: 'uppercase', letterSpacing: '1px' }}>Persistence Badges</h3>
+            </div>
+            <div style={{ display: 'flex', alignItems: 'flex-start', gap: '8px', background: 'rgba(255,200,0,0.07)', border: '1px solid rgba(255,200,0,0.2)', borderRadius: '12px', padding: '10px 12px', marginBottom: '14px' }}>
+              <span style={{ fontSize: '14px', flexShrink: 0 }}>🔥</span>
+              <p style={{ fontSize: '11px', color: 'rgba(255,200,0,0.9)', margin: 0, lineHeight: '1.5', fontWeight: '600' }}>
+                Badges are <strong>only earned through streaks</strong> — you must log your food every consecutive day to progress. Missing a day resets your streak.
+              </p>
             </div>
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '10px', paddingBottom: '8px' }}>
               {BADGES.map(badge => {
@@ -167,8 +173,15 @@ export const BadgesView: React.FC<BadgesViewProps> = ({ onClose }) => {
                         maxWidth: '100%',
                         boxSizing: 'border-box'
                       }} title={badge.title}>{badge.title}</div>
-                      <div style={{ fontSize: '8px', color: isEarned ? badge.color : 'var(--theme-text-dim)', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
-                        {isEarned ? 'UNLOCKED' : `Day ${badge.day}`}
+                      <div style={{ fontSize: '8px', color: isEarned ? badge.color : 'var(--theme-text-dim)', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.5px', lineHeight: '1.4' }}>
+                        {isEarned ? (
+                          <>
+                            <div style={{ color: '#92FE9D' }}>✓ EARNED</div>
+                            <div style={{ color: badge.color, opacity: 0.85 }}>{badge.day === 1 ? 'DAY 1 STREAK' : `${badge.day}-DAY STREAK`}</div>
+                          </>
+                        ) : (
+                          <div>REACH {badge.day}-DAY STREAK</div>
+                        )}
                       </div>
                     </div>
                   </div>

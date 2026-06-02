@@ -5,20 +5,31 @@ import { Toast } from './Toast';
 import { WeightHistoryChart } from './WeightHistoryChart';
 
 export const WeightProgressView: React.FC = () => {
-  const { localCache, updateGoals, updateDayData, currentDate } = useDiary();
+  const { localCache, updateGoals, updateDayData, currentDate, dataReady } = useDiary();
   const goals = localCache.goals || {};
-  const currentDayData = localCache[currentDate] || {};
 
   const cleanNumInput = (v: string) => {
     if (v.length > 1 && v.startsWith('0') && !v.startsWith('0.')) return v.substring(1);
     return v;
   };
 
-  const [dailyWeight, setDailyWeight] = useState<string>(currentDayData.weight?.toString() || '');
+  const [dailyWeight, setDailyWeight] = useState<string>('');
   const [logDate, setLogDate] = useState<string>(currentDate);
   const [weightLb, setWeightLb] = useState(goals.weight?.toString() || '175');
   const [targetWeight, setTargetWeight] = useState(goals.targetWeight?.toString() || '165');
   const [toastMsg, setToastMsg] = useState('');
+
+  // Re-sync input fields once cloud data has loaded
+  React.useEffect(() => {
+    if (!dataReady) return;
+    const dayData = localCache[logDate] || {};
+    if (dayData.weight !== undefined && dayData.weight !== null) {
+      setDailyWeight(dayData.weight.toString());
+    }
+    const g = localCache.goals || {};
+    if (g.weight) setWeightLb(g.weight.toString());
+    if (g.targetWeight) setTargetWeight(g.targetWeight.toString());
+  }, [dataReady]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Editing entries states
   const [editingDate, setEditingDate] = useState<string | null>(null);
@@ -108,14 +119,16 @@ export const WeightProgressView: React.FC = () => {
   const handleSaveDailyWeight = (e: React.FormEvent) => {
     e.preventDefault();
     const w = parseFloat(dailyWeight);
-    if (!isNaN(w) && w > 0) {
-      updateDayData(logDate, { weight: w });
-      if (logDate === currentDate) {
-        updateGoals({ weight: w });
-        setWeightLb(w.toString());
-      }
-      setToastMsg(`Weight record saved for ${logDate}!`);
+    if (isNaN(w) || w <= 0) {
+      setToastMsg('Please enter a valid weight.');
+      return;
     }
+    updateDayData(logDate, { weight: w });
+    if (logDate === currentDate) {
+      updateGoals({ weight: w });
+      setWeightLb(w.toString());
+    }
+    setToastMsg(`Weight record saved for ${logDate}!`);
   };
 
   return (

@@ -23,13 +23,14 @@ export const MainDashboard: React.FC = () => {
   const [showOnboarding, setShowOnboarding] = useState(false);
   const onboardingChecked = useRef(false);
 
-  // Only show onboarding after data has loaded — prevents flash for existing users
   useEffect(() => {
     if (onboardingChecked.current) return;
     if (!dataReady) return; // still loading, wait
     onboardingChecked.current = true;
     if (!localCache.goals?.onboardingComplete && !localCache.goals?.weight) {
-      setShowOnboarding(true);
+      Promise.resolve().then(() => {
+        setShowOnboarding(true);
+      });
     }
   }, [dataReady, localCache.goals]);
 

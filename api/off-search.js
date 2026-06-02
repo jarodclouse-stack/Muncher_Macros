@@ -14,6 +14,38 @@ function isEnglish(p) {
   return true;
 }
 
+// Generate all likely plural (and singular) forms of a food query word.
+// Covers: cherry→cherries, potato→potatoes, leaf→leaves, peach→peaches, apple→apples
+function getPlurals(word) {
+  const w = word.toLowerCase().trim();
+  const forms = new Set([w]);
+
+  // Already plural? Also derive the singular so scoring works both ways
+  if (w.endsWith('ies') && w.length > 4) {
+    forms.add(w.slice(0, -3) + 'y');           // cherries → cherry
+  } else if (w.endsWith('ves') && w.length > 4) {
+    forms.add(w.slice(0, -3) + 'f');           // leaves → leaf
+    forms.add(w.slice(0, -3) + 'fe');          // knives → knife
+  } else if (w.endsWith('es') && w.length > 3) {
+    forms.add(w.slice(0, -2));                 // peaches → peach, potatoes → potato
+    forms.add(w.slice(0, -1));                 // peaches → peache (safe fallback)
+  } else if (w.endsWith('s') && w.length > 3) {
+    forms.add(w.slice(0, -1));                 // apples → apple
+  }
+
+  // Generate plurals from the base
+  const base = [...forms][0]; // use original word as base
+  if (/[^aeiou]y$/i.test(base))          forms.add(base.slice(0, -1) + 'ies'); // cherry→cherries
+  if (/([sxz]|ch|sh)$/i.test(base))      forms.add(base + 'es');               // peach→peaches
+  if (/[^aeiou]o$/i.test(base))          { forms.add(base + 'es'); forms.add(base + 's'); } // potato→potatoes
+  if (/[aeiou]o$/i.test(base))           forms.add(base + 's');               // avocado→avocados
+  if (/[lf]f$/i.test(base))              forms.add(base.slice(0, -1) + 'ves'); // leaf→leaves
+  if (/fe$/i.test(base))                 forms.add(base.slice(0, -2) + 'ves'); // knife→knives
+  forms.add(base + 's');                                                        // apple→apples (default)
+
+  return [...forms];
+}
+
 export default async function handler(req, res) {
   setCors(req, res);
   if (handlePreflight(req, res)) return;
@@ -48,55 +80,107 @@ export default async function handler(req, res) {
         productsToProcess = [data.product];
       }
     } else {
-      // Text search — retry up to 3 times on failure or empty results
-      const offUrl = 'https://world.openfoodfacts.org/cgi/search.pl'
-        + '?search_terms=' + encodeURIComponent(query)
+      // Text search utilizing exact query matching and plural/singular forms
+      const buildUrl = (q) =>
+        'https://world.openfoodfacts.org/cgi/search.pl'
+        + '?search_terms=' + encodeURIComponent(q)
         + '&search_simple=1&action=process&json=1&page_size=50'
         + '&lc=en&cc=us'
         + '&fields=product_name,product_name_en,serving_size,serving_quantity,'
         + 'serving_quantity_unit,serving_size_unit,nutriments,brands,lang';
-      let data = null;
-      for (let attempt = 1; attempt <= 3; attempt++) {
-        try {
-          const offRes = await fetch(offUrl, {
-            headers: { 'User-Agent': 'MuncherMacros/1.0' },
-            signal: AbortSignal.timeout(8000)
-          });
-          if (!offRes.ok) {
-            if (attempt < 3) { await new Promise(r => setTimeout(r, 400 * attempt)); continue; }
-            return res.status(offRes.status).json({ error: 'OFF error ' + offRes.status });
+
+      // Build ordered list of queries to try: exact + plural forms first
+      const pluralForms = getPlurals(query);
+      // queriesToTry: original query + all plural/singular variants (deduped)
+      const queriesToTry = [...new Set([query, ...pluralForms])];
+
+      const fetchQuery = async (q) => {
+        for (let attempt = 1; attempt <= 2; attempt++) {
+          try {
+            const offRes = await fetch(buildUrl(q), {
+              headers: { 'User-Agent': 'MuncherMacros/1.0' },
+              signal: AbortSignal.timeout(8000)
+            });
+            if (!offRes.ok) {
+              if (attempt < 2) { await new Promise(r => setTimeout(r, 400)); continue; }
+              return [];
+            }
+            const parsed = await offRes.json();
+            return parsed.products || [];
+          } catch {
+            if (attempt === 2) return [];
+            await new Promise(r => setTimeout(r, 400));
           }
-          const parsed = await offRes.json();
-          if ((parsed.products || []).length > 0 || attempt === 3) {
-            data = parsed;
-            break;
-          }
-          // Empty result on attempt 1 or 2 — retry
-          await new Promise(r => setTimeout(r, 400 * attempt));
-        } catch (fetchErr) {
-          if (attempt === 3) throw fetchErr;
-          await new Promise(r => setTimeout(r, 400 * attempt));
+        }
+        return [];
+      };
+
+      // Try each query in order, merge results from all variants
+      const seen = new Set();
+      for (const q of queriesToTry) {
+        const products = await fetchQuery(q);
+        for (const p of products) {
+          const key = (p.product_name_en || p.product_name || '') + (p.brands || '');
+          if (!seen.has(key)) { seen.add(key); productsToProcess.push(p); }
         }
       }
-      productsToProcess = (data && data.products) || [];
-
     }
 
     // Filter server-side to English only (unless barcode match)
     const englishOnly = isBarcode ? productsToProcess : productsToProcess.filter(isEnglish);
 
-    // Relevance sort: exact name match first, then starts-with, then contains, then rest
+    // Keywords that indicate a processed/packaged product — penalise these
+    const processedWords = new Set([
+      'chip','chips','crisp','crisps','fried','fries','baked','seasoned','flavored','flavoured',
+      'flavour','flavor','instant','mix','sauce','soup','powder','extract','bar','bars',
+      'snack','snacks','cookie','cookies','cracker','crackers','dip','spread','drink',
+      'juice','soda','candy','chocolate','nugget','nuggets','frozen','canned','dried',
+      'processed','enriched','artificial','imitation','style','coated','glazed',
+      'stuffed','filled','breaded','battered','marinated','smoked','cured'
+    ]);
+
+    // Words that signal a whole / minimally-processed food — boost these
+    const wholeWords = new Set([
+      'raw','fresh','organic','whole','natural','plain','pure','uncooked','unseasoned'
+    ]);
+
     const ql = query.toLowerCase();
+    // All plural/singular variants of the query for scoring
+    const qVariants = new Set(getPlurals(ql));
+
     const scored = englishOnly.map(p => {
       const name = (p.product_name_en || p.product_name || '').toLowerCase().trim();
+      const words = name.split(/\s+/);
+      const firstName = words[0]; // the leading word of the product name
+
+      // Base relevance
       let score = 0;
-      if (name === ql) score = 4;
-      else if (name.startsWith(ql)) score = 3;
-      else if (name.includes(ql)) score = 2;
-      else score = 1; // brand-only or indirect match
+      if (name === ql || qVariants.has(name))              score = 10; // exact or exact plural
+      else if (qVariants.has(firstName))                   score = 9;  // leading word is plural form
+      else if (name.startsWith(ql))                        score = 8;  // starts with query
+      else if ([...qVariants].some(v => name.startsWith(v))) score = 7; // starts with plural
+      else if (name.includes(ql))                          score = 4;  // contains query
+      else if ([...qVariants].some(v => name.includes(v))) score = 3;  // contains plural
+      else                                                 score = 1;  // indirect / brand only
+
+      // Whole-food bonus: fewer words → closer to the raw ingredient
+      if (words.length === 1)      score += 4;
+      else if (words.length === 2) score += 2;
+      else if (words.length >= 4)  score -= 1;
+
+      // Processed food penalty
+      const hasProcessed = words.some(w => processedWords.has(w.replace(/[^a-z]/g, '')));
+      if (hasProcessed) score -= 3;
+
+      // Whole food boost
+      const hasWhole = words.some(w => wholeWords.has(w.replace(/[^a-z]/g, '')));
+      if (hasWhole) score += 2;
+
       return { p, score };
     });
+
     scored.sort((a, b) => b.score - a.score);
+
     const filtered = scored.slice(0, 20).map(s => s.p);
 
     const foods = filtered.map(p => {

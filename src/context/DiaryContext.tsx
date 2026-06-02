@@ -158,15 +158,20 @@ export const DiaryProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     setCurrentDate(date);
   };
 
-  const updateDayData = (date: string, partialData: any) => {
+  const pendingSaveRef = useRef<LocalCache | null>(null);
+
+  const updateDayData = useCallback((date: string, partialData: any) => {
     setLocalCache(prev => {
       const updated = { ...prev };
       updated[date] = { ...(updated[date] || {}), ...partialData };
+      pendingSaveRef.current = updated; // stage latest state for the debounce
       if (syncTimeoutRef.current) clearTimeout(syncTimeoutRef.current);
-      syncTimeoutRef.current = setTimeout(() => saveCloudData(updated), 1500) as any;
+      syncTimeoutRef.current = setTimeout(() => {
+        if (pendingSaveRef.current) saveCloudData(pendingSaveRef.current);
+      }, 1500) as any;
       return updated;
     });
-  };
+  }, [saveCloudData]);
 
   const addFoodLog = (meal: string, food: Food) => {
     setLocalCache(prev => {

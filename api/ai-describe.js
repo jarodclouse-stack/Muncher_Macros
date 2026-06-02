@@ -196,7 +196,6 @@ function normalizeResult(f) {
     stagedUnit: sUnit
   };
 }
-}
 
 export default async function handler(req, res) {
   setCors(req, res);
