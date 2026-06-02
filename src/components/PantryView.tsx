@@ -179,6 +179,16 @@ export const PantryView: React.FC<PantryViewProps> = ({ initialMeal, onClose, is
   const [promptDialog, setPromptDialog] = useState<{ title: string; message?: string; defaultValue?: string; placeholder?: string; onConfirm: (v: string) => void } | null>(null);
   const [confirmDialog, setConfirmDialog] = useState<{ title: string; message: string; onConfirm: () => void } | null>(null);
 
+  // States for custom save meal recipe configuration
+  const [saveRecipeConfig, setSaveRecipeConfig] = useState<{
+    recipeItems: RecipeItem[];
+    totals: Record<string, number>;
+  } | null>(null);
+  const [recipeSaveName, setRecipeSaveName] = useState('AI Detected Meal');
+  const [recipeServingQty, setRecipeServingQty] = useState('1');
+  const [recipeServingUnit, setRecipeServingUnit] = useState('serving');
+  const [recipeTotalServings, setRecipeTotalServings] = useState('1');
+
   const searchCache = React.useRef<Record<string, Food[]>>({});
   const aiSearchCache = React.useRef<Record<string, Food[]>>({});
 
@@ -565,6 +575,53 @@ export const PantryView: React.FC<PantryViewProps> = ({ initialMeal, onClose, is
       clearSearchState();
       setActiveTab('saved');
     }
+  };
+
+  const handleConfirmSaveRecipe = () => {
+    if (!saveRecipeConfig) return;
+    const { recipeItems, totals } = saveRecipeConfig;
+    const saveName = recipeSaveName.trim() || 'AI Detected Meal';
+    const servingQty = parseFloat(recipeServingQty) || 1;
+    const servingUnit = recipeServingUnit.trim() || 'serving';
+    const batchServings = Math.max(1, parseFloat(recipeTotalServings) || 1);
+
+    const ingredientsText = recipeItems.map(item => {
+      return `${item.qty} ${item.unit} of ${item.food.name}`;
+    }).join(', ');
+
+    const keysToSum = ['cal', 'p', 'c', 'f', 'fiber', 'sugars', 'sat', 'mono', 'poly', 'trans', 'chol', 'Sodium', 'Potassium', 'Calcium', 'Magnesium'];
+    const mealData: Food = {
+      name: saveName,
+      serving: `${servingQty} ${servingUnit}`,
+      sQty: servingQty,
+      sUnit: servingUnit,
+      isLocal: true,
+      type: 'recipe',
+      ingredientItems: recipeItems,
+      ingredients: ingredientsText,
+      cal: Math.round((totals.cal || 0) / batchServings),
+      p: parseFloat(((totals.p || 0) / batchServings).toFixed(1)),
+      c: parseFloat(((totals.c || 0) / batchServings).toFixed(1)),
+      f: parseFloat(((totals.f || 0) / batchServings).toFixed(1)),
+      fiber: parseFloat(((totals.fiber || 0) / batchServings).toFixed(1)),
+      sugars: parseFloat(((totals.sugars || 0) / batchServings).toFixed(1)),
+      sat: parseFloat(((totals.sat || 0) / batchServings).toFixed(1)),
+      mono: parseFloat(((totals.mono || 0) / batchServings).toFixed(1)),
+      poly: parseFloat(((totals.poly || 0) / batchServings).toFixed(1)),
+      trans: parseFloat(((totals.trans || 0) / batchServings).toFixed(1)),
+      chol: Math.round((totals.chol || 0) / batchServings),
+      Sodium: Math.round((totals.Sodium || 0) / batchServings),
+      Potassium: Math.round((totals.Potassium || 0) / batchServings),
+      Calcium: Math.round((totals.Calcium || 0) / batchServings),
+      Magnesium: Math.round((totals.Magnesium || 0) / batchServings),
+      id: `recipe-${Date.now()}`
+    };
+
+    saveCustomFood(mealData);
+    setSaveRecipeConfig(null);
+    setIsAiReviewing(false);
+    setAiStagedResults([]);
+    showNotification(`"${saveName}" saved to Kitchen Pantry! 🍳`);
   };
 
   return (
@@ -1527,7 +1584,6 @@ export const PantryView: React.FC<PantryViewProps> = ({ initialMeal, onClose, is
                     <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px', width: '100%' }}>
                       <button 
                         onClick={() => {
-                          setPromptDialog({ title: 'Name this meal', defaultValue: 'AI Detected Meal', onConfirm: (mealName) => { setPromptDialog(null); const saveMealName = mealName || 'AI Detected Meal';
                           const recipeItems: RecipeItem[] = aiStagedResults.map(f => ({
                             food: f,
                             qty: String(f.stagedQty || '1'),
@@ -1547,42 +1603,11 @@ export const PantryView: React.FC<PantryViewProps> = ({ initialMeal, onClose, is
                             });
                           });
 
-                          const ingredientsText = aiStagedResults.map(f => {
-                            return `${f.stagedQty || '1'} ${f.stagedUnit || 'serving'} of ${f.name}`;
-                          }).join(', ');
-
-                          const mealData: Food = {
-                            name: saveMealName,
-                            serving: '1 meal',
-                            sQty: 1,
-                            sUnit: 'meal',
-                            isLocal: true,
-                            type: 'recipe',
-                            ingredientItems: recipeItems,
-                            ingredients: ingredientsText,
-                            cal: Math.round(totals.cal || 0),
-                            p: parseFloat((totals.p || 0).toFixed(1)),
-                            c: parseFloat((totals.c || 0).toFixed(1)),
-                            f: parseFloat((totals.f || 0).toFixed(1)),
-                            fiber: parseFloat((totals.fiber || 0).toFixed(1)),
-                            sugars: parseFloat((totals.sugars || 0).toFixed(1)),
-                            sat: parseFloat((totals.sat || 0).toFixed(1)),
-                            mono: parseFloat((totals.mono || 0).toFixed(1)),
-                            poly: parseFloat((totals.poly || 0).toFixed(1)),
-                            trans: parseFloat((totals.trans || 0).toFixed(1)),
-                            chol: Math.round(totals.chol || 0),
-                            Sodium: Math.round(totals.Sodium || 0),
-                            Potassium: Math.round(totals.Potassium || 0),
-                            Calcium: Math.round(totals.Calcium || 0),
-                            Magnesium: Math.round(totals.Magnesium || 0),
-                            id: `recipe-${Date.now()}`
-                          };
-
-                          saveCustomFood(mealData);
-                          setIsAiReviewing(false);
-                          setAiStagedResults([]);
-                          showNotification("Entire meal saved to Kitchen Pantry!");
-                        }});
+                          setRecipeSaveName(searchQuery.trim().substring(0, 35) || 'AI Detected Meal');
+                          setRecipeServingQty('1');
+                          setRecipeServingUnit('meal');
+                          setRecipeTotalServings('1');
+                          setSaveRecipeConfig({ recipeItems, totals });
                         }}
                         style={{ padding: '14px 5px', background: 'rgba(0, 201, 255, 0.1)', border: '1px solid var(--theme-accent)', borderRadius: '16px', color: 'var(--theme-accent)', fontWeight: '900', fontSize: '11px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '4px' }}>
                         <Sparkles size={14} color="var(--theme-accent)" /> SAVE AS MEAL
@@ -2352,6 +2377,272 @@ export const PantryView: React.FC<PantryViewProps> = ({ initialMeal, onClose, is
       )}
       {promptDialog && <PromptDialog title={promptDialog.title} message={promptDialog.message} defaultValue={promptDialog.defaultValue} placeholder={promptDialog.placeholder} onConfirm={promptDialog.onConfirm} onCancel={() => setPromptDialog(null)} />}
       {confirmDialog && <ConfirmDialog title={confirmDialog.title} message={confirmDialog.message} danger onConfirm={confirmDialog.onConfirm} onCancel={() => setConfirmDialog(null)} />}
+
+      {saveRecipeConfig && (() => {
+        const totalServings = Math.max(1, parseFloat(recipeTotalServings) || 1);
+        const getValPerServing = (val: number | undefined) => {
+          if (val === undefined || isNaN(val)) return 0;
+          return val / totalServings;
+        };
+
+        const renderNutrientRow = (label: string, key: string, unit: string, color: string) => {
+          const totalVal = Number(saveRecipeConfig.totals[key]) || 0;
+          const perServingVal = getValPerServing(totalVal);
+          
+          let displayTotal = '';
+          let displayPerServing = '';
+          
+          if (key === 'cal') {
+            displayTotal = `${Math.round(totalVal)} ${unit}`;
+            displayPerServing = `${Math.round(perServingVal)} ${unit}`;
+          } else {
+            displayTotal = `${totalVal.toFixed(1)} ${unit}`;
+            displayPerServing = `${perServingVal.toFixed(1)} ${unit}`;
+          }
+
+          return (
+            <div 
+              key={key} 
+              style={{ 
+                display: 'flex', 
+                justifyContent: 'space-between', 
+                alignItems: 'center', 
+                padding: '8px 12px', 
+                background: 'rgba(255,255,255,0.02)', 
+                borderBottom: '1px solid rgba(255,255,255,0.04)', 
+                borderRadius: '8px', 
+                fontSize: '12px' 
+              }}
+            >
+              <span style={{ fontWeight: '700', color }}>{label}</span>
+              <div style={{ display: 'flex', gap: '20px', textAlign: 'right' }}>
+                <span style={{ color: 'var(--theme-text-dim)', minWidth: '80px' }}>{displayTotal}</span>
+                <span style={{ color: 'var(--theme-accent, #00C9FF)', fontWeight: '800', minWidth: '80px' }}>{displayPerServing}</span>
+              </div>
+            </div>
+          );
+        };
+
+        return (
+          <div style={{ 
+            position: 'fixed', 
+            inset: 0, 
+            zIndex: 8000, 
+            background: 'rgba(0,0,0,0.85)', 
+            backdropFilter: 'blur(12px)', 
+            display: 'flex', 
+            alignItems: 'center', 
+            justifyContent: 'center', 
+            padding: '16px' 
+          }}>
+            <div style={{ 
+              background: 'var(--theme-panel, #121520)', 
+              border: '1px solid var(--theme-border, rgba(255,255,255,0.08))', 
+              borderRadius: '24px', 
+              padding: '24px', 
+              maxWidth: '560px', 
+              width: '100%', 
+              maxHeight: '90vh', 
+              overflowY: 'auto', 
+              display: 'flex', 
+              flexDirection: 'column', 
+              gap: '20px', 
+              boxShadow: '0 24px 60px rgba(0,0,0,0.6), inset 0 1px 0 rgba(255,255,255,0.05)', 
+              animation: 'pdIn 0.25s ease-out' 
+            }}>
+              {/* Header */}
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                  <div style={{ background: 'rgba(0,201,255,0.1)', padding: '8px', borderRadius: '10px' }}>
+                    <Sparkles size={18} color="var(--theme-accent)" />
+                  </div>
+                  <h3 style={{ fontSize: '16px', fontWeight: 900, color: '#fff', margin: 0, letterSpacing: '0.5px' }}>
+                    🍳 SAVE MEAL TO PANTRY
+                  </h3>
+                </div>
+                <button 
+                  onClick={() => setSaveRecipeConfig(null)} 
+                  style={{ background: 'rgba(255,255,255,0.05)', border: 'none', borderRadius: '50%', width: '32px', height: '32px', color: 'var(--theme-text-dim)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                >
+                  <X size={18} />
+                </button>
+              </div>
+
+              {/* Meal Name Input */}
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                <label style={{ fontSize: '11px', color: 'var(--theme-text-dim)', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                  Meal / Recipe Name
+                </label>
+                <input 
+                  value={recipeSaveName}
+                  onChange={(e) => setRecipeSaveName(e.target.value)}
+                  placeholder="e.g. Teriyaki Chicken with Rice"
+                  style={{ 
+                    width: '100%', 
+                    padding: '12px 16px', 
+                    borderRadius: '12px', 
+                    border: '1.5px solid var(--theme-border, rgba(255,255,255,0.15))', 
+                    background: 'rgba(0,0,0,0.25)', 
+                    color: '#fff', 
+                    fontSize: '14px', 
+                    fontWeight: '600', 
+                    outline: 'none', 
+                    boxSizing: 'border-box' 
+                  }}
+                />
+              </div>
+
+              {/* Serving Size & Batch Definition */}
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
+                {/* Default Portion Logged */}
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                  <label style={{ fontSize: '11px', color: 'var(--theme-text-dim)', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                    Default Portion Size
+                  </label>
+                  <div style={{ display: 'flex', gap: '8px' }}>
+                    <input 
+                      type="number"
+                      min="0.1"
+                      step="any"
+                      value={recipeServingQty}
+                      onChange={(e) => setRecipeServingQty(e.target.value)}
+                      style={{ 
+                        width: '60px', 
+                        padding: '10px', 
+                        borderRadius: '12px', 
+                        border: '1.5px solid var(--theme-border, rgba(255,255,255,0.15))', 
+                        background: 'rgba(0,0,0,0.25)', 
+                        color: '#fff', 
+                        fontSize: '13px', 
+                        fontWeight: '700', 
+                        textAlign: 'center', 
+                        outline: 'none' 
+                      }}
+                    />
+                    <input 
+                      value={recipeServingUnit}
+                      onChange={(e) => setRecipeServingUnit(e.target.value)}
+                      placeholder="serving, meal"
+                      style={{ 
+                        flex: 1, 
+                        padding: '10px 12px', 
+                        borderRadius: '12px', 
+                        border: '1.5px solid var(--theme-border, rgba(255,255,255,0.15))', 
+                        background: 'rgba(0,0,0,0.25)', 
+                        color: '#fff', 
+                        fontSize: '13px', 
+                        fontWeight: '600', 
+                        outline: 'none', 
+                        boxSizing: 'border-box' 
+                      }}
+                    />
+                  </div>
+                </div>
+
+                {/* Number of Servings */}
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                  <label style={{ fontSize: '11px', color: 'var(--theme-text-dim)', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                    Total Servings in Batch
+                  </label>
+                  <input 
+                    type="number"
+                    min="1"
+                    step="any"
+                    value={recipeTotalServings}
+                    onChange={(e) => setRecipeTotalServings(e.target.value)}
+                    style={{ 
+                      width: '100%', 
+                      padding: '10px 12px', 
+                      borderRadius: '12px', 
+                      border: '1.5px solid var(--theme-border, rgba(255,255,255,0.15))', 
+                      background: 'rgba(0,0,0,0.25)', 
+                      color: '#fff', 
+                      fontSize: '13px', 
+                      fontWeight: '700', 
+                      outline: 'none', 
+                      boxSizing: 'border-box' 
+                    }}
+                  />
+                </div>
+              </div>
+
+              {/* Nutrient Comparison Preview Card */}
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <label style={{ fontSize: '11px', color: 'var(--theme-text-dim)', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                    Nutrient Breakdown
+                  </label>
+                  <div style={{ display: 'flex', gap: '20px', fontSize: '10px', fontWeight: '800', color: 'var(--theme-text-dim)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                    <span style={{ minWidth: '80px', textAlign: 'right' }}>Total Batch</span>
+                    <span style={{ minWidth: '80px', textAlign: 'right', color: 'var(--theme-accent, #00C9FF)' }}>Per Serving</span>
+                  </div>
+                </div>
+
+                <div style={{ 
+                  background: 'rgba(0, 0, 0, 0.2)', 
+                  border: '1px solid rgba(255, 255, 255, 0.05)', 
+                  borderRadius: '16px', 
+                  padding: '8px', 
+                  display: 'flex', 
+                  flexDirection: 'column', 
+                  gap: '4px' 
+                }}>
+                  {renderNutrientRow('Calories', 'cal', 'kcal', 'var(--theme-text)')}
+                  {renderNutrientRow('Protein', 'p', 'g', '#00C9FF')}
+                  {renderNutrientRow('Carbs', 'c', 'g', '#FCC419')}
+                  {renderNutrientRow('Fat', 'f', 'g', '#FF6B6B')}
+                  {renderNutrientRow('Fiber', 'fiber', 'g', 'rgba(255,255,255,0.85)')}
+                  {renderNutrientRow('Sugars', 'sugars', 'g', 'rgba(255,255,255,0.7)')}
+                  {renderNutrientRow('Sodium', 'Sodium', 'mg', 'rgba(255,255,255,0.6)')}
+                  {renderNutrientRow('Potassium', 'Potassium', 'mg', 'rgba(255,255,255,0.6)')}
+                  {renderNutrientRow('Calcium', 'Calcium', 'mg', 'rgba(255,255,255,0.6)')}
+                  {renderNutrientRow('Magnesium', 'Magnesium', 'mg', 'rgba(255,255,255,0.6)')}
+                </div>
+              </div>
+
+              {/* Action Buttons */}
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1.5fr', gap: '12px', marginTop: '8px' }}>
+                <button 
+                  onClick={() => setSaveRecipeConfig(null)}
+                  style={{ 
+                    padding: '14px', 
+                    borderRadius: '16px', 
+                    border: '1px solid rgba(255,255,255,0.1)', 
+                    background: 'rgba(255,255,255,0.04)', 
+                    color: 'var(--theme-text-dim)', 
+                    fontSize: '13px', 
+                    fontWeight: '800', 
+                    cursor: 'pointer', 
+                    transition: 'all 0.2s' 
+                  }}
+                >
+                  Cancel
+                </button>
+                <button 
+                  onClick={handleConfirmSaveRecipe}
+                  style={{ 
+                    padding: '14px', 
+                    borderRadius: '16px', 
+                    border: 'none', 
+                    background: 'var(--theme-accent, #00C9FF)', 
+                    color: '#000', 
+                    fontSize: '13px', 
+                    fontWeight: '900', 
+                    cursor: 'pointer', 
+                    display: 'flex', 
+                    alignItems: 'center', 
+                    justifyContent: 'center', 
+                    gap: '8px', 
+                    boxShadow: '0 4px 15px var(--theme-accent-dim)' 
+                  }}
+                >
+                  <Check size={16} /> Save to Pantry
+                </button>
+              </div>
+            </div>
+          </div>
+        );
+      })()}
     </div>
   );
 };
