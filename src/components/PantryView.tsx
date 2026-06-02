@@ -757,7 +757,11 @@ export const PantryView: React.FC<PantryViewProps> = ({ initialMeal, onClose, is
                       <span style={{ fontSize: '16px' }}>🔍</span> Search:
                     </span>
                     <span style={{ lineHeight: '1.5', flex: 1 }}>
-                      Queries the official, verified <strong>USDA Food Database</strong> (ideal for groceries, barcodes, and raw ingredients).
+                      Our dual-mode tool merges database queries and semantic AI search:
+                      <ul style={{ margin: '4px 0 0 0', paddingLeft: '18px', listStyleType: 'disc', display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                        <li><strong>Standard Search:</strong> Queries the global database—ideal for scanning barcodes and logging branded, packaged grocery store products.</li>
+                        <li><strong>AI Search:</strong> Uses semantic intelligence—perfect for raw whole ingredients, custom portion scaling, and restaurant dishes.</li>
+                      </ul>
                     </span>
                   </div>
                   <div style={{ display: 'flex', gap: '10px', alignItems: 'flex-start' }}>
@@ -766,14 +770,6 @@ export const PantryView: React.FC<PantryViewProps> = ({ initialMeal, onClose, is
                     </span>
                     <span style={{ lineHeight: '1.5', flex: 1 }}>
                       Activates your device camera to <strong>scan food barcodes</strong> (perfect for instantly logging standard packaged products and groceries without any manual entry).
-                    </span>
-                  </div>
-                  <div style={{ display: 'flex', gap: '10px', alignItems: 'flex-start' }}>
-                    <span style={{ color: 'var(--theme-accent)', fontWeight: '800', display: 'inline-flex', alignItems: 'center', gap: '6px', width: '105px', flexShrink: 0 }}>
-                      <span style={{ fontSize: '16px' }}>✨</span> Ask AI:
-                    </span>
-                    <span style={{ lineHeight: '1.5', flex: 1 }}>
-                      A custom AI search for <strong>local, unique, or uncommon foods</strong> not accessible in the USDA database—guaranteeing you can log almost anything.
                     </span>
                   </div>
                   <div style={{ display: 'flex', gap: '10px', alignItems: 'flex-start' }}>
