@@ -408,6 +408,36 @@ const DiaryEntryItem = ({ log, onRemove, onEditPortion, onMove }: any) => {
         {/* Serving + Portion Button */}
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
           <div style={{ fontSize: '12px', color: 'rgba(255,255,255,0.7)', fontWeight: '700', flex: 1 }}>{f.serving}</div>
+          {/* Nutri-Score badge */}
+          {f.nutriscore_grade && (() => {
+            const g = String(f.nutriscore_grade).toLowerCase().trim();
+            const nsColor: Record<string,string> = { a: '#038141', b: '#85bb2f', c: '#fecb02', d: '#ee8100', e: '#e63e11' };
+            const bg = nsColor[g] || '#888';
+            return (
+              <div
+                title={`Nutri-Score ${g.toUpperCase()}`}
+                style={{
+                  display: 'flex', alignItems: 'center', gap: '4px',
+                  background: 'rgba(255,255,255,0.05)',
+                  border: `1px solid ${bg}55`,
+                  borderRadius: '10px',
+                  padding: '5px 9px',
+                  boxShadow: `0 0 8px ${bg}40`,
+                }}
+              >
+                <span style={{ fontSize: '8px', fontWeight: '900', color: 'rgba(255,255,255,0.5)', letterSpacing: '0.5px', textTransform: 'uppercase' }}>NUTRI</span>
+                <span style={{
+                  width: '20px', height: '20px', borderRadius: '6px',
+                  background: bg,
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  fontSize: '11px', fontWeight: '900', color: '#000',
+                  boxShadow: `0 0 10px ${bg}80`,
+                }}>
+                  {g.toUpperCase()}
+                </span>
+              </div>
+            );
+          })()}
           <button 
             onClick={(e) => { e.stopPropagation(); onEditPortion(); }} 
             style={{ background: 'rgba(0,201,255,0.08)', border: '1px solid rgba(0,201,255,0.25)', color: 'var(--theme-accent, #00C9FF)', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '4px', padding: '8px 14px', borderRadius: '12px', boxShadow: '0 2px 8px rgba(0,0,0,0.3)', fontSize: '11px', fontWeight: '800' }}
