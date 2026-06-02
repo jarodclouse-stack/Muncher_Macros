@@ -16,6 +16,7 @@ export const DiaryView: React.FC = () => {
   const [searchOpenFor, setSearchOpenFor] = useState<string | null>(null);
   const [editingPortion, setEditingPortion] = useState<{ meal: string, idx: number, food: any } | null>(null);
   const [showDatePicker, setShowDatePicker] = useState(false);
+  const [expandedMeals, setExpandedMeals] = useState<Record<string, boolean>>({});
 
   // Derive Daily Data
   const dayData = localCache[currentDate] || {};
@@ -296,8 +297,10 @@ export const DiaryView: React.FC = () => {
         const mealFoods = foodLog.filter((l: any) => l.meal === meal);
         const mealTotals = sumFoods(mealFoods.map((l:any) => l.f));
         const mealCals = Math.round(mealTotals.calories);
-        
-
+        const isExpanded = !!expandedMeals[meal];
+        const VISIBLE_LIMIT = 3;
+        const visibleFoods = isExpanded ? mealFoods : mealFoods.slice(0, VISIBLE_LIMIT);
+        const hiddenCount = mealFoods.length - VISIBLE_LIMIT;
 
         return (
           <div key={meal} className="card" style={{ padding: 'var(--space-xl)' }}>
@@ -308,7 +311,7 @@ export const DiaryView: React.FC = () => {
               <span style={{ fontSize: '14px', color: 'var(--theme-accent)', fontWeight: '600' }}>{mealCals} kcal</span>
             </div>
             
-            {mealFoods.map((log: any, idx: number) => (
+            {visibleFoods.map((log: any, idx: number) => (
               <DiaryEntryItem 
                 key={idx} 
                 log={log} 
@@ -317,6 +320,15 @@ export const DiaryView: React.FC = () => {
                 onMove={(newMeal: string) => moveFoodLog(meal, idx, newMeal)}
               />
             ))}
+
+            {mealFoods.length > VISIBLE_LIMIT && (
+              <button
+                onClick={() => setExpandedMeals(prev => ({ ...prev, [meal]: !prev[meal] }))}
+                style={{ width: '100%', padding: '9px', background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '10px', color: 'rgba(255,255,255,0.55)', fontSize: '11px', fontWeight: '800', cursor: 'pointer', marginBottom: '8px', letterSpacing: '0.5px' }}
+              >
+                {isExpanded ? '▲ SHOW LESS' : `▼ SHOW ${hiddenCount} MORE`}
+              </button>
+            )}
 
             <button 
               onClick={() => setSearchOpenFor(meal)}

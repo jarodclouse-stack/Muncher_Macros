@@ -2361,6 +2361,10 @@ export const PantryView: React.FC<PantryViewProps> = ({ initialMeal, onClose, is
                   onClick={() => {
                     const mult = computeMultiplier(configuringFood.serving || '', servingUnit, parseFloat(servingQty) || 1);
                     const scaled = scaleLegacyFoodByAmount(configuringFood, mult);
+                    // Stamp the actual amount the user configured so DiaryView shows the right weight
+                    scaled.serving = `${servingQty} ${servingUnit}`;
+                    scaled.sQty = parseFloat(servingQty) || 1;
+                    scaled.sUnit = servingUnit;
                     addFoodLog(targetMeal, scaled);
                     setConfiguringFood(null);
                     showNotification(`Added to ${targetMeal}!`);
