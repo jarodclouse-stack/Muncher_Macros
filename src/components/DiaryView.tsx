@@ -393,7 +393,9 @@ const DiaryEntryItem = ({ log, onRemove, onEditPortion, onMove }: any) => {
             {f.brand && <div style={{ fontSize: '10px', color: 'rgba(255,255,255,0.45)', fontWeight: '600' }}>• {f.brand}</div>}
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-            {isOpen ? <ChevronUp size={18} color="rgba(255,255,255,0.5)" /> : <ChevronDown size={18} color="rgba(255,255,255,0.5)" />}
+            <div style={{ fontSize: '10px', fontWeight: '800', color: 'var(--theme-accent)', background: 'rgba(0,201,255,0.08)', border: '1px solid rgba(0,201,255,0.25)', borderRadius: '8px', padding: '5px 10px', letterSpacing: '0.5px' }}>
+              {isOpen ? 'LESS INFO' : 'MORE INFO'}
+            </div>
             <button 
               onClick={(e) => { e.stopPropagation(); onRemove(); }} 
               style={{ background: 'rgba(255,107,107,0.1)', border: '1px solid rgba(255,107,107,0.2)', color: '#FF6B6B', cursor: 'pointer', padding: '8px', borderRadius: '10px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
