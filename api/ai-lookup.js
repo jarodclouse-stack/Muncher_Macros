@@ -154,6 +154,13 @@ function normalizeResult(f) {
     'Insoluble Fiber': Math.round(parseNum(f['Insoluble Fiber'] || f.insolubleFiber || f.insoluble_fiber) * 10) / 10,
     solubleFiber: Math.round(parseNum(f['Soluble Fiber'] || f.solubleFiber || f.soluble_fiber) * 10) / 10,
     insolubleFiber: Math.round(parseNum(f['Insoluble Fiber'] || f.insolubleFiber || f.insoluble_fiber) * 10) / 10,
+    nutriscore_grade: f.nutriscore_grade ? String(f.nutriscore_grade).toLowerCase().trim() : undefined,
+    nutrient_levels: typeof f.nutrient_levels === 'object' && f.nutrient_levels ? {
+      fat: f.nutrient_levels.fat ? String(f.nutrient_levels.fat).toLowerCase().trim() : undefined,
+      'saturated-fat': (f.nutrient_levels['saturated-fat'] || f.nutrient_levels.saturatedFat) ? String(f.nutrient_levels['saturated-fat'] || f.nutrient_levels.saturatedFat).toLowerCase().trim() : undefined,
+      sugars: f.nutrient_levels.sugars ? String(f.nutrient_levels.sugars).toLowerCase().trim() : undefined,
+      salt: f.nutrient_levels.salt ? String(f.nutrient_levels.salt).toLowerCase().trim() : undefined,
+    } : undefined,
     _src: 'ai',
     // Legacy support
     calories: cal,
@@ -202,13 +209,21 @@ export default async function handler(req, res) {
   3. MACRO-CALORIE ALIGNMENT: Stated calories ("cal") must be mathematically aligned with the macronutrients: cal = p * 4 + c * 4 + f * 9. Stating a positive calorie count (like 150 kcal) while setting all macros (protein, carbs, fat) to 0 is an extreme error. If a food has calories, it MUST have the corresponding macros that produce those calories.
   4. ITEM COUNT/WEIGHT: Identify the base serving weight or count (e.g. 174 for a 174g breast).
   5. NUTRITION: Extract nutrition for exactly that quantity. You MUST estimate and populate every single micronutrient and trace mineral key listed below. Do not leave them out or set them all to 0. Realistically estimate each value using scientific nutrition databases (USDA/NCCDB).
+  6. NUTRI-SCORE & NUTRIENT LEVELS: Estimate the product's Nutri-Score grade ('a', 'b', 'c', 'd', or 'e') and nutrient levels (qualitative level 'low', 'moderate', or 'high' for fat, saturated-fat, sugars, and salt) based on the calculated nutritional density per 100g of the food:
+     - Nutri-Score: 'a' or 'b' for fresh raw vegetables, fruits, whole grains, water. 'c' for standard meats, mixed meals with reasonable balance. 'd' or 'e' for high-sugar, high-saturated-fat, or high-salt processed foods (e.g. regular soda, donuts, potato chips).
+     - Nutrient Levels per 100g:
+       * fat: low (<3g), moderate (3g - 17.5g), high (>17.5g)
+       * saturated-fat: low (<1.5g), moderate (1.5g - 5g), high (>5g)
+       * sugars: low (<5g), moderate (5g - 22.5g), high (>22.5g)
+       * salt: low (<0.3g / <120mg sodium), moderate (0.3g - 1.5g / 120mg - 600mg sodium), high (>1.5g / >600mg sodium)
   
-  JSON keys: name, serving, detectedCount, sUnit, cal, p, c, f, fb, sat, trans, mono, poly, chol, sugars, Sodium, Potassium, Calcium, Iron, "Vitamin C", "Vitamin A", "Vitamin D", "Vitamin B1", "Vitamin B2", "Vitamin B3", "Vitamin B5", "Vitamin B6", "Vitamin B7", "Vitamin B9", "Vitamin B12", "Vitamin E", "Vitamin K", "Magnesium", "Phosphorus", "Zinc", "Copper", "Manganese", "Selenium", "Chloride", "Iodine", "Chromium", "Molybdenum", "Fluoride", "Fiber", "Soluble Fiber", "Insoluble Fiber".
+  JSON keys: name, serving, detectedCount, sUnit, cal, p, c, f, fb, sat, trans, mono, poly, chol, sugars, Sodium, Potassium, Calcium, Iron, "Vitamin C", "Vitamin A", "Vitamin D", "Vitamin B1", "Vitamin B2", "Vitamin B3", "Vitamin B5", "Vitamin B6", "Vitamin B7", "Vitamin B9", "Vitamin B12", "Vitamin E", "Vitamin K", "Magnesium", "Phosphorus", "Zinc", "Copper", "Manganese", "Selenium", "Chloride", "Iodine", "Chromium", "Molybdenum", "Fluoride", "Fiber", "Soluble Fiber", "Insoluble Fiber", nutriscore_grade, nutrient_levels.
 
   Rules:
   - Return ONLY raw JSON. No markdown fences.
   - Accuracy is paramount. Use P*4 + C*4 + F*9 for calories.
   - CRITICAL: Use GRAMS (g) as sUnit if a weight is known, and put the weight in detectedCount. (e.g. "Chicken Breast" -> detectedCount: 174, sUnit: "g")
+  - Ensure nutrient_levels is an object containing exact keys: {"fat": "low|moderate|high", "saturated-fat": "low|moderate|high", "sugars": "low|moderate|high", "salt": "low|moderate|high"}.
   - DO NOT omit any key. Ensure every single key from the list above is included in the output JSON objects. All values should be estimated as realistically as possible for the base serving.`;
 
   try {

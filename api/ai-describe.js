@@ -172,6 +172,13 @@ function normalizeResult(f) {
     insolubleFiber: Math.round(parseNum(f['Insoluble Fiber'] || f.insolubleFiber || f.insoluble_fiber) * 10) / 10,
     category: String(f.category || 'unknown'),
     confidence: String(f.confidence || 'high'),
+    nutriscore_grade: f.nutriscore_grade ? String(f.nutriscore_grade).toLowerCase().trim() : undefined,
+    nutrient_levels: typeof f.nutrient_levels === 'object' && f.nutrient_levels ? {
+      fat: f.nutrient_levels.fat ? String(f.nutrient_levels.fat).toLowerCase().trim() : undefined,
+      'saturated-fat': (f.nutrient_levels['saturated-fat'] || f.nutrient_levels.saturatedFat) ? String(f.nutrient_levels['saturated-fat'] || f.nutrient_levels.saturatedFat).toLowerCase().trim() : undefined,
+      sugars: f.nutrient_levels.sugars ? String(f.nutrient_levels.sugars).toLowerCase().trim() : undefined,
+      salt: f.nutrient_levels.salt ? String(f.nutrient_levels.salt).toLowerCase().trim() : undefined,
+    } : undefined,
     _src: f._src || 'ai',
     calories: cal,
     protein: p,
@@ -330,6 +337,13 @@ For each component, estimate nutrition for exactly ONE (1) unit:
 5. CONTRADICTION PREVENTION (Rule 14):
   - Diet/zero-sugar drinks: sugars ≈ 0, cal ≈ 0–5. Violating this is an error.
   - Black coffee: no milk fat, no sugar. cal ≈ 5.
+6. NUTRI-SCORE & NUTRIENT LEVELS: Estimate the product's Nutri-Score grade ('a', 'b', 'c', 'd', or 'e') and nutrient levels (qualitative level 'low', 'moderate', or 'high' for fat, saturated-fat, sugars, and salt) based on the calculated nutritional density per 100g of the food:
+   - Nutri-Score: 'a' or 'b' for fresh raw vegetables, fruits, whole grains, water. 'c' for standard meats, mixed meals with reasonable balance. 'd' or 'e' for high-sugar, high-saturated-fat, or high-salt processed foods (e.g. regular soda, donuts, potato chips).
+   - Nutrient Levels per 100g:
+     * fat: low (<3g), moderate (3g - 17.5g), high (>17.5g)
+     * saturated-fat: low (<1.5g), moderate (1.5g - 5g), high (>5g)
+     * sugars: low (<5g), moderate (5g - 22.5g), high (>22.5g)
+     * salt: low (<0.3g / <120mg sodium), moderate (0.3g - 1.5g / 120mg - 600mg sodium), high (>1.5g / >600mg sodium)
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 OUTPUT FORMAT
@@ -356,7 +370,14 @@ The JSON object MUST follow this structure exactly:
       "Vitamin E": number, "Vitamin K": number,
       "Magnesium": number, "Phosphorus": number, "Zinc": number, "Copper": number,
       "Manganese": number, "Selenium": number, "Chloride": number, "Iodine": number,
-      "Chromium": number, "Molybdenum": number, "Fluoride": number, "Fiber": number, "Soluble Fiber": number, "Insoluble Fiber": number
+      "Chromium": number, "Molybdenum": number, "Fluoride": number, "Fiber": number, "Soluble Fiber": number, "Insoluble Fiber": number,
+      "nutriscore_grade": "a|b|c|d|e",
+      "nutrient_levels": {
+        "fat": "low|moderate|high",
+        "saturated-fat": "low|moderate|high",
+        "sugars": "low|moderate|high",
+        "salt": "low|moderate|high"
+      }
     }
   ]
 }
