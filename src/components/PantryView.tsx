@@ -589,7 +589,6 @@ export const PantryView: React.FC<PantryViewProps> = ({ initialMeal, onClose, is
       return `${item.qty} ${item.unit} of ${item.food.name}`;
     }).join(', ');
 
-    const keysToSum = ['cal', 'p', 'c', 'f', 'fiber', 'sugars', 'sat', 'mono', 'poly', 'trans', 'chol', 'Sodium', 'Potassium', 'Calcium', 'Magnesium'];
     const mealData: Food = {
       name: saveName,
       serving: `${servingQty} ${servingUnit}`,
