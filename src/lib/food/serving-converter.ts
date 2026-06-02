@@ -324,9 +324,6 @@ export function getCarbClassification(food: any): CarbCategory {
   const c = Number(food.c != null ? food.c : (food.carbs != null ? food.carbs : 0)) || 0;
   const s = Number(food.sugars != null ? food.sugars : (food.sugar != null ? food.sugar : 0)) || 0;
   const fb = Number(food.fb != null ? food.fb : (food.fiber != null ? food.fiber : (food.Fiber != null ? food.Fiber : 0))) || 0;
-  const f = Number(food.f != null ? food.f : (food.fat != null ? food.fat : 0)) || 0;
-  const p = Number(food.p != null ? food.p : (food.protein != null ? food.protein : 0)) || 0;
-
   if (c <= 0) {
     return { key: 'none', emoji: '🥗', name: 'Low Carb', desc: 'Minimal carbohydrate content.' };
   }
