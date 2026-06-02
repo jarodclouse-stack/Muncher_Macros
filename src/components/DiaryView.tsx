@@ -58,18 +58,6 @@ export const DiaryView: React.FC = () => {
     return text;
   };
 
-  const cheers = [
-    "Consistency is the secret sauce! Keep crushing it! ✨",
-    "You are becoming the best version of yourself, one meal at a time. 🏆",
-    "Small wins lead to massive results. Keep that momentum! 🚀",
-    "Your future self will thank you for today's discipline. 💪",
-    "Fueling your body with intention. Great work so far! 💎",
-    "Legendary progress! You're making it look easy. 🌈",
-    "Stay focused, stay fueled, stay awesome! ⚡️",
-    "Clean fuel, clear mind, unstoppable energy! 🎯"
-  ];
-  
-  const [randomCheer] = useState(() => cheers[Math.floor(Math.random() * cheers.length)]);
 
   const displayDate = useMemo(() => {
     const d = new Date(currentDate + 'T12:00:00');
@@ -209,11 +197,6 @@ export const DiaryView: React.FC = () => {
         </div>
       )}
 
-      {/* Daily Cheer Banner */}
-      <div className="glass-card luminous-breath" style={{ padding: 'var(--space-md)', display: 'flex', alignItems: 'center', gap: 'var(--space-sm)', boxShadow: '0 8px 32px rgba(0,0,0,0.15)' }}>
-          <span style={{ fontSize: '18px' }}>✨</span>
-          <span className="luminous-absolute-white" style={{ fontSize: '13px', fontWeight: '900', fontStyle: 'italic', letterSpacing: '0.4px', textShadow: '0 0 8px rgba(255,255,255,0.4)' }}>{randomCheer}</span>
-      </div>
 
       {/* Daily Summary Card */}
       <div className="card luminous-breath" style={{ padding: 'var(--space-xl)' }}>
