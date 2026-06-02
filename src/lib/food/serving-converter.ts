@@ -1,5 +1,5 @@
 import type { Food } from '../../types/food';
-import { ALL_MICRO_KEYS } from '../constants';
+import { ALL_MICRO_KEYS, SERVING_UNITS } from '../constants';
 
 export function round(value: number | string, decimals: number = 1): number {
   const factor = Math.pow(10, decimals);
@@ -59,40 +59,109 @@ function parseMatch(match: RegExpMatchArray): number {
   }
 }
 
-export function computeMultiplier(baseServingStr: string, targetUnit: string, targetQty: number): number {
-  const qty = sanitizeServingAmount(targetQty, 1);
-  if (targetUnit === 'serving') return qty;
+export function getUnitFactor(unit: string): number {
+  const target = unit.toLowerCase().trim();
+  let normalized = target;
+  if (target === 'ml' || target === 'milliliter' || target === 'milliliters') normalized = 'ml';
+  else if (target === 'g' || target === 'gram' || target === 'grams') normalized = 'g';
+  else if (target === 'cup' || target === 'cups') normalized = 'cup';
+  else if (target === 'serving' || target === 'servings') normalized = 'serving';
+  else if (target === 'piece' || target === 'pieces') normalized = 'piece';
+  else if (target === 'slice' || target === 'slices') normalized = 'slice';
+  else if (target === 'tbsp' || target === 'tablespoon' || target === 'tablespoons') normalized = 'tbsp';
+  else if (target === 'tsp' || target === 'teaspoon' || target === 'teaspoons') normalized = 'tsp';
+  else if (target === 'oz' || target === 'ounce' || target === 'ounces') normalized = 'oz';
   
-  const baseGrams = extractBaseGrams(baseServingStr);
-  const targetUnitDef = COMMON_UNITS.find(u => u.id === targetUnit.toLowerCase());
-  
-  if (!targetUnitDef || !targetUnitDef.weightG) return qty;
+  const found = SERVING_UNITS.find(u => u.v.toLowerCase() === normalized.toLowerCase());
+  return found ? found.factor : 1;
+}
 
-  // Case A: The base food has a known weight (e.g. "1 egg (50g)")
-  if (baseGrams && baseGrams > 0) {
-    const targetTotalGrams = qty * targetUnitDef.weightG;
-    return targetTotalGrams / baseGrams;
+export function parseServingString(servingStr: string): { qty: number, unit: string } | null {
+  if (!servingStr) return null;
+  
+  const matchUnit = (unitStr: string): string => {
+    const target = unitStr.toLowerCase().trim();
+    if (target === 'ml' || target === 'milliliter' || target === 'milliliters') return 'ml';
+    if (target === 'g' || target === 'gram' || target === 'grams') return 'g';
+    if (target === 'cup' || target === 'cups') return 'cup';
+    if (target === 'serving' || target === 'servings') return 'serving';
+    if (target === 'piece' || target === 'pieces') return 'piece';
+    if (target === 'slice' || target === 'slices') return 'slice';
+    if (target === 'tbsp' || target === 'tablespoon' || target === 'tablespoons') return 'tbsp';
+    if (target === 'tsp' || target === 'teaspoon' || target === 'teaspoons') return 'tsp';
+    if (target === 'oz' || target === 'ounce' || target === 'ounces') return 'oz';
+    
+    const found = SERVING_UNITS.find(u => u.v.toLowerCase() === target);
+    return found ? found.v : unitStr.trim();
+  };
+
+  // 1. Try parentheses first (e.g. "1 cup (240ml)")
+  const parenMatch = servingStr.match(/\(([^)]+)\)/);
+  if (parenMatch) {
+    const inside = parenMatch[1];
+    const match = inside.match(/(\d+(?:\.\d+)?)\s*([a-zA-Z\s]+)/);
+    if (match) {
+      return { qty: parseFloat(match[1]) || 1, unit: matchUnit(match[2]) };
+    }
   }
 
-  // Case B: No base weight (e.g. "2 eggs"). 
-  // If user picks grams, assume they mean "X grams of this food's density".
-  // Fallback to 100g standard density for AI results.
-  return (qty * targetUnitDef.weightG) / 100;
+  // 2. Search whole serving string
+  const match = servingStr.match(/(\d+(?:\.\d+)?)\s*([a-zA-Z\s]+)/);
+  if (match) {
+    return { qty: parseFloat(match[1]) || 1, unit: matchUnit(match[2]) };
+  }
+  
+  // 3. Fallback: if no number, check if it's just a unit (e.g. "whole")
+  const unitOnly = servingStr.trim();
+  if (unitOnly) {
+    return { qty: 1, unit: matchUnit(unitOnly) };
+  }
+
+  return null;
+}
+
+export function computeMultiplier(baseServingStr: string, targetUnit: string, targetQty: number): number {
+  const qty = sanitizeServingAmount(targetQty, 1);
+  if (targetUnit.toLowerCase() === 'serving') return qty;
+  
+  const parsedBase = parseServingString(baseServingStr);
+  if (!parsedBase) {
+    return qty; // No base serving info, return raw quantity
+  }
+
+  // If target unit matches base unit directly, simple ratio
+  if (targetUnit.toLowerCase() === parsedBase.unit.toLowerCase()) {
+    return qty / Math.max(0.01, parsedBase.qty);
+  }
+
+  // Otherwise convert using SERVING_UNITS factors
+  const baseFactor = getUnitFactor(parsedBase.unit);
+  const targetFactor = getUnitFactor(targetUnit);
+
+  const baseTotalWeight = parsedBase.qty * baseFactor;
+  const targetTotalWeight = qty * targetFactor;
+
+  return targetTotalWeight / Math.max(0.01, baseTotalWeight);
 }
 
 export function getQuantityForUnit(baseServingStr: string, currentMultiplier: number, targetUnit: string): number {
-  if (targetUnit === 'serving') {
+  if (targetUnit.toLowerCase() === 'serving') {
     return currentMultiplier;
   }
-  const baseGrams = extractBaseGrams(baseServingStr) || 100;
-  const targetUnitDef = COMMON_UNITS.find(u => u.id === targetUnit.toLowerCase());
-  
-  if (!targetUnitDef || !targetUnitDef.weightG) {
+  const parsedBase = parseServingString(baseServingStr);
+  if (!parsedBase) {
     return currentMultiplier;
   }
-  
-  return (currentMultiplier * baseGrams) / targetUnitDef.weightG;
+
+  const baseFactor = getUnitFactor(parsedBase.unit);
+  const targetFactor = getUnitFactor(targetUnit);
+
+  const baseTotalWeight = parsedBase.qty * baseFactor;
+  const targetTotalWeight = currentMultiplier * baseTotalWeight;
+
+  return targetTotalWeight / Math.max(0.01, targetFactor);
 }
+
 
 export function scaleFoodByAmount(food: any, amount: number | string): any {
   const multiplier = sanitizeServingAmount(amount, 1);
