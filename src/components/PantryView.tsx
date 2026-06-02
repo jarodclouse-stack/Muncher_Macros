@@ -760,7 +760,7 @@ export const PantryView: React.FC<PantryViewProps> = ({ initialMeal, onClose, is
                       Our dual-mode tool merges database queries and semantic AI search:
                       <ul style={{ margin: '4px 0 0 0', paddingLeft: '18px', listStyleType: 'disc', display: 'flex', flexDirection: 'column', gap: '4px' }}>
                         <li><strong>Standard Search:</strong> Queries the global database—ideal for scanning barcodes and logging branded, packaged grocery products (like <em>Lays Chips</em> or <em>Yoplait Yogurt</em>).</li>
-                        <li><strong>AI Search:</strong> Uses semantic intelligence—perfect for raw whole ingredients, custom portion scaling, and restaurant dishes.</li>
+                        <li><strong>AI Search:</strong> Uses semantic intelligence—perfect for raw whole ingredients, fresh produce, and unbranded foods or restaurant dishes.</li>
                       </ul>
                     </span>
                   </div>
