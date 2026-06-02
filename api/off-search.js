@@ -312,6 +312,12 @@ export default async function handler(req, res) {
         barcode: p.code || p._id || (isBarcode ? strippedQuery : undefined),
         nutriscore_grade: p.nutriscore_grade,
         nutrient_levels: p.nutrient_levels,
+        nutrient_percentages: p.nutriments ? {
+          fat: p.nutriments.fat_100g !== undefined ? Number(p.nutriments.fat_100g) : undefined,
+          'saturated-fat': p.nutriments['saturated-fat_100g'] !== undefined ? Number(p.nutriments['saturated-fat_100g']) : undefined,
+          sugars: p.nutriments.sugars_100g !== undefined ? Number(p.nutriments.sugars_100g) : undefined,
+          salt: p.nutriments.salt_100g !== undefined ? Number(p.nutriments.salt_100g) : undefined,
+        } : undefined,
         _src: 'off'
       };
     });

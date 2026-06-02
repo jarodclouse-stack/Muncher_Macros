@@ -191,6 +191,12 @@ export const NutritionFactsDisplay: React.FC<NutritionFactsDisplayProps> = ({ fo
               ? `${displayVal}mg sodium`
               : `${displayVal}${unit}`;
 
+            const pctVal = f.nutrient_percentages 
+              ? (f.nutrient_percentages[key] ?? f.nutrient_percentages[key.replace('-', '')] ?? f.nutrient_percentages[key === 'saturated-fat' ? 'saturatedFat' : '']) 
+              : undefined;
+
+            const pctText = pctVal !== undefined && pctVal !== null ? `${pctVal}%` : quantityText;
+
             return (
               <div 
                 key={key} 
@@ -207,11 +213,11 @@ export const NutritionFactsDisplay: React.FC<NutritionFactsDisplayProps> = ({ fo
                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                   <div style={{ width: '8px', height: '8px', borderRadius: '50%', background: color, boxShadow: `0 0 8px ${color}` }} />
                   <span style={{ fontSize: '12px', fontWeight: '800', color: 'var(--theme-text)' }}>
-                    {label}
+                    {label} in {lvl} quantity
                   </span>
                 </div>
                 <span style={{ fontSize: '11px', fontWeight: '800', color: color }}>
-                  {lvl} quantity <span style={{ opacity: 0.6, fontSize: '10px', color: 'var(--theme-text-dim)', marginLeft: '4px' }}>({quantityText})</span>
+                  ({pctText})
                 </span>
               </div>
             );

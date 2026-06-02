@@ -161,6 +161,12 @@ function normalizeResult(f) {
       sugars: f.nutrient_levels.sugars ? String(f.nutrient_levels.sugars).toLowerCase().trim() : undefined,
       salt: f.nutrient_levels.salt ? String(f.nutrient_levels.salt).toLowerCase().trim() : undefined,
     } : undefined,
+    nutrient_percentages: typeof f.nutrient_percentages === 'object' && f.nutrient_percentages ? {
+      fat: f.nutrient_percentages.fat !== undefined ? Number(f.nutrient_percentages.fat) : undefined,
+      'saturated-fat': (f.nutrient_percentages['saturated-fat'] || f.nutrient_percentages.saturatedFat) !== undefined ? Number(f.nutrient_percentages['saturated-fat'] || f.nutrient_percentages.saturatedFat) : undefined,
+      sugars: f.nutrient_percentages.sugars !== undefined ? Number(f.nutrient_percentages.sugars) : undefined,
+      salt: f.nutrient_percentages.salt !== undefined ? Number(f.nutrient_percentages.salt) : undefined,
+    } : undefined,
     _src: 'ai',
     // Legacy support
     calories: cal,
@@ -216,14 +222,16 @@ export default async function handler(req, res) {
        * saturated-fat: low (<1.5g), moderate (1.5g - 5g), high (>5g)
        * sugars: low (<5g), moderate (5g - 22.5g), high (>22.5g)
        * salt: low (<0.3g / <120mg sodium), moderate (0.3g - 1.5g / 120mg - 600mg sodium), high (>1.5g / >600mg sodium)
+     - Also calculate/estimate the exact nutrient percentages (weight percentage of that nutrient per 100g of the food) for: fat, saturated-fat, sugars, and salt (where salt percentage = sodium per 100g in mg * 2.5 / 10000). e.g., a food with 30g sugar per 100g has 30% sugars.
   
-  JSON keys: name, serving, detectedCount, sUnit, cal, p, c, f, fb, sat, trans, mono, poly, chol, sugars, Sodium, Potassium, Calcium, Iron, "Vitamin C", "Vitamin A", "Vitamin D", "Vitamin B1", "Vitamin B2", "Vitamin B3", "Vitamin B5", "Vitamin B6", "Vitamin B7", "Vitamin B9", "Vitamin B12", "Vitamin E", "Vitamin K", "Magnesium", "Phosphorus", "Zinc", "Copper", "Manganese", "Selenium", "Chloride", "Iodine", "Chromium", "Molybdenum", "Fluoride", "Fiber", "Soluble Fiber", "Insoluble Fiber", nutriscore_grade, nutrient_levels.
+  JSON keys: name, serving, detectedCount, sUnit, cal, p, c, f, fb, sat, trans, mono, poly, chol, sugars, Sodium, Potassium, Calcium, Iron, "Vitamin C", "Vitamin A", "Vitamin D", "Vitamin B1", "Vitamin B2", "Vitamin B3", "Vitamin B5", "Vitamin B6", "Vitamin B7", "Vitamin B9", "Vitamin B12", "Vitamin E", "Vitamin K", "Magnesium", "Phosphorus", "Zinc", "Copper", "Manganese", "Selenium", "Chloride", "Iodine", "Chromium", "Molybdenum", "Fluoride", "Fiber", "Soluble Fiber", "Insoluble Fiber", nutriscore_grade, nutrient_levels, nutrient_percentages.
 
   Rules:
   - Return ONLY raw JSON. No markdown fences.
   - Accuracy is paramount. Use P*4 + C*4 + F*9 for calories.
   - CRITICAL: Use GRAMS (g) as sUnit if a weight is known, and put the weight in detectedCount. (e.g. "Chicken Breast" -> detectedCount: 174, sUnit: "g")
   - Ensure nutrient_levels is an object containing exact keys: {"fat": "low|moderate|high", "saturated-fat": "low|moderate|high", "sugars": "low|moderate|high", "salt": "low|moderate|high"}.
+  - Ensure nutrient_percentages is an object containing exact keys with estimated numeric values (e.g., mass percentages like 41, 24, 30, 0.02): {"fat": number, "saturated-fat": number, "sugars": number, "salt": number}.
   - DO NOT omit any key. Ensure every single key from the list above is included in the output JSON objects. All values should be estimated as realistically as possible for the base serving.`;
 
   try {

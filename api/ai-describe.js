@@ -179,6 +179,12 @@ function normalizeResult(f) {
       sugars: f.nutrient_levels.sugars ? String(f.nutrient_levels.sugars).toLowerCase().trim() : undefined,
       salt: f.nutrient_levels.salt ? String(f.nutrient_levels.salt).toLowerCase().trim() : undefined,
     } : undefined,
+    nutrient_percentages: typeof f.nutrient_percentages === 'object' && f.nutrient_percentages ? {
+      fat: f.nutrient_percentages.fat !== undefined ? Number(f.nutrient_percentages.fat) : undefined,
+      'saturated-fat': (f.nutrient_percentages['saturated-fat'] || f.nutrient_percentages.saturatedFat) !== undefined ? Number(f.nutrient_percentages['saturated-fat'] || f.nutrient_percentages.saturatedFat) : undefined,
+      sugars: f.nutrient_percentages.sugars !== undefined ? Number(f.nutrient_percentages.sugars) : undefined,
+      salt: f.nutrient_percentages.salt !== undefined ? Number(f.nutrient_percentages.salt) : undefined,
+    } : undefined,
     _src: f._src || 'ai',
     calories: cal,
     protein: p,
@@ -344,6 +350,7 @@ For each component, estimate nutrition for exactly ONE (1) unit:
      * saturated-fat: low (<1.5g), moderate (1.5g - 5g), high (>5g)
      * sugars: low (<5g), moderate (5g - 22.5g), high (>22.5g)
      * salt: low (<0.3g / <120mg sodium), moderate (0.3g - 1.5g / 120mg - 600mg sodium), high (>1.5g / >600mg sodium)
+   - Also calculate/estimate the exact nutrient percentages (weight percentage of that nutrient per 100g of the food) for: fat, saturated-fat, sugars, and salt (where salt percentage = sodium per 100g in mg * 2.5 / 10000). e.g., a food with 30g sugar per 100g has 30% sugars.
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 OUTPUT FORMAT
@@ -377,6 +384,12 @@ The JSON object MUST follow this structure exactly:
         "saturated-fat": "low|moderate|high",
         "sugars": "low|moderate|high",
         "salt": "low|moderate|high"
+      },
+      "nutrient_percentages": {
+        "fat": number,
+        "saturated-fat": number,
+        "sugars": number,
+        "salt": number
       }
     }
   ]
