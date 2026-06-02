@@ -87,6 +87,7 @@ export const NutritionView: React.FC = () => {
   const [showDisclaimer, setShowDisclaimer] = useState<boolean>(false);
   const [showCardioBalance, setShowCardioBalance] = useState<boolean>(false);
   const [showMicroDetails, setShowMicroDetails] = useState<boolean>(false);
+  const [showDeficiencyDetails, setShowDeficiencyDetails] = useState<boolean>(false);
 
   const resolvedColors = useMemo(() => {
     void localCache.theme;
@@ -183,6 +184,7 @@ export const NutritionView: React.FC = () => {
                       if (label === 'Protein' || label === 'Fat') {
                         setExpandedMicro(expandedMicro === label ? null : label);
                         setShowMicroDetails(false);
+                        setShowDeficiencyDetails(false);
                       }
                     }}
                     style={{ display: 'flex', justifyContent: 'space-between', fontSize: '12px', cursor: (label === 'Protein' || label === 'Fat') ? 'pointer' : 'default' }}
@@ -254,12 +256,49 @@ export const NutritionView: React.FC = () => {
                           </div>
                         )}
                       </div>
-                      {(DEFICIENCY_INFO as Record<string, { desc?: string }>).Protein && (
+                      {(DEFICIENCY_INFO as Record<string, { name: string; desc?: string; sources?: string }>).Protein && (
                         <div style={{ borderTop: '1px solid var(--theme-border)', paddingTop: '12px' }}>
                           <div style={{ fontWeight: '900', color: 'color-mix(in srgb, var(--theme-warning), white 70%)', marginBottom: '8px', fontSize: '11px', textTransform: 'uppercase', letterSpacing: '1px' }}>
                             ⚠️ Deficiency Risks
                           </div>
-                          <div style={{ lineHeight: '1.5', color: '#FFFFFF', fontWeight: '600' }}>{(DEFICIENCY_INFO as Record<string, { desc?: string }>).Protein.desc}</div>
+                          <div style={{ lineHeight: '1.5', color: '#FFFFFF', fontWeight: '800', marginBottom: '6px' }}>
+                            {(DEFICIENCY_INFO as Record<string, { name: string; desc?: string }>).Protein.name}
+                          </div>
+                          <div>
+                            <span 
+                              onClick={() => setShowDeficiencyDetails(!showDeficiencyDetails)}
+                              style={{
+                                fontSize: '9px',
+                                fontWeight: '900',
+                                color: 'var(--theme-accent)',
+                                cursor: 'pointer',
+                                textTransform: 'uppercase',
+                                letterSpacing: '0.5px',
+                                userSelect: 'none',
+                                display: 'inline-flex',
+                                alignItems: 'center',
+                                gap: '4px',
+                                background: 'rgba(255, 255, 255, 0.05)',
+                                padding: '2px 8px',
+                                borderRadius: '6px',
+                                border: '1px solid rgba(255, 255, 255, 0.1)'
+                              }}
+                            >
+                              {showDeficiencyDetails ? 'Hide Details ▲' : 'Show Details ▼'}
+                            </span>
+                            {showDeficiencyDetails && (
+                              <div style={{ marginTop: '8px', display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                                <div style={{ lineHeight: '1.5', color: '#FFFFFF', fontSize: '11px' }}>
+                                  {(DEFICIENCY_INFO as Record<string, { desc?: string }>).Protein.desc}
+                                </div>
+                                {((DEFICIENCY_INFO as Record<string, { sources?: string }>).Protein.sources) && (
+                                  <div style={{ fontSize: '11px', color: '#FFFFFF', fontStyle: 'italic' }}>
+                                    Best Sources: {(DEFICIENCY_INFO as Record<string, { sources?: string }>).Protein.sources}
+                                  </div>
+                                )}
+                              </div>
+                            )}
+                          </div>
                         </div>
                       )}
                     </div>
@@ -303,12 +342,49 @@ export const NutritionView: React.FC = () => {
                           </div>
                         )}
                       </div>
-                      {(DEFICIENCY_INFO as Record<string, { desc?: string }>).Fat && (
+                      {(DEFICIENCY_INFO as Record<string, { name: string; desc?: string; sources?: string }>).Fat && (
                         <div style={{ borderTop: '1px solid var(--theme-border)', paddingTop: '12px' }}>
                           <div style={{ fontWeight: '900', color: 'color-mix(in srgb, var(--theme-warning), white 70%)', marginBottom: '8px', fontSize: '11px', textTransform: 'uppercase', letterSpacing: '1px' }}>
                             ⚠️ Deficiency Risks
                           </div>
-                          <div style={{ lineHeight: '1.5', color: '#FFFFFF', fontWeight: '600' }}>{(DEFICIENCY_INFO as Record<string, { desc?: string }>).Fat.desc}</div>
+                          <div style={{ lineHeight: '1.5', color: '#FFFFFF', fontWeight: '800', marginBottom: '6px' }}>
+                            {(DEFICIENCY_INFO as Record<string, { name: string; desc?: string }>).Fat.name}
+                          </div>
+                          <div>
+                            <span 
+                              onClick={() => setShowDeficiencyDetails(!showDeficiencyDetails)}
+                              style={{
+                                fontSize: '9px',
+                                fontWeight: '900',
+                                color: 'var(--theme-accent)',
+                                cursor: 'pointer',
+                                textTransform: 'uppercase',
+                                letterSpacing: '0.5px',
+                                userSelect: 'none',
+                                display: 'inline-flex',
+                                alignItems: 'center',
+                                gap: '4px',
+                                background: 'rgba(255, 255, 255, 0.05)',
+                                padding: '2px 8px',
+                                borderRadius: '6px',
+                                border: '1px solid rgba(255, 255, 255, 0.1)'
+                              }}
+                            >
+                              {showDeficiencyDetails ? 'Hide Details ▲' : 'Show Details ▼'}
+                            </span>
+                            {showDeficiencyDetails && (
+                              <div style={{ marginTop: '8px', display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                                <div style={{ lineHeight: '1.5', color: '#FFFFFF', fontSize: '11px' }}>
+                                  {(DEFICIENCY_INFO as Record<string, { desc?: string }>).Fat.desc}
+                                </div>
+                                {((DEFICIENCY_INFO as Record<string, { sources?: string }>).Fat.sources) && (
+                                  <div style={{ fontSize: '11px', color: '#FFFFFF', fontStyle: 'italic' }}>
+                                    Best Sources: {(DEFICIENCY_INFO as Record<string, { sources?: string }>).Fat.sources}
+                                  </div>
+                                )}
+                              </div>
+                            )}
+                          </div>
                         </div>
                       )}
                     </div>
@@ -332,6 +408,7 @@ export const NutritionView: React.FC = () => {
                               if (info) {
                                 setExpandedMicro(isExpanded ? null : sub.k);
                                 setShowMicroDetails(false);
+                                setShowDeficiencyDetails(false);
                               }
                             }} style={{ display: 'flex', justifyContent: 'space-between', fontSize: '10px', cursor: info ? 'pointer' : 'default' }}>
                               <span style={{ color: 'var(--theme-text-dim-on-panel)', display: 'flex', alignItems: 'center', gap: '4px', fontWeight: '900', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
@@ -392,12 +469,43 @@ export const NutritionView: React.FC = () => {
                                     <div style={{ fontWeight: '800', color: 'color-mix(in srgb, var(--theme-warning), white 70%)', marginBottom: '6px', fontSize: '12px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
                                       ⚠️ Deficiency Risks
                                     </div>
-                                    <div style={{ lineHeight: '1.5', color: '#FFFFFF' }}>{defInfo.desc}</div>
-                                    {defInfo.sources && (
-                                      <div style={{ marginTop: '8px', fontSize: '11px', color: '#FFFFFF', fontStyle: 'italic' }}>
-                                        Best Sources: {defInfo.sources}
-                                      </div>
-                                    )}
+                                    <div style={{ lineHeight: '1.5', color: '#FFFFFF', fontWeight: '800', marginBottom: '6px' }}>{defInfo.name}</div>
+                                    <div>
+                                      <span 
+                                        onClick={(e) => {
+                                          e.stopPropagation();
+                                          setShowDeficiencyDetails(!showDeficiencyDetails);
+                                        }}
+                                        style={{
+                                          fontSize: '9px',
+                                          fontWeight: '900',
+                                          color: 'var(--theme-accent)',
+                                          cursor: 'pointer',
+                                          textTransform: 'uppercase',
+                                          letterSpacing: '0.5px',
+                                          userSelect: 'none',
+                                          display: 'inline-flex',
+                                          alignItems: 'center',
+                                          gap: '4px',
+                                          background: 'rgba(255, 255, 255, 0.05)',
+                                          padding: '2px 8px',
+                                          borderRadius: '6px',
+                                          border: '1px solid rgba(255, 255, 255, 0.1)'
+                                        }}
+                                      >
+                                        {showDeficiencyDetails ? 'Hide Details ▲' : 'Show Details ▼'}
+                                      </span>
+                                      {showDeficiencyDetails && (
+                                        <div style={{ marginTop: '8px', display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                                          <div style={{ lineHeight: '1.5', color: '#FFFFFF', fontSize: '11px' }}>{defInfo.desc}</div>
+                                          {defInfo.sources && (
+                                            <div style={{ fontSize: '11px', color: '#FFFFFF', fontStyle: 'italic' }}>
+                                              Best Sources: {defInfo.sources}
+                                            </div>
+                                          )}
+                                        </div>
+                                      )}
+                                    </div>
                                   </div>
                                 )}
                               </div>
@@ -428,6 +536,7 @@ export const NutritionView: React.FC = () => {
                               if (info) {
                                 setExpandedMicro(isExpanded ? null : sub.k);
                                 setShowMicroDetails(false);
+                                setShowDeficiencyDetails(false);
                               }
                             }} style={{ display: 'flex', justifyContent: 'space-between', fontSize: '10px', cursor: info ? 'pointer' : 'default' }}>
                               <span style={{ color: 'var(--theme-text-dim-on-panel)', display: 'flex', alignItems: 'center', gap: '4px', fontWeight: '900', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
@@ -523,12 +632,43 @@ export const NutritionView: React.FC = () => {
                                     <div style={{ fontWeight: '800', color: 'color-mix(in srgb, var(--theme-warning), white 70%)', marginBottom: '6px', fontSize: '12px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
                                       {sub.k === 'Simple Carbs' ? '⚠️ Consumption Warnings' : '⚠️ Deficiency Risks'}
                                     </div>
-                                    <div style={{ lineHeight: '1.5', color: '#FFFFFF' }}>{defInfo.desc}</div>
-                                    {defInfo.sources && (
-                                      <div style={{ marginTop: '8px', fontSize: '11px', color: '#FFFFFF', fontStyle: 'italic' }}>
-                                        {sub.k === 'Simple Carbs' ? 'Sources:' : 'Best Sources:'} {defInfo.sources}
-                                      </div>
-                                    )}
+                                    <div style={{ lineHeight: '1.5', color: '#FFFFFF', fontWeight: '800', marginBottom: '6px' }}>{defInfo.name}</div>
+                                    <div>
+                                      <span 
+                                        onClick={(e) => {
+                                          e.stopPropagation();
+                                          setShowDeficiencyDetails(!showDeficiencyDetails);
+                                        }}
+                                        style={{
+                                          fontSize: '9px',
+                                          fontWeight: '900',
+                                          color: 'var(--theme-accent)',
+                                          cursor: 'pointer',
+                                          textTransform: 'uppercase',
+                                          letterSpacing: '0.5px',
+                                          userSelect: 'none',
+                                          display: 'inline-flex',
+                                          alignItems: 'center',
+                                          gap: '4px',
+                                          background: 'rgba(255, 255, 255, 0.05)',
+                                          padding: '2px 8px',
+                                          borderRadius: '6px',
+                                          border: '1px solid rgba(255, 255, 255, 0.1)'
+                                        }}
+                                      >
+                                        {showDeficiencyDetails ? 'Hide Details ▲' : 'Show Details ▼'}
+                                      </span>
+                                      {showDeficiencyDetails && (
+                                        <div style={{ marginTop: '8px', display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                                          <div style={{ lineHeight: '1.5', color: '#FFFFFF', fontSize: '11px' }}>{defInfo.desc}</div>
+                                          {defInfo.sources && (
+                                            <div style={{ fontSize: '11px', color: '#FFFFFF', fontStyle: 'italic' }}>
+                                              {sub.k === 'Simple Carbs' ? 'Sources:' : 'Best Sources:'} {defInfo.sources}
+                                            </div>
+                                          )}
+                                        </div>
+                                      )}
+                                    </div>
                                   </div>
                                 )}
                               </div>
@@ -655,6 +795,7 @@ export const NutritionView: React.FC = () => {
                           if (info) {
                             setExpandedMicro(isExpanded ? null : label);
                             setShowMicroDetails(false);
+                            setShowDeficiencyDetails(false);
                           }
                         }}
                         style={{ display: 'grid', gridTemplateColumns: 'minmax(120px, auto) 1fr 95px', gap: '16px', alignItems: 'center', cursor: info ? 'pointer' : 'default' }}
@@ -759,17 +900,48 @@ export const NutritionView: React.FC = () => {
 
                           {/* Deficiency Section */}
                           {defInfo && (
-                            <div style={{ borderTop: '1px solid var(--theme-border, rgba(255,255,255,0.05))', paddingTop: '12px' }}>
-                              <div style={{ fontWeight: '800', color: '#FFFFFF', marginBottom: '6px', fontSize: '12px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-                                ⚠️ Deficiency Risks
-                              </div>
-                              <div style={{ lineHeight: '1.5', color: '#FFFFFF' }}>{defInfo.desc}</div>
-                              {defInfo.sources && (
-                                <div style={{ marginTop: '8px', fontSize: '11px', color: '#FFFFFF', fontStyle: 'italic' }}>
-                                  Best Sources: {defInfo.sources}
-                                </div>
-                              )}
-                            </div>
+                             <div style={{ borderTop: '1px solid var(--theme-border, rgba(255,255,255,0.05))', paddingTop: '12px' }}>
+                               <div style={{ fontWeight: '800', color: '#FFFFFF', marginBottom: '6px', fontSize: '12px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                                 ⚠️ Deficiency Risks
+                               </div>
+                               <div style={{ lineHeight: '1.5', color: '#FFFFFF', fontWeight: '800', marginBottom: '6px' }}>{defInfo.name}</div>
+                               <div>
+                                 <span 
+                                   onClick={(e) => {
+                                     e.stopPropagation();
+                                     setShowDeficiencyDetails(!showDeficiencyDetails);
+                                   }}
+                                   style={{
+                                     fontSize: '9px',
+                                     fontWeight: '900',
+                                     color: 'var(--theme-accent)',
+                                     cursor: 'pointer',
+                                     textTransform: 'uppercase',
+                                     letterSpacing: '0.5px',
+                                     userSelect: 'none',
+                                     display: 'inline-flex',
+                                     alignItems: 'center',
+                                     gap: '4px',
+                                     background: 'rgba(255, 255, 255, 0.05)',
+                                     padding: '2px 8px',
+                                     borderRadius: '6px',
+                                     border: '1px solid rgba(255, 255, 255, 0.1)'
+                                   }}
+                                 >
+                                   {showDeficiencyDetails ? 'Hide Details ▲' : 'Show Details ▼'}
+                                 </span>
+                                 {showDeficiencyDetails && (
+                                   <div style={{ marginTop: '8px', display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                                     <div style={{ lineHeight: '1.5', color: '#FFFFFF', fontSize: '11px' }}>{defInfo.desc}</div>
+                                     {defInfo.sources && (
+                                       <div style={{ fontSize: '11px', color: '#FFFFFF', fontStyle: 'italic' }}>
+                                         Best Sources: {defInfo.sources}
+                                       </div>
+                                     )}
+                                   </div>
+                                 )}
+                               </div>
+                             </div>
                           )}
                         </div>
                       )}
