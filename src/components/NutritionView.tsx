@@ -454,7 +454,7 @@ export const NutritionView: React.FC = () => {
 
       {/* Sodium-Potassium Ratio Balance Card */}
       <div className="card" style={{ 
-        padding: 'var(--space-xl)',
+        padding: 'var(--space-md)',
         background: 'linear-gradient(135deg, var(--theme-panel, #10141f) 0%, rgba(10, 15, 30, 0.95) 100%)',
         border: '1px solid var(--theme-border, rgba(255,255,255,0.1))',
         position: 'relative',
@@ -480,7 +480,7 @@ export const NutritionView: React.FC = () => {
             <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
               <span style={{ fontSize: '20px' }}>🧂</span>
               <h2 style={{ fontSize: '18px', fontWeight: '800', margin: 0, color: 'var(--theme-text-on-panel)' }}>
-                Cardiovascular Sodium-Potassium Balance
+                Sodium-Potassium Balance
               </h2>
             </div>
             <span style={{ fontSize: '11px', textTransform: 'uppercase', letterSpacing: '0.5px', color: 'var(--theme-accent)', fontWeight: '900' }}>
