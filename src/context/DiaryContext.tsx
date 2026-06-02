@@ -144,9 +144,16 @@ export const DiaryProvider: React.FC<{ children: React.ReactNode }> = ({ childre
 
   const updateStagingTray = useCallback((newTray: StagedFood[]) => {
     setStagingTray(newTray);
-    const updated = { ...localCache, stagingTray: newTray };
-    updateCacheDebounced(updated);
-  }, [localCache, updateCacheDebounced]);
+    setLocalCache(prev => {
+      const updated = { ...prev, stagingTray: newTray };
+      pendingSaveRef.current = updated;
+      if (syncTimeoutRef.current) clearTimeout(syncTimeoutRef.current);
+      syncTimeoutRef.current = setTimeout(() => {
+        if (pendingSaveRef.current) saveCloudData(pendingSaveRef.current);
+      }, 1500) as any;
+      return updated;
+    });
+  }, [saveCloudData]);
 
   const changeDate = (delta: number) => {
     const d = new Date(currentDate + 'T12:00:00');
@@ -264,64 +271,117 @@ export const DiaryProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     });
   };
 
-  const updateGoals = (partialGoals: Record<string, any>) => {
-    const updated = { ...localCache, goals: { ...(localCache.goals || {}), ...partialGoals } };
-    updateCacheDebounced(updated);
-  };
+  const updateGoals = useCallback((partialGoals: Record<string, any>) => {
+    setLocalCache(prev => {
+      const updated = { ...prev, goals: { ...(prev.goals || {}), ...partialGoals } };
+      pendingSaveRef.current = updated;
+      if (syncTimeoutRef.current) clearTimeout(syncTimeoutRef.current);
+      syncTimeoutRef.current = setTimeout(() => {
+        if (pendingSaveRef.current) saveCloudData(pendingSaveRef.current);
+      }, 1500) as any;
+      return updated;
+    });
+  }, [saveCloudData]);
 
-  const updateSettings = (partialSettings: any) => {
-    const updated = { ...localCache, settings: { ...(localCache.settings || {}), ...partialSettings } };
-    updateCacheDebounced(updated);
-  };
+  const updateSettings = useCallback((partialSettings: any) => {
+    setLocalCache(prev => {
+      const updated = { ...prev, settings: { ...(prev.settings || {}), ...partialSettings } };
+      pendingSaveRef.current = updated;
+      if (syncTimeoutRef.current) clearTimeout(syncTimeoutRef.current);
+      syncTimeoutRef.current = setTimeout(() => {
+        if (pendingSaveRef.current) saveCloudData(pendingSaveRef.current);
+      }, 1500) as any;
+      return updated;
+    });
+  }, [saveCloudData]);
 
-  const saveCustomFood = (food: Food) => {
-    const updated = { ...localCache };
-    const foods = [...(updated.customFoods || [])];
-    if (food.barcode) {
-      if (!foods.find((f: any) => f.barcode === food.barcode)) foods.push(food);
-    } else {
-      foods.push(food);
-    }
-    updated.customFoods = foods;
-    updateCacheDebounced(updated);
-  };
-
-  const updateCustomFood = (idx: number, food: Food) => {
-    const updated = { ...localCache };
-    const foods = [...(updated.customFoods || [])];
-    foods[idx] = food;
-    updated.customFoods = foods;
-    updateCacheDebounced(updated);
-  };
-
-  const deleteCustomFood = (idx: number) => {
-    const updated = { ...localCache };
-    const foods = [...(updated.customFoods || [])];
-    foods.splice(idx, 1);
-    updated.customFoods = foods;
-    updateCacheDebounced(updated);
-  };
-
-  const toggleFavorite = (idx: number) => {
-    const updated = { ...localCache };
-    const foods = [...(updated.customFoods || [])];
-    if (foods[idx]) {
-      foods[idx] = { ...foods[idx], favorite: !foods[idx].favorite };
+  const saveCustomFood = useCallback((food: Food) => {
+    setLocalCache(prev => {
+      const updated = { ...prev };
+      const foods = [...(prev.customFoods || [])];
+      if (food.barcode) {
+        if (!foods.find((f: any) => f.barcode === food.barcode)) foods.push(food);
+      } else {
+        foods.push(food);
+      }
       updated.customFoods = foods;
-      updateCacheDebounced(updated);
-    }
-  };
+      pendingSaveRef.current = updated;
+      if (syncTimeoutRef.current) clearTimeout(syncTimeoutRef.current);
+      syncTimeoutRef.current = setTimeout(() => {
+        if (pendingSaveRef.current) saveCloudData(pendingSaveRef.current);
+      }, 1500) as any;
+      return updated;
+    });
+  }, [saveCloudData]);
 
-  const duplicateCustomFood = (idx: number) => {
-    const updated = { ...localCache };
-    const foods = [...(updated.customFoods || [])];
-    if (foods[idx]) {
-      const copy = { ...foods[idx], name: `${foods[idx].name} (Copy)`, favorite: false };
-      foods.splice(idx + 1, 0, copy);
+  const updateCustomFood = useCallback((idx: number, food: Food) => {
+    setLocalCache(prev => {
+      const updated = { ...prev };
+      const foods = [...(prev.customFoods || [])];
+      if (idx >= 0 && idx < foods.length) {
+        foods[idx] = food;
+      }
       updated.customFoods = foods;
-      updateCacheDebounced(updated);
-    }
-  };
+      pendingSaveRef.current = updated;
+      if (syncTimeoutRef.current) clearTimeout(syncTimeoutRef.current);
+      syncTimeoutRef.current = setTimeout(() => {
+        if (pendingSaveRef.current) saveCloudData(pendingSaveRef.current);
+      }, 1500) as any;
+      return updated;
+    });
+  }, [saveCloudData]);
+
+  const deleteCustomFood = useCallback((idx: number) => {
+    setLocalCache(prev => {
+      const updated = { ...prev };
+      const foods = [...(prev.customFoods || [])];
+      if (idx >= 0 && idx < foods.length) {
+        foods.splice(idx, 1);
+      }
+      updated.customFoods = foods;
+      pendingSaveRef.current = updated;
+      if (syncTimeoutRef.current) clearTimeout(syncTimeoutRef.current);
+      syncTimeoutRef.current = setTimeout(() => {
+        if (pendingSaveRef.current) saveCloudData(pendingSaveRef.current);
+      }, 1500) as any;
+      return updated;
+    });
+  }, [saveCloudData]);
+
+  const toggleFavorite = useCallback((idx: number) => {
+    setLocalCache(prev => {
+      const updated = { ...prev };
+      const foods = [...(prev.customFoods || [])];
+      if (foods[idx]) {
+        foods[idx] = { ...foods[idx], favorite: !foods[idx].favorite };
+        updated.customFoods = foods;
+        pendingSaveRef.current = updated;
+        if (syncTimeoutRef.current) clearTimeout(syncTimeoutRef.current);
+        syncTimeoutRef.current = setTimeout(() => {
+          if (pendingSaveRef.current) saveCloudData(pendingSaveRef.current);
+        }, 1500) as any;
+      }
+      return updated;
+    });
+  }, [saveCloudData]);
+
+  const duplicateCustomFood = useCallback((idx: number) => {
+    setLocalCache(prev => {
+      const updated = { ...prev };
+      const foods = [...(prev.customFoods || [])];
+      if (foods[idx]) {
+        const copy = { ...foods[idx], name: `${foods[idx].name} (Copy)`, favorite: false };
+        foods.splice(idx + 1, 0, copy);
+        updated.customFoods = foods;
+        pendingSaveRef.current = updated;
+        if (syncTimeoutRef.current) clearTimeout(syncTimeoutRef.current);
+        syncTimeoutRef.current = setTimeout(() => {
+          if (pendingSaveRef.current) saveCloudData(pendingSaveRef.current);
+        }, 1500) as any;
+      }
+      return updated;
+    });
+  }, [saveCloudData]);
 
   const purchaseTheme = (themeId: string) => {
     const currentPurchased = localCache.settings?.purchasedThemes || [

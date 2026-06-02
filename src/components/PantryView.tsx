@@ -1081,12 +1081,12 @@ export const PantryView: React.FC<PantryViewProps> = ({ initialMeal, onClose, is
                   }}>
                     <Loader2 className="spin" size={20} color="var(--theme-accent)" style={{ marginBottom: '8px' }} />
                     <div style={{ fontSize: '11px', fontWeight: '900', color: 'var(--theme-accent)', marginBottom: '4px', letterSpacing: '1px', textTransform: 'uppercase' }}>
-                      {innerGlobalSearchTab === 'search' ? 'Searching Database' : 'Gemini AI Thinking'}
+                      {innerGlobalSearchTab === 'search' ? 'Searching Database' : 'Searching Macros'}
                     </div>
                     <div style={{ fontSize: '11px', color: 'var(--theme-text-dim, rgba(255,255,255,0.6))', fontWeight: '600', lineHeight: '1.4', maxWidth: '320px' }}>
                       {innerGlobalSearchTab === 'search' 
                         ? 'Fetching nutrition records from the global database. This will only take a quick moment...' 
-                        : 'Gemini AI is parsing your request to construct mathematically accurate macro & calorie breakdowns...'}
+                        : 'Muncher AI is parsing your request to construct mathematically accurate macro & calorie breakdowns...'}
                     </div>
                   </div>
                 )}
