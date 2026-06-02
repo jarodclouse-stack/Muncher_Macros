@@ -9,13 +9,13 @@ function extractJSON(text) {
   if (!text) return null;
   let clean = text.replace(/```json\s*/gi, '').replace(/```\s*/g, '').trim();
   try { return JSON.parse(clean); } catch {}
+  const oStart = clean.indexOf('{'), oEnd = clean.lastIndexOf('}');
+  if (oStart !== -1 && oEnd > oStart) {
+    try { return JSON.parse(clean.slice(oStart, oEnd + 1)); } catch {}
+  }
   const aStart = clean.indexOf('['), aEnd = clean.lastIndexOf(']');
   if (aStart !== -1 && aEnd > aStart) {
     try { return JSON.parse(clean.slice(aStart, aEnd + 1)); } catch {}
-  }
-  const oStart = clean.indexOf('{'), oEnd = clean.lastIndexOf('}');
-  if (oStart !== -1 && oEnd > oStart) {
-    try { return [JSON.parse(clean.slice(oStart, oEnd + 1))]; } catch {}
   }
   return null;
 }
@@ -334,25 +334,32 @@ For each component, estimate nutrition for exactly ONE (1) unit:
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 OUTPUT FORMAT
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-Return a JSON array. Every object must contain ALL keys below. No omissions.
+Return ONLY a single raw JSON object. Do not wrap in markdown fences or include introductory text.
+The JSON object MUST follow this structure exactly:
 
-[{
-  "name": "specific ingredient name (canonicalized)",
-  "category": "protein|grain|vegetable|fruit|dairy|sauce|topping|side|beverage|dessert|condiment|snack|other",
-  "confidence": "high|medium|low",
-  "detectedCount": number,
-  "sUnit": "piece|slice|whole|serving|oz|cup|tbsp|tsp|g|ml",
-  "cal": number, "p": number, "c": number, "f": number,
-  "fb": number, "sugars": number, "sat": number, "trans": number, "mono": number, "poly": number, "chol": number,
-  "Sodium": number, "Potassium": number, "Calcium": number, "Iron": number,
-  "Vitamin C": number, "Vitamin A": number, "Vitamin D": number,
-  "Vitamin B1": number, "Vitamin B2": number, "Vitamin B3": number, "Vitamin B5": number,
-  "Vitamin B6": number, "Vitamin B7": number, "Vitamin B9": number, "Vitamin B12": number,
-  "Vitamin E": number, "Vitamin K": number,
-  "Magnesium": number, "Phosphorus": number, "Zinc": number, "Copper": number,
-  "Manganese": number, "Selenium": number, "Chloride": number, "Iodine": number,
-  "Chromium": number, "Molybdenum": number, "Fluoride": number, "Fiber": number, "Soluble Fiber": number, "Insoluble Fiber": number
-}]
+{
+  "totalServingQty": number (estimate the overall combined physical volume/weight of the entire meal/plate combined, e.g. 4, 500, 2),
+  "totalServingUnit": "cups|slices|tacos|g|ml|pieces|bowls|plates" (the physical unit for the entire meal combined. Avoid generic "meal" or "serving" alone unless no physical unit applies; if "meal" is used, you MUST define a physical equivalent, e.g. quantity 4, unit "cups"),
+  "foods": [
+    {
+      "name": "specific ingredient name (canonicalized)",
+      "category": "protein|grain|vegetable|fruit|dairy|sauce|topping|side|beverage|dessert|condiment|snack|other",
+      "confidence": "high|medium|low",
+      "detectedCount": number,
+      "sUnit": "piece|slice|whole|serving|oz|cup|tbsp|tsp|g|ml",
+      "cal": number, "p": number, "c": number, "f": number,
+      "fb": number, "sugars": number, "sat": number, "trans": number, "mono": number, "poly": number, "chol": number,
+      "Sodium": number, "Potassium": number, "Calcium": number, "Iron": number,
+      "Vitamin C": number, "Vitamin A": number, "Vitamin D": number,
+      "Vitamin B1": number, "Vitamin B2": number, "Vitamin B3": number, "Vitamin B5": number,
+      "Vitamin B6": number, "Vitamin B7": number, "Vitamin B9": number, "Vitamin B12": number,
+      "Vitamin E": number, "Vitamin K": number,
+      "Magnesium": number, "Phosphorus": number, "Zinc": number, "Copper": number,
+      "Manganese": number, "Selenium": number, "Chloride": number, "Iodine": number,
+      "Chromium": number, "Molybdenum": number, "Fluoride": number, "Fiber": number, "Soluble Fiber": number, "Insoluble Fiber": number
+    }
+  ]
+}
 
 CRITICAL REMINDERS:
 - cal = calories for ONE unit. detectedCount is the multiplier the app applies.
@@ -364,8 +371,26 @@ CRITICAL REMINDERS:
   try {
     const aiResults = await anthropicJson(prompt, apiKey);
     console.log('AI Describe Result:', JSON.stringify(aiResults));
-    const finalFoods = (Array.isArray(aiResults) ? aiResults : []).map(f => normalizeResult(f));
-    return res.status(200).json({ foods: finalFoods, meal });
+    
+    let finalFoods = [];
+    let totalServingQty = 1;
+    let totalServingUnit = 'meal';
+    
+    if (aiResults && typeof aiResults === 'object' && !Array.isArray(aiResults)) {
+      const foodsArray = Array.isArray(aiResults.foods) ? aiResults.foods : [];
+      finalFoods = foodsArray.map(f => normalizeResult(f));
+      totalServingQty = Number(aiResults.totalServingQty || 1);
+      totalServingUnit = String(aiResults.totalServingUnit || 'meal');
+    } else if (Array.isArray(aiResults)) {
+      finalFoods = aiResults.map(f => normalizeResult(f));
+    }
+    
+    return res.status(200).json({ 
+      foods: finalFoods, 
+      meal,
+      totalServingQty,
+      totalServingUnit
+    });
   } catch (e) {
     console.error('AI Describe Error:', e);
     return res.status(500).json({ error: 'Could not analyze meal: ' + e.message });

@@ -189,6 +189,12 @@ export const PantryView: React.FC<PantryViewProps> = ({ initialMeal, onClose, is
   const [recipeServingUnit, setRecipeServingUnit] = useState('serving');
   const [recipeTotalServings, setRecipeTotalServings] = useState('1');
 
+  // New states for descriptive overall physical portions and dual-unit toggles
+  const [aiTotalServingQty, setAiTotalServingQty] = useState<number>(1);
+  const [aiTotalServingUnit, setAiTotalServingUnit] = useState<string>('meal');
+  const [selectedServingUnitToggle, setSelectedServingUnitToggle] = useState<'meal' | 'physical'>('meal');
+  const [loggedPortionsVal, setLoggedPortionsVal] = useState<string>('1');
+
   const searchCache = React.useRef<Record<string, Food[]>>({});
   const aiSearchCache = React.useRef<Record<string, Food[]>>({});
 
@@ -461,6 +467,7 @@ export const PantryView: React.FC<PantryViewProps> = ({ initialMeal, onClose, is
     setIsSearching(true);
     setSearchResults([]);
     setAiStagedResults([]);
+    setSelectedServingUnitToggle('meal'); // Reset toggle
     try {
       const res = await fetch('/api/ai-describe', {
         method: 'POST',
@@ -469,6 +476,12 @@ export const PantryView: React.FC<PantryViewProps> = ({ initialMeal, onClose, is
       });
       const body = await res.json();
       const detected = (body.foods || []) as Food[];
+      
+      const qty = Number(body.totalServingQty || 1);
+      const unit = String(body.totalServingUnit || 'meal');
+      setAiTotalServingQty(qty);
+      setAiTotalServingUnit(unit);
+
       setAiStagedResults(detected.map((f: Food) => {
         const norm = normalizeFoodResult(f);
         return { 
@@ -586,7 +599,8 @@ export const PantryView: React.FC<PantryViewProps> = ({ initialMeal, onClose, is
     const batchServings = Math.max(1, parseFloat(recipeTotalServings) || 1);
 
     const ingredientsText = recipeItems.map(item => {
-      return `${item.qty} ${item.unit} of ${item.food.name}`;
+      const categoryLabel = item.food.category && item.food.category !== 'unknown' ? ` (${item.food.category})` : '';
+      return `${item.qty} ${item.unit} of ${item.food.name}${categoryLabel}`;
     }).join(', ');
 
     const mealData: Food = {
@@ -1147,10 +1161,103 @@ export const PantryView: React.FC<PantryViewProps> = ({ initialMeal, onClose, is
                     </div>
                     <button onClick={() => { setIsAiReviewing(false); setAiStagedResults([]); }} style={{ background: 'rgba(255,255,255,0.05)', border: 'none', color: 'var(--theme-text-dim)', cursor: 'pointer', padding: '6px', borderRadius: '50%' }}><X size={18} /></button>
                   </div>
+
+                  {/* Physical serving size toggle & amount selection */}
+                  <div style={{ 
+                    display: 'flex', 
+                    flexDirection: 'column', 
+                    gap: '12px', 
+                    background: 'rgba(255,255,255,0.03)', 
+                    border: '1px solid rgba(255,255,255,0.06)',
+                    borderRadius: '18px', 
+                    padding: '14px', 
+                    marginBottom: '16px' 
+                  }}>
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '8px' }}>
+                      <span style={{ fontSize: '11px', color: 'var(--theme-text-dim)', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                        📋 Portion Unit
+                      </span>
+                      <div style={{ display: 'flex', background: 'rgba(0,0,0,0.3)', padding: '2px', borderRadius: '10px', border: '1px solid rgba(255,255,255,0.05)' }}>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setSelectedServingUnitToggle('meal');
+                            setLoggedPortionsVal('1');
+                          }}
+                          style={{
+                            padding: '5px 12px',
+                            border: 'none',
+                            borderRadius: '8px',
+                            fontSize: '11px',
+                            fontWeight: '800',
+                            cursor: 'pointer',
+                            transition: 'all 0.2s',
+                            background: selectedServingUnitToggle === 'meal' ? 'var(--theme-accent)' : 'transparent',
+                            color: selectedServingUnitToggle === 'meal' ? '#000' : 'var(--theme-text-dim)'
+                          }}
+                        >
+                          1 Meal
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setSelectedServingUnitToggle('physical');
+                            setLoggedPortionsVal(aiTotalServingQty.toString());
+                          }}
+                          style={{
+                            padding: '5px 12px',
+                            border: 'none',
+                            borderRadius: '8px',
+                            fontSize: '11px',
+                            fontWeight: '800',
+                            cursor: 'pointer',
+                            transition: 'all 0.2s',
+                            background: selectedServingUnitToggle === 'physical' ? 'var(--theme-accent)' : 'transparent',
+                            color: selectedServingUnitToggle === 'physical' ? '#000' : 'var(--theme-text-dim)'
+                          }}
+                        >
+                          {aiTotalServingQty} {aiTotalServingUnit}
+                        </button>
+                      </div>
+                    </div>
+
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '12px' }}>
+                      <span style={{ fontSize: '12px', color: 'rgba(255,255,255,0.85)', fontWeight: '600' }}>
+                        Amount to Log:
+                      </span>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                        <input
+                          type="number"
+                          min="0.1"
+                          step="any"
+                          value={loggedPortionsVal}
+                          onChange={(e) => setLoggedPortionsVal(e.target.value)}
+                          style={{
+                            width: '70px',
+                            padding: '8px 10px',
+                            borderRadius: '10px',
+                            border: '1px solid rgba(255,255,255,0.15)',
+                            background: 'rgba(0,0,0,0.2)',
+                            color: '#fff',
+                            fontSize: '13px',
+                            fontWeight: '700',
+                            textAlign: 'center',
+                            outline: 'none'
+                          }}
+                        />
+                        <span style={{ fontSize: '12px', color: 'var(--theme-accent)', fontWeight: '700', textTransform: 'lowercase' }}>
+                          {selectedServingUnitToggle === 'meal' ? (parseFloat(loggedPortionsVal) === 1 ? 'meal' : 'meals') : aiTotalServingUnit}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
                   
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', marginBottom: '16px' }}>
                     {aiStagedResults.map((f, i) => {
-                      const multiplier = computeMultiplier(f.serving || '100g', f.stagedUnit || 'serving', parseFloat(String(f.stagedQty)) || 1);
+                      const scaleFactor = selectedServingUnitToggle === 'meal'
+                        ? (parseFloat(loggedPortionsVal) || 1)
+                        : (parseFloat(loggedPortionsVal) || 1) / Math.max(0.1, aiTotalServingQty);
+                      const multiplier = computeMultiplier(f.serving || '100g', f.stagedUnit || 'serving', parseFloat(String(f.stagedQty)) || 1) * scaleFactor;
                       
                       return (
                         <div key={i} className="glass-card ai-staged-food-card" style={{ 
@@ -1566,9 +1673,13 @@ export const PantryView: React.FC<PantryViewProps> = ({ initialMeal, onClose, is
 
                     <button 
                       onClick={() => {
+                        const scaleFactor = selectedServingUnitToggle === 'meal'
+                          ? (parseFloat(loggedPortionsVal) || 1)
+                          : (parseFloat(loggedPortionsVal) || 1) / Math.max(0.1, aiTotalServingQty);
+
                         aiStagedResults.forEach(f => {
                           const mult = computeMultiplier(f.serving || '', f.stagedUnit || 'serving', parseFloat(String(f.stagedQty)) || 1);
-                          const scaled = scaleLegacyFoodByAmount(f, mult);
+                          const scaled = scaleLegacyFoodByAmount(f, mult * scaleFactor);
                           addFoodLog(targetMeal, scaled);
                         });
                         setIsAiReviewing(false);
@@ -1603,9 +1714,18 @@ export const PantryView: React.FC<PantryViewProps> = ({ initialMeal, onClose, is
                           });
 
                           setRecipeSaveName(searchQuery.trim().substring(0, 35) || 'AI Detected Meal');
-                          setRecipeServingQty('1');
-                          setRecipeServingUnit('meal');
-                          setRecipeTotalServings('1');
+                          
+                          // Pre-fill recipe serving fields based on currently toggled unit
+                          if (selectedServingUnitToggle === 'meal') {
+                            setRecipeServingQty(loggedPortionsVal);
+                            setRecipeServingUnit('meal');
+                            setRecipeTotalServings('1');
+                          } else {
+                            setRecipeServingQty(loggedPortionsVal);
+                            setRecipeServingUnit(aiTotalServingUnit);
+                            setRecipeTotalServings('1');
+                          }
+                          
                           setSaveRecipeConfig({ recipeItems, totals });
                         }}
                         style={{ padding: '14px 5px', background: 'rgba(0, 201, 255, 0.1)', border: '1px solid var(--theme-accent)', borderRadius: '16px', color: 'var(--theme-accent)', fontWeight: '900', fontSize: '11px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '4px' }}>

@@ -62,10 +62,8 @@ export const NutritionView: React.FC = () => {
     const breakdown = {
       'simple-carbs': 0,
       'refined-carbs': 0,
-      'steady-starches': 0,
       'sustained-energy': 0,
       'natural-carbs': 0,
-      'hybrid-bites': 0,
     };
     
     foodLog.forEach((l: { f: Food }) => {
@@ -307,10 +305,8 @@ export const NutritionView: React.FC = () => {
                   {label === 'Carbs' && (
                     <div style={{ paddingLeft: 'var(--space-sm)', display: 'flex', flexDirection: 'column', gap: 'var(--space-xs)', borderLeft: '2px solid var(--theme-border)', marginBottom: 'var(--space-sm)' }}>
                       {[
-                        { k: 'Sustained Energy', disp: '🌾 Sustained Energy', v: carbBreakdown['sustained-energy'], g: goal * 0.4, c: 'var(--theme-success)' },
-                        { k: 'Natural Carbs', disp: '🍇 Natural Carbs', v: carbBreakdown['natural-carbs'], g: goal * 0.25, c: 'var(--theme-accent)' },
-                        { k: 'Steady Starches', disp: '🌾 Steady Starches', v: carbBreakdown['steady-starches'], g: goal * 0.2, c: 'var(--theme-accent)' },
-                        { k: 'Hybrid Bites', disp: '🍩 Hybrid Bites', v: carbBreakdown['hybrid-bites'], g: goal * 0.1, c: 'var(--theme-warning)' },
+                        { k: 'Sustained Energy', disp: '🌾 Sustained Energy', v: carbBreakdown['sustained-energy'], g: goal * 0.6, c: 'var(--theme-success)' },
+                        { k: 'Natural Carbs', disp: '🍇 Natural Carbs', v: carbBreakdown['natural-carbs'], g: goal * 0.35, c: 'var(--theme-accent)' },
                         { k: 'Refined Carbs', disp: '🍞 Refined Carbs', v: carbBreakdown['refined-carbs'], g: goal * 0.05, c: 'var(--theme-error)' },
                         { k: 'Simple Carbs', disp: '🍭 Simple Carbs', v: carbBreakdown['simple-carbs'], g: goal * 0.05, c: 'var(--theme-error)' }
                       ].map(sub => {

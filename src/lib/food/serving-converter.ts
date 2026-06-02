@@ -337,22 +337,12 @@ export function getCarbClassification(food: any): CarbCategory {
 
   if (isSugary) {
     if (passesShield) {
-      const isProcessed = f >= 1.5 || p >= 2.0;
-      if (isProcessed) {
-        return {
-          key: 'hybrid-bites',
-          emoji: '🍩',
-          name: 'Hybrid Bites',
-          desc: 'Sweet processed foods or snacks buffered with dietary fiber to slow sugar digestion.'
-        };
-      } else {
-        return {
-          key: 'natural-carbs',
-          emoji: '🍇',
-          name: 'Natural Carbs',
-          desc: 'Whole, fiber-shielded plant sugars (fruits and sweet vegetables) that digest smoothly.'
-        };
-      }
+      return {
+        key: 'natural-carbs',
+        emoji: '🍇',
+        name: 'Natural Carbs',
+        desc: 'Whole, fiber-shielded plant sugars (fruits and sweet vegetables) that digest smoothly.'
+      };
     } else {
       return {
         key: 'simple-carbs',
@@ -363,22 +353,12 @@ export function getCarbClassification(food: any): CarbCategory {
     }
   } else {
     if (passesShield) {
-      const isVeryHighFiber = fb >= 3.0;
-      if (isVeryHighFiber) {
-        return {
-          key: 'sustained-energy',
-          emoji: '🌾',
-          name: 'Sustained Energy',
-          desc: 'Slow-digesting, fiber-rich superfoods (oats, quinoa, lentils) offering long-lasting fuel.'
-        };
-      } else {
-        return {
-          key: 'steady-starches',
-          emoji: '🌾',
-          name: 'Steady Starches',
-          desc: 'Moderate-digesting starchy grains and tubers (white rice, potatoes, standard pasta).'
-        };
-      }
+      return {
+        key: 'sustained-energy',
+        emoji: '🌾',
+        name: 'Sustained Energy',
+        desc: 'Slow-digesting, fiber-rich superfoods (oats, quinoa, lentils) offering long-lasting fuel.'
+      };
     } else {
       return {
         key: 'refined-carbs',
