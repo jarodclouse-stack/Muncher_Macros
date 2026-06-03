@@ -1,6 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import { X } from 'lucide-react';
+import { X, Info } from 'lucide-react';
 import { estimateNutriScore } from '../lib/food/serving-converter';
 
 // Nutri-Score colours
@@ -37,6 +37,7 @@ interface NutriScorePopupProps {
 }
 
 export const NutriScorePopup: React.FC<NutriScorePopupProps> = ({ food, onClose }) => {
+  const [showExplain, setShowExplain] = React.useState(false);
   const { grade: g, estimated } = estimateNutriScore(food);
   if (!g) return null;
   const bg = NS_COLOR[g] || '#888';
@@ -107,7 +108,47 @@ export const NutriScorePopup: React.FC<NutriScorePopupProps> = ({ food, onClose 
         </div>
 
         {/* Nutrient traffic lights */}
-        <div style={{ fontSize: '11px', fontWeight: '900', color: 'rgba(255,255,255,0.4)', letterSpacing: '1px', textTransform: 'uppercase', marginBottom: '10px' }}>Nutrient Levels (per 100g)</div>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
+          <div style={{ fontSize: '11px', fontWeight: '900', color: 'rgba(255,255,255,0.4)', letterSpacing: '1px', textTransform: 'uppercase' }}>Nutrient Levels (per 100g)</div>
+          <button 
+            type="button"
+            onClick={() => setShowExplain(!showExplain)}
+            style={{
+              background: 'none',
+              border: 'none',
+              color: showExplain ? 'var(--theme-accent, #00C9FF)' : 'rgba(255,255,255,0.4)',
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              padding: '2px',
+              borderRadius: '4px',
+              transition: 'all 0.2s',
+              outline: 'none'
+            }}
+            title="Why per 100g?"
+          >
+            <Info size={14} />
+          </button>
+        </div>
+
+        {showExplain && (
+          <div style={{
+            background: 'rgba(255, 255, 255, 0.03)',
+            border: '1px solid rgba(255, 255, 255, 0.08)',
+            borderRadius: '12px',
+            padding: '12px',
+            marginBottom: '12px',
+            fontSize: '11px',
+            lineHeight: '1.4',
+            color: 'rgba(255, 255, 255, 0.7)'
+          }}>
+            <div style={{ fontWeight: '800', color: 'var(--theme-accent, #00C9FF)', marginBottom: '4px', display: 'flex', alignItems: 'center', gap: '4px' }}>
+              💡 Why per 100g?
+            </div>
+            Nutri-Score grades are calculated per 100g so different foods can be compared fairly side-by-side. If grades were based on serving sizes, unhealthy foods could claim a healthy rating by just declaring a tiny "1 gram" serving size.
+          </div>
+        )}
         <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
           {rows.map(({ label, level, value }) => (
             <div key={label} style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '10px 14px', borderRadius: '12px', background: LEVEL_BG[level], border: `1px solid ${LEVEL_COLOR[level]}30` }}>
