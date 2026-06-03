@@ -237,7 +237,7 @@ export const PantryView: React.FC<PantryViewProps> = ({ initialMeal, onClose, is
         .then(r => r.ok ? r.json() : { foods: [] }).catch(() => ({ foods: [] }));
       const dbResults = (dbResponse.foods || []).map(normalizeFoodResult);
 
-      searchCache.current[q.toLowerCase()] = dbResults;
+      // Don't cache yet — only cache the complete (DB+OFF) result below.
       setIngResults([...localMatches, ...dbResults].slice(0, 30));
       setIsIngSearching(false);
 
@@ -429,8 +429,9 @@ export const PantryView: React.FC<PantryViewProps> = ({ initialMeal, onClose, is
         .then(r => r.ok ? r.json() : { foods: [] }).catch(() => ({ foods: [] }));
       const dbResults = (dbResponse.foods || []).map(normalizeFoodResult);
 
-      // Show DB results immediately — don't wait for OFF
-      searchCache.current[q.toLowerCase()] = dbResults;
+      // Show DB results immediately — don't wait for OFF.
+      // Don't cache yet: only cache the complete (DB+OFF) result below, so a
+      // flaky OFF failure isn't locked in for the whole session.
       setSearchResults([...localMatches, ...dbResults].slice(0, 50));
       setIsSearching(false);
 
