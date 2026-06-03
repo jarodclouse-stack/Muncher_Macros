@@ -85,40 +85,41 @@ export default async function handler(req, res) {
         + '&fields=product_name,product_name_en,serving_size,serving_quantity,'
         + 'serving_quantity_unit,serving_size_unit,nutriments,brands,lang,nutriscore_grade,nutrient_levels';
 
-      // Build ordered list of queries to try: exact + plural forms first
+      // Build ordered list of queries to try: exact + plural forms
       const pluralForms = getPlurals(query);
-      // queriesToTry: original query + all plural/singular variants (deduped)
+      // queriesToTry: original query first, then plural/singular variants (deduped)
       const queriesToTry = [...new Set([query, ...pluralForms])];
 
-      const fetchQuery = async (q) => {
-        for (let attempt = 1; attempt <= 2; attempt++) {
-          try {
-            const offRes = await fetch(buildUrl(q), {
-              headers: { 'User-Agent': 'MuncherMacros/1.0' },
-              signal: AbortSignal.timeout(3000)
-            });
-            if (!offRes.ok) {
-              if (attempt < 2) { await new Promise(r => setTimeout(r, 400)); continue; }
-              return [];
-            }
-            const parsed = await offRes.json();
-            return parsed.products || [];
-          } catch {
-            if (attempt === 2) return [];
-            await new Promise(r => setTimeout(r, 400));
-          }
+      // OFF's search.pl is slow (~3s typical). Since OFF results stream in
+      // after DB results on the client, we can afford a generous timeout.
+      // Stay within Vercel's 10s function limit: 6s original + one 3s fallback.
+      const fetchQuery = async (q, timeoutMs) => {
+        try {
+          const offRes = await fetch(buildUrl(q), {
+            headers: { 'User-Agent': 'MuncherMacros/1.0' },
+            signal: AbortSignal.timeout(timeoutMs)
+          });
+          if (!offRes.ok) return [];
+          const parsed = await offRes.json();
+          return parsed.products || [];
+        } catch {
+          return [];
         }
-        return [];
       };
 
-      // Try each query in order, merge results from all variants
       const seen = new Set();
-      for (const q of queriesToTry) {
-        const products = await fetchQuery(q);
+      const addProducts = (products) => {
         for (const p of products) {
           const key = (p.product_name_en || p.product_name || '') + (p.brands || '');
           if (!seen.has(key)) { seen.add(key); productsToProcess.push(p); }
         }
+      };
+
+      // Try the original query first (6s). Only fall back to ONE plural variant
+      // (3s) if it returns nothing — keeps total well under Vercel's 10s limit.
+      addProducts(await fetchQuery(queriesToTry[0], 6000));
+      if (productsToProcess.length === 0 && queriesToTry.length > 1) {
+        addProducts(await fetchQuery(queriesToTry[1], 3000));
       }
     }
 
