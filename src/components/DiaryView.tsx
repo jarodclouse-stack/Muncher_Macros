@@ -354,32 +354,15 @@ const DiaryEntryItem = ({ log, onRemove, onEditPortion, onMove }: any) => {
     <div style={{ marginBottom: '12px' }}>
       <div 
         onClick={() => setIsOpen(!isOpen)}
-        style={{ 
-          background: 'rgba(12,25,28,0.85)',
-          padding: '16px', 
-          borderRadius: '18px',
-          border: '1px solid rgba(255,255,255,0.1)',
-          borderLeft: '4px solid var(--theme-accent)', 
-          '--theme-text': '#FFF', 
-          '--theme-text-dim': 'rgba(255,255,255,0.6)',
-          '--theme-panel-dim': 'rgba(255,255,255,0.05)',
-          '--theme-border': 'rgba(255,255,255,0.1)',
-          cursor: 'pointer', 
-          transition: 'transform 0.2s, box-shadow 0.2s',
-          backdropFilter: 'blur(12px)',
-          WebkitBackdropFilter: 'blur(12px)',
-          boxShadow: '0 4px 20px rgba(0,0,0,0.35)',
-        } as React.CSSProperties}
-        onMouseEnter={e => (e.currentTarget.style.transform = 'translateY(-1px)')}
-        onMouseLeave={e => (e.currentTarget.style.transform = 'translateY(0)')}
+        className="diary-entry-card"
       >
         {/* Top Row: Name + Nutri-Score badge + Trash */}
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px', gap: '8px' }}>
+        <div className="diary-entry-header">
           <div style={{ flex: 1, minWidth: 0 }}>
-            <div style={{ fontWeight: '800', color: 'var(--theme-accent)', fontSize: '15px', lineHeight: '1.3', wordBreak: 'break-word' }}>{f.name}</div>
-            {f.brand && <div style={{ fontSize: '10px', color: 'rgba(255,255,255,0.45)', fontWeight: '600', marginTop: '2px' }}>• {f.brand}</div>}
+            <div className="diary-entry-name">{f.name}</div>
+            {f.brand && <div className="diary-entry-brand">• {f.brand}</div>}
           </div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flexShrink: 0 }}>
+          <div className="diary-entry-actions">
             {/* Nutri-Score badge — clickable, horizontal pill design, perfectly aligned */}
             {(() => {
               const { grade: g, estimated } = estimateNutriScore(f);
@@ -389,19 +372,11 @@ const DiaryEntryItem = ({ log, onRemove, onEditPortion, onMove }: any) => {
                 <button
                   onClick={(e) => { e.stopPropagation(); setShowNutriPopup(true); }}
                   title={`Nutri-Score ${g.toUpperCase()}${estimated ? ' (estimated)' : ''} — tap to learn more`}
+                  className="diary-entry-nutri-btn"
                   style={{
-                    display: 'flex',
-                    flexDirection: 'row',
-                    alignItems: 'center',
-                    gap: '8px',
-                    height: '38px',
                     background: `${bg}18`,
                     border: `1px solid ${bg}55`,
-                    borderRadius: '12px',
-                    padding: '0 10px 0 12px',
-                    cursor: 'pointer',
                     boxShadow: `0 0 10px ${bg}30`,
-                    transition: 'all 0.15s ease',
                   }}
                   onMouseEnter={e => {
                     const btn = e.currentTarget as HTMLButtonElement;
@@ -414,20 +389,14 @@ const DiaryEntryItem = ({ log, onRemove, onEditPortion, onMove }: any) => {
                     btn.style.transform = 'scale(1)';
                   }}
                 >
-                  <span style={{ fontSize: '9px', fontWeight: '900', color: 'rgba(255,255,255,0.6)', letterSpacing: '0.8px', textTransform: 'uppercase' }}>{estimated ? '~' : ''}NUTRI</span>
-                  <span style={{
-                    width: '26px',
-                    height: '26px',
-                    borderRadius: '8px',
-                    background: bg,
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    fontSize: '14px',
-                    fontWeight: '900',
-                    color: '#000',
-                    boxShadow: `0 0 8px ${bg}90`,
-                  }}>
+                  <span className="diary-entry-nutri-label">{estimated ? '~' : ''}NUTRI</span>
+                  <span 
+                    className="diary-entry-nutri-badge"
+                    style={{
+                      background: bg,
+                      boxShadow: `0 0 8px ${bg}90`,
+                    }}
+                  >
                     {g.toUpperCase()}
                   </span>
                 </button>
@@ -435,68 +404,45 @@ const DiaryEntryItem = ({ log, onRemove, onEditPortion, onMove }: any) => {
             })()}
             <button 
               onClick={(e) => { e.stopPropagation(); onRemove(); }} 
-              style={{
-                height: '38px',
-                width: '38px',
-                background: 'rgba(255,107,107,0.1)',
-                border: '1px solid rgba(255,107,107,0.2)',
-                color: '#FF6B6B',
-                cursor: 'pointer',
-                borderRadius: '12px',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                flexShrink: 0,
-                transition: 'all 0.15s ease',
-              }}
-              onMouseEnter={e => {
-                const btn = e.currentTarget as HTMLButtonElement;
-                btn.style.background = 'rgba(255,107,107,0.2)';
-                btn.style.transform = 'scale(1.02)';
-              }}
-              onMouseLeave={e => {
-                const btn = e.currentTarget as HTMLButtonElement;
-                btn.style.background = 'rgba(255,107,107,0.1)';
-                btn.style.transform = 'scale(1)';
-              }}
+              className="diary-entry-delete-btn"
             >
-              <Trash2 size={16} />
+              <Trash2 size={16} className="diary-entry-delete-icon" />
             </button>
           </div>
         </div>
 
         {/* Macro Breakdown Grid — matches AddFoodModal staging card */}
-        <div className="quick-stats-bubble-row" style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '6px', marginBottom: '12px', background: 'rgba(0,0,0,0.25)', border: '1px solid rgba(255,255,255,0.08)', padding: '10px', borderRadius: '16px' }}>
-          <div style={{ textAlign: 'center' }}>
-            <div style={{ fontSize: '9px', color: 'rgba(255,255,255,0.4)', fontWeight: '700' }}>KCAL</div>
-            <div style={{ fontSize: '14px', fontWeight: '900', color: '#FFF' }}>{Math.round(f.calories || f.cal || 0)}</div>
+        <div className="diary-entry-stats-row">
+          <div className="diary-entry-stats-col">
+            <div className="diary-entry-stats-label">KCAL</div>
+            <div className="diary-entry-stats-val">{Math.round(f.calories || f.cal || 0)}</div>
           </div>
-          <div style={{ textAlign: 'center' }}>
-            <div style={{ fontSize: '9px', color: 'rgba(255,255,255,0.4)', fontWeight: '700' }}>P</div>
-            <div style={{ fontSize: '14px', fontWeight: '900', color: 'var(--theme-error, #FF6B6B)' }}>{Number(f.p || 0).toFixed(1)}g</div>
+          <div className="diary-entry-stats-col">
+            <div className="diary-entry-stats-label">P</div>
+            <div className="diary-entry-stats-val p">{Number(f.p || 0).toFixed(1)}g</div>
           </div>
-          <div style={{ textAlign: 'center' }}>
-            <div style={{ fontSize: '9px', color: 'rgba(255,255,255,0.4)', fontWeight: '700' }}>C</div>
-            <div style={{ fontSize: '14px', fontWeight: '900', color: 'var(--theme-accent, #00C9FF)' }}>{Number(f.c || 0).toFixed(1)}g</div>
+          <div className="diary-entry-stats-col">
+            <div className="diary-entry-stats-label">C</div>
+            <div className="diary-entry-stats-val c">{Number(f.c || 0).toFixed(1)}g</div>
           </div>
-          <div style={{ textAlign: 'center' }}>
-            <div style={{ fontSize: '9px', color: 'rgba(255,255,255,0.4)', fontWeight: '700' }}>F</div>
-            <div style={{ fontSize: '14px', fontWeight: '900', color: 'var(--theme-warning, #FCC419)' }}>{Number(f.f || 0).toFixed(1)}g</div>
+          <div className="diary-entry-stats-col">
+            <div className="diary-entry-stats-label">F</div>
+            <div className="diary-entry-stats-val f">{Number(f.f || 0).toFixed(1)}g</div>
           </div>
         </div>
 
-        {/* Serving + Action Buttons (clean row — nutri-score moved to top) */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-          <div style={{ fontSize: '12px', color: 'rgba(255,255,255,0.7)', fontWeight: '700', flex: 1, minWidth: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{f.serving}</div>
+        {/* Serving + Action Buttons */}
+        <div className="diary-entry-bottom-row">
+          <div className="diary-entry-serving">{f.serving}</div>
           <button 
             onClick={(e) => { e.stopPropagation(); onEditPortion(); }} 
-            style={{ background: 'rgba(0,201,255,0.08)', border: '1px solid rgba(0,201,255,0.25)', color: 'var(--theme-accent, #00C9FF)', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '4px', padding: '8px 12px', borderRadius: '12px', boxShadow: '0 2px 8px rgba(0,0,0,0.3)', fontSize: '11px', fontWeight: '800', flexShrink: 0 }}
+            className="diary-entry-adjust-btn"
           >
-            <Scale size={14} /> ADJUST
+            <Scale size={14} className="diary-entry-adjust-icon" /> ADJUST
           </button>
           <div
             onClick={(e) => { e.stopPropagation(); setIsOpen(!isOpen); }}
-            style={{ fontSize: '10px', fontWeight: '800', color: 'var(--theme-accent)', background: 'rgba(0,201,255,0.08)', border: '1px solid rgba(0,201,255,0.25)', borderRadius: '12px', padding: '8px 12px', letterSpacing: '0.5px', cursor: 'pointer', flexShrink: 0, whiteSpace: 'nowrap' }}
+            className="diary-entry-more-btn"
           >
             {isOpen ? 'LESS' : 'MORE'}
           </div>
@@ -504,7 +450,7 @@ const DiaryEntryItem = ({ log, onRemove, onEditPortion, onMove }: any) => {
       </div>
       
       {isOpen && (
-        <div className="glass" style={{ margin: 'var(--space-xs) var(--space-md) var(--space-md) var(--space-md)', padding: 'var(--space-lg)' }}>
+        <div className="glass diary-entry-expanded">
           <NutritionFactsDisplay food={f} multiplier={1} />
 
           {/* Move to another meal */}
