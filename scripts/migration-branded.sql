@@ -68,4 +68,4 @@ BEGIN
   ORDER BY rank_score DESC, fd.popularity DESC
   LIMIT result_limit;
 END;
-$$ LANGUAGE plpgsql STABLE;
+$$ LANGUAGE plpgsql STABLE SECURITY DEFINER SET search_path = public, extensions;

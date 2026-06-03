@@ -60,7 +60,7 @@ BEGIN
   ORDER BY rank_score DESC, fd.popularity DESC
   LIMIT result_limit;
 END;
-$$ LANGUAGE plpgsql STABLE;
+$$ LANGUAGE plpgsql STABLE SECURITY DEFINER SET search_path = public, extensions;
 
 -- Fix synonym: "coke" should map to "cola" not "coca cola"
 -- (so it matches the drink name, not the company name)

@@ -83,7 +83,7 @@ BEGIN
   NEW.search_vector := to_tsvector('english', coalesce(NEW.name, '') || ' ' || coalesce(NEW.brand, ''));
   RETURN NEW;
 END;
-$$ LANGUAGE plpgsql;
+$$ LANGUAGE plpgsql SECURITY DEFINER SET search_path = public, extensions;
 
 DROP TRIGGER IF EXISTS trg_foods_search_vector ON foods;
 CREATE TRIGGER trg_foods_search_vector
@@ -152,4 +152,4 @@ BEGIN
   ORDER BY rank_score DESC, fd.popularity DESC
   LIMIT result_limit;
 END;
-$$ LANGUAGE plpgsql STABLE;
+$$ LANGUAGE plpgsql STABLE SECURITY DEFINER SET search_path = public, extensions;
