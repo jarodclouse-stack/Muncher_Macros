@@ -394,7 +394,6 @@ export const normalizeFoodResult = (food: any): Food => {
 
 export interface CarbCategory {
   key: 'simple-carbs' | 'refined-carbs' | 'steady-starches' | 'sustained-energy' | 'natural-carbs' | 'hybrid-bites' | 'none';
-  emoji: string;
   name: string;
   desc: string;
 }
@@ -404,7 +403,7 @@ export function getCarbClassification(food: any): CarbCategory {
   const s = Number(food.sugars != null ? food.sugars : (food.sugar != null ? food.sugar : 0)) || 0;
   const fb = Number(food.fb != null ? food.fb : (food.fiber != null ? food.fiber : (food.Fiber != null ? food.Fiber : 0))) || 0;
   if (c <= 0) {
-    return { key: 'none', emoji: '🥗', name: 'Low Carb', desc: 'Minimal carbohydrate content.' };
+    return { key: 'none', name: 'Low Carb', desc: 'Minimal carbohydrate content.' };
   }
 
   const isSugary = s >= 0.15 * c;
@@ -415,14 +414,12 @@ export function getCarbClassification(food: any): CarbCategory {
     if (passesShield) {
       return {
         key: 'natural-carbs',
-        emoji: '🍇',
         name: 'Natural Carbs',
         desc: 'Whole, fiber-shielded plant sugars (fruits and sweet vegetables) that digest smoothly.'
       };
     } else {
       return {
         key: 'simple-carbs',
-        emoji: '🍭',
         name: 'Simple Carbs',
         desc: 'Fast-digesting, high-sugar refined foods (sodas, candies, syrup) with no fiber buffer.'
       };
@@ -431,14 +428,12 @@ export function getCarbClassification(food: any): CarbCategory {
     if (passesShield) {
       return {
         key: 'sustained-energy',
-        emoji: '🌾',
         name: 'Sustained Energy',
         desc: 'Slow-digesting, fiber-rich superfoods (oats, quinoa, lentils) offering long-lasting fuel.'
       };
     } else {
       return {
         key: 'refined-carbs',
-        emoji: '🍞',
         name: 'Refined Carbs',
         desc: 'Fast-digesting processed starches (white bread, bagels, pretzels) stripped of their natural fiber.'
       };

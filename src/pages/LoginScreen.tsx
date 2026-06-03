@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { supabase } from '../lib/supabase';
-import { LogIn } from 'lucide-react';
+import { LogIn, Check } from 'lucide-react';
 import { PrivacyPolicy } from '../components/PrivacyPolicy';
 import { TermsOfService } from '../components/TermsOfService';
 
@@ -90,7 +90,7 @@ export const LoginScreen: React.FC = () => {
           
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginTop: '4px', cursor: 'pointer', userSelect: 'none' }} onClick={() => setRememberMe(!rememberMe)}>
             <div style={{ width: '18px', height: '18px', borderRadius: '6px', border: '1px solid rgba(255,255,255,0.2)', background: rememberMe ? 'linear-gradient(90deg, #00C9FF 0%, #92FE9D 100%)' : 'rgba(0,0,0,0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'all 0.2s' }}>
-              {rememberMe && <span style={{ color: '#000', fontSize: '12px', fontWeight: '900' }}>✓</span>}
+              {rememberMe && <Check size={11} strokeWidth={4} color="#000" />}
             </div>
             <span style={{ fontSize: '13px', color: '#c0c0d0' }}>Stay logged in</span>
           </div>

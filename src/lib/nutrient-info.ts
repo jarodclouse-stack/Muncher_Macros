@@ -153,7 +153,7 @@ export const DEFICIENCY_INFO: Record<string, { name: string; sources: string; de
 
 export const NUTRIENT_BENEFITS: Record<string, { summary: string; points: string[] }> = {
   'Vitamin C': {
-    summary: '🛡️ Collagen & Tissue Repair Protocol',
+    summary: 'Collagen & Tissue Repair Protocol',
     points: [
       'Collagen Synthesis: Essential cofactor for prolyl hydroxylase in skin and joint repair.',
       'Antioxidant Shield: Neutralizes superoxide and hydroxyl radicals during metabolic stress.',
@@ -163,7 +163,7 @@ export const NUTRIENT_BENEFITS: Record<string, { summary: string; points: string
     ]
   },
   'Vitamin D': {
-    summary: '☀️ Steroid Hormone & Immune Sentinel',
+    summary: 'Steroid Hormone & Immune Sentinel',
     points: [
       'VDR Support: Binds to Vitamin D Receptors (VDR) to regulate 1,000+ gene sequences.',
       'Calcium Partitioning: Calcitriol signals the gut to upregulate calcium binding proteins.',
@@ -173,7 +173,7 @@ export const NUTRIENT_BENEFITS: Record<string, { summary: string; points: string
     ]
   },
   'Magnesium': {
-    summary: '🧘 Neuromuscular Conductivity Catalyst',
+    summary: 'Neuromuscular Conductivity Catalyst',
     points: [
       'ATP Kinase: Required for the stability and activation of every ATP-dependent enzyme.',
       'GABA Agonist: Binds to GABA receptors to lower CNS excitability and improve sleep.',
@@ -183,7 +183,7 @@ export const NUTRIENT_BENEFITS: Record<string, { summary: string; points: string
     ]
   },
   'Iron': {
-    summary: '🎈 Heme-Delivery & Mitochondrial Respiration',
+    summary: 'Heme-Delivery & Mitochondrial Respiration',
     points: [
       'Hemoglobin Core: The central functional unit of red blood cells for oxygen transport.',
       'Myoglobin Storage: Facilitates oxygen diffusion into myocyte mitochondria during load.',
@@ -193,7 +193,7 @@ export const NUTRIENT_BENEFITS: Record<string, { summary: string; points: string
     ]
   },
   'Zinc': {
-    summary: '🛡️ Genomic Repair & Hormonal Catalyst',
+    summary: 'Genomic Repair & Hormonal Catalyst',
     points: [
       'Zinc Fingers: Structural component of DNA-binding proteins that direct genetic repair.',
       'Thymic Hormone: Critical for the biological activity of thymulin (T-cell maturation).',
@@ -203,7 +203,7 @@ export const NUTRIENT_BENEFITS: Record<string, { summary: string; points: string
     ]
   },
   'Potassium': {
-    summary: '⚖️ Cardiac Potential & Intracellular Balance',
+    summary: 'Cardiac Potential & Intracellular Balance',
     points: [
       'Membrane Re-Polarization: Critical for the "reset" phase of muscle and nerve signals.',
       'Na+/K+ Pump: Actively drives sodium out of cells to prevent edema and hypertension.',
@@ -213,7 +213,7 @@ export const NUTRIENT_BENEFITS: Record<string, { summary: string; points: string
     ]
   },
   'Vitamin B12': {
-    summary: '🛰️ Neuro-Protection & One-Carbon Flux',
+    summary: 'Neuro-Protection & One-Carbon Flux',
     points: [
       'Myelin Integrity: Required for the synthesis of the fatty sheath around nerve fibers.',
       'Methionine Cycle: Converts homocysteine to methionine to protect the vascular walls.',
@@ -223,7 +223,7 @@ export const NUTRIENT_BENEFITS: Record<string, { summary: string; points: string
     ]
   },
   'Calcium': {
-    summary: '🦴 Skeletal Matrix & Signal Trigger',
+    summary: 'Skeletal Matrix & Signal Trigger',
     points: [
       'Hydroxyapatite Flux: Maintains the mineral "bank" needed for dense bone tissue.',
       'Troponin Activation: The specific trigger that allows muscle fibers to contract.',
@@ -233,7 +233,7 @@ export const NUTRIENT_BENEFITS: Record<string, { summary: string; points: string
     ]
   },
   'Vitamin A': {
-    summary: '👁️ Retinoid Shield & Genetic Differentiation',
+    summary: 'Retinoid Shield & Genetic Differentiation',
     points: [
       'Rhodopsin Cycle: Regenerates visual pigments needed for scotopic (low-light) vision.',
       'Epithelial Defense: Prevents keratinization of mucous membranes (skin/lung health).',
@@ -243,7 +243,7 @@ export const NUTRIENT_BENEFITS: Record<string, { summary: string; points: string
     ]
   },
   'Sodium': {
-    summary: '🧂 Osmotic Pressure & Signal Potential',
+    summary: 'Osmotic Pressure & Signal Potential',
     points: [
       'Action Potential: The primary ion responsible for the "upstroke" of nerve signals.',
       'Blood Volume: Controls the amount of water retained in the circulatory system.',
@@ -253,7 +253,7 @@ export const NUTRIENT_BENEFITS: Record<string, { summary: string; points: string
     ]
   },
   'Vitamin B1': {
-    summary: '⚡ Pyruvate Flux & Mitochondrial Ignition',
+    summary: 'Pyruvate Flux & Mitochondrial Ignition',
     points: [
       'TDP Cofactor: Required for pyruvate dehydrogenase to extract energy from carbs.',
       'BCAAs Metabolism: Essential for breaking down branched-chain amino acids (leucine).',
@@ -262,7 +262,7 @@ export const NUTRIENT_BENEFITS: Record<string, { summary: string; points: string
     ]
   },
   'Vitamin B2': {
-    summary: '🔋 FAD Energy Capture & Redox Balance',
+    summary: 'FAD Energy Capture & Redox Balance',
     points: [
       'FAD Synthesis: Transports high-energy electrons to the mitochondrial ETC.',
       'Glutathione Recycling: Required for glutathione reductase to fight oxidative stress.',
@@ -271,7 +271,7 @@ export const NUTRIENT_BENEFITS: Record<string, { summary: string; points: string
     ]
   },
   'Vitamin B3': {
-    summary: '🛡️ NAD+ Fuel & Genomic Integrity',
+    summary: 'NAD+ Fuel & Genomic Integrity',
     points: [
       'NAD+/NADP+ Catalyst: The primary molecule for 200+ redox energy reactions.',
       'Sirtuin Activation: Powers the "longevity" proteins that repair cellular damage.',
@@ -280,7 +280,7 @@ export const NUTRIENT_BENEFITS: Record<string, { summary: string; points: string
     ]
   },
   'Vitamin B5': {
-    summary: '🚜 Coenzyme A & Steroid synthesis',
+    summary: 'Coenzyme A & Steroid synthesis',
     points: [
       'CoA Production: The gateway molecule for carb, fat, and protein metabolism.',
       'Adrenal Support: Essential fuel for the production of cortisol and stress hormones.',
@@ -289,7 +289,7 @@ export const NUTRIENT_BENEFITS: Record<string, { summary: string; points: string
     ]
   },
   'Vitamin B6': {
-    summary: '🧠 Neuro-Synthesis & Heme Creation',
+    summary: 'Neuro-Synthesis & Heme Creation',
     points: [
       'Amine Transfer: Required to create serotonin, dopamine, and norepinephrine.',
       'Glycogenolysis: The key to unlocking stored muscle glycogen during exercise.',
@@ -298,7 +298,7 @@ export const NUTRIENT_BENEFITS: Record<string, { summary: string; points: string
     ]
   },
   'Vitamin B7': {
-    summary: '💅 Carbon Selection & Keratin Flux',
+    summary: 'Carbon Selection & Keratin Flux',
     points: [
       'Gluconeogenesis: A vital cofactor for enzymes that create glucose from protein.',
       'Lipid Synthesis: Drives the creation of fatty acids for skin and brain health.',
@@ -307,7 +307,7 @@ export const NUTRIENT_BENEFITS: Record<string, { summary: string; points: string
     ]
   },
   'Vitamin B9': {
-    summary: '🧬 DNA Methylation & Genomic Integrity',
+    summary: 'DNA Methylation & Genomic Integrity',
     points: [
       'Purine Synthesis: Required for create adenine and guanine, the building blocks of DNA.',
       'Methylation Cycle: Critical for silencing or activating genes via one-carbon metabolism.',
@@ -316,7 +316,7 @@ export const NUTRIENT_BENEFITS: Record<string, { summary: string; points: string
     ]
   },
   'Vitamin E': {
-    summary: '🛡️ Non-Polar Anti-Oxidation Shield',
+    summary: 'Non-Polar Anti-Oxidation Shield',
     points: [
       'Lipid Protection: Prevents oxidative rancidity of fats within cell membranes.',
       'Vascular Elasticity: Prevents the oxidation of LDL to protect heart health.',
@@ -325,7 +325,7 @@ export const NUTRIENT_BENEFITS: Record<string, { summary: string; points: string
     ]
   },
   'Vitamin K': {
-    summary: '🦴 Coagulation & Mineral Partitioning',
+    summary: 'Coagulation & Mineral Partitioning',
     points: [
       'Coagulation Cascade: Triggers the conversion of prothrombin to thrombin.',
       'Gla-Protein Flux: Activates Osteocalcin to bind calcium into the bone matrix.',
@@ -334,7 +334,7 @@ export const NUTRIENT_BENEFITS: Record<string, { summary: string; points: string
     ]
   },
   'Phosphorus': {
-    summary: '🔋 ATP Mineral & Structural Base',
+    summary: 'ATP Mineral & Structural Base',
     points: [
       'Phosphorylation: The fundamental mechanism for "activating" protein enzymes.',
       'Hydroxyapatite Matrix: Works with calcium to provide 90% of bone strength.',
@@ -343,7 +343,7 @@ export const NUTRIENT_BENEFITS: Record<string, { summary: string; points: string
     ]
   },
   'Chloride': {
-    summary: '🌊 Hydrochloric Acid & pH Balance',
+    summary: 'Hydrochloric Acid & pH Balance',
     points: [
       'Digestive Acid: The "Cl" in HCl—required for stomach acid and protein breakdown.',
       'Anion Gap: Maintains electrical neutrality and osmotic pressure in fluids.',
@@ -352,7 +352,7 @@ export const NUTRIENT_BENEFITS: Record<string, { summary: string; points: string
     ]
   },
   'Iodine': {
-    summary: '🔥 Thyroidal BMR Ignition',
+    summary: 'Thyroidal BMR Ignition',
     points: [
       'T3/T4 Synthesis: The only biological use for iodine is thyroid hormone creation.',
       'Metabolic Rate: Directly dictates the speed at which you burn calories.',
@@ -361,7 +361,7 @@ export const NUTRIENT_BENEFITS: Record<string, { summary: string; points: string
     ]
   },
   'Copper': {
-    summary: '⚡ Electron Flux & Collagen Cross-Linking',
+    summary: 'Electron Flux & Collagen Cross-Linking',
     points: [
       'Cytochrome C Type: Drives the final step of the mitochondrial ETC for energy.',
       'Lysyl Oxidase: Essential for cross-linking collagen/elastin for joint strength.',
@@ -370,7 +370,7 @@ export const NUTRIENT_BENEFITS: Record<string, { summary: string; points: string
     ]
   },
   'Selenium': {
-    summary: '🛑 Selenoprotein Antioxidant Defense',
+    summary: 'Selenoprotein Antioxidant Defense',
     points: [
       'Glutathione Peroxidase: The body\'s primary engine for flushing toxins.',
       'Thyroid Conversion: Required to convert inactive T4 into the active T3 hormone.',
@@ -379,7 +379,7 @@ export const NUTRIENT_BENEFITS: Record<string, { summary: string; points: string
     ]
   },
   'Manganese': {
-    summary: '🦴 Enzyme Activator & Glycan Flux',
+    summary: 'Enzyme Activator & Glycan Flux',
     points: [
       'SOD-2 Activation: Key cofactor for the manganese-dependent SOD in mitochondria.',
       'Bone Cartilage: Drives the enzymes that create proteoglycans for joints.',
@@ -388,7 +388,7 @@ export const NUTRIENT_BENEFITS: Record<string, { summary: string; points: string
     ]
   },
   'Chromium': {
-    summary: '🔑 Insulin Receptor Sensitizer',
+    summary: 'Insulin Receptor Sensitizer',
     points: [
       'Glucose Tolerance: Enhances the binding of insulin to its cell receptors.',
       'Carb Metabolism: Optimizes the clearing of glucose from the bloodstream.',
@@ -397,7 +397,7 @@ export const NUTRIENT_BENEFITS: Record<string, { summary: string; points: string
     ]
   },
   'Molybdenum': {
-    summary: '🧪 Sulfur Amino Acid Metabolism',
+    summary: 'Sulfur Amino Acid Metabolism',
     points: [
       'Sulfite Oxidase: Crucial for converting reactive sulfites into harmless sulfates.',
       'Xanthine Oxidase: Breaks down nucleotides into uric acid for safe excretion.',
@@ -406,7 +406,7 @@ export const NUTRIENT_BENEFITS: Record<string, { summary: string; points: string
     ]
   },
   'Fluoride': {
-    summary: '🛡️ Enamel Matrix Reinforcement',
+    summary: 'Enamel Matrix Reinforcement',
     points: [
       'Fluoroapatite: Integrates into tooth enamel to make it resistant to acid.',
       'Remineralization: Accelerates the repair of micro-porosity in teeth.',
@@ -415,7 +415,7 @@ export const NUTRIENT_BENEFITS: Record<string, { summary: string; points: string
     ]
   },
   'Soluble Fiber': {
-    summary: '💧 Viscous Gel & Metabolic Stabilizer (Prebiotic)',
+    summary: 'Viscous Gel & Metabolic Stabilizer (Prebiotic)',
     points: [
       'Viscous Gel: Attracts water to form a gel in the gut, slowing digestion and gastric emptying.',
       'Cholesterol Management: Binds to bile acids in the intestines, prompting the liver to draw LDL cholesterol from blood to rebuild them.',
@@ -425,7 +425,7 @@ export const NUTRIENT_BENEFITS: Record<string, { summary: string; points: string
     ]
   },
   'Insoluble Fiber': {
-    summary: '🌾 Laxative Bulk & Intestinal Peristalsis Broom',
+    summary: 'Laxative Bulk & Intestinal Peristalsis Broom',
     points: [
       'Bowel Motility: Adds mechanical bulk to stool and stretches intestinal walls, triggering muscular contractions (peristalsis) to speed up transit.',
       'Bowel Regularity: Prevents constipation and reduces transit time, keeping waste moving efficiently.',
@@ -435,7 +435,7 @@ export const NUTRIENT_BENEFITS: Record<string, { summary: string; points: string
     ]
   },
   'Sustained Energy': {
-    summary: '🌾 Slow-Burning Glycogen & Beta-Glucan Fuel',
+    summary: 'Slow-Burning Glycogen & Beta-Glucan Fuel',
     points: [
       'Appetite Regulation: High soluble and beta-glucan fibers slow down gastric emptying to prolong fullness.',
       'Stable Energy Curve: Provides hours of steady glucose release, completely avoiding insulin peaks and crashes.',
@@ -444,7 +444,7 @@ export const NUTRIENT_BENEFITS: Record<string, { summary: string; points: string
     ]
   },
   'Natural Carbs': {
-    summary: '🍇 Cellular Vitamin Buffers & Natural Fructose Matrix',
+    summary: 'Cellular Vitamin Buffers & Natural Fructose Matrix',
     points: [
       'Fiber Shield: Sugar absorption is slowed down by intact cell walls and pectin, preventing rapid liver fat accumulation.',
       'Vitamins & Hydration: Rich in active bio-available minerals, potassium, Vitamin C, and natural cellular water.',
@@ -452,7 +452,7 @@ export const NUTRIENT_BENEFITS: Record<string, { summary: string; points: string
     ]
   },
   'Refined Carbs': {
-    summary: '🍞 Alright in moderation, but not the best',
+    summary: 'Alright in moderation, but not the best',
     points: [
       'Quick Energy Boost: Can be useful when you need fast, immediate energy before intense physical training.',
       'Low Fiber Warning: Stripped of natural fibers, meaning they digest very rapidly and shouldn\'t be your main carb source.',
@@ -460,7 +460,7 @@ export const NUTRIENT_BENEFITS: Record<string, { summary: string; points: string
     ]
   },
   'Simple Carbs': {
-    summary: '🍭 Not the best and should be limited/avoided in large amounts',
+    summary: 'Not the best and should be limited/avoided in large amounts',
     points: [
       'Fast Sugar Spikes: Enter the bloodstream almost immediately, causing rapid insulin spikes followed by sharp crashes.',
       'Liver & Visceral Fat: In large quantities, excess simple sugars are easily converted by the liver into stored visceral fat.',
@@ -468,7 +468,7 @@ export const NUTRIENT_BENEFITS: Record<string, { summary: string; points: string
     ]
   },
   'Protein': {
-    summary: '💪 Muscle Repair & Body Reconstruction',
+    summary: 'Muscle Repair & Body Reconstruction',
     points: [
       'Muscle Growth & Repair: Supplies the essential amino acid building blocks to repair and build lean muscle tissue.',
       'Satiety Booster: Digests slowly to keep you feeling full and satisfied, reducing cravings between meals.',
@@ -477,7 +477,7 @@ export const NUTRIENT_BENEFITS: Record<string, { summary: string; points: string
     ]
   },
   'Fat': {
-    summary: '🥑 Cell Protection & Hormone Support',
+    summary: 'Cell Protection & Hormone Support',
     points: [
       'Hormone Production: The foundational building blocks for creating key regulatory hormones like testosterone.',
       'Vitamin Absorber: Necessary for absorbing essential fat-soluble vitamins (A, D, E, and K) from your diet.',

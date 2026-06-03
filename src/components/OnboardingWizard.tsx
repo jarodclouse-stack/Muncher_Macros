@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import ReactDOM from 'react-dom';
 import { useDiary } from '../context/DiaryContext';
 import { ACTIVITY_LEVELS } from '../lib/constants';
-import { ChevronRight, ChevronLeft, User, Target, Flame, Sparkles } from 'lucide-react';
+import { ChevronRight, ChevronLeft, User, Target, Flame, Sparkles, Dumbbell, Scale } from 'lucide-react';
 
 const STEPS = ['welcome', 'body', 'goal', 'activity'] as const;
 type Step = typeof STEPS[number];
@@ -64,8 +64,8 @@ export const OnboardingWizard: React.FC<{ onComplete: () => void }> = ({ onCompl
     switch (step) {
       case 'welcome':
         return (
-          <div style={{ textAlign: 'center', display: 'flex', flexDirection: 'column', gap: '20px' }}>
-            <div style={{ fontSize: '48px' }}>💪</div>
+          <div style={{ textAlign: 'center', display: 'flex', flexDirection: 'column', gap: '20px', alignItems: 'center' }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '60px' }}><Dumbbell size={48} color="var(--theme-accent)" /></div>
             <h2 style={{ fontSize: '24px', fontWeight: '900', color: 'var(--theme-text)', margin: 0 }}>
               Welcome to Macro Munchers
             </h2>
@@ -131,9 +131,9 @@ export const OnboardingWizard: React.FC<{ onComplete: () => void }> = ({ onCompl
             </div>
             <p style={{ color: 'var(--theme-text-dim)', fontSize: '13px', margin: 0 }}>What are you working toward?</p>
             {[
-              { id: 'lose', label: 'Lose Weight', emoji: '🔥', desc: 'Cut body fat while preserving muscle' },
-              { id: 'maintain', label: 'Maintain Weight', emoji: '⚖️', desc: 'Stay at your current weight' },
-              { id: 'gain', label: 'Gain Muscle', emoji: '💪', desc: 'Build muscle with a calorie surplus' },
+              { id: 'lose', label: 'Lose Weight', icon: <Flame size={22} color="var(--theme-accent)" />, desc: 'Cut body fat while preserving muscle' },
+              { id: 'maintain', label: 'Maintain Weight', icon: <Scale size={22} color="var(--theme-accent)" />, desc: 'Stay at your current weight' },
+              { id: 'gain', label: 'Gain Muscle', icon: <Dumbbell size={22} color="var(--theme-accent)" />, desc: 'Build muscle with a calorie surplus' },
             ].map(g => (
               <div
                 key={g.id}
@@ -148,7 +148,7 @@ export const OnboardingWizard: React.FC<{ onComplete: () => void }> = ({ onCompl
                   display: 'flex', alignItems: 'center', gap: '12px',
                 }}
               >
-                <span style={{ fontSize: '24px' }}>{g.emoji}</span>
+                <span style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '28px', height: '28px' }}>{g.icon}</span>
                 <div>
                   <div style={{ fontWeight: '700', color: 'var(--theme-text)', fontSize: '14px' }}>{g.label}</div>
                   <div style={{ fontSize: '11px', color: 'var(--theme-text-dim)', marginTop: '2px' }}>{g.desc}</div>

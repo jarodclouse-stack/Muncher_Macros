@@ -992,7 +992,7 @@ body.theme-ember-forge {
   #shop-panel-themes .shop-card,#shop-panel-badges .shop-card{min-height:150px}
   #shop-panel-themes .shop-card > div,#shop-panel-badges .shop-card > div{color:inherit}
   @keyframes floatLeaf{0%{transform:translateY(0) rotate(0deg);opacity:.8}100%{transform:translateY(-110vh) rotate(360deg);opacity:0}}
-  .theme-anim-leaves::before,.theme-anim-leaves::after{content:'🍃';position:fixed;bottom:-30px;font-size:16px;animation:floatLeaf 8s linear infinite;pointer-events:none;z-index:0}
+  .theme-anim-leaves::before,.theme-anim-leaves::after{content:'';position:fixed;bottom:-30px;width:16px;height:16px;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%2348c78a'%3E%3Cpath d='M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 3.5 1 9.8a7 7 0 0 1-9 8.2Z'/%3E%3C/svg%3E");background-size:contain;background-repeat:no-repeat;animation:floatLeaf 8s linear infinite;pointer-events:none;z-index:0}
   .theme-anim-leaves::before{left:12%;animation-duration:7s}.theme-anim-leaves::after{left:68%;animation-duration:10s;animation-delay:3.5s}
   @keyframes twinkle{0%,100%{opacity:.15}50%{opacity:.9}}
   .theme-anim-stars::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;background-image:radial-gradient(1px 1px at 10% 15%,#fff 0,transparent 100%),radial-gradient(1px 1px at 28% 42%,#ccc 0,transparent 100%),radial-gradient(1px 1px at 54% 18%,#fff 0,transparent 100%),radial-gradient(1px 1px at 74% 62%,#ccc 0,transparent 100%),radial-gradient(1px 1px at 88% 8%,#fff 0,transparent 100%),radial-gradient(1px 1px at 44% 78%,#ccc 0,transparent 100%),radial-gradient(1px 1px at 60% 55%,#fff 0,transparent 100%),radial-gradient(1px 1px at 82% 35%,#ccc 0,transparent 100%);animation:twinkle 4s ease-in-out infinite}
@@ -1000,7 +1000,7 @@ body.theme-ember-forge {
   @keyframes rayPulse{0%,100%{opacity:.03}50%{opacity:.09}}
   .theme-anim-rays::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;background:conic-gradient(from 270deg at 50% -10%,rgba(68,187,255,0) 0deg,rgba(68,187,255,.18) 18deg,rgba(68,187,255,0) 36deg,rgba(68,187,255,.1) 55deg,rgba(68,187,255,0) 74deg,rgba(68,187,255,.14) 95deg,rgba(68,187,255,0) 115deg);animation:rayPulse 7s ease-in-out infinite}
   @keyframes fallPetal{0%{transform:translateY(-20px) rotate(0deg);opacity:.9}100%{transform:translateY(110vh) rotate(720deg);opacity:0}}
-  .theme-anim-petals::before,.theme-anim-petals::after{content:'🌸';position:fixed;top:-30px;font-size:15px;animation:fallPetal 8s linear infinite;pointer-events:none;z-index:0}
+  .theme-anim-petals::before,.theme-anim-petals::after{content:'';position:fixed;top:-30px;width:15px;height:15px;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23ffb7c5'%3E%3Cpath d='M12 2 C 16 6, 17 12, 12 22 C 7 12, 8 6, 12 2 Z'/%3E%3C/svg%3E");background-size:contain;background-repeat:no-repeat;animation:fallPetal 8s linear infinite;pointer-events:none;z-index:0}
   .theme-anim-petals::before{left:18%;animation-duration:6s}.theme-anim-petals::after{left:62%;animation-duration:9s;animation-delay:2.5s}
 
 

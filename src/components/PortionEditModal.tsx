@@ -29,9 +29,9 @@ const ALL_UNITS = [
 ];
 
 // ── Small units (< ~½ cup / ~120g) ───────────────────────────────────────────
-const SMALL_UNITS = ['tsp', 'tbsp', 'ml', 'oz', 'cup', 'g', 'serving'];
+const SMALL_UNITS = ['serving', 'tsp', 'tbsp', 'ml', 'oz', 'cup', 'g'];
 // ── Large units (≥ ~½ cup / ~120g) ───────────────────────────────────────────
-const LARGE_UNITS = ['cup', 'oz', 'g', 'kg', 'lb', 'serving'];
+const LARGE_UNITS = ['serving', 'cup', 'oz', 'g', 'kg', 'lb'];
 
 /**
  * Decide which unit list to show by default based on the food's base serving.
@@ -77,7 +77,7 @@ export const PortionEditModal: React.FC<PortionEditModalProps> = ({ meal, idx, o
   const defaultUnits = useMemo(() => getDefaultUnits(base), [base]);
 
   const [qty,         setQty]         = useState('1');
-  const [unit,        setUnit]        = useState(defaultUnits[0] || 'serving');
+  const [unit,        setUnit]        = useState('serving'); // always start on Serving(s)
   const [showAll,     setShowAll]     = useState(false);
 
   const activeUnits = showAll ? ALL_UNITS : ALL_UNITS.filter(u => defaultUnits.includes(u.id));

@@ -1,6 +1,36 @@
 import React, { useState } from 'react';
 import ReactDOM from 'react-dom';
-import { User, Mail, Lock, ShieldCheck, AlertCircle, Loader2, Settings as SettingsIcon, Trash2, Palette, RotateCcw, Check, X, Download } from 'lucide-react';
+import { 
+  User, Mail, Lock, ShieldCheck, AlertCircle, Loader2, Settings as SettingsIcon, 
+  Trash2, Palette, RotateCcw, Check, X, Download, Moon, Zap, Sun, Waves, Leaf, 
+  Castle, Sunset, Anchor, Gauge, Atom, Crown, Wind, Shield, Eye, Hammer, Sparkles 
+} from 'lucide-react';
+
+const getThemeIcon = (id: ThemeName, color: string, size = 16) => {
+  switch (id) {
+    case 'obsidian': return <Moon size={size} color={color} style={{ flexShrink: 0 }} />;
+    case 'olympian-gold': return <Zap size={size} color={color} style={{ flexShrink: 0 }} />;
+    case 'neon-wasteland': return <Zap size={size} color={color} style={{ flexShrink: 0 }} />;
+    case 'cybermancer': return <Sparkles size={size} color={color} style={{ flexShrink: 0 }} />;
+    case 'solar-flare': return <Sun size={size} color={color} style={{ flexShrink: 0 }} />;
+    case 'deep-sea': return <Waves size={size} color={color} style={{ flexShrink: 0 }} />;
+    case 'forest-phantom': return <Leaf size={size} color={color} style={{ flexShrink: 0 }} />;
+    case 'dionysus-vineyard': return <Sparkles size={size} color={color} style={{ flexShrink: 0 }} />;
+    case 'emerald-city': return <Castle size={size} color={color} style={{ flexShrink: 0 }} />;
+    case 'sunset-horizon': return <Sunset size={size} color={color} style={{ flexShrink: 0 }} />;
+    case 'poseidons-depths': return <Anchor size={size} color={color} style={{ flexShrink: 0 }} />;
+    case 'carbon-fiber': return <Gauge size={size} color={color} style={{ flexShrink: 0 }} />;
+    case 'quantum-violet': return <Atom size={size} color={color} style={{ flexShrink: 0 }} />;
+    case 'artemis-moonlight': return <Moon size={size} color={color} style={{ flexShrink: 0 }} />;
+    case 'gold-reserve': return <Crown size={size} color={color} style={{ flexShrink: 0 }} />;
+    case 'hermes-swiftness': return <Wind size={size} color={color} style={{ flexShrink: 0 }} />;
+    case 'midnight-galaxy': return <Atom size={size} color={color} style={{ flexShrink: 0 }} />;
+    case 'spartan-grit': return <Shield size={size} color={color} style={{ flexShrink: 0 }} />;
+    case 'oracles-vision': return <Eye size={size} color={color} style={{ flexShrink: 0 }} />;
+    case 'ember-forge': return <Hammer size={size} color={color} style={{ flexShrink: 0 }} />;
+    default: return <Sparkles size={size} color={color} style={{ flexShrink: 0 }} />;
+  }
+};
 import { Toast } from './Toast';
 import { ConfirmDialog } from './ConfirmDialog';
 import { PromptDialog } from './PromptDialog';
@@ -45,27 +75,27 @@ export const SettingsView: React.FC<{ onClose: () => void }> = ({ onClose }) => 
 
   const purchasedThemes = settings.purchasedThemes;
 
-  const themes: { id: ThemeName; name: string; emoji: string; price: number; colors: string[] }[] = [
-    { id: 'obsidian', name: 'Obsidian', emoji: '🌑', price: 0, colors: ['#080A0F', '#00F5D4'] },
-    { id: 'olympian-gold', name: 'Olympian Gold', emoji: '⚡', price: 0, colors: ['#0F0D08', '#D4AF37'] },
-    { id: 'neon-wasteland', name: 'Neon Wasteland', emoji: '⚡', price: 0, colors: ['#0D0221', '#39FF14'] },
-    { id: 'cybermancer', name: 'Cybermancer', emoji: '🔮', price: 0, colors: ['#0D0221', '#FF00E5'] },
-    { id: 'solar-flare', name: 'Solar Flare', emoji: '☀️', price: 0, colors: ['#1A0700', '#FF9F1C'] },
-    { id: 'deep-sea', name: 'Deep Sea', emoji: '🌊', price: 0, colors: ['#001219', '#0077B6'] },
-    { id: 'forest-phantom', name: 'Forest Phantom', emoji: '🌿', price: 0, colors: ['#0A1410', '#92FE9D'] },
-    { id: 'dionysus-vineyard', name: 'Dionysus\' Vineyard', emoji: '🍇', price: 0, colors: ['#1A0A1F', '#9D4EDD'] },
-    { id: 'emerald-city', name: 'Emerald City', emoji: '🏰', price: 0, colors: ['#012E1B', '#50C878'] },
-    { id: 'sunset-horizon', name: 'Sunset Horizon', emoji: '🌅', price: 0, colors: ['#1A0F0F', '#FF9F1C'] },
-    { id: 'poseidons-depths', name: 'Poseidon\'s Depths', emoji: '🔱', price: 0, colors: ['#051923', '#00A6FB'] },
-    { id: 'carbon-fiber', name: 'Carbon Fiber', emoji: '🏎️', price: 0, colors: ['#111111', '#E63946'] },
-    { id: 'quantum-violet', name: 'Quantum Violet', emoji: '🌌', price: 0, colors: ['#0F0014', '#9A48D0'] },
-    { id: 'artemis-moonlight', name: 'Artemis\' Moonlight', emoji: '🌙', price: 0, colors: ['#0B0E14', '#A5B4FC'] },
-    { id: 'gold-reserve', name: 'Gold Reserve', emoji: '🔱', price: 0, colors: ['#111111', '#D4AF37'] },
-    { id: 'hermes-swiftness', name: 'Hermes\' Swiftness', emoji: '👟', price: 0, colors: ['#1F1D1A', '#F97316'] },
-    { id: 'midnight-galaxy', name: 'Midnight Galaxy', emoji: '🌌', price: 0, colors: ['#10002B', '#E0AAFF'] },
-    { id: 'spartan-grit', name: 'Spartan Grit', emoji: '🛡️', price: 0, colors: ['#0F0A0A', '#991B1B'] },
-    { id: 'oracles-vision', name: 'Oracle\'s Vision', emoji: '🔮', price: 0, colors: ['#0D0B12', '#C084FC'] },
-    { id: 'ember-forge', name: 'Ember Forge', emoji: '⚒️', price: 0, colors: ['#1B0B04', '#FF4500'] }
+  const themes: { id: ThemeName; name: string; price: number; colors: string[] }[] = [
+    { id: 'obsidian', name: 'Obsidian', price: 0, colors: ['#080A0F', '#00F5D4'] },
+    { id: 'olympian-gold', name: 'Olympian Gold', price: 0, colors: ['#0F0D08', '#D4AF37'] },
+    { id: 'neon-wasteland', name: 'Neon Wasteland', price: 0, colors: ['#0D0221', '#39FF14'] },
+    { id: 'cybermancer', name: 'Cybermancer', price: 0, colors: ['#0D0221', '#FF00E5'] },
+    { id: 'solar-flare', name: 'Solar Flare', price: 0, colors: ['#1A0700', '#FF9F1C'] },
+    { id: 'deep-sea', name: 'Deep Sea', price: 0, colors: ['#001219', '#0077B6'] },
+    { id: 'forest-phantom', name: 'Forest Phantom', price: 0, colors: ['#0A1410', '#92FE9D'] },
+    { id: 'dionysus-vineyard', name: 'Dionysus\' Vineyard', price: 0, colors: ['#1A0A1F', '#9D4EDD'] },
+    { id: 'emerald-city', name: 'Emerald City', price: 0, colors: ['#012E1B', '#50C878'] },
+    { id: 'sunset-horizon', name: 'Sunset Horizon', price: 0, colors: ['#1A0F0F', '#FF9F1C'] },
+    { id: 'poseidons-depths', name: 'Poseidon\'s Depths', price: 0, colors: ['#051923', '#00A6FB'] },
+    { id: 'carbon-fiber', name: 'Carbon Fiber', price: 0, colors: ['#111111', '#E63946'] },
+    { id: 'quantum-violet', name: 'Quantum Violet', price: 0, colors: ['#0F0014', '#9A48D0'] },
+    { id: 'artemis-moonlight', name: 'Artemis\' Moonlight', price: 0, colors: ['#0B0E14', '#A5B4FC'] },
+    { id: 'gold-reserve', name: 'Gold Reserve', price: 0, colors: ['#111111', '#D4AF37'] },
+    { id: 'hermes-swiftness', name: 'Hermes\' Swiftness', price: 0, colors: ['#1F1D1A', '#F97316'] },
+    { id: 'midnight-galaxy', name: 'Midnight Galaxy', price: 0, colors: ['#10002B', '#E0AAFF'] },
+    { id: 'spartan-grit', name: 'Spartan Grit', price: 0, colors: ['#0F0A0A', '#991B1B'] },
+    { id: 'oracles-vision', name: 'Oracle\'s Vision', price: 0, colors: ['#0D0B12', '#C084FC'] },
+    { id: 'ember-forge', name: 'Ember Forge', price: 0, colors: ['#1B0B04', '#FF4500'] }
   ];
 
   const handleSelectTheme = (t: any) => {
@@ -354,7 +384,21 @@ export const SettingsView: React.FC<{ onClose: () => void }> = ({ onClose }) => 
                         BUY
                       </div>
                     )}
-                    <div style={{ fontSize: '24px', marginBottom: '8px' }}>{t.emoji}</div>
+                    <div style={{ 
+                      display: 'flex', 
+                      alignItems: 'center', 
+                      justifyContent: 'center',
+                      width: '38px', 
+                      height: '38px', 
+                      margin: '0 auto 12px auto', 
+                      borderRadius: '50%', 
+                      background: 'rgba(255,255,255,0.04)', 
+                      border: '1.5px solid rgba(255,255,255,0.12)', 
+                      boxShadow: isSelected ? `0 0 15px ${t.colors[1]}55` : 'none',
+                      color: t.colors[1]
+                    }}>
+                      {getThemeIcon(t.id, t.colors[1], 18)}
+                    </div>
                     <div style={{ 
                       fontSize: '11px', 
                       fontWeight: '900', 
@@ -364,12 +408,7 @@ export const SettingsView: React.FC<{ onClose: () => void }> = ({ onClose }) => 
                       textTransform: 'uppercase',
                       letterSpacing: '0.05em'
                     }}>{t.name}</div>
-                    {!isPurchased && <div style={{ fontSize: '9px', color: 'var(--theme-accent)', fontWeight: '700', marginBottom: '8px' }}>{t.price} GEMS</div>}
-                    
-                    <div style={{ display: 'flex', gap: '4px', width: '50px', height: '10px', margin: '0 auto', borderRadius: '5px', overflow: 'hidden', border: '1px solid rgba(255,255,255,0.15)', boxShadow: isSelected ? '0 0 12px var(--theme-accent)' : 'none' }}>
-                      <div style={{ flex: 1, background: t.colors[0] }} />
-                      <div style={{ flex: 1, background: t.colors[1] }} />
-                    </div>
+                    {!isPurchased && <div style={{ fontSize: '9px', color: 'var(--theme-accent)', fontWeight: '700', marginBottom: '4px' }}>{t.price} GEMS</div>}
                     
                     {isSelected && (
                       <div style={{ position: 'absolute', bottom: '-8px', left: '50%', transform: 'translateX(-50%)', background: 'var(--theme-accent)', color: '#000', borderRadius: '50%', padding: '2px', boxShadow: '0 4px 12px var(--theme-accent-dim)' }}>

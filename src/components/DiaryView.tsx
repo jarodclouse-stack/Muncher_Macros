@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom';
 import { useDiary } from '../context/DiaryContext';
 import { sumFoods, estimateNutriScore } from '../lib/food/serving-converter';
 import { computeGoals } from '../lib/goals/compute';
-import { Utensils, Trash2, Sparkles, Droplets, ChevronLeft, ChevronRight, ChevronDown, ChevronUp, Scale, Dumbbell, X } from 'lucide-react';
+import { Utensils, Trash2, Sparkles, Droplets, ChevronLeft, ChevronRight, ChevronDown, ChevronUp, Scale, Dumbbell, X, Plus, Minus } from 'lucide-react';
 import { MEALS, ALL_MICRO_KEYS, MICRO_UNITS } from '../lib/constants';
 
 import { AddFoodModal } from './AddFoodModal';
@@ -40,21 +40,21 @@ export const DiaryView: React.FC = () => {
     let text = '';
     const diff = remainingCals;
     
-    if (foodLog.length === 0) return "Ready for a legendary day of fueling? Log your first meal to start! 🚀";
+    if (foodLog.length === 0) return "Ready for a legendary day of fueling? Log your first meal to start!";
 
     if (diff > 0) {
-        text += `Excellent! You still have ~${Math.round(diff)} kcal left to power your goals today. ⚡️ `;
+        text += `Excellent! You still have ~${Math.round(diff)} kcal left to power your goals today. `;
     } else if (diff === 0) {
-        text += `Absolute bulls-eye! You hit your target exactly. Legendary discipline! 🎯✨ `;
+        text += `Absolute bulls-eye! You hit your target exactly. Legendary discipline! `;
     } else {
-        text += `A little extra fuel today! You're ${Math.round(Math.abs(diff))} kcal over, but focus on keeping your macros clean now! 🍏 `;
+        text += `A little extra fuel today! You're ${Math.round(Math.abs(diff))} kcal over, but focus on keeping your macros clean now! `;
     }
 
     const proDiff = (computed.proteinG || 150) - totals.protein;
     if (proDiff > 0) {
-        text += `Just ${Math.round(proDiff)}g more protein to reach peak muscle support! 💪`;
+        text += `Just ${Math.round(proDiff)}g more protein to reach peak muscle support!`;
     } else {
-        text += `Protein goal crushed! Your muscles are thanking you. 🔥🏆`;
+        text += `Protein goal crushed! Your muscles are thanking you.`;
     }
     return text;
   };
@@ -488,13 +488,13 @@ const DiaryEntryItem = ({ log, onRemove, onEditPortion, onMove }: any) => {
         onMouseLeave={e => (e.currentTarget.style.transform = 'translateY(0)')}
       >
         {/* Top Row: Name + Nutri-Score badge + Trash */}
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '10px', gap: '8px' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px', gap: '8px' }}>
           <div style={{ flex: 1, minWidth: 0 }}>
             <div style={{ fontWeight: '800', color: 'var(--theme-accent)', fontSize: '15px', lineHeight: '1.3', wordBreak: 'break-word' }}>{f.name}</div>
             {f.brand && <div style={{ fontSize: '10px', color: 'rgba(255,255,255,0.45)', fontWeight: '600', marginTop: '2px' }}>• {f.brand}</div>}
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flexShrink: 0 }}>
-            {/* Nutri-Score badge — clickable, bigger, with lateral padding */}
+            {/* Nutri-Score badge — clickable, horizontal pill design, perfectly aligned */}
             {(() => {
               const { grade: g, estimated } = estimateNutriScore(f);
               if (!g) return null;
@@ -504,25 +504,43 @@ const DiaryEntryItem = ({ log, onRemove, onEditPortion, onMove }: any) => {
                   onClick={(e) => { e.stopPropagation(); setShowNutriPopup(true); }}
                   title={`Nutri-Score ${g.toUpperCase()}${estimated ? ' (estimated)' : ''} — tap to learn more`}
                   style={{
-                    display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '2px',
+                    display: 'flex',
+                    flexDirection: 'row',
+                    alignItems: 'center',
+                    gap: '8px',
+                    height: '38px',
                     background: `${bg}18`,
                     border: `1px solid ${bg}55`,
                     borderRadius: '12px',
-                    padding: '6px 12px',
+                    padding: '0 10px 0 12px',
                     cursor: 'pointer',
                     boxShadow: `0 0 10px ${bg}30`,
-                    transition: 'all 0.15s',
+                    transition: 'all 0.15s ease',
                   }}
-                  onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.boxShadow = `0 0 16px ${bg}60`; }}
-                  onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.boxShadow = `0 0 10px ${bg}30`; }}
+                  onMouseEnter={e => {
+                    const btn = e.currentTarget as HTMLButtonElement;
+                    btn.style.boxShadow = `0 0 16px ${bg}60`;
+                    btn.style.transform = 'scale(1.02)';
+                  }}
+                  onMouseLeave={e => {
+                    const btn = e.currentTarget as HTMLButtonElement;
+                    btn.style.boxShadow = `0 0 10px ${bg}30`;
+                    btn.style.transform = 'scale(1)';
+                  }}
                 >
-                  <span style={{ fontSize: '7px', fontWeight: '900', color: 'rgba(255,255,255,0.45)', letterSpacing: '0.8px', textTransform: 'uppercase' }}>{estimated ? '~' : ''}NUTRI</span>
+                  <span style={{ fontSize: '9px', fontWeight: '900', color: 'rgba(255,255,255,0.6)', letterSpacing: '0.8px', textTransform: 'uppercase' }}>{estimated ? '~' : ''}NUTRI</span>
                   <span style={{
-                    width: '30px', height: '30px', borderRadius: '9px',
+                    width: '26px',
+                    height: '26px',
+                    borderRadius: '8px',
                     background: bg,
-                    display: 'flex', alignItems: 'center', justifyContent: 'center',
-                    fontSize: '15px', fontWeight: '900', color: '#000',
-                    boxShadow: `0 0 12px ${bg}90`,
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    fontSize: '14px',
+                    fontWeight: '900',
+                    color: '#000',
+                    boxShadow: `0 0 8px ${bg}90`,
                   }}>
                     {g.toUpperCase()}
                   </span>
@@ -531,7 +549,30 @@ const DiaryEntryItem = ({ log, onRemove, onEditPortion, onMove }: any) => {
             })()}
             <button 
               onClick={(e) => { e.stopPropagation(); onRemove(); }} 
-              style={{ background: 'rgba(255,107,107,0.1)', border: '1px solid rgba(255,107,107,0.2)', color: '#FF6B6B', cursor: 'pointer', padding: '8px', borderRadius: '10px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+              style={{
+                height: '38px',
+                width: '38px',
+                background: 'rgba(255,107,107,0.1)',
+                border: '1px solid rgba(255,107,107,0.2)',
+                color: '#FF6B6B',
+                cursor: 'pointer',
+                borderRadius: '12px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                flexShrink: 0,
+                transition: 'all 0.15s ease',
+              }}
+              onMouseEnter={e => {
+                const btn = e.currentTarget as HTMLButtonElement;
+                btn.style.background = 'rgba(255,107,107,0.2)';
+                btn.style.transform = 'scale(1.02)';
+              }}
+              onMouseLeave={e => {
+                const btn = e.currentTarget as HTMLButtonElement;
+                btn.style.background = 'rgba(255,107,107,0.1)';
+                btn.style.transform = 'scale(1)';
+              }}
             >
               <Trash2 size={16} />
             </button>
@@ -821,6 +862,32 @@ const WeeklyMacro = ({ label, val, color }: any) => (
   </div>
 );
 
+const WaterBottleIcon = ({ color }: { color: string }) => (
+  <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke={color} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ display: 'block' }}>
+    <rect x="10" y="2" width="4" height="2" rx="0.5" fill={color} />
+    <path d="M9 4.5h6" />
+    <path d="M10 4.5v2.5h4v-2.5" />
+    <path d="M8.5 7h7a1.5 1.5 0 0 1 1.5 1.5v11a2 2 0 0 1-2 2h-6a2 2 0 0 1-2-2v-11A1.5 1.5 0 0 1 8.5 7z" />
+    <path d="M9.5 11h5" opacity="0.4" />
+    <path d="M9.5 14h5" opacity="0.4" />
+    <path d="M9 17.5c1.5 0 1.5-1 3-1s1.5 1 3 1" strokeWidth="1.5" opacity="0.7" />
+  </svg>
+);
+
+const WaterJugIcon = ({ color }: { color: string }) => (
+  <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke={color} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ display: 'block' }}>
+    <rect x="9" y="2" width="4" height="1.5" rx="0.5" fill={color} />
+    <path d="M9 3.5h6" />
+    <path d="M10 3.5v2h4v-2" />
+    <path d="M7 6.5h7.5a1.5 1.5 0 0 1 1.5 1.5v11.5a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2V8a1.5 1.5 0 0 1 1-1.5" />
+    <path d="M14.5 9h2.5a1.5 1.5 0 0 1 1.5 1.5v4.5a1.5 1.5 0 0 1-1.5 1.5h-2.5" />
+    <path d="M8 10h1.5" strokeWidth="1.5" opacity="0.4" />
+    <path d="M8 13h2.5" strokeWidth="1.5" opacity="0.4" />
+    <path d="M8 16h1.5" strokeWidth="1.5" opacity="0.4" />
+    <path d="M7.5 18c1 0 1-0.8 2-0.8s1 0.8 2 0.8 1-0.8 2-0.8 1 0.8 2.5 0.8" strokeWidth="1.5" opacity="0.7" />
+  </svg>
+);
+
 const HydrationCard = ({ current, goal, onAdd }: { current: number, goal: number, onAdd: (v: number) => void }) => {
   const pct = Math.min(100, (current / (goal || 120)) * 100);
   const [customVal, setCustomVal] = useState('');
@@ -961,30 +1028,35 @@ const HydrationCard = ({ current, goal, onAdd }: { current: number, goal: number
         </div>
 
         {/* Quick Action Buttons */}
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '10px' }}>
-           <WaterBtn icon="🥤" label={mode === 'add' ? "+8 oz" : "-8 oz"} onClick={() => handleQuickAdd(8)} color={mode === 'remove' ? 'var(--theme-error-dim, rgba(255,107,107,0.05))' : undefined} />
-           <WaterBtn icon="🍾" label={mode === 'add' ? "+16 oz" : "-16 oz"} onClick={() => handleQuickAdd(16)} color={mode === 'remove' ? 'var(--theme-error-dim, rgba(255,107,107,0.1))' : 'var(--theme-accent-dim, rgba(0,201,255,0.1))'} />
-           {isCustom ? (
-             <div style={{ gridColumn: 'span 2', display: 'flex', background: 'var(--theme-panel-dim, rgba(0,0,0,0.3))', borderRadius: '14px', padding: '4px', border: mode === 'add' ? '1px solid var(--theme-accent, #00C9FF)' : '1px solid var(--theme-error, #FF6B6B)' }}>
-                 <input 
-                   autoFocus
-                   type="number" 
-                   placeholder={mode === 'add' ? "Add oz" : "Remove oz"} 
-                   value={customVal} 
-                   onChange={e => setCustomVal(e.target.value)} 
-                   onBlur={() => !customVal && setIsCustom(false)}
-                   onKeyDown={e => e.key === 'Enter' && handleCustomAdd()}
-                   style={{ flex: 1, background: 'none', border: 'none', color: 'var(--theme-text-on-panel)', padding: '0 8px', width: '100%', outline: 'none', fontSize: '14px' }} 
-                 />
-               <button onClick={handleCustomAdd} style={{ background: mode === 'add' ? 'var(--theme-accent, #00C9FF)' : 'var(--theme-error, #FF6B6B)', border: 'none', borderRadius: '10px', color: mode === 'add' ? 'var(--theme-bg, #000)' : 'var(--theme-text-on-panel)', padding: '0 12px', fontWeight: 'bold', cursor: 'pointer' }}>{mode === 'add' ? 'Add' : 'Remove'}</button>
-             </div>
-           ) : (
-             <>
-               <WaterBtn icon="➕" label="Custom +" onClick={() => { setIsCustom(true); setMode('add'); }} color="var(--theme-accent-dim, rgba(0,201,255,0.15))" />
-               <WaterBtn icon="➖" label="Custom -" onClick={() => { setIsCustom(true); setMode('remove'); }} color="var(--theme-error-dim, rgba(255,107,107,0.15))" />
-             </>
-           )}
-        </div>
+        {(() => {
+          const iconColor = mode === 'remove' ? 'var(--theme-error, #FF6B6B)' : 'var(--theme-accent, #00C9FF)';
+          return (
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '10px' }}>
+               <WaterBtn icon={<WaterBottleIcon color={iconColor} />} label={mode === 'add' ? "+8 oz" : "-8 oz"} onClick={() => handleQuickAdd(8)} color={mode === 'remove' ? 'var(--theme-error-dim, rgba(255,107,107,0.05))' : undefined} />
+               <WaterBtn icon={<WaterJugIcon color={iconColor} />} label={mode === 'add' ? "+16 oz" : "-16 oz"} onClick={() => handleQuickAdd(16)} color={mode === 'remove' ? 'var(--theme-error-dim, rgba(255,107,107,0.1))' : 'var(--theme-accent-dim, rgba(0,201,255,0.1))'} />
+               {isCustom ? (
+                 <div style={{ gridColumn: 'span 2', display: 'flex', background: 'var(--theme-panel-dim, rgba(0,0,0,0.3))', borderRadius: '14px', padding: '4px', border: mode === 'add' ? '1px solid var(--theme-accent, #00C9FF)' : '1px solid var(--theme-error, #FF6B6B)' }}>
+                     <input 
+                       autoFocus
+                       type="number" 
+                       placeholder={mode === 'add' ? "Add oz" : "Remove oz"} 
+                       value={customVal} 
+                       onChange={e => setCustomVal(e.target.value)} 
+                       onBlur={() => !customVal && setIsCustom(false)}
+                       onKeyDown={e => e.key === 'Enter' && handleCustomAdd()}
+                       style={{ flex: 1, background: 'none', border: 'none', color: 'var(--theme-text-on-panel)', padding: '0 8px', width: '100%', outline: 'none', fontSize: '14px' }} 
+                     />
+                   <button onClick={handleCustomAdd} style={{ background: mode === 'add' ? 'var(--theme-accent, #00C9FF)' : 'var(--theme-error, #FF6B6B)', border: 'none', borderRadius: '10px', color: mode === 'add' ? 'var(--theme-bg, #000)' : 'var(--theme-text-on-panel)', padding: '0 12px', fontWeight: 'bold', cursor: 'pointer' }}>{mode === 'add' ? 'Add' : 'Remove'}</button>
+                 </div>
+               ) : (
+                 <>
+                   <WaterBtn icon={<Plus size={18} color="var(--theme-accent, #00C9FF)" />} label="Custom +" onClick={() => { setIsCustom(true); setMode('add'); }} color="var(--theme-accent-dim, rgba(0,201,255,0.15))" />
+                   <WaterBtn icon={<Minus size={18} color="var(--theme-error, #FF6B6B)" />} label="Custom -" onClick={() => { setIsCustom(true); setMode('remove'); }} color="var(--theme-error-dim, rgba(255,107,107,0.15))" />
+                 </>
+               )}
+            </div>
+          );
+        })()}
       </div>
     </div>
   );
@@ -1011,7 +1083,7 @@ const WaterBtn = ({ icon, label, onClick, color = 'var(--theme-panel-dim, rgba(2
     onMouseOver={e => e.currentTarget.style.transform = 'translateY(-2px)'}
     onMouseOut={e => e.currentTarget.style.transform = 'translateY(0)'}
   >
-    <span style={{ fontSize: '18px' }}>{icon}</span>
+    <span style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '22px' }}>{icon}</span>
     <span style={{ fontSize: '11px', fontWeight: '800' }}>{label}</span>
   </button>
 );

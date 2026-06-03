@@ -3,7 +3,9 @@ import { useDiary } from '../context/DiaryContext';
 import { 
   Plus, Check, X, Search, Sparkles, ChevronDown, 
   Flame, Activity, Trash2, Loader2, BookmarkCheck,
-  Info, Edit2, Camera
+  Info, Edit2, Camera, Brain, Lightbulb, ClipboardList, CheckCircle,
+  AlertTriangle, TrendingDown, Zap, Egg, Wheat, Salad, Apple, Coffee,
+  GlassWater, Cookie, Utensils, Dumbbell
 } from 'lucide-react';
 import { ALL_MICRO_KEYS, SERVING_UNITS, MICRO_CATEGORIES } from '../lib/constants';
 import { computeMultiplier, normalizeFoodResult, scaleLegacyFoodByAmount, calculateMacroBalance, scaleToTarget, getCarbClassification, estimateNutriScore } from '../lib/food/serving-converter';
@@ -15,6 +17,44 @@ import { BarcodeScanner } from './BarcodeScanner';
 import { ConfirmDialog } from './ConfirmDialog';
 import { PromptDialog } from './PromptDialog';
 import type { Food, RecipeItem } from '../types/food';
+
+const getCategoryIcon = (cat: string, size = 16) => {
+  switch (String(cat).toLowerCase()) {
+    case 'protein': return <Egg size={size} color="#F2994A" style={{ display: 'inline-block', verticalAlign: 'middle' }} />;
+    case 'grain': return <Wheat size={size} color="#F2C94C" style={{ display: 'inline-block', verticalAlign: 'middle' }} />;
+    case 'vegetable': return <Salad size={size} color="#27AE60" style={{ display: 'inline-block', verticalAlign: 'middle' }} />;
+    case 'fruit': return <Apple size={size} color="#EB5757" style={{ display: 'inline-block', verticalAlign: 'middle' }} />;
+    case 'dairy': return <GlassWater size={size} color="#56CCF2" style={{ display: 'inline-block', verticalAlign: 'middle' }} />;
+    case 'sauce':
+    case 'condiment': return <GlassWater size={size} color="#E08030" opacity={0.8} style={{ display: 'inline-block', verticalAlign: 'middle' }} />;
+    case 'topping': return <Sparkles size={size} color="#F2C94C" style={{ display: 'inline-block', verticalAlign: 'middle' }} />;
+    case 'side': return <Utensils size={size} color="#BDBDBD" opacity={0.8} style={{ display: 'inline-block', verticalAlign: 'middle' }} />;
+    case 'beverage': return <Coffee size={size} color="#8D5B4C" style={{ display: 'inline-block', verticalAlign: 'middle' }} />;
+    case 'dessert':
+    case 'snack': return <Cookie size={size} color="#D35400" style={{ display: 'inline-block', verticalAlign: 'middle' }} />;
+    default: return <Utensils size={size} color="#BDBDBD" style={{ display: 'inline-block', verticalAlign: 'middle' }} />;
+  }
+};
+
+const getMineralIcon = (key: string, size = 11) => {
+  if (key === 'iron') return <Dumbbell size={size} style={{ display: 'inline-block', verticalAlign: 'middle', marginRight: '4px' }} />;
+  if (key === 'sodium') return <AlertTriangle size={size} style={{ display: 'inline-block', verticalAlign: 'middle', marginRight: '4px' }} />;
+  if (key === 'calcium') return <Activity size={size} style={{ display: 'inline-block', verticalAlign: 'middle', marginRight: '4px' }} />;
+  if (key === 'potassium') return <Zap size={size} style={{ display: 'inline-block', verticalAlign: 'middle', marginRight: '4px' }} />;
+  return null;
+};
+
+const getCarbClassIcon = (key: string, size = 11) => {
+  switch (key) {
+    case 'sustained-energy': return <Wheat size={size} color="#F2C94C" style={{ display: 'inline-block', verticalAlign: 'middle', marginRight: '4px' }} />;
+    case 'natural-carbs': return <Apple size={size} color="#EB5757" style={{ display: 'inline-block', verticalAlign: 'middle', marginRight: '4px' }} />;
+    case 'refined-carbs': return <Cookie size={size} color="#D35400" style={{ display: 'inline-block', verticalAlign: 'middle', marginRight: '4px' }} />;
+    case 'simple-carbs': return <GlassWater size={size} color="#56CCF2" style={{ display: 'inline-block', verticalAlign: 'middle', marginRight: '4px' }} />;
+    case 'none':
+    case 'low-carb': return <Salad size={size} color="#27AE60" style={{ display: 'inline-block', verticalAlign: 'middle', marginRight: '4px' }} />;
+    default: return <Utensils size={size} color="#BDBDBD" style={{ display: 'inline-block', verticalAlign: 'middle', marginRight: '4px' }} />;
+  }
+};
 
 const CollapsibleEntrySection = ({ title, isOpen, onToggle, children }: { title: string, isOpen: boolean, onToggle: () => void, children: React.ReactNode }) => (
   <div style={{ border: '1px solid var(--theme-border)', borderRadius: '16px', overflow: 'hidden', background: 'var(--theme-panel-dim)', marginBottom: '8px' }}>
@@ -617,7 +657,7 @@ export const PantryView: React.FC<PantryViewProps> = ({ initialMeal, onClose, is
     setSaveRecipeConfig(null);
     setIsAiReviewing(false);
     setAiStagedResults([]);
-    showNotification(`"${saveName}" saved to Kitchen Pantry! 🍳`);
+    showNotification(`"${saveName}" saved to Kitchen Pantry!`);
   };
 
   return (
@@ -807,7 +847,7 @@ export const PantryView: React.FC<PantryViewProps> = ({ initialMeal, onClose, is
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', fontSize: '13px', color: 'var(--theme-text-dim-on-panel)', marginTop: '4px', width: '100%' }}>
                   <div style={{ display: 'flex', gap: '10px', alignItems: 'flex-start' }}>
                     <span style={{ color: 'var(--theme-accent)', fontWeight: '800', display: 'inline-flex', alignItems: 'center', gap: '6px', width: '105px', flexShrink: 0 }}>
-                      <span style={{ fontSize: '16px' }}>🔍</span> Search:
+                      <Search size={14} /> Search:
                     </span>
                     <span style={{ lineHeight: '1.5', flex: 1 }}>
                       Our dual-mode tool merges database queries and semantic AI search:
@@ -819,7 +859,7 @@ export const PantryView: React.FC<PantryViewProps> = ({ initialMeal, onClose, is
                   </div>
                   <div style={{ display: 'flex', gap: '10px', alignItems: 'flex-start' }}>
                     <span style={{ color: 'var(--theme-accent)', fontWeight: '800', display: 'inline-flex', alignItems: 'center', gap: '6px', width: '105px', flexShrink: 0 }}>
-                      <span style={{ fontSize: '16px' }}>📸</span> Scan:
+                      <Camera size={14} /> Scan:
                     </span>
                     <span style={{ lineHeight: '1.5', flex: 1 }}>
                       Activates your device camera to <strong>scan food barcodes</strong> (perfect for instantly logging standard packaged products and groceries without any manual entry).
@@ -827,7 +867,7 @@ export const PantryView: React.FC<PantryViewProps> = ({ initialMeal, onClose, is
                   </div>
                   <div style={{ display: 'flex', gap: '10px', alignItems: 'flex-start' }}>
                     <span style={{ color: 'var(--theme-accent)', fontWeight: '800', display: 'inline-flex', alignItems: 'center', gap: '6px', width: '105px', flexShrink: 0 }}>
-                      <span style={{ fontSize: '16px' }}>🧠</span> Muncher:
+                      <Brain size={14} /> Muncher:
                     </span>
                     <span style={{ lineHeight: '1.5', flex: 1 }}>
                       Describe <strong>whole multi-ingredient meals</strong> in natural language and Muncher Meal Intelligence automatically breaks them down into macros!
@@ -974,7 +1014,7 @@ export const PantryView: React.FC<PantryViewProps> = ({ initialMeal, onClose, is
                     alignItems: 'flex-start',
                     marginTop: '-4px'
                   }}>
-                    <span style={{ fontSize: '16px', marginTop: '-1px' }}>💡</span>
+                    <Lightbulb size={16} color="var(--theme-accent)" style={{ flexShrink: 0, marginTop: '1px' }} />
                     <span style={{ fontSize: '12px', color: 'rgba(255, 255, 255, 0.85)', lineHeight: '1.4', fontWeight: '500' }}>
                       <strong>Serving Size Tip:</strong> AI portion sizes are smart guesses and might not be perfect. Don't worry! You can easily tweak and change them on the next screen before adding them to your food log.
                     </span>
@@ -1197,7 +1237,7 @@ export const PantryView: React.FC<PantryViewProps> = ({ initialMeal, onClose, is
                       >
                         {isVerifyingPhoto
                           ? <><Loader2 size={16} className="spin" /> VERIFYING PHOTO...</>
-                          : <><Camera size={16} /> 📷 VERIFY WITH PHOTO</>
+                          : <><Camera size={16} /> VERIFY WITH PHOTO</>
                         }
                       </label>
                     </div>
@@ -1216,10 +1256,11 @@ export const PantryView: React.FC<PantryViewProps> = ({ initialMeal, onClose, is
                         {/* Header */}
                         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '10px', gap: '10px' }}>
                           <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                            <span style={{ fontSize: '16px' }}>
-                              {verifyResult.portionAssessment === 'accurate' ? '✅' :
-                               verifyResult.portionAssessment === 'too_large' ? '⚠️' :
-                               verifyResult.portionAssessment === 'too_small' ? '📉' : '🔍'}
+                            <span style={{ display: 'inline-flex', alignItems: 'center' }}>
+                              {verifyResult.portionAssessment === 'accurate' ? <CheckCircle size={16} color="var(--theme-success)" /> :
+                               verifyResult.portionAssessment === 'too_large' ? <AlertTriangle size={16} color="var(--theme-warning)" /> :
+                               verifyResult.portionAssessment === 'too_small' ? <TrendingDown size={16} color="var(--theme-error)" /> :
+                               <Search size={16} color="var(--theme-accent)" />}
                             </span>
                             <span style={{ fontSize: '11px', fontWeight: '900', color: verifyResult.significantDifference ? 'var(--theme-error)' : 'var(--theme-success)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
                               {verifyResult.significantDifference ? 'Adjustment Suggested' : 'Looks Good!'}
@@ -1281,7 +1322,7 @@ export const PantryView: React.FC<PantryViewProps> = ({ initialMeal, onClose, is
                               });
                               setAiStagedResults(updated);
                               setVerifyResult(null);
-                              showNotification('Meal updated with photo verification! 📷');
+                              showNotification('Meal updated with photo verification!');
                             }}
                             style={{ padding: '10px', background: verifyResult.significantDifference ? 'rgba(255,107,107,0.15)' : 'rgba(146,254,157,0.15)', border: `1px solid ${verifyResult.significantDifference ? 'rgba(255,107,107,0.4)' : 'rgba(146,254,157,0.4)'}`, borderRadius: '12px', color: verifyResult.significantDifference ? 'var(--theme-error)' : 'var(--theme-success)', fontSize: '11px', fontWeight: '800', cursor: 'pointer' }}
                           >
@@ -1305,8 +1346,8 @@ export const PantryView: React.FC<PantryViewProps> = ({ initialMeal, onClose, is
                   }}>
                     {aiTotalServingUnit !== 'serving' && (
                       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '8px' }}>
-                        <span style={{ fontSize: '11px', color: 'var(--theme-text-dim)', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
-                          📋 Portion Unit
+                        <span style={{ fontSize: '11px', color: 'var(--theme-text-dim)', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.5px', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                          <ClipboardList size={12} color="var(--theme-accent)" /> Portion Unit
                         </span>
                         <div style={{ display: 'flex', background: 'rgba(0,0,0,0.3)', padding: '2px', borderRadius: '10px', border: '1px solid rgba(255,255,255,0.05)' }}>
                           <button
@@ -1487,12 +1528,8 @@ export const PantryView: React.FC<PantryViewProps> = ({ initialMeal, onClose, is
                                   color: 'rgba(255,255,255,0.85)', borderRadius: '6px', padding: '2px 7px',
                                   fontSize: '9px', fontWeight: '700', letterSpacing: '0.3px', textTransform: 'lowercase'
                                 }}>
-                                  {
-                                    ({ protein: '🥩', grain: '🌾', vegetable: '🥦', fruit: '🍎', dairy: '🧀',
-                                      sauce: '🫙', topping: '🧂', side: '🍚', beverage: '🥤',
-                                      dessert: '🍫', condiment: '🫙', snack: '🍟', other: '🍽️'
-                                    } as Record<string, string>)[String((f as any).category)] || '🍽️'
-                                  } {(f as any).category}
+                                  {getCategoryIcon(String((f as any).category), 11)}
+                                  <span style={{ marginLeft: '4px' }}>{(f as any).category}</span>
                                 </span>
                               )}
                             </div>
@@ -2314,17 +2351,21 @@ export const PantryView: React.FC<PantryViewProps> = ({ initialMeal, onClose, is
                 const calciumMg = (Number((configuringFood as any).Calcium || (configuringFood as any).calcium) || 0) * multiplier;
                 const potassiumMg = (Number((configuringFood as any).Potassium || (configuringFood as any).potassium) || 0) * multiplier;
 
-                const mineralBadges: { label: string; emoji: string }[] = [];
-                if (ironMg > 4) mineralBadges.push({ label: 'Dense in Iron', emoji: '🔩' });
-                if (sodiumMg > 600) mineralBadges.push({ label: 'Dense in Sodium', emoji: '🧂' });
-                if (calciumMg > 300) mineralBadges.push({ label: 'Dense in Calcium', emoji: '🦴' });
-                if (potassiumMg > 400) mineralBadges.push({ label: 'Dense in Potassium', emoji: '⚡' });
+                const mineralBadges: { label: string; key: string }[] = [];
+                if (ironMg > 4) mineralBadges.push({ label: 'Dense in Iron', key: 'iron' });
+                if (sodiumMg > 600) mineralBadges.push({ label: 'Dense in Sodium', key: 'sodium' });
+                if (calciumMg > 300) mineralBadges.push({ label: 'Dense in Calcium', key: 'calcium' });
+                if (potassiumMg > 400) mineralBadges.push({ label: 'Dense in Potassium', key: 'potassium' });
 
                 const carbClass = getCarbClassification({ c, sugars, fb, f, p, cal: totalCal });
 
                 return (
                   <div style={{ display: 'flex', gap: '6px', marginBottom: '24px', flexWrap: 'wrap' }}>
-                    {isHighProtein && <div style={{ padding: '4px 10px', background: 'rgba(146, 254, 157, 0.1)', border: '1px solid var(--theme-success)', borderRadius: '10px', color: 'var(--theme-success)', fontSize: '10px', fontWeight: '800' }}>⚡ PROTEIN POWERHOUSE</div>}
+                    {isHighProtein && (
+                      <div style={{ padding: '4px 10px', background: 'rgba(146, 254, 157, 0.1)', border: '1px solid var(--theme-success)', borderRadius: '10px', color: 'var(--theme-success)', fontSize: '10px', fontWeight: '800', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                        <Zap size={10} /> PROTEIN POWERHOUSE
+                      </div>
+                    )}
                     {isHighCarb && carbClass.key !== 'none' && (
                       <div style={{ 
                         padding: '4px 10px', 
@@ -2347,16 +2388,29 @@ export const PantryView: React.FC<PantryViewProps> = ({ initialMeal, onClose, is
                             ? '#FF6B6B' 
                             : (carbClass.key === 'hybrid-bites' ? '#FCC419' : 'var(--theme-accent)')), 
                         fontSize: '10px', 
-                        fontWeight: '800' 
+                        fontWeight: '800',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '4px'
                       }}>
-                        {carbClass.emoji} {carbClass.name.toUpperCase()}
+                        {getCarbClassIcon(carbClass.key, 10)}
+                        <span>{carbClass.name.toUpperCase()}</span>
                       </div>
                     )}
-                    {isHighFat && <div style={{ padding: '4px 10px', background: 'rgba(255, 107, 107, 0.1)', border: '1px solid #FF6B6B', borderRadius: '10px', color: '#FF6B6B', fontSize: '10px', fontWeight: '800' }}>🥑 HIGH FAT CONTENT</div>}
-                    {totalCal > 500 && <div style={{ padding: '4px 10px', background: 'rgba(255, 255, 255, 0.05)', border: '1px solid rgba(255,255,255,0.2)', borderRadius: '10px', color: '#fff', fontSize: '10px', fontWeight: '800' }}>🍽️ HEAVY MEAL</div>}
+                    {isHighFat && (
+                      <div style={{ padding: '4px 10px', background: 'rgba(255, 107, 107, 0.1)', border: '1px solid #FF6B6B', borderRadius: '10px', color: '#FF6B6B', fontSize: '10px', fontWeight: '800', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                        <Flame size={10} /> HIGH FAT CONTENT
+                      </div>
+                    )}
+                    {totalCal > 500 && (
+                      <div style={{ padding: '4px 10px', background: 'rgba(255, 255, 255, 0.05)', border: '1px solid rgba(255,255,255,0.2)', borderRadius: '10px', color: '#fff', fontSize: '10px', fontWeight: '800', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                        <Utensils size={10} /> HEAVY MEAL
+                      </div>
+                    )}
                     {mineralBadges.map(b => (
-                      <div key={b.label} style={{ padding: '4px 10px', background: 'rgba(0, 201, 255, 0.08)', border: '1px solid rgba(0,201,255,0.35)', borderRadius: '10px', color: 'var(--theme-accent)', fontSize: '10px', fontWeight: '800' }}>
-                        {b.emoji} {b.label.toUpperCase()}
+                      <div key={b.label} style={{ padding: '4px 10px', background: 'rgba(0, 201, 255, 0.08)', border: '1px solid rgba(0,201,255,0.35)', borderRadius: '10px', color: 'var(--theme-accent)', fontSize: '10px', fontWeight: '800', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                        {getMineralIcon(b.key, 10)}
+                        <span>{b.label.toUpperCase()}</span>
                       </div>
                     ))}
                   </div>
@@ -2590,7 +2644,7 @@ export const PantryView: React.FC<PantryViewProps> = ({ initialMeal, onClose, is
                     <Sparkles size={18} color="var(--theme-accent)" />
                   </div>
                   <h3 style={{ fontSize: '16px', fontWeight: 900, color: '#fff', margin: 0, letterSpacing: '0.5px' }}>
-                    🍳 SAVE MEAL TO PANTRY
+                    SAVE MEAL TO PANTRY
                   </h3>
                 </div>
                 <button 

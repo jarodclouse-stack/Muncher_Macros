@@ -1,9 +1,38 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useDiary } from '../context/DiaryContext';
 import { getRewardBreakdown } from '../lib/reward-utils';
-import { Check } from 'lucide-react';
+import { 
+  Check, Moon, Zap, Sun, Waves, Leaf, Castle, Sunset, Anchor, 
+  Gauge, Atom, Crown, Wind, Shield, Eye, Hammer, Sparkles 
+} from 'lucide-react';
 import { useTheme, type ThemeName } from '../context/ThemeContext';
 import { Toast } from './Toast';
+
+const getThemeIcon = (id: ThemeName, color: string, size = 16) => {
+  switch (id) {
+    case 'obsidian': return <Moon size={size} color={color} style={{ flexShrink: 0 }} />;
+    case 'olympian-gold': return <Zap size={size} color={color} style={{ flexShrink: 0 }} />;
+    case 'neon-wasteland': return <Zap size={size} color={color} style={{ flexShrink: 0 }} />;
+    case 'cybermancer': return <Sparkles size={size} color={color} style={{ flexShrink: 0 }} />;
+    case 'solar-flare': return <Sun size={size} color={color} style={{ flexShrink: 0 }} />;
+    case 'deep-sea': return <Waves size={size} color={color} style={{ flexShrink: 0 }} />;
+    case 'forest-phantom': return <Leaf size={size} color={color} style={{ flexShrink: 0 }} />;
+    case 'dionysus-vineyard': return <Sparkles size={size} color={color} style={{ flexShrink: 0 }} />;
+    case 'emerald-city': return <Castle size={size} color={color} style={{ flexShrink: 0 }} />;
+    case 'sunset-horizon': return <Sunset size={size} color={color} style={{ flexShrink: 0 }} />;
+    case 'poseidons-depths': return <Anchor size={size} color={color} style={{ flexShrink: 0 }} />;
+    case 'carbon-fiber': return <Gauge size={size} color={color} style={{ flexShrink: 0 }} />;
+    case 'quantum-violet': return <Atom size={size} color={color} style={{ flexShrink: 0 }} />;
+    case 'artemis-moonlight': return <Moon size={size} color={color} style={{ flexShrink: 0 }} />;
+    case 'gold-reserve': return <Crown size={size} color={color} style={{ flexShrink: 0 }} />;
+    case 'hermes-swiftness': return <Wind size={size} color={color} style={{ flexShrink: 0 }} />;
+    case 'midnight-galaxy': return <Atom size={size} color={color} style={{ flexShrink: 0 }} />;
+    case 'spartan-grit': return <Shield size={size} color={color} style={{ flexShrink: 0 }} />;
+    case 'oracles-vision': return <Eye size={size} color={color} style={{ flexShrink: 0 }} />;
+    case 'ember-forge': return <Hammer size={size} color={color} style={{ flexShrink: 0 }} />;
+    default: return <Sparkles size={size} color={color} style={{ flexShrink: 0 }} />;
+  }
+};
 
 export const ThemesView: React.FC = () => {
   const { localCache, purchaseTheme } = useDiary();
@@ -31,27 +60,27 @@ export const ThemesView: React.FC = () => {
     'ember-forge'
   ];
 
-  const themes: { id: ThemeName; name: string; emoji: string; price: number; colors: string[] }[] = [
-    { id: 'obsidian', name: 'Obsidian', emoji: '🌑', price: 0, colors: ['#080A0F', '#00F5D4'] },
-    { id: 'olympian-gold', name: 'Olympian Gold', emoji: '⚡', price: 0, colors: ['#0F0D08', '#D4AF37'] },
-    { id: 'neon-wasteland', name: 'Neon Wasteland', emoji: '⚡', price: 0, colors: ['#0D0221', '#39FF14'] },
-    { id: 'cybermancer', name: 'Cybermancer', emoji: '🔮', price: 0, colors: ['#0D0221', '#FF00E5'] },
-    { id: 'solar-flare', name: 'Solar Flare', emoji: '☀️', price: 0, colors: ['#1A0700', '#FF9F1C'] },
-    { id: 'deep-sea', name: 'Deep Sea', emoji: '🌊', price: 0, colors: ['#001219', '#0077B6'] },
-    { id: 'forest-phantom', name: 'Forest Phantom', emoji: '🌿', price: 0, colors: ['#0A1410', '#92FE9D'] },
-    { id: 'dionysus-vineyard', name: 'Dionysus\' Vineyard', emoji: '🍇', price: 0, colors: ['#1A0A1F', '#9D4EDD'] },
-    { id: 'emerald-city', name: 'Emerald City', emoji: '🏰', price: 0, colors: ['#012E1B', '#50C878'] },
-    { id: 'sunset-horizon', name: 'Sunset Horizon', emoji: '🌅', price: 0, colors: ['#1A0F0F', '#FF9F1C'] },
-    { id: 'poseidons-depths', name: 'Poseidon\'s Depths', emoji: '🔱', price: 0, colors: ['#051923', '#00A6FB'] },
-    { id: 'carbon-fiber', name: 'Carbon Fiber', emoji: '🏎️', price: 0, colors: ['#111111', '#E63946'] },
-    { id: 'quantum-violet', name: 'Quantum Violet', emoji: '🌌', price: 0, colors: ['#0F0014', '#9A48D0'] },
-    { id: 'artemis-moonlight', name: 'Artemis\' Moonlight', emoji: '🌙', price: 0, colors: ['#0B0E14', '#A5B4FC'] },
-    { id: 'gold-reserve', name: 'Gold Reserve', emoji: '🔱', price: 0, colors: ['#111111', '#D4AF37'] },
-    { id: 'hermes-swiftness', name: 'Hermes\' Swiftness', emoji: '👟', price: 0, colors: ['#1F1D1A', '#F97316'] },
-    { id: 'midnight-galaxy', name: 'Midnight Galaxy', emoji: '🌌', price: 0, colors: ['#10002B', '#E0AAFF'] },
-    { id: 'spartan-grit', name: 'Spartan Grit', emoji: '🛡️', price: 0, colors: ['#0F0A0A', '#991B1B'] },
-    { id: 'oracles-vision', name: 'Oracle\'s Vision', emoji: '🔮', price: 0, colors: ['#0D0B12', '#C084FC'] },
-    { id: 'ember-forge', name: 'Ember Forge', emoji: '⚒️', price: 0, colors: ['#1B0B04', '#FF4500'] }
+  const themes: { id: ThemeName; name: string; price: number; colors: string[] }[] = [
+    { id: 'obsidian', name: 'Obsidian', price: 0, colors: ['#080A0F', '#00F5D4'] },
+    { id: 'olympian-gold', name: 'Olympian Gold', price: 0, colors: ['#0F0D08', '#D4AF37'] },
+    { id: 'neon-wasteland', name: 'Neon Wasteland', price: 0, colors: ['#0D0221', '#39FF14'] },
+    { id: 'cybermancer', name: 'Cybermancer', price: 0, colors: ['#0D0221', '#FF00E5'] },
+    { id: 'solar-flare', name: 'Solar Flare', price: 0, colors: ['#1A0700', '#FF9F1C'] },
+    { id: 'deep-sea', name: 'Deep Sea', price: 0, colors: ['#001219', '#0077B6'] },
+    { id: 'forest-phantom', name: 'Forest Phantom', price: 0, colors: ['#0A1410', '#92FE9D'] },
+    { id: 'dionysus-vineyard', name: 'Dionysus\' Vineyard', price: 0, colors: ['#1A0A1F', '#9D4EDD'] },
+    { id: 'emerald-city', name: 'Emerald City', price: 0, colors: ['#012E1B', '#50C878'] },
+    { id: 'sunset-horizon', name: 'Sunset Horizon', price: 0, colors: ['#1A0F0F', '#FF9F1C'] },
+    { id: 'poseidons-depths', name: 'Poseidon\'s Depths', price: 0, colors: ['#051923', '#00A6FB'] },
+    { id: 'carbon-fiber', name: 'Carbon Fiber', price: 0, colors: ['#111111', '#E63946'] },
+    { id: 'quantum-violet', name: 'Quantum Violet', price: 0, colors: ['#0F0014', '#9A48D0'] },
+    { id: 'artemis-moonlight', name: 'Artemis\' Moonlight', price: 0, colors: ['#0B0E14', '#A5B4FC'] },
+    { id: 'gold-reserve', name: 'Gold Reserve', price: 0, colors: ['#111111', '#D4AF37'] },
+    { id: 'hermes-swiftness', name: 'Hermes\' Swiftness', price: 0, colors: ['#1F1D1A', '#F97316'] },
+    { id: 'midnight-galaxy', name: 'Midnight Galaxy', price: 0, colors: ['#10002B', '#E0AAFF'] },
+    { id: 'spartan-grit', name: 'Spartan Grit', price: 0, colors: ['#0F0A0A', '#991B1B'] },
+    { id: 'oracles-vision', name: 'Oracle\'s Vision', price: 0, colors: ['#0D0B12', '#C084FC'] },
+    { id: 'ember-forge', name: 'Ember Forge', price: 0, colors: ['#1B0B04', '#FF4500'] }
   ];
 
   const handleSelectTheme = (t: any) => {
@@ -118,7 +147,9 @@ export const ThemesView: React.FC = () => {
               
               <div style={{ flex: 1 }}>
                 <div style={{ fontSize: '15px', fontWeight: '800', color: 'var(--theme-text)', display: 'flex', alignItems: 'center', gap: '6px' }}>
-                  <span style={{ fontSize: '18px' }}>{t.emoji}</span> {t.name} <span style={{ fontSize: '11px', color: 'var(--theme-accent)', fontWeight: '400', background: 'var(--theme-accent-dim)', padding: '1px 6px', borderRadius: '4px' }}>{t.price} Gems</span>
+                  {getThemeIcon(t.id, t.colors[1], 15)}
+                  <span>{t.name}</span>
+                  <span style={{ fontSize: '11px', color: 'var(--theme-accent)', fontWeight: '400', background: 'var(--theme-accent-dim)', padding: '1px 6px', borderRadius: '4px' }}>{t.price} Gems</span>
                 </div>
                 <div style={{ fontSize: '11px', color: 'var(--theme-text-dim)', textTransform: 'uppercase', letterSpacing: '0.5px', marginTop: '2px', display: 'flex', alignItems: 'center', gap: '8px' }}>
                   {isPurchased ? (

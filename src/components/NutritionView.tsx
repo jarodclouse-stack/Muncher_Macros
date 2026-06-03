@@ -6,10 +6,24 @@ import { MICRO_CATEGORIES } from '../lib/constants';
 import { DEFICIENCY_INFO, NUTRIENT_BENEFITS } from '../lib/nutrient-info';
 import { Doughnut } from 'react-chartjs-2';
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js';
-import { Sparkles } from 'lucide-react';
+import { Sparkles, AlertTriangle, Activity, Wheat, Apple, Cookie, GlassWater } from 'lucide-react';
 import type { Food } from '../types/food';
 
 ChartJS.register(ArcElement, Tooltip, Legend);
+
+const SectionBenefitsHeader = ({ label = 'Performance Benefits' }: { label?: string }) => (
+  <div style={{ fontWeight: '900', color: 'color-mix(in srgb, var(--theme-success), white 70%)', marginBottom: '8px', fontSize: '11px', textTransform: 'uppercase', letterSpacing: '1px', display: 'flex', alignItems: 'center', gap: '6px' }}>
+    <Sparkles size={11} />
+    <span>{label}</span>
+  </div>
+);
+
+const SectionDeficiencyHeader = ({ label = 'Deficiency Risks' }: { label?: string }) => (
+  <div style={{ fontWeight: '900', color: 'color-mix(in srgb, var(--theme-warning), white 70%)', marginBottom: '8px', fontSize: '11px', textTransform: 'uppercase', letterSpacing: '1px', display: 'flex', alignItems: 'center', gap: '6px' }}>
+    <AlertTriangle size={11} />
+    <span>{label}</span>
+  </div>
+);
 
 const getNutrientProgress = (val: number, goal: number, label: string) => {
   const actualPct = goal ? (val / goal) * 100 : 0;
@@ -221,9 +235,7 @@ export const NutritionView: React.FC = () => {
                   {label === 'Protein' && expandedMicro === 'Protein' && (
                     <div className="glass-card" style={{ background: 'rgba(0, 0, 0, 0.85)', marginTop: 'var(--space-md)', padding: 'var(--space-md)', borderLeft: '3px solid var(--theme-error)', marginBottom: 'var(--space-sm)' }}>
                       <div style={{ marginBottom: '16px' }}>
-                        <div style={{ fontWeight: '900', color: 'color-mix(in srgb, var(--theme-success), white 70%)', marginBottom: '8px', fontSize: '11px', textTransform: 'uppercase', letterSpacing: '1px' }}>
-                          ✨ Performance Benefits
-                        </div>
+                        <SectionBenefitsHeader label="Performance Benefits" />
                         <div style={{ lineHeight: '1.5', color: '#FFFFFF' }}>{(NUTRIENT_BENEFITS as Record<string, { summary?: string, points?: string[] }>).Protein?.summary || 'The building block of all human tissue.'}</div>
                         {(NUTRIENT_BENEFITS as Record<string, { summary?: string, points?: string[] }>).Protein?.points && (
                           <div style={{ marginTop: '8px' }}>
@@ -258,9 +270,7 @@ export const NutritionView: React.FC = () => {
                       </div>
                       {(DEFICIENCY_INFO as Record<string, { name: string; desc?: string; sources?: string }>).Protein && (
                         <div style={{ borderTop: '1px solid var(--theme-border)', paddingTop: '12px' }}>
-                          <div style={{ fontWeight: '900', color: 'color-mix(in srgb, var(--theme-warning), white 70%)', marginBottom: '8px', fontSize: '11px', textTransform: 'uppercase', letterSpacing: '1px' }}>
-                            ⚠️ Deficiency Risks
-                          </div>
+                          <SectionDeficiencyHeader label="Deficiency Risks" />
                           <div style={{ lineHeight: '1.5', color: '#FFFFFF', fontWeight: '800', marginBottom: '6px' }}>
                             {(DEFICIENCY_INFO as Record<string, { name: string; desc?: string }>).Protein.name}
                           </div>
@@ -307,9 +317,7 @@ export const NutritionView: React.FC = () => {
                   {label === 'Fat' && expandedMicro === 'Fat' && (
                     <div className="glass-card" style={{ background: 'rgba(0, 0, 0, 0.85)', marginTop: 'var(--space-md)', padding: 'var(--space-md)', borderLeft: '3px solid var(--theme-warning)', marginBottom: 'var(--space-sm)' }}>
                       <div style={{ marginBottom: '16px' }}>
-                        <div style={{ fontWeight: '900', color: 'color-mix(in srgb, var(--theme-success), white 70%)', marginBottom: '8px', fontSize: '11px', textTransform: 'uppercase', letterSpacing: '1px' }}>
-                          ✨ Performance Benefits
-                        </div>
+                        <SectionBenefitsHeader label="Performance Benefits" />
                         <div style={{ lineHeight: '1.5', color: '#FFFFFF' }}>{(NUTRIENT_BENEFITS as Record<string, { summary?: string, points?: string[] }>).Fat?.summary || 'Essential healthy fats for optimal body function.'}</div>
                         {(NUTRIENT_BENEFITS as Record<string, { summary?: string, points?: string[] }>).Fat?.points && (
                           <div style={{ marginTop: '8px' }}>
@@ -344,9 +352,7 @@ export const NutritionView: React.FC = () => {
                       </div>
                       {(DEFICIENCY_INFO as Record<string, { name: string; desc?: string; sources?: string }>).Fat && (
                         <div style={{ borderTop: '1px solid var(--theme-border)', paddingTop: '12px' }}>
-                          <div style={{ fontWeight: '900', color: 'color-mix(in srgb, var(--theme-warning), white 70%)', marginBottom: '8px', fontSize: '11px', textTransform: 'uppercase', letterSpacing: '1px' }}>
-                            ⚠️ Deficiency Risks
-                          </div>
+                          <SectionDeficiencyHeader label="Deficiency Risks" />
                           <div style={{ lineHeight: '1.5', color: '#FFFFFF', fontWeight: '800', marginBottom: '6px' }}>
                             {(DEFICIENCY_INFO as Record<string, { name: string; desc?: string }>).Fat.name}
                           </div>
@@ -457,18 +463,14 @@ export const NutritionView: React.FC = () => {
 
                                 {/* Benefits Section */}
                                 <div style={{ marginBottom: '16px' }}>
-                                  <div style={{ fontWeight: '800', color: 'color-mix(in srgb, var(--theme-success), white 70%)', marginBottom: '6px', fontSize: '12px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-                                    ✨ Metabolic Benefits
-                                  </div>
+                                  <SectionBenefitsHeader label="Metabolic Benefits" />
                                   <div style={{ lineHeight: '1.5', color: '#FFFFFF' }}>{(info as { summary?: string }).summary || 'Essential profile for balanced nutrition.'}</div>
                                 </div>
 
                                 {/* Deficiency Section */}
                                 {defInfo && (
                                   <div style={{ borderTop: '1px solid var(--theme-border, rgba(255,255,255,0.05))', paddingTop: '12px' }}>
-                                    <div style={{ fontWeight: '800', color: 'color-mix(in srgb, var(--theme-warning), white 70%)', marginBottom: '6px', fontSize: '12px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-                                      ⚠️ Deficiency Risks
-                                    </div>
+                                    <SectionDeficiencyHeader label="Deficiency Risks" />
                                     <div style={{ lineHeight: '1.5', color: '#FFFFFF', fontWeight: '800', marginBottom: '6px' }}>{defInfo.name}</div>
                                     <div>
                                       <span 
@@ -520,10 +522,10 @@ export const NutritionView: React.FC = () => {
                   {label === 'Carbs' && (
                     <div style={{ paddingLeft: 'var(--space-sm)', display: 'flex', flexDirection: 'column', gap: 'var(--space-xs)', borderLeft: '2px solid var(--theme-border)', marginBottom: 'var(--space-sm)' }}>
                       {[
-                        { k: 'Sustained Energy', disp: '🌾 Sustained Energy', v: carbBreakdown['sustained-energy'], g: goal * 0.6, c: 'var(--theme-success)' },
-                        { k: 'Natural Carbs', disp: '🍇 Natural Carbs', v: carbBreakdown['natural-carbs'], g: goal * 0.35, c: 'var(--theme-accent)' },
-                        { k: 'Refined Carbs', disp: '🍞 Refined Carbs', v: carbBreakdown['refined-carbs'], g: goal * 0.05, c: 'var(--theme-error)' },
-                        { k: 'Simple Carbs', disp: '🍭 Simple Carbs', v: carbBreakdown['simple-carbs'], g: goal * 0.05, c: 'var(--theme-error)' }
+                        { k: 'Sustained Energy', label: 'Sustained Energy', icon: <Wheat size={14} color="#F2C94C" />, v: carbBreakdown['sustained-energy'], g: goal * 0.6, c: 'var(--theme-success)' },
+                        { k: 'Natural Carbs', label: 'Natural Carbs', icon: <Apple size={14} color="#EB5757" />, v: carbBreakdown['natural-carbs'], g: goal * 0.35, c: 'var(--theme-accent)' },
+                        { k: 'Refined Carbs', label: 'Refined Carbs', icon: <Cookie size={14} color="#D35400" />, v: carbBreakdown['refined-carbs'], g: goal * 0.05, c: 'var(--theme-error)' },
+                        { k: 'Simple Carbs', label: 'Simple Carbs', icon: <GlassWater size={14} color="#56CCF2" />, v: carbBreakdown['simple-carbs'], g: goal * 0.05, c: 'var(--theme-error)' }
                       ].map(sub => {
                         const { pct, actualPct, color: barColor } = getNutrientProgress(sub.v, sub.g || 0, sub.k);
                         const isExpanded = expandedMicro === sub.k;
@@ -539,8 +541,9 @@ export const NutritionView: React.FC = () => {
                                 setShowDeficiencyDetails(false);
                               }
                             }} style={{ display: 'flex', justifyContent: 'space-between', fontSize: '10px', cursor: info ? 'pointer' : 'default' }}>
-                              <span style={{ color: 'var(--theme-text-dim-on-panel)', display: 'flex', alignItems: 'center', gap: '4px', fontWeight: '900', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
-                                {sub.disp} 
+                              <span style={{ color: 'var(--theme-text-dim-on-panel)', display: 'flex', alignItems: 'center', gap: '6px', fontWeight: '900', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                                {sub.icon} 
+                                <span>{sub.label}</span> 
                                 {info && (
                                   <span style={{
                                     background: isExpanded ? 'var(--theme-accent)' : 'rgba(255, 255, 255, 0.05)',
@@ -586,9 +589,7 @@ export const NutritionView: React.FC = () => {
                                 {/* Benefits Section */}
                                 {benefitsInfo && sub.k !== 'Simple Carbs' && (
                                   <div style={{ marginBottom: '16px' }}>
-                                    <div style={{ fontWeight: '800', color: 'color-mix(in srgb, var(--theme-success), white 70%)', marginBottom: '6px', fontSize: '12px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-                                      ✨ Performance Benefits
-                                    </div>
+                                    <SectionBenefitsHeader label="Performance Benefits" />
                                     <div style={{ lineHeight: '1.5', color: '#FFFFFF' }}>{benefitsInfo.summary}</div>
                                     {benefitsInfo.points && (
                                       <div style={{ marginTop: '8px' }}>
@@ -629,9 +630,7 @@ export const NutritionView: React.FC = () => {
                                 {/* Deficiency Section */}
                                 {defInfo && (
                                   <div style={{ borderTop: (benefitsInfo && sub.k !== 'Simple Carbs') ? '1px solid var(--theme-border, rgba(255,255,255,0.05))' : 'none', paddingTop: (benefitsInfo && sub.k !== 'Simple Carbs') ? '12px' : '0' }}>
-                                    <div style={{ fontWeight: '800', color: 'color-mix(in srgb, var(--theme-warning), white 70%)', marginBottom: '6px', fontSize: '12px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-                                      {sub.k === 'Simple Carbs' ? '⚠️ Consumption Warnings' : '⚠️ Deficiency Risks'}
-                                    </div>
+                                    <SectionDeficiencyHeader label={sub.k === 'Simple Carbs' ? 'Consumption Warnings' : 'Deficiency Risks'} />
                                     <div style={{ lineHeight: '1.5', color: '#FFFFFF', fontWeight: '800', marginBottom: '6px' }}>{defInfo.name}</div>
                                     <div>
                                       <span 
@@ -712,7 +711,7 @@ export const NutritionView: React.FC = () => {
             style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', cursor: 'pointer', userSelect: 'none' }}
           >
             <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-              <span style={{ fontSize: '20px' }}>🧂</span>
+              <Activity size={20} color="var(--theme-accent)" />
               <h2 style={{ fontSize: '18px', fontWeight: '800', margin: 0, color: 'var(--theme-text-on-panel)' }}>
                 Sodium-Potassium Balance
               </h2>
@@ -754,7 +753,9 @@ export const NutritionView: React.FC = () => {
               }}
             >
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontWeight: '800' }}>
-                <span>⚠️ Legal & Clinical Disclaimer</span>
+                <span style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
+                  <AlertTriangle size={12} color="rgba(255, 107, 107, 0.9)" /> Legal & Clinical Disclaimer
+                </span>
                 <span style={{ fontSize: '9px', textTransform: 'uppercase', letterSpacing: '0.5px', color: 'rgba(255, 107, 107, 0.7)', fontWeight: '900' }}>
                   {showDisclaimer ? 'Collapse ▲' : 'Expand ▼'}
                 </span>
@@ -859,9 +860,7 @@ export const NutritionView: React.FC = () => {
 
                           {/* Benefits Section */}
                           <div style={{ marginBottom: '16px' }}>
-                            <div style={{ fontWeight: '800', color: '#FFFFFF', marginBottom: '6px', fontSize: '12px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-                              ✨ Clinical Benefits
-                            </div>
+                            <SectionBenefitsHeader label="Clinical Benefits" />
                             <div style={{ marginBottom: '10px', lineHeight: '1.5', color: '#FFFFFF' }}>{benefitsInfo?.summary || 'Vital biological support for systemic homeostatis.'}</div>
                             {benefitsInfo?.points && (
                               <div style={{ marginTop: '8px' }}>
@@ -901,9 +900,7 @@ export const NutritionView: React.FC = () => {
                           {/* Deficiency Section */}
                           {defInfo && (
                              <div style={{ borderTop: '1px solid var(--theme-border, rgba(255,255,255,0.05))', paddingTop: '12px' }}>
-                               <div style={{ fontWeight: '800', color: '#FFFFFF', marginBottom: '6px', fontSize: '12px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-                                 ⚠️ Deficiency Risks
-                               </div>
+                               <SectionDeficiencyHeader label="Deficiency Risks" />
                                <div style={{ lineHeight: '1.5', color: '#FFFFFF', fontWeight: '800', marginBottom: '6px' }}>{defInfo.name}</div>
                                <div>
                                  <span 

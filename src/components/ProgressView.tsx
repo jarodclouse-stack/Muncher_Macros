@@ -3,7 +3,7 @@ import { Toast } from './Toast';
 import { useDiary } from '../context/DiaryContext';
 import { ACTIVITY_LEVELS, MICRO_CATEGORIES } from '../lib/constants';
 import { computeGoals } from '../lib/goals/compute';
-import { Flame, Save, Droplet, User, PieChart, Info, Check, Edit2, ChevronDown, Leaf } from 'lucide-react';
+import { Flame, Save, Droplet, User, PieChart, Info, Check, Edit2, ChevronDown, Leaf, Dna, Lightbulb } from 'lucide-react';
 
 export const ProgressView: React.FC = () => {
   const { localCache, updateGoals } = useDiary();
@@ -170,7 +170,7 @@ export const ProgressView: React.FC = () => {
                   }}
                 >
                   <span style={{ fontSize: '13px', fontWeight: '700', color: 'var(--theme-text)', display: 'flex', alignItems: 'center', gap: '6px' }}>
-                    🧬 Biological Profile (Sex, Age, Height)
+                    <Dna size={14} color="var(--theme-accent)" /> Biological Profile (Sex, Age, Height)
                   </span>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                     <ChevronDown 
@@ -341,7 +341,7 @@ export const ProgressView: React.FC = () => {
                     gap: '6px',
                     alignItems: 'center'
                   }}>
-                    <span>💡</span>
+                    <Lightbulb size={14} color="var(--theme-accent)" style={{ flexShrink: 0 }} />
                     <span>
                       {goalType === 'gain' 
                         ? 'Building muscle successfully requires consistent nutrition and dedicated, persistent effort.' 
@@ -595,7 +595,7 @@ export const ProgressView: React.FC = () => {
                   return (
                     <div key={nutrient.k} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '8px 0', borderBottom: '1px solid var(--theme-border)', fontSize: '13px' }}>
                       <span style={{ color: 'var(--theme-text-dim)', display: 'flex', gap: '4px', alignItems: 'center' }}>
-                        {nutrient.k} {isEnhanced && <span title="Activity Boost" style={{ fontSize: '12px' }}>🔥</span>}
+                        {nutrient.k} {isEnhanced && <span title="Activity Boost" style={{ display: 'inline-flex', alignItems: 'center' }}><Flame size={12} color="var(--theme-error)" /></span>}
                       </span>
                       {editingMicro === nutrient.k ? (
                         <div style={{ display: 'flex', gap: '4px' }}>

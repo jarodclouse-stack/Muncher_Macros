@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom';
 import { useDiary } from '../context/DiaryContext';
 import { getRewardBreakdown } from '../lib/reward-utils';
 import { BADGES, BADGE_TIERS } from '../lib/badge-info';
-import { Award, X, Info, Trophy, Star, Shield, Zap, Lock } from 'lucide-react';
+import { Award, X, Info, Trophy, Star, Shield, Zap, Lock, Flame, Check } from 'lucide-react';
 
 interface BadgesViewProps {
   onClose: () => void;
@@ -123,7 +123,7 @@ export const BadgesView: React.FC<BadgesViewProps> = ({ onClose }) => {
               <h3 style={{ fontSize: '13px', fontWeight: '900', margin: 0, color: 'var(--theme-text)', textTransform: 'uppercase', letterSpacing: '1px' }}>Persistence Badges</h3>
             </div>
             <div style={{ display: 'flex', alignItems: 'flex-start', gap: '8px', background: 'rgba(255,200,0,0.07)', border: '1px solid rgba(255,200,0,0.2)', borderRadius: '12px', padding: '10px 12px', marginBottom: '14px' }}>
-              <span style={{ fontSize: '14px', flexShrink: 0 }}>🔥</span>
+              <Flame size={14} color="#FF9F1C" style={{ flexShrink: 0, marginTop: '1px' }} />
               <p style={{ fontSize: '11px', color: 'rgba(255,200,0,0.9)', margin: 0, lineHeight: '1.5', fontWeight: '600' }}>
                 Badges are <strong>only earned through streaks</strong> — you must log your food every consecutive day to progress. Missing a day resets your streak.
               </p>
@@ -176,7 +176,7 @@ export const BadgesView: React.FC<BadgesViewProps> = ({ onClose }) => {
                       <div style={{ fontSize: '8px', color: isEarned ? badge.color : 'var(--theme-text-dim)', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.5px', lineHeight: '1.4' }}>
                         {isEarned ? (
                           <>
-                            <div style={{ color: '#92FE9D' }}>✓ EARNED</div>
+                            <div style={{ color: '#92FE9D', display: 'flex', alignItems: 'center', gap: '3px', justifyContent: 'center' }}><Check size={10} strokeWidth={3} /> EARNED</div>
                             <div style={{ color: badge.color, opacity: 0.85 }}>{badge.day === 1 ? 'DAY 1 STREAK' : `${badge.day}-DAY STREAK`}</div>
                           </>
                         ) : (
