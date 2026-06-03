@@ -72,7 +72,7 @@ export const DiaryProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       try {
         const stored = JSON.parse(localStorage.getItem('ft_guest') || '{}');
         setLocalCache(stored);
-      } catch (e) {}
+      } catch {}
       setDataReady(true);
       return;
     }
@@ -120,7 +120,7 @@ export const DiaryProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         // Cache backup locally
         try {
           localStorage.setItem(`ft_user_${user.id}`, JSON.stringify(loaded));
-        } catch (e) {}
+        } catch {}
         
         setSyncStatus('ok');
         setDataReady(true);
@@ -145,7 +145,7 @@ export const DiaryProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     // Always write backup locally immediately
     try {
       localStorage.setItem(`ft_user_${user.id}`, JSON.stringify(dataToSave));
-    } catch (e) {}
+    } catch {}
     
     setSyncStatus('syncing');
     try {
@@ -155,7 +155,7 @@ export const DiaryProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       );
       if (error) throw error;
       setSyncStatus('ok');
-    } catch (err) {
+    } catch {
       setSyncStatus(navigator.onLine ? 'error' : 'offline');
     }
   }, [user, isGuest]);
