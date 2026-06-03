@@ -1760,6 +1760,15 @@ body .luminous-absolute-white * {
 
 .diary-entry-stats-col {
   text-align: center;
+  cursor: pointer;
+  transition: transform 0.15s ease, background-color 0.15s ease;
+  border-radius: 8px;
+  padding: 4px 0;
+}
+
+.diary-entry-stats-col:hover {
+  background-color: rgba(255, 255, 255, 0.06);
+  transform: scale(1.05);
 }
 
 .diary-entry-stats-label {

@@ -9,6 +9,7 @@ import { AddFoodModal } from './AddFoodModal';
 import { PortionEditModal } from './PortionEditModal';
 import { NutritionFactsDisplay } from './NutritionFactsDisplay';
 import { NutriScorePopup, NS_COLOR } from './NutriScorePopup';
+import { MacroInfoPopup } from './MacroInfoPopup';
 
 
 
@@ -18,6 +19,7 @@ export const DiaryView: React.FC = () => {
   const [editingPortion, setEditingPortion] = useState<{ meal: string, idx: number, food: any } | null>(null);
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [expandedMeals, setExpandedMeals] = useState<Record<string, boolean>>({});
+  const [selectedGlobalMacro, setSelectedGlobalMacro] = useState<'p' | 'c' | 'f' | null>(null);
 
   // Derive Daily Data
   const dayData = localCache[currentDate] || {};
@@ -262,9 +264,9 @@ export const DiaryView: React.FC = () => {
 
         {/* Macros */}
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 'var(--space-sm)', marginBottom: 'var(--space-sm)' }}>
-          <MacroCard label="Protein" value={totals.protein} total={computed.proteinG || 150} color="var(--theme-error)" icon={<Utensils size={14} />} />
-          <MacroCard label="Carbs" value={totals.carbs} total={computed.carbG || 200} color="var(--theme-accent)" icon={<Utensils size={14} />} />
-          <MacroCard label="Fat" value={totals.fat} total={computed.fatG || 60} color="var(--theme-warning)" icon={<Utensils size={14} />} />
+          <MacroCard label="Protein" value={totals.protein} total={computed.proteinG || 150} color="var(--theme-error)" icon={<Utensils size={14} />} onClick={() => setSelectedGlobalMacro('p')} />
+          <MacroCard label="Carbs" value={totals.carbs} total={computed.carbG || 200} color="var(--theme-accent)" icon={<Utensils size={14} />} onClick={() => setSelectedGlobalMacro('c')} />
+          <MacroCard label="Fat" value={totals.fat} total={computed.fatG || 60} color="var(--theme-warning)" icon={<Utensils size={14} />} onClick={() => setSelectedGlobalMacro('f')} />
           <MacroCard label="Fiber" value={totals.fiber} total={38} color="var(--theme-success)" icon={<Scale size={14} />} />
         </div>
 
@@ -338,6 +340,20 @@ export const DiaryView: React.FC = () => {
       <div style={{ marginTop: '20px' }}>
         <WeeklyReport localCache={localCache} currentDate={currentDate} targetCal={computed.targetCal} />
       </div>
+      {selectedGlobalMacro && (
+        <MacroInfoPopup 
+          macro={selectedGlobalMacro} 
+          food={{ 
+            name: "Today's Total Progress", 
+            serving: "All logged items today", 
+            p: totals.protein, 
+            c: totals.carbs, 
+            f: totals.fat, 
+            calories: totals.calories 
+          }} 
+          onClose={() => setSelectedGlobalMacro(null)} 
+        />
+      )}
     </div>
   );
 };
@@ -348,6 +364,7 @@ export const DiaryView: React.FC = () => {
 const DiaryEntryItem = ({ log, onRemove, onEditPortion, onMove }: any) => {
   const [isOpen, setIsOpen] = useState(false);
   const [showNutriPopup, setShowNutriPopup] = useState(false);
+  const [selectedMacro, setSelectedMacro] = useState<'kcal' | 'p' | 'c' | 'f' | null>(null);
   const f = log.f;
 
   return (
@@ -413,19 +430,31 @@ const DiaryEntryItem = ({ log, onRemove, onEditPortion, onMove }: any) => {
 
         {/* Macro Breakdown Grid — matches AddFoodModal staging card */}
         <div className="diary-entry-stats-row">
-          <div className="diary-entry-stats-col">
+          <div 
+            className="diary-entry-stats-col"
+            onClick={(e) => { e.stopPropagation(); setSelectedMacro('kcal'); }}
+          >
             <div className="diary-entry-stats-label">KCAL</div>
             <div className="diary-entry-stats-val">{Math.round(f.calories || f.cal || 0)}</div>
           </div>
-          <div className="diary-entry-stats-col">
+          <div 
+            className="diary-entry-stats-col"
+            onClick={(e) => { e.stopPropagation(); setSelectedMacro('p'); }}
+          >
             <div className="diary-entry-stats-label">P</div>
             <div className="diary-entry-stats-val p">{Number(f.p || 0).toFixed(1)}g</div>
           </div>
-          <div className="diary-entry-stats-col">
+          <div 
+            className="diary-entry-stats-col"
+            onClick={(e) => { e.stopPropagation(); setSelectedMacro('c'); }}
+          >
             <div className="diary-entry-stats-label">C</div>
             <div className="diary-entry-stats-val c">{Number(f.c || 0).toFixed(1)}g</div>
           </div>
-          <div className="diary-entry-stats-col">
+          <div 
+            className="diary-entry-stats-col"
+            onClick={(e) => { e.stopPropagation(); setSelectedMacro('f'); }}
+          >
             <div className="diary-entry-stats-label">F</div>
             <div className="diary-entry-stats-val f">{Number(f.f || 0).toFixed(1)}g</div>
           </div>
@@ -500,16 +529,37 @@ const DiaryEntryItem = ({ log, onRemove, onEditPortion, onMove }: any) => {
         </div>
       )}
       {showNutriPopup && <NutriScorePopup food={f} onClose={() => setShowNutriPopup(false)} />}
+      {selectedMacro && (
+        <MacroInfoPopup 
+          macro={selectedMacro} 
+          food={f} 
+          onClose={() => setSelectedMacro(null)} 
+        />
+      )}
     </div>
   );
 };
 
 
 
-const MacroCard = ({ label, value, total, color, icon }: any) => {
+const MacroCard = ({ label, value, total, color, icon, onClick }: any) => {
   const pct = Math.min(100, (value / (total || 1)) * 100);
   return (
-    <div style={{ background: 'var(--theme-panel-dim)', padding: '16px', borderRadius: '20px', display: 'flex', flexDirection: 'column', border: '1px solid var(--theme-border)' }}>
+    <div 
+      onClick={onClick}
+      style={{ 
+        background: 'var(--theme-panel-dim)', 
+        padding: '16px', 
+        borderRadius: '20px', 
+        display: 'flex', 
+        flexDirection: 'column', 
+        border: '1px solid var(--theme-border)',
+        cursor: onClick ? 'pointer' : 'default',
+        transition: 'transform 0.15s, background 0.15s'
+      }}
+      onMouseEnter={e => { if (onClick) { e.currentTarget.style.transform = 'scale(1.02)'; e.currentTarget.style.background = 'rgba(255, 255, 255, 0.03)'; } }}
+      onMouseLeave={e => { if (onClick) { e.currentTarget.style.transform = 'scale(1)'; e.currentTarget.style.background = 'var(--theme-panel-dim)'; } }}
+    >
       <span style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '11px', color: 'var(--theme-text-dim-on-panel)', marginBottom: '8px', fontWeight: '900', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
         {icon} {label}
       </span>
