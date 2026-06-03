@@ -7,8 +7,6 @@ function isEnglish(p) {
   // Must have a product name
   const name = p.product_name_en || p.product_name || '';
   if (!name.trim()) return false;
-  // Prefer products explicitly tagged as English
-  if (p.lang && p.lang !== 'en') return false;
   return true;
 }
 
