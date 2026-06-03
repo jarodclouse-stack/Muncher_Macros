@@ -130,7 +130,7 @@ export default async function handler(req, res) {
     }
 
     const foods = results.map(mapToFoodShape);
-    return res.status(200).json({ foods });
+    return res.status(200).json({ foods, expandedQuery: synonymText || query });
   } catch (err) {
     console.error('db-search error:', err?.message || err);
     return res.status(500).json({ error: 'Search failed', foods: [] });

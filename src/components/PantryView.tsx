@@ -190,13 +190,15 @@ export const PantryView: React.FC<PantryViewProps> = ({ initialMeal, onClose, is
     }
 
     try {
-      // Search both DB and Open Food Facts in parallel, merge results
-      const [dbResults, offResults] = await Promise.all([
-        fetch('/api/db-search', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ query: q }) })
-          .then(r => r.ok ? r.json() : { foods: [] }).then(b => (b.foods || []).map(normalizeFoodResult)).catch(() => []),
-        fetch('/api/off-search', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ query: q }) })
-          .then(r => r.ok ? r.json() : { foods: [] }).then(b => (b.foods || b.results || []).map(normalizeFoodResult)).catch(() => []),
-      ]);
+      // Search DB first to get synonym expansion, then OFF with expanded query
+      const dbResponse = await fetch('/api/db-search', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ query: q }) })
+        .then(r => r.ok ? r.json() : { foods: [], expandedQuery: q }).catch(() => ({ foods: [], expandedQuery: q }));
+      const dbResults = (dbResponse.foods || []).map(normalizeFoodResult);
+      const offQuery = dbResponse.expandedQuery || q;
+
+      // Use expanded query for OFF (e.g. "coke" -> "cola" finds Coca-Cola)
+      const offResults = await fetch('/api/off-search', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ query: offQuery }) })
+        .then(r => r.ok ? r.json() : { foods: [] }).then(b => (b.foods || b.results || []).map(normalizeFoodResult)).catch(() => []);
 
       // Merge: DB first, then OFF (dedupe by name+cal to avoid duplicates)
       const seen = new Set(dbResults.map((f: Food) => (f.name + '|' + f.cal).toLowerCase()));
@@ -363,13 +365,15 @@ export const PantryView: React.FC<PantryViewProps> = ({ initialMeal, onClose, is
     }
 
     try {
-      // Search both DB and Open Food Facts in parallel, merge results
-      const [dbResults, offResults] = await Promise.all([
-        fetch('/api/db-search', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ query: q }) })
-          .then(r => r.ok ? r.json() : { foods: [] }).then(b => (b.foods || []).map(normalizeFoodResult)).catch(() => []),
-        fetch('/api/off-search', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ query: q }) })
-          .then(r => r.ok ? r.json() : { foods: [] }).then(b => (b.foods || b.results || []).map(normalizeFoodResult)).catch(() => []),
-      ]);
+      // Search DB first to get synonym expansion, then OFF with expanded query
+      const dbResponse = await fetch('/api/db-search', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ query: q }) })
+        .then(r => r.ok ? r.json() : { foods: [], expandedQuery: q }).catch(() => ({ foods: [], expandedQuery: q }));
+      const dbResults = (dbResponse.foods || []).map(normalizeFoodResult);
+      const offQuery = dbResponse.expandedQuery || q;
+
+      // Use expanded query for OFF (e.g. "coke" -> "cola" finds Coca-Cola)
+      const offResults = await fetch('/api/off-search', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ query: offQuery }) })
+        .then(r => r.ok ? r.json() : { foods: [] }).then(b => (b.foods || b.results || []).map(normalizeFoodResult)).catch(() => []);
 
       // Merge: DB first, then OFF (dedupe by name+cal to avoid duplicates)
       const seen = new Set(dbResults.map((f: Food) => (f.name + '|' + f.cal).toLowerCase()));
