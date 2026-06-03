@@ -4,13 +4,11 @@ import { setCors, handlePreflight } from './_lib/cors.js';
 import { readBody } from './_lib/validate.js';
 
 function isEnglish(p) {
-  // Must have an English product name
+  // Must have a product name
   const name = p.product_name_en || p.product_name || '';
   if (!name.trim()) return false;
   // Prefer products explicitly tagged as English
   if (p.lang && p.lang !== 'en') return false;
-  // Filter out names with non-Latin characters (Chinese, Arabic, Cyrillic, etc.)
-  if (/[^\x00-\x7F\u00C0-\u024F]/.test(name)) return false;
   return true;
 }
 
@@ -99,7 +97,7 @@ export default async function handler(req, res) {
           try {
             const offRes = await fetch(buildUrl(q), {
               headers: { 'User-Agent': 'MuncherMacros/1.0' },
-              signal: AbortSignal.timeout(8000)
+              signal: AbortSignal.timeout(3000)
             });
             if (!offRes.ok) {
               if (attempt < 2) { await new Promise(r => setTimeout(r, 400)); continue; }

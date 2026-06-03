@@ -179,6 +179,7 @@ export const PantryView: React.FC<PantryViewProps> = ({ initialMeal, onClose, is
   
   const [searchQuery, setSearchQuery] = useState('');
   const [isSearching, setIsSearching] = useState(false);
+  const [isLoadingMore, setIsLoadingMore] = useState(false);
   const [searchResults, setSearchResults] = useState<Food[]>([]);
   const [innerGlobalSearchTab, setInnerGlobalSearchTab] = useState<SearchTab>('search');
   const [hasSearched, setHasSearched] = useState(false);
@@ -230,32 +231,39 @@ export const PantryView: React.FC<PantryViewProps> = ({ initialMeal, onClose, is
     }
 
     try {
-      // Search DB first to get synonym expansion, then OFF with expanded query
+      // Step 1: DB search — show results instantly
       const dbResponse = await fetch('/api/db-search', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ query: q }) })
         .then(r => r.ok ? r.json() : { foods: [], expandedQuery: q }).catch(() => ({ foods: [], expandedQuery: q }));
       const dbResults = (dbResponse.foods || []).map(normalizeFoodResult);
       const offQuery = dbResponse.expandedQuery || q;
 
-      // Use expanded query for OFF (e.g. "coke" -> "cola" finds Coca-Cola)
-      const offResults = await fetch('/api/off-search', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ query: offQuery }) })
-        .then(r => r.ok ? r.json() : { foods: [] }).then(b => (b.foods || b.results || []).map(normalizeFoodResult)).catch(() => []);
+      searchCache.current[q.toLowerCase()] = dbResults;
+      setIngResults([...localMatches, ...dbResults].slice(0, 30));
+      setIsIngSearching(false);
 
-      // Merge: DB first, then OFF (dedupe by name+cal to avoid duplicates)
-      const seen = new Set(dbResults.map((f: Food) => (f.name + '|' + f.cal).toLowerCase()));
-      const merged = [...dbResults];
-      for (const f of offResults) {
-        if (!seen.has((f.name + '|' + f.cal).toLowerCase())) {
-          merged.push(f);
-          seen.add((f.name + '|' + f.cal).toLowerCase());
-        }
-      }
-
-      searchCache.current[q.toLowerCase()] = merged;
-      setIngResults([...localMatches, ...merged].slice(0, 30));
+      // Step 2: OFF search — streams in branded results
+      fetch('/api/off-search', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ query: offQuery }) })
+        .then(r => r.ok ? r.json() : { foods: [] })
+        .then(offBody => {
+          const offResults = (offBody.foods || offBody.results || []).map(normalizeFoodResult);
+          if (offResults.length > 0) {
+            const seen = new Set(dbResults.map((f: Food) => (f.name + '|' + f.cal).toLowerCase()));
+            const merged = [...dbResults];
+            for (const f of offResults) {
+              if (!seen.has((f.name + '|' + f.cal).toLowerCase())) {
+                merged.push(f);
+                seen.add((f.name + '|' + f.cal).toLowerCase());
+              }
+            }
+            searchCache.current[q.toLowerCase()] = merged;
+            setIngResults([...localMatches, ...merged].slice(0, 30));
+          }
+        })
+        .catch(() => {});
     } catch {
       // Keep displaying the immediate local matches
+      setIsIngSearching(false);
     }
-    setIsIngSearching(false);
   };
 
   const calculateRecipeTotals = (items: RecipeItem[]) => {
@@ -285,6 +293,17 @@ export const PantryView: React.FC<PantryViewProps> = ({ initialMeal, onClose, is
     return () => clearTimeout(timer);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [ingQuery]);
+
+  // As-you-type search for global search (300ms debounce)
+  React.useEffect(() => {
+    const timer = setTimeout(() => {
+      if (searchQuery.trim().length > 1 && innerGlobalSearchTab === 'search') {
+        handleGlobalSearch(undefined, searchQuery);
+      }
+    }, 300);
+    return () => clearTimeout(timer);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchQuery]);
 
 
   const [aiStagedResults, setAiStagedResults] = useState<Food[]>([]);
@@ -405,32 +424,42 @@ export const PantryView: React.FC<PantryViewProps> = ({ initialMeal, onClose, is
     }
 
     try {
-      // Search DB first to get synonym expansion, then OFF with expanded query
+      // Step 1: DB search — show results instantly (~100ms)
       const dbResponse = await fetch('/api/db-search', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ query: q }) })
         .then(r => r.ok ? r.json() : { foods: [], expandedQuery: q }).catch(() => ({ foods: [], expandedQuery: q }));
       const dbResults = (dbResponse.foods || []).map(normalizeFoodResult);
       const offQuery = dbResponse.expandedQuery || q;
 
-      // Use expanded query for OFF (e.g. "coke" -> "cola" finds Coca-Cola)
-      const offResults = await fetch('/api/off-search', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ query: offQuery }) })
-        .then(r => r.ok ? r.json() : { foods: [] }).then(b => (b.foods || b.results || []).map(normalizeFoodResult)).catch(() => []);
+      // Show DB results immediately — don't wait for OFF
+      searchCache.current[q.toLowerCase()] = dbResults;
+      setSearchResults([...localMatches, ...dbResults].slice(0, 50));
+      setIsSearching(false);
 
-      // Merge: DB first, then OFF (dedupe by name+cal to avoid duplicates)
-      const seen = new Set(dbResults.map((f: Food) => (f.name + '|' + f.cal).toLowerCase()));
-      const merged = [...dbResults];
-      for (const f of offResults) {
-        if (!seen.has((f.name + '|' + f.cal).toLowerCase())) {
-          merged.push(f);
-          seen.add((f.name + '|' + f.cal).toLowerCase());
-        }
-      }
-
-      searchCache.current[q.toLowerCase()] = merged;
-      setSearchResults([...localMatches, ...merged].slice(0, 50));
+      // Step 2: OFF search — streams in branded results (~1-2s later)
+      setIsLoadingMore(true);
+      fetch('/api/off-search', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ query: offQuery }) })
+        .then(r => r.ok ? r.json() : { foods: [] })
+        .then(offBody => {
+          const offResults = (offBody.foods || offBody.results || []).map(normalizeFoodResult);
+          if (offResults.length > 0) {
+            const seen = new Set(dbResults.map((f: Food) => (f.name + '|' + f.cal).toLowerCase()));
+            const merged = [...dbResults];
+            for (const f of offResults) {
+              if (!seen.has((f.name + '|' + f.cal).toLowerCase())) {
+                merged.push(f);
+                seen.add((f.name + '|' + f.cal).toLowerCase());
+              }
+            }
+            searchCache.current[q.toLowerCase()] = merged;
+            setSearchResults([...localMatches, ...merged].slice(0, 50));
+          }
+        })
+        .catch(() => {})
+        .finally(() => setIsLoadingMore(false));
     } catch {
       setSearchResults(localMatches.slice(0, 50));
+      setIsSearching(false);
     }
-    setIsSearching(false);
   };
 
   const handleGlobalAISearch = async (e?: React.SyntheticEvent) => {
@@ -1177,6 +1206,11 @@ export const PantryView: React.FC<PantryViewProps> = ({ initialMeal, onClose, is
                   </div>
                 </div>
               ))}
+              {isLoadingMore && (
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', padding: '12px', color: 'var(--theme-text-dim)', fontSize: '11px', fontWeight: '700', letterSpacing: '0.5px' }}>
+                  <Loader2 className="spin" size={14} color="var(--theme-accent)" /> Loading branded results...
+                </div>
+              )}
             </div>
           )}
 
