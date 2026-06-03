@@ -6,7 +6,7 @@
 //   SUPABASE_URL=https://... SUPABASE_SERVICE_ROLE_KEY=... node scripts/ingest-branded.js
 
 import { createClient } from '@supabase/supabase-js';
-import { readFileSync } from 'fs';
+import { readFileSync, readdirSync } from 'fs';
 import { fileURLToPath } from 'url';
 import { dirname, join } from 'path';
 
@@ -27,10 +27,23 @@ const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
 const CURATED_PRIORITY = 20;
 
 async function main() {
-  const path = join(__dirname, 'branded-foods.json');
-  console.log(`Reading branded foods from: ${path}`);
-  const items = JSON.parse(readFileSync(path, 'utf-8'));
-  console.log(`Found ${items.length} branded foods to ingest`);
+  // Load every branded-foods*.json file in this directory and combine them.
+  const files = readdirSync(__dirname)
+    .filter(f => /^branded-foods.*\.json$/.test(f))
+    .sort();
+  console.log(`Reading ${files.length} data file(s): ${files.join(', ')}`);
+
+  const combined = [];
+  for (const file of files) {
+    const data = JSON.parse(readFileSync(join(__dirname, file), 'utf-8'));
+    combined.push(...data);
+  }
+
+  // De-dupe by name (last occurrence wins).
+  const byName = new Map();
+  for (const it of combined) byName.set(it.name, it);
+  const items = [...byName.values()];
+  console.log(`Found ${combined.length} entries, ${items.length} unique branded foods to ingest`);
 
   // Map each item to a foods-table row.
   // Each food is stored as 1 serving with per-serving macros, matching how
@@ -55,15 +68,12 @@ async function main() {
     priority: CURATED_PRIORITY,
   }));
 
-  // Upsert on a deterministic key. The foods table's unique constraint is on
-  // usda_fdc_id (null for curated), so we de-dupe by deleting existing curated
-  // rows with the same name first, then insert. This keeps re-runs idempotent.
-  const names = rows.map(r => r.name);
+  // Full re-ingest: delete ALL existing curated rows, then insert fresh.
+  // Keeps re-runs fully idempotent regardless of how the data files change.
   const { error: delErr } = await supabase
     .from('foods')
     .delete()
-    .eq('source', 'curated')
-    .in('name', names);
+    .eq('source', 'curated');
   if (delErr) {
     console.error('Cleanup of existing curated rows failed:', delErr.message);
     process.exit(1);
