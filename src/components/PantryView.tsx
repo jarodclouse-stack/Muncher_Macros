@@ -2494,11 +2494,7 @@ export const PantryView: React.FC<PantryViewProps> = ({ initialMeal, onClose, is
                         <Flame size={10} /> HIGH FAT CONTENT
                       </div>
                     )}
-                    {totalCal > 500 && (
-                      <div style={{ padding: '4px 10px', background: 'rgba(255, 255, 255, 0.05)', border: '1px solid rgba(255,255,255,0.2)', borderRadius: '10px', color: '#fff', fontSize: '10px', fontWeight: '800', display: 'flex', alignItems: 'center', gap: '4px' }}>
-                        <Utensils size={10} /> HEAVY MEAL
-                      </div>
-                    )}
+
                     {mineralBadges.map(b => (
                       <div key={b.label} style={{ padding: '4px 10px', background: 'rgba(0, 201, 255, 0.08)', border: '1px solid rgba(0,201,255,0.35)', borderRadius: '10px', color: 'var(--theme-accent)', fontSize: '10px', fontWeight: '800', display: 'flex', alignItems: 'center', gap: '4px' }}>
                         {getMineralIcon(b.key, 10)}
