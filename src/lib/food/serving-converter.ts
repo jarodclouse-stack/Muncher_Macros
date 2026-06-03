@@ -450,7 +450,7 @@ export function getCarbClassification(food: any): CarbCategory {
  * `estimated: true` means it was computed — show a "~" prefix to signal approximation.
  */
 export function estimateNutriScore(food: any): { grade: string; estimated: boolean } {
-  if (food?.nutriscore_grade) {
+  if (food?.nutriscore_grade && food?._src !== 'ai') {
     const g = String(food.nutriscore_grade).toLowerCase().trim();
     if ('abcde'.includes(g) && g.length === 1) return { grade: g, estimated: false };
   }
@@ -486,7 +486,11 @@ export function estimateNutriScore(food: any): { grade: string; estimated: boole
   const fbP = fiber100 < 0.9 ? 0 : fiber100 < 1.9 ? 1 : fiber100 < 2.8 ? 2 : fiber100 < 3.7 ? 3 : fiber100 < 4.7 ? 4 : 5;
   const prP = prot100  < 1.6 ? 0 : prot100  < 3.2 ? 1 : prot100  < 4.8 ? 2 : prot100  < 6.4 ? 3 : prot100  < 8   ? 4 : 5;
 
-  const score = (eP + sP + suP + naP) - (fbP + prP);
-  const grade = score <= -1 ? 'a' : score <= 2 ? 'b' : score <= 10 ? 'c' : score <= 18 ? 'd' : 'e';
+  const negativePoints = eP + sP + suP + naP;
+  let score = negativePoints - fbP;
+  if (negativePoints < 11) {
+    score -= prP;
+  }
+  const grade = score <= 0 ? 'a' : score <= 2 ? 'b' : score <= 8 ? 'c' : score <= 18 ? 'd' : 'e';
   return { grade, estimated: true };
 }
