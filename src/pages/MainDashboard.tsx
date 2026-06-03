@@ -1,16 +1,17 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, lazy, Suspense } from 'react';
 import { useAuth } from '../context/AuthContext';
-import { DiaryView } from '../components/DiaryView';
-import { NutritionView } from '../components/NutritionView';
-import { ProgressView } from '../components/ProgressView';
-import { WeightProgressView } from '../components/WeightProgressView';
-import { PantryView } from '../components/PantryView';
-import { SettingsView } from '../components/SettingsView';
-import { VaultView } from '../components/VaultView';
-import { BadgesView } from '../components/BadgesView';
 import { useDiary } from '../context/DiaryContext';
-import { OnboardingWizard } from '../components/OnboardingWizard';
 import { LogOut, Plus, Settings, Sparkles, Trophy, Menu, BookOpen, Apple, TrendingUp, Target } from 'lucide-react';
+
+const DiaryView = lazy(() => import('../components/DiaryView').then(m => ({ default: m.DiaryView })));
+const NutritionView = lazy(() => import('../components/NutritionView').then(m => ({ default: m.NutritionView })));
+const ProgressView = lazy(() => import('../components/ProgressView').then(m => ({ default: m.ProgressView })));
+const WeightProgressView = lazy(() => import('../components/WeightProgressView').then(m => ({ default: m.WeightProgressView })));
+const PantryView = lazy(() => import('../components/PantryView').then(m => ({ default: m.PantryView })));
+const SettingsView = lazy(() => import('../components/SettingsView').then(m => ({ default: m.SettingsView })));
+const VaultView = lazy(() => import('../components/VaultView').then(m => ({ default: m.VaultView })));
+const BadgesView = lazy(() => import('../components/BadgesView').then(m => ({ default: m.BadgesView })));
+const OnboardingWizard = lazy(() => import('../components/OnboardingWizard').then(m => ({ default: m.OnboardingWizard })));
 
 export const MainDashboard: React.FC = () => {
   const { user, logout } = useAuth();
@@ -35,7 +36,15 @@ export const MainDashboard: React.FC = () => {
   }, [dataReady, localCache.goals]);
 
   if (showOnboarding) {
-    return <OnboardingWizard onComplete={() => setShowOnboarding(false)} />;
+    return (
+      <Suspense fallback={
+        <div style={{ height: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#0c0c12', color: '#fff' }}>
+          <div style={{ animation: 'spin 1.5s linear infinite', borderTop: '2px solid var(--theme-accent, #00C9FF)', borderRight: '2px solid transparent', borderRadius: '50%', width: '40px', height: '40px' }} />
+        </div>
+      }>
+        <OnboardingWizard onComplete={() => setShowOnboarding(false)} />
+      </Suspense>
+    );
   }
 
   return (
@@ -179,16 +188,24 @@ export const MainDashboard: React.FC = () => {
         paddingBottom: 'calc(80px + max(12px, env(safe-area-inset-bottom)))',
         background: 'transparent'
       }}>
-        {activeTab === 'diary' && <DiaryView />}
-        {activeTab === 'nutrition' && <NutritionView />}
-        {activeTab === 'prestige' && <WeightProgressView />}
-        {activeTab === 'progress' && <ProgressView />}
-        {activeTab === 'pantry' && <PantryView />}
+        <Suspense fallback={
+          <div style={{ height: '200px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--theme-text-dim, #8b8b9b)' }}>
+            <div style={{ animation: 'spin 1.5s linear infinite', borderTop: '2px solid var(--theme-accent, #00C9FF)', borderRight: '2px solid transparent', borderRadius: '50%', width: '30px', height: '30px' }} />
+          </div>
+        }>
+          {activeTab === 'diary' && <DiaryView />}
+          {activeTab === 'nutrition' && <NutritionView />}
+          {activeTab === 'prestige' && <WeightProgressView />}
+          {activeTab === 'progress' && <ProgressView />}
+          {activeTab === 'pantry' && <PantryView />}
+        </Suspense>
       </main>
 
-      {showSettingsModal && <SettingsView onClose={() => setShowSettingsModal(false)} />}
-      {showVaultModal && <VaultView onClose={() => setShowVaultModal(false)} />}
-      {showBadgesModal && <BadgesView onClose={() => setShowBadgesModal(false)} />}
+      <Suspense fallback={null}>
+        {showSettingsModal && <SettingsView onClose={() => setShowSettingsModal(false)} />}
+        {showVaultModal && <VaultView onClose={() => setShowVaultModal(false)} />}
+        {showBadgesModal && <BadgesView onClose={() => setShowBadgesModal(false)} />}
+      </Suspense>
 
       {/* Bottom Navigation */}
         <div style={{

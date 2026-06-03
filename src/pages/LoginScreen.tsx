@@ -20,7 +20,7 @@ export const LoginScreen: React.FC = () => {
     e.preventDefault();
     setError('');
     
-    if (email === 'guest' && password === 'password') {
+    if (import.meta.env.DEV && email === 'guest' && password === 'password') {
       loginAsGuest();
       return;
     }

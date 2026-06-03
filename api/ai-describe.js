@@ -3,8 +3,9 @@
 
 import { setCors, handlePreflight } from './_lib/cors.js';
 import { validateText, readBody } from './_lib/validate.js';
-import { rateLimit } from './_lib/rate-limit.js';
+import { rateLimit, checkAiQuota } from './_lib/rate-limit.js';
 import { requireAuth } from './_lib/auth.js';
+import { checkCache, saveToCache } from './_lib/supabase-client.js';
 
 function extractJSON(text) {
   if (!text) return null;
@@ -22,10 +23,10 @@ function extractJSON(text) {
 }
 
 const MODELS = [
-  'claude-sonnet-4-6',
   'claude-haiku-4-5-20251001',
   'claude-haiku-4-5-20241022',
   'claude-haiku-4-5-20241001',
+  'claude-sonnet-4-6',
 ];
 
 import https from 'https';
@@ -215,7 +216,7 @@ export default async function handler(req, res) {
   setCors(req, res);
   if (handlePreflight(req, res)) return;
   if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
-  if (!rateLimit(req, res)) return;
+  if (!(await rateLimit(req, res))) return;
 
   const user = await requireAuth(req, res);
   if (!user) return;
@@ -223,6 +224,20 @@ export default async function handler(req, res) {
   const body = await readBody(req);
   const description = validateText(body.description);
   const meal = body.meal || 'Snacks';
+
+  if (!description.trim()) {
+    return res.status(400).json({ error: 'Description is required' });
+  }
+
+  const cached = await checkCache('describe', description);
+  if (cached) {
+    return res.status(200).json({
+      ...cached,
+      meal
+    });
+  }
+
+  if (!(await checkAiQuota(user.id, res))) return;
 
   const apiKey = (process.env.ANTHROPIC_API_KEY || '').trim();
   console.log(`AI Describe: key=${apiKey ? 'configured' : 'MISSING'} model=${MODELS[0]}`);
@@ -423,11 +438,17 @@ CRITICAL REMINDERS:
       finalFoods = aiResults.map(f => normalizeResult(f));
     }
     
-    return res.status(200).json({ 
-      foods: finalFoods, 
-      meal,
+    const responsePayload = {
+      foods: finalFoods,
       totalServingQty,
       totalServingUnit
+    };
+    
+    await saveToCache('describe', description, responsePayload);
+    
+    return res.status(200).json({ 
+      ...responsePayload,
+      meal
     });
   } catch (e) {
     console.error('AI Describe Error:', e);

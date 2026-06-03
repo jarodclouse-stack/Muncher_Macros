@@ -1,11 +1,11 @@
 {
   "functions": {
-    "api/ai-label.js": {
-      "maxDuration": 15
-    },
-    "api/ai-barcode.js": {
-      "maxDuration": 15
-    }
+    "api/ai-label.js": { "maxDuration": 30 },
+    "api/ai-barcode.js": { "maxDuration": 30 },
+    "api/ai-describe.js": { "maxDuration": 30 },
+    "api/ai-lookup.js": { "maxDuration": 30 },
+    "api/ai-verify-meal.js": { "maxDuration": 30 },
+    "api/ai-ingredients.js": { "maxDuration": 15 }
   },
   "rewrites": [
     { "source": "/((?!api/).*)", "destination": "/index.html" }
@@ -16,6 +16,13 @@
       "headers": [
         { "key": "Cache-Control", "value": "no-store, max-age=0" }
       ]
+    },
+    {
+      "source": "/assets/(.*)",
+      "headers": [
+        { "key": "Cache-Control", "value": "public, max-age=31536000, immutable" }
+      ]
     }
   ]
 }
+

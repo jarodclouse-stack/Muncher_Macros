@@ -3,8 +3,9 @@
 
 import { setCors, handlePreflight } from './_lib/cors.js';
 import { validateQuery, readBody } from './_lib/validate.js';
-import { rateLimit } from './_lib/rate-limit.js';
+import { rateLimit, checkAiQuota } from './_lib/rate-limit.js';
 import { requireAuth } from './_lib/auth.js';
+import { checkCache, saveToCache } from './_lib/supabase-client.js';
 
 function extractJSON(text) {
   if (!text) return null;
@@ -22,10 +23,10 @@ function extractJSON(text) {
 }
 
 const MODELS = [
-  'claude-sonnet-4-6',
   'claude-haiku-4-5-20251001',
   'claude-haiku-4-5-20241022',
   'claude-haiku-4-5-20241001',
+  'claude-sonnet-4-6',
 ];
 
 import https from 'https';
@@ -208,7 +209,7 @@ export default async function handler(req, res) {
   setCors(req, res);
   if (handlePreflight(req, res)) return;
   if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
-  if (!rateLimit(req, res)) return;
+  if (!(await rateLimit(req, res))) return;
 
   const user = await requireAuth(req, res);
   if (!user) return;
@@ -249,8 +250,18 @@ export default async function handler(req, res) {
   - DO NOT omit any key. Ensure every single key from the list above is included in the output JSON objects. All values should be estimated as realistically as possible for the base serving.`;
 
   try {
+    const cached = await checkCache('lookup', query);
+    if (cached) {
+      return res.status(200).json({ foods: cached });
+    }
+
+    if (!(await checkAiQuota(user.id, res))) return;
+
     const aiResults = await anthropicJson(prompt, apiKey);
     const finalFoods = aiResults.map(f => normalizeResult(f));
+    
+    await saveToCache('lookup', query, finalFoods);
+    
     return res.status(200).json({ foods: finalFoods });
   } catch (e) {
     console.error('AI Lookup Error:', e);

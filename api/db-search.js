@@ -78,7 +78,7 @@ export default async function handler(req, res) {
   setCors(req, res);
   if (handlePreflight(req, res)) return;
   if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
-  if (!rateLimit(req, res)) return;
+  if (!(await rateLimit(req, res))) return;
 
   const user = await requireAuth(req, res);
   if (!user) return;

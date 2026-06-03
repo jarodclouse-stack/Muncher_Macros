@@ -77,6 +77,19 @@ export const DiaryProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       return;
     }
 
+    // Load instantly from localStorage backup if it exists
+    let localBackup: LocalCache = {};
+    try {
+      const stored = localStorage.getItem(`ft_user_${user.id}`);
+      if (stored) {
+        localBackup = JSON.parse(stored);
+        setLocalCache(localBackup);
+        if (localBackup.stagingTray) setStagingTray(localBackup.stagingTray);
+      }
+    } catch (e) {
+      console.warn('Failed to load local backup:', e);
+    }
+
     const loadCloudData = async () => {
       setSyncStatus('syncing');
       try {
@@ -103,6 +116,12 @@ export const DiaryProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         
         setLocalCache(loaded);
         if (loaded.stagingTray) setStagingTray(loaded.stagingTray);
+        
+        // Cache backup locally
+        try {
+          localStorage.setItem(`ft_user_${user.id}`, JSON.stringify(loaded));
+        } catch (e) {}
+        
         setSyncStatus('ok');
         setDataReady(true);
       } catch (err) {
@@ -123,6 +142,11 @@ export const DiaryProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       return;
     }
     
+    // Always write backup locally immediately
+    try {
+      localStorage.setItem(`ft_user_${user.id}`, JSON.stringify(dataToSave));
+    } catch (e) {}
+    
     setSyncStatus('syncing');
     try {
       const { error } = await supabase.from('user_data').upsert(
@@ -135,6 +159,18 @@ export const DiaryProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       setSyncStatus(navigator.onLine ? 'error' : 'offline');
     }
   }, [user, isGuest]);
+
+  // Automatically sync when browser connection is restored
+  useEffect(() => {
+    const handleOnline = () => {
+      if (syncStatus === 'offline' || syncStatus === 'error') {
+        saveCloudData(localCache);
+      }
+    };
+    window.addEventListener('online', handleOnline);
+    return () => window.removeEventListener('online', handleOnline);
+  }, [syncStatus, localCache, saveCloudData]);
+
 
   const updateCacheDebounced = useCallback((newCache: LocalCache) => {
     setLocalCache(newCache);
