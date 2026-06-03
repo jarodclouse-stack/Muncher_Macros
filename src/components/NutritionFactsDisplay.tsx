@@ -168,8 +168,11 @@ export const NutritionFactsDisplay: React.FC<NutritionFactsDisplayProps> = ({ fo
           padding: '16px',
           marginBottom: '16px'
         }}>
-          <div style={{ fontSize: '11px', fontWeight: '900', color: 'var(--theme-text-dim)', letterSpacing: '1px', textTransform: 'uppercase', marginBottom: '4px' }}>
+          <div style={{ fontSize: '11px', fontWeight: '900', color: 'var(--theme-text-dim)', letterSpacing: '1px', textTransform: 'uppercase', marginBottom: '2px' }}>
             Nutrient Levels
+          </div>
+          <div style={{ fontSize: '10px', color: 'rgba(255, 255, 255, 0.4)', lineHeight: '1.4', marginBottom: '6px', fontWeight: '500' }}>
+            The percentage shows how much of the food's weight is made of that nutrient. For example, 10% Fat means if you split the food into 10 equal bites, 1 whole bite is pure fat!
           </div>
           
           {([
