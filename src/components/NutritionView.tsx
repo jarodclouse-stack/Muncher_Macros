@@ -771,13 +771,13 @@ export const NutritionView: React.FC = () => {
       </div>
 
       {/* Micronutrients */}
-      <div className="card" style={{ padding: 'var(--space-xl)' }}>
+      <div className="card micronutrients-card">
         <h2 style={{ fontSize: '18px', fontWeight: '800', marginBottom: 'var(--space-lg)', color: 'var(--theme-text-on-panel)' }}>Micronutrients</h2>
         <div style={{ display: 'grid', gap: 'var(--space-lg)' }}>
           {MICRO_CATEGORIES.map((cat: { cat: string; keys: { k: string; u: string }[] }) => (
             <div key={cat.cat}>
               <h3 style={{ fontSize: '12px', color: 'var(--theme-accent)', marginBottom: '16px', textTransform: 'uppercase', letterSpacing: '1px', fontWeight: '900' }}>{cat.cat}</h3>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+              <div className="micro-rows-container" style={{ display: 'flex', flexDirection: 'column' }}>
                 {cat.keys.map((nutrient: { k: string; u: string }) => {
                   const label = nutrient.k;
                   const unit = nutrient.u;
@@ -799,40 +799,25 @@ export const NutritionView: React.FC = () => {
                             setShowDeficiencyDetails(false);
                           }
                         }}
-                        style={{ display: 'grid', gridTemplateColumns: 'minmax(120px, auto) 1fr 95px', gap: '16px', alignItems: 'center', cursor: info ? 'pointer' : 'default' }}
+                        className="micro-row-grid"
+                        style={{ cursor: info ? 'pointer' : 'default' }}
                       >
-                        <div style={{
-                          fontSize: '10px',
-                          fontWeight: '900',
-                          color: isExpanded ? 'var(--theme-accent)' : 'var(--theme-text-on-panel)',
-                          background: 'var(--theme-panel)',
-                          padding: '6px 14px',
-                          borderRadius: '24px',
-                          display: 'inline-flex',
-                          alignItems: 'center',
-                          gap: '6px',
-                          textTransform: 'uppercase',
-                          letterSpacing: '0.8px',
-                          border: '1px solid var(--theme-border)',
-                          boxShadow: '0 2px 8px rgba(0,0,0,0.05)',
-                          transition: 'all 0.2s'
-                        }}>
+                        <div 
+                          className="micro-badge-btn"
+                          style={{
+                            color: isExpanded ? 'var(--theme-accent)' : 'var(--theme-text-on-panel)',
+                            background: 'var(--theme-panel)'
+                          }}
+                        >
                           {label} 
                           {info && (
-                            <span style={{
-                              background: isExpanded ? 'var(--theme-accent)' : 'rgba(255, 255, 255, 0.05)',
-                              border: '1px solid rgba(255, 255, 255, 0.1)',
-                              borderRadius: '6px',
-                              color: isExpanded ? '#000000' : 'var(--theme-accent)',
-                              padding: '2px 6px',
-                              fontSize: '8px',
-                              fontWeight: '900',
-                              textTransform: 'uppercase',
-                              transition: 'all 0.2s',
-                              marginLeft: '6px',
-                              display: 'inline-flex',
-                              alignItems: 'center'
-                            }}>
+                            <span 
+                              className="micro-info-span"
+                              style={{
+                                background: isExpanded ? 'var(--theme-accent)' : 'rgba(255, 255, 255, 0.05)',
+                                color: isExpanded ? '#000000' : 'var(--theme-accent)'
+                              }}
+                            >
                               info
                             </span>
                           )}
@@ -847,7 +832,12 @@ export const NutritionView: React.FC = () => {
                             transition: 'width var(--transition-smooth), background-color 0.3s ease'
                           }} />
                         </div>
-                        <div style={{ fontSize: '13px', fontWeight: '900', textAlign: 'right', color: pct >= 100 ? 'var(--theme-success)' : 'var(--theme-text-on-panel)', whiteSpace: 'nowrap' }}>
+                        <div 
+                          className="micro-val-col"
+                          style={{ 
+                            color: pct >= 100 ? 'var(--theme-success)' : 'var(--theme-text-on-panel)' 
+                          }}
+                        >
                           {Math.round(val)}<span style={{ fontSize: '10px', opacity: 0.8, marginRight: '4px' }}>{unit}</span>
                           <span style={{ fontSize: '11px', fontWeight: '800', opacity: 0.85, color: val > 0 ? barColor : 'var(--theme-text-dim)' }}>
                             ({Math.round(actualPct)}%)

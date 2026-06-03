@@ -1559,4 +1559,88 @@ body .luminous-absolute-white * {
   opacity: 1 !important;
 }
 
+/* RESPONSIVE MICRONUTRIENT ROW STYLES */
+.micro-row-grid {
+  display: grid;
+  grid-template-columns: minmax(120px, auto) 1fr 95px;
+  gap: 16px;
+  align-items: center;
+}
+
+.micro-badge-btn {
+  font-size: 10px;
+  font-weight: 900;
+  border-radius: 24px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  border: 1px solid var(--theme-border);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+  transition: all 0.2s;
+  padding: 6px 14px;
+  white-space: nowrap;
+}
+
+.micro-info-span {
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 6px;
+  padding: 2px 6px;
+  font-size: 8px;
+  font-weight: 900;
+  text-transform: uppercase;
+  transition: all 0.2s;
+  margin-left: 6px;
+  display: inline-flex;
+  align-items: center;
+}
+
+.micro-val-col {
+  font-size: 13px;
+  font-weight: 900;
+  text-align: right;
+  white-space: nowrap;
+}
+
+.micronutrients-card {
+  padding: var(--space-xl) !important;
+}
+
+.micro-rows-container {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+@media (max-width: 480px) {
+  .app-container {
+    padding: 0 12px !important;
+  }
+  .micronutrients-card {
+    padding: 12px !important;
+  }
+  .micro-rows-container {
+    gap: 8px !important;
+  }
+  .micro-row-grid {
+    grid-template-columns: 112px 1fr 68px !important;
+    gap: 8px !important;
+  }
+  .micro-badge-btn {
+    font-size: 8.5px !important;
+    padding: 3px 6px !important;
+    letter-spacing: 0.4px !important;
+  }
+  .micro-info-span {
+    padding: 1px 3px !important;
+    font-size: 7px !important;
+    margin-left: 3px !important;
+  }
+  .micro-val-col {
+    font-size: 10.5px !important;
+  }
+}
+
+
 
