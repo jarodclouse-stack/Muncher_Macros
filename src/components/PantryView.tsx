@@ -16,6 +16,7 @@ import { NutritionFactsDisplay } from './NutritionFactsDisplay';
 import { BarcodeScanner } from './BarcodeScanner';
 import { ConfirmDialog } from './ConfirmDialog';
 import { PromptDialog } from './PromptDialog';
+import { NutriScorePopup } from './NutriScorePopup';
 import type { Food, RecipeItem } from '../types/food';
 
 const getCategoryIcon = (cat: string, size = 16) => {
@@ -556,6 +557,7 @@ export const PantryView: React.FC<PantryViewProps> = ({ initialMeal, onClose, is
   const [servingQty, setServingQty] = useState('1');
   const [servingUnit, setServingUnit] = useState('serving');
   const [showFullNutrition, setShowFullNutrition] = useState(false);
+  const [showNutriPopup, setShowNutriPopup] = useState(false);
 
   const handleAddPreviewClick = (food: Food) => {
     setConfiguringFood(food);
@@ -764,12 +766,12 @@ export const PantryView: React.FC<PantryViewProps> = ({ initialMeal, onClose, is
           display: 'grid', 
           gridTemplateColumns: 'repeat(2, 1fr)',
           gap: '8px', 
-          marginBottom: '20px', 
+          marginBottom: isModal ? '8px' : '10px', 
           position: 'sticky', 
           top: '0', 
           zIndex: 100, 
           background: 'transparent',
-          padding: isModal ? '8px 20px 16px 20px' : '24px 20px 16px 20px'
+          padding: isModal ? '28px 20px 12px 20px' : '40px 20px 12px 20px'
         }}>
         <button onClick={() => { setActiveTab('search'); clearSearchState(); }} 
           className={`pantry-main-tab ${activeTab === 'search' ? 'active' : ''}`}
@@ -785,7 +787,7 @@ export const PantryView: React.FC<PantryViewProps> = ({ initialMeal, onClose, is
 
       {activeTab === 'search' && (
         <div style={{ padding: '0 20px' }}>
-          <div style={{ height: '20px' }} />
+          <div style={{ height: isModal ? '8px' : '10px' }} />
 
           {showGuide && (
             <div className="card" style={{ 
@@ -2341,8 +2343,8 @@ export const PantryView: React.FC<PantryViewProps> = ({ initialMeal, onClose, is
             padding: '24px 24px 120px 24px', 
             overflowY: 'auto' 
           }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '20px' }}>
-                <div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px', gap: '16px' }}>
+                <div style={{ flex: 1, minWidth: 0 }}>
                   <input 
                     value={editName}
                     onChange={(e) => setEditName(e.target.value)}
@@ -2354,7 +2356,63 @@ export const PantryView: React.FC<PantryViewProps> = ({ initialMeal, onClose, is
                     </div>
                   </div>
                 </div>
-                <button onClick={() => { setConfiguringFood(null); setConfiguringFromRecipe(false); }} style={{ background: 'rgba(255,255,255,0.05)', border: 'none', borderRadius: '50%', width: '32px', height: '32px', color: '#fff', cursor: 'pointer' }}><X size={18} /></button>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexShrink: 0 }}>
+                  {(() => {
+                    const { grade: g, estimated } = estimateNutriScore(configuringFood);
+                    if (!g) return null;
+                    const nsColor: Record<string,string> = { a: '#038141', b: '#85bb2f', c: '#fecb02', d: '#ee8100', e: '#e63e11' };
+                    const bg = nsColor[g] || '#888';
+                    return (
+                      <button 
+                        onClick={() => setShowNutriPopup(true)}
+                        title={`Nutri-Score ${g.toUpperCase()}${estimated ? ' (estimated)' : ''} — tap to learn more`} 
+                        style={{ 
+                          display: 'flex', 
+                          flexDirection: 'row', 
+                          alignItems: 'center', 
+                          gap: '6px',
+                          background: `${bg}18`,
+                          border: `1px solid ${bg}44`,
+                          borderRadius: '10px',
+                          padding: '3px 8px',
+                          boxShadow: `0 0 8px ${bg}20`,
+                          height: '32px',
+                          cursor: 'pointer',
+                          outline: 'none',
+                          transition: 'all 0.15s ease'
+                        }}
+                        onMouseEnter={e => {
+                          const btn = e.currentTarget as HTMLButtonElement;
+                          btn.style.boxShadow = `0 0 12px ${bg}50`;
+                          btn.style.transform = 'scale(1.02)';
+                        }}
+                        onMouseLeave={e => {
+                          const btn = e.currentTarget as HTMLButtonElement;
+                          btn.style.boxShadow = `0 0 8px ${bg}20`;
+                          btn.style.transform = 'scale(1)';
+                        }}
+                      >
+                        <span style={{ fontSize: '8px', fontWeight: '900', color: 'rgba(255,255,255,0.6)', letterSpacing: '0.5px', textTransform: 'uppercase' }}>{estimated ? '~' : ''}NUTRI</span>
+                        <span style={{ 
+                          width: '20px', 
+                          height: '20px', 
+                          borderRadius: '6px', 
+                          background: bg, 
+                          display: 'flex', 
+                          alignItems: 'center', 
+                          justifyContent: 'center', 
+                          fontSize: '11px', 
+                          fontWeight: '900', 
+                          color: '#000', 
+                          boxShadow: `0 0 6px ${bg}80` 
+                        }}>
+                          {g.toUpperCase()}
+                        </span>
+                      </button>
+                    );
+                  })()}
+                  <button onClick={() => { setConfiguringFood(null); setConfiguringFromRecipe(false); }} style={{ background: 'rgba(255,255,255,0.05)', border: 'none', borderRadius: '50%', width: '32px', height: '32px', color: '#fff', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><X size={18} /></button>
+                </div>
               </div>
 
               {/* Nutrition Summary */}
@@ -2595,6 +2653,9 @@ export const PantryView: React.FC<PantryViewProps> = ({ initialMeal, onClose, is
               </div>
           </div>
         </div>
+      )}
+      {showNutriPopup && configuringFood && (
+        <NutriScorePopup food={configuringFood} onClose={() => setShowNutriPopup(false)} />
       )}
       {promptDialog && <PromptDialog title={promptDialog.title} message={promptDialog.message} defaultValue={promptDialog.defaultValue} placeholder={promptDialog.placeholder} onConfirm={promptDialog.onConfirm} onCancel={() => setPromptDialog(null)} />}
       {confirmDialog && <ConfirmDialog title={confirmDialog.title} message={confirmDialog.message} danger onConfirm={confirmDialog.onConfirm} onCancel={() => setConfirmDialog(null)} />}

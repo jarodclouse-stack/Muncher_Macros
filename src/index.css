@@ -1615,7 +1615,8 @@ body .luminous-absolute-white * {
 
 @media (max-width: 480px) {
   .app-container {
-    padding: 0 12px !important;
+    padding-left: 12px !important;
+    padding-right: 12px !important;
   }
   .micronutrients-card {
     padding: 12px !important;
@@ -1624,12 +1625,12 @@ body .luminous-absolute-white * {
     gap: 8px !important;
   }
   .micro-row-grid {
-    grid-template-columns: 112px 1fr 68px !important;
+    grid-template-columns: 115px 1fr 68px !important;
     gap: 8px !important;
   }
   .micro-badge-btn {
     font-size: 8.5px !important;
-    padding: 3px 6px !important;
+    padding: 5px 7px !important;
     letter-spacing: 0.4px !important;
   }
   .micro-info-span {
