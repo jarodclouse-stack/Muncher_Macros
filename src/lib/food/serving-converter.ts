@@ -483,6 +483,101 @@ export function estimateNutriScore(food: any): { grade: string; estimated: boole
   const prot100   = Number(food?.p ?? food?.protein ?? 0) * scale;
   const kj100     = kcal100 * 4.184;
 
+  // Detect if food is a beverage
+  const name = String(food?.name ?? '').toLowerCase();
+  const brand = String(food?.brand ?? '').toLowerCase();
+  const ingredients = String(food?.ingredients ?? '').toLowerCase();
+  const serving = String(food?.serving ?? '').toLowerCase();
+
+  const isMlUnit = sUnit === 'ml' || serving.includes('ml') || serving.includes(' l ') || serving.includes('fl oz') || serving.includes('floz');
+  const hasBeverageTag = Array.isArray(food?.tags) && food.tags.some((t: string) => {
+    const lt = t.toLowerCase();
+    return lt === 'beverage' || lt === 'drink' || lt === 'beverages' || lt === 'drinks' || lt === 'liquid';
+  });
+
+  const beverageKeywords = [
+    'coke', 'cola', 'pepsi', 'soda', 'pop', 'juice', 'water', 'tea', 'coffee', 'milk', 'sprite', 
+    'dr pepper', 'fanta', 'gatorade', 'powerade', 'smoothie', 'nesquik', 'lemonade', 'punch', 'cider', 
+    'latte', 'cappuccino', 'espresso', 'brew', 'shake', 'beverage', 'drink', 'beer', 'wine', 'syrup',
+    'mountain dew', 'ginger ale', 'root beer', 'capri sun', 'sunny d', 'tropicana', 'minute maid', 
+    'monster energy', 'red bull', 'yakult', 'fizz'
+  ];
+  const hasBeverageKeyword = beverageKeywords.some(keyword => name.includes(keyword) || brand.includes(keyword));
+
+  const isBeverage = isMlUnit || hasBeverageTag || hasBeverageKeyword;
+
+  if (isBeverage) {
+    // Pure water is the only beverage that can get 'a'
+    const isPureWater = kcal100 === 0 && sugar100 === 0 && sat100 === 0 && prot100 === 0 &&
+      (name.includes('water') || name.includes('aqua') || name.includes('seltzer') || name.includes('club soda') || name.includes('sparkling water'));
+    if (isPureWater) {
+      return { grade: 'a', estimated: true };
+    }
+
+    // Beverage negative points (2024 update rules)
+    // Energy (kJ/100mL)
+    let eP = 0;
+    if (kj100 > 570) eP = 10;
+    else if (kj100 > 510) eP = 9;
+    else if (kj100 > 450) eP = 8;
+    else if (kj100 > 390) eP = 7;
+    else if (kj100 > 330) eP = 6;
+    else if (kj100 > 270) eP = 5;
+    else if (kj100 > 210) eP = 4;
+    else if (kj100 > 150) eP = 2;
+    else if (kj100 > 90) eP = 2; // Non-linear scale values: 0-30=0, 31-90=1, 91-150=2
+    else if (kj100 > 30) eP = 1;
+
+    // Sugar (g/100mL) - Stricter scale (max 15 points)
+    let suP = 0;
+    if (sugar100 > 0.5) {
+      suP = Math.min(Math.floor((sugar100 - 0.5) / 1.0) + 1, 15);
+    }
+
+    // Saturated Fat (g/100mL)
+    const sP = sat100 < 1 ? 0 : sat100 < 2 ? 1 : sat100 < 3 ? 2 : sat100 < 4 ? 3 : sat100 < 5 ? 4 : sat100 < 6 ? 5 : sat100 < 7 ? 6 : sat100 < 8 ? 7 : sat100 < 9 ? 8 : sat100 < 10 ? 9 : 10;
+
+    // Sodium (mg/100mL)
+    const naP = sodium100 < 90 ? 0 : sodium100 < 180 ? 1 : sodium100 < 270 ? 2 : sodium100 < 360 ? 3 : sodium100 < 450 ? 4 : sodium100 < 540 ? 5 : sodium100 < 630 ? 6 : sodium100 < 720 ? 7 : sodium100 < 810 ? 8 : sodium100 < 900 ? 9 : 10;
+
+    // Sweeteners Penalty (+4 points)
+    const sweetenerKeywords = [
+      'aspartame', 'sucralose', 'stevia', 'erythritol', 'monk fruit', 'acesulfame', 
+      'saccharin', 'xylitol', 'sorbitol', 'diet', 'zero sugar', 'sugar free', 
+      'no sugar', 'zero calorie', 'coke zero', 'pepsi max', 'pepsi zero'
+    ];
+    const sweetenerP = sweetenerKeywords.some(kw => name.includes(kw) || brand.includes(kw) || ingredients.includes(kw)) ? 4 : 0;
+
+    // Positive points (0-7 for protein)
+    let prP = 0;
+    if (prot100 > 3.0) prP = 7;
+    else if (prot100 > 2.7) prP = 6;
+    else if (prot100 > 2.4) prP = 5;
+    else if (prot100 > 2.1) prP = 4;
+    else if (prot100 > 1.8) prP = 3;
+    else if (prot100 > 1.5) prP = 2;
+    else if (prot100 > 1.2) prP = 1;
+
+    let fvP = 0;
+    const isJuiceOrSmoothie = name.includes('juice') || name.includes('smoothie') || name.includes('cider');
+    if (isJuiceOrSmoothie) {
+      fvP = 4; // Fruit juice estimate points
+    }
+
+    const negativePoints = eP + sP + suP + naP + sweetenerP;
+    let score = negativePoints - fvP;
+
+    // Protein penalty for beverages (ignore if negative points without sweeteners >= 11)
+    if ((negativePoints - sweetenerP) < 11 || fvP >= 5) {
+      score -= prP;
+    }
+
+    // Grade Mapping for beverages: B (score <= 2), C (score <= 6), D (score <= 10), E (score > 10)
+    const grade = score <= 2 ? 'b' : score <= 6 ? 'c' : score <= 10 ? 'd' : 'e';
+    return { grade, estimated: true };
+  }
+
+  // General food scoring (General Foods algorithm)
   // Negative points (0–10 each)
   const eP  = kj100   < 335  ? 0 : kj100   < 670  ? 1 : kj100   < 1005 ? 2 : kj100   < 1340 ? 3 : kj100   < 1675 ? 4 : kj100   < 2010 ? 5 : kj100   < 2345 ? 6 : kj100   < 2680 ? 7 : kj100   < 3015 ? 8 : kj100   < 3350 ? 9 : 10;
   const sP  = sat100  < 1    ? 0 : sat100  < 2    ? 1 : sat100  < 3    ? 2 : sat100  < 4    ? 3 : sat100  < 5    ? 4 : sat100  < 6    ? 5 : sat100  < 7    ? 6 : sat100  < 8    ? 7 : sat100  < 9    ? 8 : sat100  < 10   ? 9 : 10;
