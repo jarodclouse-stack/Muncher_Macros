@@ -268,8 +268,22 @@ export default async function handler(req, res) {
       const carb = getVal('carbohydrates', 1, 1);
       const fat = getVal('fat', 1, 1);
 
+      // Build a clean name: only prepend the brand if the product name doesn't already contain it
+      const rawProductName = (p.product_name_en || p.product_name || 'Unknown Item').trim();
+      const primaryBrand = (p.brands || '').split(',')[0].trim();
+      const productLower = rawProductName.toLowerCase();
+      const brandLower = primaryBrand.toLowerCase();
+      let displayName = rawProductName;
+      if (primaryBrand && brandLower && !productLower.includes(brandLower)) {
+        displayName = primaryBrand + ' ' + rawProductName;
+      }
+
+      // Energy per 100g for sanity-checking (nothing edible exceeds ~900 kcal/100g — pure fat is 884)
+      const energy100g = Number((p.nutriments || {})['energy-kcal_100g']);
+
       return {
-        name: (p.brands ? p.brands + ' ' : '') + (p.product_name_en || p.product_name || 'Unknown Item'),
+        name: displayName,
+        _energy100g: Number.isFinite(energy100g) ? energy100g : null,
         serving: servingText,
         sQty: sQty,
         sUnit: sUnit,
@@ -319,14 +333,21 @@ export default async function handler(req, res) {
     });
 
     const activeFoods = foods.filter(f => {
+      // Drop entries with physically-impossible energy density (broken OFF data)
+      if (f._energy100g != null && f._energy100g > 900) return false;
+
       const isZero = f.cal === 0 && f.p === 0 && f.c === 0 && f.f === 0;
       if (!isZero) return true;
       const name = f.name.toLowerCase();
       const allowedZeroKeywords = [
-        'water', 'diet', 'zero', 'tea', 'coffee', 'mustard', 'vinegar', 'spice', 
+        'water', 'diet', 'zero', 'tea', 'coffee', 'mustard', 'vinegar', 'spice',
         'salt', 'stevia', 'splenda', 'sweetener', 'seasoning', 'coke 0', 'pepsi 0'
       ];
       return allowedZeroKeywords.some(kw => name.includes(kw));
+    }).map(f => {
+      // Strip internal sanity-check field before returning
+      const { _energy100g, ...clean } = f;
+      return clean;
     });
 
     return res.status(200).json({ foods: activeFoods });

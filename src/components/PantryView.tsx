@@ -232,18 +232,17 @@ export const PantryView: React.FC<PantryViewProps> = ({ initialMeal, onClose, is
     }
 
     try {
-      // Step 1: DB search — show results instantly
+      // Step 1: DB search — show results instantly (DB uses synonym internally)
       const dbResponse = await fetch('/api/db-search', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ query: q }) })
-        .then(r => r.ok ? r.json() : { foods: [], expandedQuery: q }).catch(() => ({ foods: [], expandedQuery: q }));
+        .then(r => r.ok ? r.json() : { foods: [] }).catch(() => ({ foods: [] }));
       const dbResults = (dbResponse.foods || []).map(normalizeFoodResult);
-      const offQuery = dbResponse.expandedQuery || q;
 
       searchCache.current[q.toLowerCase()] = dbResults;
       setIngResults([...localMatches, ...dbResults].slice(0, 30));
       setIsIngSearching(false);
 
-      // Step 2: OFF search — streams in branded results
-      fetch('/api/off-search', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ query: offQuery }) })
+      // Step 2: OFF search — uses ORIGINAL query (OFF indexes brand slang like "coke" natively)
+      fetch('/api/off-search', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ query: q }) })
         .then(r => r.ok ? r.json() : { foods: [] })
         .then(offBody => {
           const offResults = (offBody.foods || offBody.results || []).map(normalizeFoodResult);
@@ -425,20 +424,19 @@ export const PantryView: React.FC<PantryViewProps> = ({ initialMeal, onClose, is
     }
 
     try {
-      // Step 1: DB search — show results instantly (~100ms)
+      // Step 1: DB search — show results instantly (~100ms). DB uses synonym internally.
       const dbResponse = await fetch('/api/db-search', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ query: q }) })
-        .then(r => r.ok ? r.json() : { foods: [], expandedQuery: q }).catch(() => ({ foods: [], expandedQuery: q }));
+        .then(r => r.ok ? r.json() : { foods: [] }).catch(() => ({ foods: [] }));
       const dbResults = (dbResponse.foods || []).map(normalizeFoodResult);
-      const offQuery = dbResponse.expandedQuery || q;
 
       // Show DB results immediately — don't wait for OFF
       searchCache.current[q.toLowerCase()] = dbResults;
       setSearchResults([...localMatches, ...dbResults].slice(0, 50));
       setIsSearching(false);
 
-      // Step 2: OFF search — streams in branded results (~1-2s later)
+      // Step 2: OFF search — uses ORIGINAL query (OFF indexes brand slang like "coke" natively)
       setIsLoadingMore(true);
-      fetch('/api/off-search', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ query: offQuery }) })
+      fetch('/api/off-search', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ query: q }) })
         .then(r => r.ok ? r.json() : { foods: [] })
         .then(offBody => {
           const offResults = (offBody.foods || offBody.results || []).map(normalizeFoodResult);
