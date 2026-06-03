@@ -385,7 +385,14 @@ export const normalizeFoodResult = (food: any): Food => {
       ? food.nutrient_levels
       : undefined,
     nutrient_percentages: (typeof food.nutrient_percentages === 'object' && food.nutrient_percentages)
-      ? food.nutrient_percentages
+      ? {
+          fat: food.nutrient_percentages.fat !== undefined ? Number(food.nutrient_percentages.fat) : undefined,
+          'saturated-fat': (food.nutrient_percentages['saturated-fat'] || food.nutrient_percentages.saturatedFat) !== undefined ? Number(food.nutrient_percentages['saturated-fat'] || food.nutrient_percentages.saturatedFat) : undefined,
+          sugars: food.nutrient_percentages.sugars !== undefined ? Number(food.nutrient_percentages.sugars) : undefined,
+          salt: food.nutrient_percentages.salt !== undefined 
+            ? (Number(food.nutrient_percentages.salt) > 10 ? Number(food.nutrient_percentages.salt) / 10 : Number(food.nutrient_percentages.salt))
+            : undefined,
+        }
       : undefined,
   };
 

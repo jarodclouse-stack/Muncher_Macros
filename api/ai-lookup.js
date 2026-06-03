@@ -232,7 +232,7 @@ export default async function handler(req, res) {
        * saturated-fat: low (<1.5g), moderate (1.5g - 5g), high (>5g)
        * sugars: low (<5g), moderate (5g - 22.5g), high (>22.5g)
        * salt: low (<0.3g / <120mg sodium), moderate (0.3g - 1.5g / 120mg - 600mg sodium), high (>1.5g / >600mg sodium)
-     - Also calculate/estimate the exact nutrient percentages (weight percentage of that nutrient per 100g of the food) for: fat, saturated-fat, sugars, and salt (where salt percentage = sodium per 100g in mg * 2.5 / 10000). e.g., a food with 30g sugar per 100g has 30% sugars.
+     - Also calculate/estimate the exact nutrient percentages (weight percentage of that nutrient per 100g of the food) for: fat, saturated-fat, sugars, and salt (where salt percentage = sodium per 100g in mg * 2.5 / 1000). e.g., a food with 30g sugar per 100g has 30% sugars.
   
   JSON keys: name, serving, detectedCount, sUnit, cal, p, c, f, fb, sat, trans, mono, poly, chol, sugars, Sodium, Potassium, Calcium, Iron, "Vitamin C", "Vitamin A", "Vitamin D", "Vitamin B1", "Vitamin B2", "Vitamin B3", "Vitamin B5", "Vitamin B6", "Vitamin B7", "Vitamin B9", "Vitamin B12", "Vitamin E", "Vitamin K", "Magnesium", "Phosphorus", "Zinc", "Copper", "Manganese", "Selenium", "Chloride", "Iodine", "Chromium", "Molybdenum", "Fluoride", "Fiber", "Soluble Fiber", "Insoluble Fiber", nutriscore_grade, nutrient_levels, nutrient_percentages.
 
