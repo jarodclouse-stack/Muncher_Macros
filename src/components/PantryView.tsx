@@ -190,42 +190,26 @@ export const PantryView: React.FC<PantryViewProps> = ({ initialMeal, onClose, is
     }
 
     try {
-      // Tier 1: Search our own database (fast, fuzzy matching)
-      let globalRes = [];
-      try {
-        const dbRes = await fetch('/api/db-search', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ query: q })
-        });
-        if (dbRes.ok) {
-          const dbBody = await dbRes.json();
-          globalRes = (dbBody.foods || []).map(normalizeFoodResult);
-        }
-      } catch {
-        // DB search unavailable — fall through to OFF
-      }
+      // Search both DB and Open Food Facts in parallel, merge results
+      const [dbResults, offResults] = await Promise.all([
+        fetch('/api/db-search', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ query: q }) })
+          .then(r => r.ok ? r.json() : { foods: [] }).then(b => (b.foods || []).map(normalizeFoodResult)).catch(() => []),
+        fetch('/api/off-search', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ query: q }) })
+          .then(r => r.ok ? r.json() : { foods: [] }).then(b => (b.foods || b.results || []).map(normalizeFoodResult)).catch(() => []),
+      ]);
 
-      // Tier 2: Fall back to Open Food Facts if DB returned nothing
-      if (globalRes.length === 0) {
-        try {
-          const offRes = await fetch('/api/off-search', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ query: q })
-          });
-          if (offRes.ok) {
-            const offBody = await offRes.json();
-            globalRes = (offBody.foods || offBody.results || []).map(normalizeFoodResult);
-          }
-        } catch {
-          // OFF also failed — keep local matches only
+      // Merge: DB first, then OFF (dedupe by name+cal to avoid duplicates)
+      const seen = new Set(dbResults.map((f: Food) => (f.name + '|' + f.cal).toLowerCase()));
+      const merged = [...dbResults];
+      for (const f of offResults) {
+        if (!seen.has((f.name + '|' + f.cal).toLowerCase())) {
+          merged.push(f);
+          seen.add((f.name + '|' + f.cal).toLowerCase());
         }
       }
 
-      // Cache whichever results came back
-      searchCache.current[q.toLowerCase()] = globalRes;
-      setIngResults([...localMatches, ...globalRes].slice(0, 30));
+      searchCache.current[q.toLowerCase()] = merged;
+      setIngResults([...localMatches, ...merged].slice(0, 30));
     } catch {
       // Keep displaying the immediate local matches
     }
@@ -379,42 +363,26 @@ export const PantryView: React.FC<PantryViewProps> = ({ initialMeal, onClose, is
     }
 
     try {
-      // Tier 1: Search our own database (fast, fuzzy matching)
-      let globalRes = [];
-      try {
-        const dbRes = await fetch('/api/db-search', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ query: q })
-        });
-        if (dbRes.ok) {
-          const dbBody = await dbRes.json();
-          globalRes = (dbBody.foods || []).map(normalizeFoodResult);
-        }
-      } catch {
-        // DB search unavailable — fall through to OFF
-      }
+      // Search both DB and Open Food Facts in parallel, merge results
+      const [dbResults, offResults] = await Promise.all([
+        fetch('/api/db-search', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ query: q }) })
+          .then(r => r.ok ? r.json() : { foods: [] }).then(b => (b.foods || []).map(normalizeFoodResult)).catch(() => []),
+        fetch('/api/off-search', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ query: q }) })
+          .then(r => r.ok ? r.json() : { foods: [] }).then(b => (b.foods || b.results || []).map(normalizeFoodResult)).catch(() => []),
+      ]);
 
-      // Tier 2: Fall back to Open Food Facts if DB returned nothing
-      if (globalRes.length === 0) {
-        try {
-          const offRes = await fetch('/api/off-search', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ query: q })
-          });
-          if (offRes.ok) {
-            const offBody = await offRes.json();
-            globalRes = (offBody.foods || offBody.results || []).map(normalizeFoodResult);
-          }
-        } catch {
-          // OFF also failed — keep local matches only
+      // Merge: DB first, then OFF (dedupe by name+cal to avoid duplicates)
+      const seen = new Set(dbResults.map((f: Food) => (f.name + '|' + f.cal).toLowerCase()));
+      const merged = [...dbResults];
+      for (const f of offResults) {
+        if (!seen.has((f.name + '|' + f.cal).toLowerCase())) {
+          merged.push(f);
+          seen.add((f.name + '|' + f.cal).toLowerCase());
         }
       }
 
-      // Cache whichever results came back
-      searchCache.current[q.toLowerCase()] = globalRes;
-      setSearchResults([...localMatches, ...globalRes].slice(0, 50));
+      searchCache.current[q.toLowerCase()] = merged;
+      setSearchResults([...localMatches, ...merged].slice(0, 50));
     } catch {
       setSearchResults(localMatches.slice(0, 50));
     }
