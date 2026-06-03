@@ -25,11 +25,38 @@ const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
 
 // Priority tiers (added to search rank when an item matches a query).
 //   FLAGSHIP — the single most iconic item per brand, leads brand searches
+//   POPULAR  — the next most-ordered items, rank just under the flagship
 //   DEFAULT  — regular menu / catalogue items
 //   SIDE     — sauces, biscuits, small add-ons; stay findable but below mains
 const FLAGSHIP_PRIORITY = 30;
+const POPULAR_PRIORITY = 25;
 const CURATED_PRIORITY = 20;
 const SIDE_PRIORITY = 12;
+
+// Restaurant brands whose item names redundantly start with the brand.
+// We strip that prefix so a brand search ranks all siblings evenly (otherwise
+// items that happen to include the brand in their name get an unfair boost).
+const RESTAURANT_BRANDS = new Set([
+  "McDonald's", 'Burger King', "Wendy's", 'Taco Bell', 'KFC', 'Popeyes',
+  'Chick-fil-A', 'Chipotle', 'Panda Express', 'In-N-Out', 'Five Guys',
+  'Shake Shack', 'Subway', "Jimmy John's", "Jersey Mike's", "Arby's", 'Sonic',
+  'Jack in the Box', 'Whataburger', "Raising Cane's", 'Wingstop',
+  'Buffalo Wild Wings', 'Starbucks', 'Dunkin', "Domino's", 'Pizza Hut',
+  "Papa John's", 'Little Caesars', 'Olive Garden', 'Texas Roadhouse',
+  'Cheesecake Factory', "Chili's",
+]);
+
+// Strip a redundant leading brand prefix from a restaurant item's name.
+// "McDonald's Hotcakes" -> "Hotcakes" (brand still shown as a subtitle).
+function cleanName(name, brand) {
+  if (!brand || !RESTAURANT_BRANDS.has(brand)) return name;
+  const prefix = brand.toLowerCase() + ' ';
+  if (name.toLowerCase().startsWith(prefix)) {
+    const stripped = name.slice(brand.length + 1).trim();
+    if (stripped.length >= 3) return stripped;
+  }
+  return name;
+}
 
 // Iconic hero item per brand — leads when someone searches the brand.
 const FLAGSHIP_NAMES = new Set([
@@ -62,6 +89,54 @@ const FLAGSHIP_NAMES = new Set([
   "Jimmy John's Turkey Tom (8 inch)",
 ]);
 
+// The next most-ordered items per major brand — rank just below the flagship.
+const POPULAR_NAMES = new Set([
+  // McDonald's
+  'Quarter Pounder with Cheese', 'Chicken McNuggets (10 piece)',
+  "McDonald's French Fries (Medium)", 'McChicken', 'McDouble',
+  // Chick-fil-A
+  'Chick-fil-A Spicy Chicken Sandwich', 'Chick-fil-A Nuggets (8 piece)',
+  'Chick-fil-A Waffle Fries (Medium)', 'Chick-fil-A Deluxe Chicken Sandwich',
+  // Taco Bell
+  'Taco Bell Crunchwrap Supreme', 'Taco Bell Soft Taco (Beef)',
+  'Taco Bell Bean Burrito', 'Taco Bell Cheesy Gordita Crunch',
+  'Taco Bell Doritos Locos Taco',
+  // Wendy's
+  "Wendy's Baconator", "Wendy's Spicy Chicken Sandwich",
+  "Wendy's 10 Piece Chicken Nuggets", "Wendy's French Fries (Medium)",
+  "Wendy's Dave's Double",
+  // Burger King
+  'Whopper Jr.', 'Burger King Chicken Fries (9 piece)',
+  'Burger King French Fries (Medium)', 'Burger King Original Chicken Sandwich',
+  // Starbucks
+  'Starbucks Caramel Macchiato (Grande)',
+  'Starbucks Pike Place Brewed Coffee (Grande)',
+  'Starbucks Vanilla Latte (Grande)', 'Starbucks Caramel Frappuccino (Grande)',
+  'Starbucks Cold Brew (Grande)',
+  // Chipotle
+  'Chipotle Chicken (4 oz)', 'Chipotle Steak (4 oz)', 'Chipotle Guacamole',
+  'Chipotle White Rice', 'Chipotle Carnitas (4 oz)',
+  // KFC
+  'KFC Original Recipe Drumstick', 'KFC Extra Crispy Chicken Breast',
+  'KFC Famous Bowl', 'KFC Original Recipe Thigh',
+  // Popeyes
+  'Popeyes Spicy Chicken Sandwich', 'Popeyes Handcrafted Tenders (3 piece)',
+  'Popeyes Cajun Fries (Regular)', 'Popeyes Red Beans and Rice (Regular)',
+  // Panda Express
+  'Panda Express Chow Mein', 'Panda Express Fried Rice',
+  'Panda Express Beijing Beef', 'Panda Express Broccoli Beef',
+  'Panda Express Honey Walnut Shrimp',
+  // Subway
+  'Subway Turkey Breast (6 inch)', 'Subway Meatball Marinara (6 inch)',
+  'Subway Chicken & Bacon Ranch (6 inch)', 'Subway Steak & Cheese (6 inch)',
+  // Dunkin
+  'Dunkin Boston Kreme Donut', 'Dunkin Bacon, Egg & Cheese Croissant',
+  'Dunkin Caramel Iced Latte (Medium)', 'Dunkin Hash Browns',
+  // In-N-Out
+  'In-N-Out Cheeseburger', 'In-N-Out French Fries',
+  'In-N-Out Animal Style Fries',
+]);
+
 // Side items / condiments that should not lead a brand search.
 const SIDE_NAMES = new Set([
   "Raising Cane's Cane's Sauce",
@@ -75,6 +150,7 @@ const SIDE_NAMES = new Set([
 
 function priorityFor(name) {
   if (FLAGSHIP_NAMES.has(name)) return FLAGSHIP_PRIORITY;
+  if (POPULAR_NAMES.has(name)) return POPULAR_PRIORITY;
   if (SIDE_NAMES.has(name)) return SIDE_PRIORITY;
   return CURATED_PRIORITY;
 }
@@ -102,7 +178,7 @@ async function main() {
   // Each food is stored as 1 serving with per-serving macros, matching how
   // the app logs (multiplier = quantity of servings).
   const rows = items.map(it => ({
-    name: it.name,
+    name: cleanName(it.name, it.brand),
     brand: it.brand || '',
     serving: it.serving || '1 serving',
     s_qty: 1,
