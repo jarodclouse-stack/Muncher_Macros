@@ -7,6 +7,7 @@ import https from 'https';
 import { setCors, handlePreflight } from './_lib/cors.js';
 import { readBody, validateImage } from './_lib/validate.js';
 import { rateLimit } from './_lib/rate-limit.js';
+import { requireAuth } from './_lib/auth.js';
 
 const MODELS = [
   'claude-sonnet-4-6',
@@ -65,6 +66,9 @@ export default async function handler(req, res) {
   if (handlePreflight(req, res)) return;
   if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
   if (!rateLimit(req, res)) return;
+
+  const user = await requireAuth(req, res);
+  if (!user) return;
 
   const body = await readBody(req);
   const { base64, mediaType, originalItems } = body;

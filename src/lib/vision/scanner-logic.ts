@@ -1,4 +1,5 @@
 import { BrowserBarcodeReader, BrowserMultiFormatReader, DecodeHintType, BarcodeFormat } from '@zxing/library';
+import { apiFetch } from '../api';
 
 // Shared reader instances with aggressive decoding hints
 const hints = new Map<DecodeHintType, any>();
@@ -75,9 +76,8 @@ export const scanNutritionLabel = async (imageBlob: Blob): Promise<ScanResult> =
     reader.onload = async () => {
       try {
         const base64Str = (reader.result as string).split(',')[1];
-        const res = await fetch(`/api/ai-label?t=${Date.now()}`, {
+        const res = await apiFetch(`/api/ai-label?t=${Date.now()}`, {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ action: 'vision', type: 'label', base64: base64Str, mediaType: 'image/jpeg' }),
           cache: 'no-store'
         });
@@ -116,9 +116,8 @@ export const extractBarcodeDigits = async (imageBlob: Blob): Promise<ScanResult>
     reader.onload = async () => {
       try {
         const base64Str = (reader.result as string).split(',')[1];
-        const res = await fetch(`/api/ai-barcode?t=${Date.now()}`, {
+        const res = await apiFetch(`/api/ai-barcode?t=${Date.now()}`, {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ action: 'vision', type: 'barcode', base64: base64Str, mediaType: 'image/jpeg' }),
           cache: 'no-store'
         });

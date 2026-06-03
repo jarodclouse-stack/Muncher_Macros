@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { apiFetch } from '../lib/api';
 import { useDiary } from '../context/DiaryContext';
 import { 
   Plus, Check, X, Search, Sparkles, ChevronDown, 
@@ -233,7 +234,7 @@ export const PantryView: React.FC<PantryViewProps> = ({ initialMeal, onClose, is
 
     try {
       // Step 1: DB search — show results instantly (DB uses synonym internally)
-      const dbResponse = await fetch('/api/db-search', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ query: q }) })
+      const dbResponse = await apiFetch('/api/db-search', { method: 'POST', body: JSON.stringify({ query: q }) })
         .then(r => r.ok ? r.json() : { foods: [] }).catch(() => ({ foods: [] }));
       const dbResults = (dbResponse.foods || []).map(normalizeFoodResult);
 
@@ -242,7 +243,7 @@ export const PantryView: React.FC<PantryViewProps> = ({ initialMeal, onClose, is
       setIsIngSearching(false);
 
       // Step 2: OFF search — uses ORIGINAL query (OFF indexes brand slang like "coke" natively)
-      fetch('/api/off-search', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ query: q }) })
+      apiFetch('/api/off-search', { method: 'POST', body: JSON.stringify({ query: q }) })
         .then(r => r.ok ? r.json() : { foods: [] })
         .then(offBody => {
           const offResults = (offBody.foods || offBody.results || []).map(normalizeFoodResult);
@@ -330,9 +331,8 @@ export const PantryView: React.FC<PantryViewProps> = ({ initialMeal, onClose, is
       const reader = new FileReader();
       reader.onloadend = async () => {
         const base64 = (reader.result as string).split(',')[1];
-        const res = await fetch('/api/ai-ingredients', {
+        const res = await apiFetch('/api/ai-ingredients', {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ base64, mediaType: file.type })
         });
         const data = await res.json();
@@ -361,9 +361,8 @@ export const PantryView: React.FC<PantryViewProps> = ({ initialMeal, onClose, is
       const reader = new FileReader();
       reader.onloadend = async () => {
         const base64 = (reader.result as string).split(',')[1];
-        const res = await fetch('/api/ai-verify-meal', {
+        const res = await apiFetch('/api/ai-verify-meal', {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
             base64,
             mediaType: file.type,
@@ -425,7 +424,7 @@ export const PantryView: React.FC<PantryViewProps> = ({ initialMeal, onClose, is
 
     try {
       // Step 1: DB search — show results instantly (~100ms). DB uses synonym internally.
-      const dbResponse = await fetch('/api/db-search', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ query: q }) })
+      const dbResponse = await apiFetch('/api/db-search', { method: 'POST', body: JSON.stringify({ query: q }) })
         .then(r => r.ok ? r.json() : { foods: [] }).catch(() => ({ foods: [] }));
       const dbResults = (dbResponse.foods || []).map(normalizeFoodResult);
 
@@ -437,7 +436,7 @@ export const PantryView: React.FC<PantryViewProps> = ({ initialMeal, onClose, is
 
       // Step 2: OFF search — uses ORIGINAL query (OFF indexes brand slang like "coke" natively)
       setIsLoadingMore(true);
-      fetch('/api/off-search', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ query: q }) })
+      apiFetch('/api/off-search', { method: 'POST', body: JSON.stringify({ query: q }) })
         .then(r => r.ok ? r.json() : { foods: [] })
         .then(offBody => {
           const offResults = (offBody.foods || offBody.results || []).map(normalizeFoodResult);
@@ -486,9 +485,8 @@ export const PantryView: React.FC<PantryViewProps> = ({ initialMeal, onClose, is
     }
 
     try {
-      const res = await fetch('/api/ai-lookup', {
+      const res = await apiFetch('/api/ai-lookup', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ query: q })
       });
       if (res.ok) {
@@ -517,9 +515,8 @@ export const PantryView: React.FC<PantryViewProps> = ({ initialMeal, onClose, is
     setAiStagedResults([]);
     setSelectedServingUnitToggle('meal'); // Reset toggle
     try {
-      const res = await fetch('/api/ai-describe', {
+      const res = await apiFetch('/api/ai-describe', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ description: searchQuery })
       });
       const body = await res.json();

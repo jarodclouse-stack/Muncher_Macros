@@ -2,6 +2,7 @@
 
 import { setCors, handlePreflight } from './_lib/cors.js';
 import { readBody } from './_lib/validate.js';
+import { requireAuth } from './_lib/auth.js';
 
 function isEnglish(p) {
   // Must have a product name
@@ -46,6 +47,9 @@ export default async function handler(req, res) {
   setCors(req, res);
   if (handlePreflight(req, res)) return;
   if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
+
+  const user = await requireAuth(req, res);
+  if (!user) return;
 
   const body = await readBody(req);
   const query = (body.query || '').trim();
