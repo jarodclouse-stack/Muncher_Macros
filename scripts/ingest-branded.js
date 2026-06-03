@@ -23,8 +23,61 @@ if (!SUPABASE_URL || !SUPABASE_KEY) {
 
 const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
 
-// Priority boost so curated branded items rank at the top of their query.
+// Priority tiers (added to search rank when an item matches a query).
+//   FLAGSHIP — the single most iconic item per brand, leads brand searches
+//   DEFAULT  — regular menu / catalogue items
+//   SIDE     — sauces, biscuits, small add-ons; stay findable but below mains
+const FLAGSHIP_PRIORITY = 30;
 const CURATED_PRIORITY = 20;
+const SIDE_PRIORITY = 12;
+
+// Iconic hero item per brand — leads when someone searches the brand.
+const FLAGSHIP_NAMES = new Set([
+  'Coca-Cola Classic',
+  'Pepsi',
+  'Big Mac',
+  'Whopper',
+  "Wendy's Dave's Single",
+  'Popeyes Chicken Sandwich',
+  'Chick-fil-A Chicken Sandwich',
+  'KFC Original Recipe Chicken Breast',
+  'Taco Bell Crunchy Taco',
+  'Chipotle Chicken Burrito Bowl',
+  'Panda Express Orange Chicken',
+  'In-N-Out Double-Double',
+  'Five Guys Cheeseburger',
+  'Shake Shack ShackBurger (Single)',
+  'Starbucks Caffe Latte (Grande)',
+  'Dunkin Glazed Donut',
+  'Subway Italian B.M.T. (6 inch)',
+  "Domino's Hand Tossed Pepperoni Pizza (1 slice)",
+  'Pizza Hut Pepperoni Pan Pizza (1 slice)',
+  'Wingstop Classic Wings (6 piece, plain)',
+  "Arby's Classic Roast Beef",
+  'Sonic Cheeseburger',
+  'Jack in the Box Jumbo Jack',
+  "Raising Cane's Chicken Finger (1)",
+  'Whataburger Whataburger',
+  "Jersey Mike's Original Italian (Regular)",
+  "Jimmy John's Turkey Tom (8 inch)",
+]);
+
+// Side items / condiments that should not lead a brand search.
+const SIDE_NAMES = new Set([
+  "Raising Cane's Cane's Sauce",
+  "Raising Cane's Texas Toast",
+  'Chipotle Sour Cream',
+  'Chipotle Cheese',
+  'KFC Biscuit',
+  'Popeyes Biscuit',
+  'Olive Garden Breadstick',
+]);
+
+function priorityFor(name) {
+  if (FLAGSHIP_NAMES.has(name)) return FLAGSHIP_PRIORITY;
+  if (SIDE_NAMES.has(name)) return SIDE_PRIORITY;
+  return CURATED_PRIORITY;
+}
 
 async function main() {
   // Load every branded-foods*.json file in this directory and combine them.
@@ -65,7 +118,7 @@ async function main() {
     potassium: it.potassium || 0,
     calcium: it.calcium || 0,
     source: 'curated',
-    priority: CURATED_PRIORITY,
+    priority: priorityFor(it.name),
   }));
 
   // Full re-ingest: delete ALL existing curated rows, then insert fresh.
