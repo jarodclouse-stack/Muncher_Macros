@@ -108,11 +108,21 @@ function normalizeResult(f) {
     }
   }
 
+  let serving = f.serving ? String(f.serving).trim() : '';
+  const detectedCount = Number(f.detectedCount || f.sQty || f.qty || f.quantity || 1);
+  const sUnit = String(f.sUnit || f.unit || 'piece').trim();
+
+  // If serving string is missing, just a unit name, or too short, reconstruct it
+  const isUnitOnly = /^[a-zA-Z\s]+$/.test(serving) && (serving.toLowerCase() === sUnit.toLowerCase() || ['g', 'ml', 'oz', 'serving', 'piece'].includes(serving.toLowerCase()));
+  if (!serving || isUnitOnly || serving.length <= 2) {
+    serving = `${detectedCount}${sUnit}`;
+  }
+
   return {
     name: String(f.name || 'Unknown Item'),
-    serving: String(f.serving || (f.detectedCount || f.sQty ? `${f.detectedCount || f.sQty}${f.sUnit || f.unit || 'piece'}` : '1 serving')),
-    sQty: Number(f.detectedCount || f.sQty || f.qty || f.quantity || 1),
-    sUnit: String(f.sUnit || f.unit || 'piece'),
+    serving,
+    sQty: detectedCount,
+    sUnit,
     cal, p, c, f: fat,
     fb,
     sat: Math.round(parseNum(f.sat) * 10) / 10,

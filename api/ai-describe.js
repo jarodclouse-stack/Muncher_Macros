@@ -119,7 +119,7 @@ function normalizeResult(f) {
 
   // Base serving description MUST strictly represent 1 unit of sUnit (or baseQty)
   // so the client-side computeMultiplier multiplies by totalQty / baseQty.
-  const serving = f.sUnit || f.unit ? `1 ${f.sUnit || f.unit}` : (f.serving || '1 serving');
+  const serving = f.sUnit || f.unit ? `${baseQty} ${f.sUnit || f.unit}` : (f.serving || '1 serving');
 
   return {
     name: String(f.name || 'Unknown Item'),

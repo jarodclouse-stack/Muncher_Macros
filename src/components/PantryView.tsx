@@ -8,7 +8,7 @@ import {
   GlassWater, Cookie, Utensils, Dumbbell
 } from 'lucide-react';
 import { ALL_MICRO_KEYS, SERVING_UNITS, MICRO_CATEGORIES } from '../lib/constants';
-import { computeMultiplier, normalizeFoodResult, scaleLegacyFoodByAmount, calculateMacroBalance, scaleToTarget, getCarbClassification, estimateNutriScore } from '../lib/food/serving-converter';
+import { computeMultiplier, normalizeFoodResult, scaleLegacyFoodByAmount, calculateMacroBalance, scaleToTarget, getCarbClassification, estimateNutriScore, getQuantityForUnit } from '../lib/food/serving-converter';
 import { getPairingSuggestions } from '../lib/food/smart-pairing';
 
 import { SearchCoaster, type SearchTab } from './SearchCoaster';
@@ -586,28 +586,33 @@ export const PantryView: React.FC<PantryViewProps> = ({ initialMeal, onClose, is
 
     const servingStr = food.serving || '';
     
-    // 1. Try parentheses first (e.g. "1 cup (240ml)")
-    const parenMatch = servingStr.match(/\(([^)]+)\)/);
-    if (parenMatch) {
-      const inside = parenMatch[1];
-      const match = inside.match(/(\d+(?:\.\d+)?)\s*([a-zA-Z\s]+)/);
-      if (match) {
-        const mapped = matchUnit(match[2]);
-        if (mapped) {
-          parsedQty = match[1];
-          parsedUnit = mapped;
+    if (food._src === 'ai') {
+      parsedQty = '1';
+      parsedUnit = 'serving';
+    } else {
+      // 1. Try parentheses first (e.g. "1 cup (240ml)")
+      const parenMatch = servingStr.match(/\(([^)]+)\)/);
+      if (parenMatch) {
+        const inside = parenMatch[1];
+        const match = inside.match(/(\d+(?:\.\d+)?)\s*([a-zA-Z\s]+)/);
+        if (match) {
+          const mapped = matchUnit(match[2]);
+          if (mapped) {
+            parsedQty = match[1];
+            parsedUnit = mapped;
+          }
         }
       }
-    }
 
-    // 2. If no valid match in parentheses, search whole serving string (e.g. "1 cup")
-    if (!parsedQty || !parsedUnit) {
-      const match = servingStr.match(/(\d+(?:\.\d+)?)\s*([a-zA-Z\s]+)/);
-      if (match) {
-        const mapped = matchUnit(match[2]);
-        if (mapped) {
-          parsedQty = match[1];
-          parsedUnit = mapped;
+      // 2. If no valid match in parentheses, search whole serving string (e.g. "1 cup")
+      if (!parsedQty || !parsedUnit) {
+        const match = servingStr.match(/(\d+(?:\.\d+)?)\s*([a-zA-Z\s]+)/);
+        if (match) {
+          const mapped = matchUnit(match[2]);
+          if (mapped) {
+            parsedQty = match[1];
+            parsedUnit = mapped;
+          }
         }
       }
     }
@@ -1614,10 +1619,8 @@ export const PantryView: React.FC<PantryViewProps> = ({ initialMeal, onClose, is
                               const oldUnit = f.stagedUnit || 'g';
                               const oldQty = parseFloat(f.stagedQty || '') || 1;
                               
-                              const oldUnitDef = SERVING_UNITS.find(u => u.v === oldUnit) || { factor: 1 };
-                              const newUnitDef = SERVING_UNITS.find(u => u.v === newUnit) || { factor: 1 };
-                              
-                              const newQtyVal = oldQty * (oldUnitDef.factor / newUnitDef.factor);
+                              const currentMult = computeMultiplier(f.serving || '', oldUnit, oldQty);
+                              const newQtyVal = getQuantityForUnit(f.serving || '', currentMult, newUnit);
                               const roundedQty = Math.round(newQtyVal * 100) / 100;
 
                               const next = [...aiStagedResults];
@@ -2529,10 +2532,8 @@ export const PantryView: React.FC<PantryViewProps> = ({ initialMeal, onClose, is
                         const oldUnit = servingUnit || 'g';
                         const oldQty = parseFloat(servingQty) || 1;
                         
-                        const oldUnitDef = SERVING_UNITS.find(u => u.v === oldUnit) || { factor: 1 };
-                        const newUnitDef = SERVING_UNITS.find(u => u.v === newUnit) || { factor: 1 };
-                        
-                        const newQtyVal = oldQty * (oldUnitDef.factor / newUnitDef.factor);
+                        const currentMult = computeMultiplier(configuringFood?.serving || '', oldUnit, oldQty);
+                        const newQtyVal = getQuantityForUnit(configuringFood?.serving || '', currentMult, newUnit);
                         const roundedQty = Math.round(newQtyVal * 100) / 100;
 
                         setServingQty(roundedQty.toString());
