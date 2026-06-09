@@ -1926,5 +1926,22 @@ body .luminous-absolute-white * {
   }
 }
 
+/* Recipe Save Modal Mobile Optimization */
+@media (max-width: 480px) {
+  .recipe-save-overlay {
+    padding: 8px !important;
+  }
+  .recipe-save-modal {
+    padding: 16px !important;
+    border-radius: 16px !important;
+    gap: 14px !important;
+    max-height: 96vh !important;
+  }
+  .recipe-save-grid {
+    grid-template-columns: 1fr !important;
+    gap: 12px !important;
+  }
+}
+
 
 

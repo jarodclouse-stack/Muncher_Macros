@@ -2724,16 +2724,16 @@ export const PantryView: React.FC<PantryViewProps> = ({ initialMeal, onClose, is
               }}
             >
               <span style={{ fontWeight: '700', color }}>{label}</span>
-              <div style={{ display: 'flex', gap: '20px', textAlign: 'right' }}>
-                <span style={{ color: 'var(--theme-text-dim)', minWidth: '80px' }}>{displayTotal}</span>
-                <span style={{ color: 'var(--theme-accent, #00C9FF)', fontWeight: '800', minWidth: '80px' }}>{displayPerServing}</span>
+              <div style={{ display: 'flex', gap: '12px', textAlign: 'right' }}>
+                <span style={{ color: 'var(--theme-text-dim)', minWidth: '70px' }}>{displayTotal}</span>
+                <span style={{ color: 'var(--theme-accent, #00C9FF)', fontWeight: '800', minWidth: '70px' }}>{displayPerServing}</span>
               </div>
             </div>
           );
         };
 
         return (
-          <div style={{ 
+          <div className="recipe-save-overlay" style={{ 
             position: 'fixed', 
             inset: 0, 
             zIndex: 8000, 
@@ -2744,7 +2744,7 @@ export const PantryView: React.FC<PantryViewProps> = ({ initialMeal, onClose, is
             justifyContent: 'center', 
             padding: '16px' 
           }}>
-            <div style={{ 
+            <div className="recipe-save-modal" style={{ 
               background: 'var(--theme-panel, #121520)', 
               border: '1px solid var(--theme-border, rgba(255,255,255,0.08))', 
               borderRadius: '24px', 
@@ -2802,7 +2802,7 @@ export const PantryView: React.FC<PantryViewProps> = ({ initialMeal, onClose, is
               </div>
 
               {/* Serving Size & Batch Definition */}
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
+              <div className="recipe-save-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
                 {/* Default Portion Logged */}
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
                   <label style={{ fontSize: '11px', color: 'var(--theme-text-dim)', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
@@ -2881,9 +2881,9 @@ export const PantryView: React.FC<PantryViewProps> = ({ initialMeal, onClose, is
                   <label style={{ fontSize: '11px', color: 'var(--theme-text-dim)', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
                     Nutrient Breakdown
                   </label>
-                  <div style={{ display: 'flex', gap: '20px', fontSize: '10px', fontWeight: '800', color: 'var(--theme-text-dim)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
-                    <span style={{ minWidth: '80px', textAlign: 'right' }}>Total Batch</span>
-                    <span style={{ minWidth: '80px', textAlign: 'right', color: 'var(--theme-accent, #00C9FF)' }}>Per Serving</span>
+                  <div style={{ display: 'flex', gap: '12px', fontSize: '10px', fontWeight: '800', color: 'var(--theme-text-dim)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                    <span style={{ minWidth: '70px', textAlign: 'right' }}>Total Batch</span>
+                    <span style={{ minWidth: '70px', textAlign: 'right', color: 'var(--theme-accent, #00C9FF)' }}>Per Serving</span>
                   </div>
                 </div>
 
