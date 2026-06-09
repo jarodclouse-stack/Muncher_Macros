@@ -275,6 +275,10 @@ Determine detectedCount for every component. Follow this decision tree:
 
 A) EXPLICIT COUNT — always takes priority.
    "2 eggs" → 2. "3 slices toast" → 3. "a brownie" or "one brownie" → 1.
+   "14 fl oz of milk" → detectedCount=14, sUnit=fl oz, sQty=1. (For physical volumes, weights, or measurements, the number is the detectedCount, and the unit is the sUnit with sQty=1).
+   "500g chicken breast" → detectedCount=500, sUnit=g, sQty=1.
+   "2 cups of rice" → detectedCount=2, sUnit=cup, sQty=1.
+   "3 tbsp protein powder" → detectedCount=3, sUnit=tbsp, sQty=1.
 
 B) TOPPING / FILLING INHERITANCE — applies when the meal uses "with" or "topped with":
    When "X [dish] with [ingredients]", toppings/fillings/sauces inherit X.

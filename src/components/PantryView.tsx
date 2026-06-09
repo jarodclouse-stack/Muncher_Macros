@@ -4,7 +4,7 @@ import { useDiary } from '../context/DiaryContext';
 import { 
   Plus, Check, X, Search, Sparkles, ChevronDown, 
   Flame, Activity, Trash2, Loader2, BookmarkCheck,
-  Info, Edit2, Camera, Brain, Lightbulb, ClipboardList, CheckCircle,
+  Info, Edit2, Camera, Brain, Lightbulb, CheckCircle,
   AlertTriangle, TrendingDown, Zap, Egg, Wheat, Salad, Apple, Coffee,
   GlassWater, Cookie, Utensils, Dumbbell
 } from 'lucide-react';
@@ -199,10 +199,17 @@ export const PantryView: React.FC<PantryViewProps> = ({ initialMeal, onClose, is
   const [recipeTotalServings, setRecipeTotalServings] = useState('1');
 
   // New states for descriptive overall physical portions and dual-unit toggles
-  const [aiTotalServingQty, setAiTotalServingQty] = useState<number>(1);
-  const [aiTotalServingUnit, setAiTotalServingUnit] = useState<string>('serving');
-  const [selectedServingUnitToggle, setSelectedServingUnitToggle] = useState<'meal' | 'physical'>('meal');
   const [loggedPortionsVal, setLoggedPortionsVal] = useState<string>('1');
+  const abortControllerRef = React.useRef<AbortController | null>(null);
+
+  const cancelSearch = () => {
+    if (abortControllerRef.current) {
+      abortControllerRef.current.abort();
+      abortControllerRef.current = null;
+    }
+    setIsSearching(false);
+    setIsLoadingMore(false);
+  };
 
   const searchCache = React.useRef<Record<string, Food[]>>({});
   const aiSearchCache = React.useRef<Record<string, Food[]>>({});
@@ -422,23 +429,36 @@ export const PantryView: React.FC<PantryViewProps> = ({ initialMeal, onClose, is
       return;
     }
 
+    const controller = new AbortController();
+    abortControllerRef.current = controller;
+
     try {
       // Step 1: DB search — show results instantly (~100ms). DB uses synonym internally.
-      const dbResponse = await apiFetch('/api/db-search', { method: 'POST', body: JSON.stringify({ query: q }) })
+      const dbResponse = await apiFetch('/api/db-search', { 
+        method: 'POST', 
+        body: JSON.stringify({ query: q }),
+        signal: controller.signal
+      })
         .then(r => r.ok ? r.json() : { foods: [] }).catch(() => ({ foods: [] }));
       const dbResults = (dbResponse.foods || []).map(normalizeFoodResult);
 
       // Show DB results immediately — don't wait for OFF.
       // Don't cache yet: only cache the complete (DB+OFF) result below, so a
       // flaky OFF failure isn't locked in for the whole session.
+      if (controller.signal.aborted) return;
       setSearchResults([...localMatches, ...dbResults].slice(0, 50));
       setIsSearching(false);
 
       // Step 2: OFF search — uses ORIGINAL query (OFF indexes brand slang like "coke" natively)
       setIsLoadingMore(true);
-      apiFetch('/api/off-search', { method: 'POST', body: JSON.stringify({ query: q }) })
+      apiFetch('/api/off-search', { 
+        method: 'POST', 
+        body: JSON.stringify({ query: q }),
+        signal: controller.signal
+      })
         .then(r => r.ok ? r.json() : { foods: [] })
         .then(offBody => {
+          if (controller.signal.aborted) return;
           const offResults = (offBody.foods || offBody.results || []).map(normalizeFoodResult);
           if (offResults.length > 0) {
             const seen = new Set(dbResults.map((f: Food) => (f.name + '|' + f.cal).toLowerCase()));
@@ -454,10 +474,21 @@ export const PantryView: React.FC<PantryViewProps> = ({ initialMeal, onClose, is
           }
         })
         .catch(() => {})
-        .finally(() => setIsLoadingMore(false));
-    } catch {
-      setSearchResults(localMatches.slice(0, 50));
-      setIsSearching(false);
+        .finally(() => {
+          if (!controller.signal.aborted) {
+            setIsLoadingMore(false);
+          }
+        });
+    } catch (err: any) {
+      if (err.name !== 'AbortError') {
+        setSearchResults(localMatches.slice(0, 50));
+        setIsSearching(false);
+      }
+    } finally {
+      if (abortControllerRef.current === controller) {
+        abortControllerRef.current = null;
+        setIsSearching(false);
+      }
     }
   };
 
@@ -484,13 +515,18 @@ export const PantryView: React.FC<PantryViewProps> = ({ initialMeal, onClose, is
       return;
     }
 
+    const controller = new AbortController();
+    abortControllerRef.current = controller;
+
     try {
       const res = await apiFetch('/api/ai-lookup', {
         method: 'POST',
-        body: JSON.stringify({ query: q })
+        body: JSON.stringify({ query: q }),
+        signal: controller.signal
       });
       if (res.ok) {
         const body = await res.json();
+        if (controller.signal.aborted) return;
         const detected = (body.foods || []) as Food[];
         const normalized = detected.map(normalizeFoodResult);
         
@@ -501,10 +537,16 @@ export const PantryView: React.FC<PantryViewProps> = ({ initialMeal, onClose, is
       } else {
         setErrorMsg("AI Lookup failed.");
       }
-    } catch {
-      setErrorMsg("AI Lookup failed.");
+    } catch (err: any) {
+      if (err.name !== 'AbortError') {
+        setErrorMsg("AI Lookup failed.");
+      }
+    } finally {
+      if (abortControllerRef.current === controller) {
+        abortControllerRef.current = null;
+        setIsSearching(false);
+      }
     }
-    setIsSearching(false);
   };
 
   const handleGlobalAIDescribe = async (e?: React.SyntheticEvent) => {
@@ -513,23 +555,19 @@ export const PantryView: React.FC<PantryViewProps> = ({ initialMeal, onClose, is
     setIsSearching(true);
     setSearchResults([]);
     setAiStagedResults([]);
-    setSelectedServingUnitToggle('meal'); // Reset toggle
+
+    const controller = new AbortController();
+    abortControllerRef.current = controller;
+
     try {
       const res = await apiFetch('/api/ai-describe', {
         method: 'POST',
-        body: JSON.stringify({ description: searchQuery })
+        body: JSON.stringify({ description: searchQuery }),
+        signal: controller.signal
       });
       const body = await res.json();
+      if (controller.signal.aborted) return;
       const detected = (body.foods || []) as Food[];
-      
-      const qty = Number(body.totalServingQty || 1);
-      let unit = String(body.totalServingUnit || 'serving');
-      const lowerUnit = unit.toLowerCase().trim();
-      if (lowerUnit === 'meal' || lowerUnit === 'meals' || lowerUnit === 'plate' || lowerUnit === 'plates') {
-        unit = 'serving';
-      }
-      setAiTotalServingQty(qty);
-      setAiTotalServingUnit(unit);
 
       setAiStagedResults(detected.map((f: Food) => {
         const norm = normalizeFoodResult(f);
@@ -541,10 +579,16 @@ export const PantryView: React.FC<PantryViewProps> = ({ initialMeal, onClose, is
         };
       }));
       setIsAiReviewing(true);
-    } catch {
-      setErrorMsg("AI Describe failed.");
+    } catch (err: any) {
+      if (err.name !== 'AbortError') {
+        setErrorMsg("AI Describe failed.");
+      }
+    } finally {
+      if (abortControllerRef.current === controller) {
+        abortControllerRef.current = null;
+        setIsSearching(false);
+      }
     }
-    setIsSearching(false);
   };
   
   const [configuringFood, setConfiguringFood] = useState<Food | null>(null);
@@ -1009,6 +1053,37 @@ export const PantryView: React.FC<PantryViewProps> = ({ initialMeal, onClose, is
                         <div style={{ fontSize: '11px', color: 'var(--theme-text-dim, rgba(255,255,255,0.6))', fontWeight: '600', lineHeight: '1.4', maxWidth: '320px' }}>
                           Muncher is breaking down your meal into individual ingredients with precise macro breakdowns. This can take a few seconds...
                         </div>
+                        <button
+                          type="button"
+                          onClick={cancelSearch}
+                          style={{
+                            marginTop: '12px',
+                            padding: '6px 14px',
+                            background: 'rgba(255,255,255,0.05)',
+                            border: '1px solid rgba(255,255,255,0.12)',
+                            borderRadius: '10px',
+                            color: 'var(--theme-text-dim, rgba(255,255,255,0.6))',
+                            fontSize: '11px',
+                            fontWeight: '800',
+                            cursor: 'pointer',
+                            transition: 'all 0.2s',
+                            display: 'inline-flex',
+                            alignItems: 'center',
+                            gap: '4px'
+                          }}
+                          onMouseEnter={(e) => {
+                            e.currentTarget.style.background = 'rgba(255, 107, 107, 0.12)';
+                            e.currentTarget.style.borderColor = 'rgba(255, 107, 107, 0.35)';
+                            e.currentTarget.style.color = '#ff6b6b';
+                          }}
+                          onMouseLeave={(e) => {
+                            e.currentTarget.style.background = 'rgba(255,255,255,0.05)';
+                            e.currentTarget.style.borderColor = 'rgba(255,255,255,0.12)';
+                            e.currentTarget.style.color = 'var(--theme-text-dim, rgba(255,255,255,0.6))';
+                          }}
+                        >
+                          Cancel Search
+                        </button>
                     </div>
                   )}
 
@@ -1161,6 +1236,37 @@ export const PantryView: React.FC<PantryViewProps> = ({ initialMeal, onClose, is
                         ? 'Fetching nutrition records from the global database. This will only take a quick moment...' 
                         : 'Muncher AI is parsing your request to construct mathematically accurate macro & calorie breakdowns...'}
                     </div>
+                    <button
+                      type="button"
+                      onClick={cancelSearch}
+                      style={{
+                        marginTop: '12px',
+                        padding: '6px 14px',
+                        background: 'rgba(255,255,255,0.05)',
+                        border: '1px solid rgba(255,255,255,0.12)',
+                        borderRadius: '10px',
+                        color: 'var(--theme-text-dim, rgba(255,255,255,0.6))',
+                        fontSize: '11px',
+                        fontWeight: '800',
+                        cursor: 'pointer',
+                        transition: 'all 0.2s',
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        gap: '4px'
+                      }}
+                      onMouseEnter={(e) => {
+                        e.currentTarget.style.background = 'rgba(255, 107, 107, 0.12)';
+                        e.currentTarget.style.borderColor = 'rgba(255, 107, 107, 0.35)';
+                        e.currentTarget.style.color = '#ff6b6b';
+                      }}
+                      onMouseLeave={(e) => {
+                        e.currentTarget.style.background = 'rgba(255,255,255,0.05)';
+                        e.currentTarget.style.borderColor = 'rgba(255,255,255,0.12)';
+                        e.currentTarget.style.color = 'var(--theme-text-dim, rgba(255,255,255,0.6))';
+                      }}
+                    >
+                      Cancel Search
+                    </button>
                   </div>
                 )}
             </div>
@@ -1370,7 +1476,7 @@ export const PantryView: React.FC<PantryViewProps> = ({ initialMeal, onClose, is
                     )}
                   </div>
 
-                  {/* Physical serving size toggle & amount selection */}
+                  {/* Amount selection */}
                   <div style={{ 
                     display: 'flex', 
                     flexDirection: 'column', 
@@ -1381,68 +1487,6 @@ export const PantryView: React.FC<PantryViewProps> = ({ initialMeal, onClose, is
                     padding: '14px', 
                     marginBottom: '16px' 
                   }}>
-                    {aiTotalServingUnit !== 'serving' && (
-                      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '8px' }}>
-                        <span style={{ fontSize: '11px', color: 'var(--theme-text-dim)', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.5px', display: 'flex', alignItems: 'center', gap: '4px' }}>
-                          <ClipboardList size={12} color="var(--theme-accent)" /> Portion Unit
-                        </span>
-                        <div style={{ display: 'flex', background: 'rgba(0,0,0,0.3)', padding: '2px', borderRadius: '10px', border: '1px solid rgba(255,255,255,0.05)' }}>
-                          <button
-                            type="button"
-                            onClick={() => {
-                              if (selectedServingUnitToggle !== 'meal') {
-                                const oldQty = parseFloat(loggedPortionsVal);
-                                const baseQty = Math.max(0.1, aiTotalServingQty || 1);
-                                const convertedQty = isNaN(oldQty) ? 1 : oldQty / baseQty;
-                                const roundedQty = Math.round(convertedQty * 100) / 100;
-                                setLoggedPortionsVal(roundedQty.toString());
-                              }
-                              setSelectedServingUnitToggle('meal');
-                            }}
-                            style={{
-                              padding: '5px 12px',
-                              border: 'none',
-                              borderRadius: '8px',
-                              fontSize: '11px',
-                              fontWeight: '800',
-                              cursor: 'pointer',
-                              transition: 'all 0.2s',
-                              background: selectedServingUnitToggle === 'meal' ? 'var(--theme-accent)' : 'transparent',
-                              color: selectedServingUnitToggle === 'meal' ? '#000' : 'var(--theme-text-dim)'
-                            }}
-                          >
-                            1 Serving
-                          </button>
-                          <button
-                            type="button"
-                            onClick={() => {
-                              if (selectedServingUnitToggle !== 'physical') {
-                                const oldQty = parseFloat(loggedPortionsVal);
-                                const baseQty = Math.max(0.1, aiTotalServingQty || 1);
-                                const convertedQty = isNaN(oldQty) ? baseQty : oldQty * baseQty;
-                                const roundedQty = Math.round(convertedQty * 100) / 100;
-                                setLoggedPortionsVal(roundedQty.toString());
-                              }
-                              setSelectedServingUnitToggle('physical');
-                            }}
-                            style={{
-                              padding: '5px 12px',
-                              border: 'none',
-                              borderRadius: '8px',
-                              fontSize: '11px',
-                              fontWeight: '800',
-                              cursor: 'pointer',
-                              transition: 'all 0.2s',
-                              background: selectedServingUnitToggle === 'physical' ? 'var(--theme-accent)' : 'transparent',
-                              color: selectedServingUnitToggle === 'physical' ? '#000' : 'var(--theme-text-dim)'
-                            }}
-                          >
-                            {aiTotalServingQty} {aiTotalServingUnit}
-                          </button>
-                        </div>
-                      </div>
-                    )}
-
                     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '12px' }}>
                       <span style={{ fontSize: '12px', color: 'rgba(255,255,255,0.85)', fontWeight: '600' }}>
                         Amount to Log:
@@ -1468,7 +1512,7 @@ export const PantryView: React.FC<PantryViewProps> = ({ initialMeal, onClose, is
                           }}
                         />
                         <span style={{ fontSize: '12px', color: 'var(--theme-accent)', fontWeight: '700', textTransform: 'lowercase' }}>
-                          {selectedServingUnitToggle === 'meal' ? (parseFloat(loggedPortionsVal) === 1 ? 'serving' : 'servings') : aiTotalServingUnit}
+                          {parseFloat(loggedPortionsVal) === 1 ? 'serving' : 'servings'}
                         </span>
                       </div>
                     </div>
@@ -1476,9 +1520,7 @@ export const PantryView: React.FC<PantryViewProps> = ({ initialMeal, onClose, is
                   
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', marginBottom: '16px' }}>
                     {aiStagedResults.map((f, i) => {
-                      const scaleFactor = selectedServingUnitToggle === 'meal'
-                        ? (parseFloat(loggedPortionsVal) || 1)
-                        : (parseFloat(loggedPortionsVal) || 1) / Math.max(0.1, aiTotalServingQty);
+                      const scaleFactor = parseFloat(loggedPortionsVal) || 1;
                       const multiplier = computeMultiplier(f.serving || '100g', f.stagedUnit || 'serving', parseFloat(String(f.stagedQty)) || 1) * scaleFactor;
                       
                       return (
@@ -1759,9 +1801,7 @@ export const PantryView: React.FC<PantryViewProps> = ({ initialMeal, onClose, is
 
                     <button 
                       onClick={() => {
-                        const scaleFactor = selectedServingUnitToggle === 'meal'
-                          ? (parseFloat(loggedPortionsVal) || 1)
-                          : (parseFloat(loggedPortionsVal) || 1) / Math.max(0.1, aiTotalServingQty);
+                        const scaleFactor = parseFloat(loggedPortionsVal) || 1;
 
                         aiStagedResults.forEach(f => {
                           const mult = computeMultiplier(f.serving || '', f.stagedUnit || 'serving', parseFloat(String(f.stagedQty)) || 1);
@@ -1801,16 +1841,10 @@ export const PantryView: React.FC<PantryViewProps> = ({ initialMeal, onClose, is
 
                           setRecipeSaveName(searchQuery.trim().substring(0, 35) || 'AI Detected Meal');
                           
-                          // Pre-fill recipe serving fields based on currently toggled unit
-                          if (selectedServingUnitToggle === 'meal') {
-                            setRecipeServingQty(loggedPortionsVal);
-                            setRecipeServingUnit('serving');
-                            setRecipeTotalServings('1');
-                          } else {
-                            setRecipeServingQty(loggedPortionsVal);
-                            setRecipeServingUnit(aiTotalServingUnit);
-                            setRecipeTotalServings('1');
-                          }
+                          // Pre-fill recipe serving fields based on serving
+                          setRecipeServingQty(loggedPortionsVal);
+                          setRecipeServingUnit('serving');
+                          setRecipeTotalServings('1');
                           
                           setSaveRecipeConfig({ recipeItems, totals });
                         }}
