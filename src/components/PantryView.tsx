@@ -119,6 +119,80 @@ const EntryField = ({ label, value, onChange, placeholder }: { label: string, va
   </div>
 );
 
+interface RecipeNutrientRowProps {
+  label: string;
+  nutrientKey: string;
+  unit: string;
+  color: string;
+  totals: Record<string, number>;
+  totalServings: number;
+  onChange: (key: string, val: number) => void;
+}
+
+const RecipeNutrientRow: React.FC<RecipeNutrientRowProps> = ({
+  label,
+  nutrientKey,
+  unit,
+  color,
+  totals,
+  totalServings,
+  onChange
+}) => {
+  const totalVal = Number(totals[nutrientKey]) || 0;
+  const perServingVal = totalVal / totalServings;
+
+  let displayPerServing = '';
+  if (nutrientKey === 'cal') {
+    displayPerServing = `${Math.round(perServingVal)} ${unit}`;
+  } else {
+    displayPerServing = `${perServingVal.toFixed(1)} ${unit}`;
+  }
+
+  return (
+    <div 
+      style={{ 
+        display: 'flex', 
+        justifyContent: 'space-between', 
+        alignItems: 'center', 
+        padding: '6px 12px', 
+        background: 'rgba(255,255,255,0.02)', 
+        borderBottom: '1px solid rgba(255,255,255,0.04)', 
+        borderRadius: '8px', 
+        fontSize: '12px' 
+      }}
+    >
+      <span style={{ fontWeight: '700', color }}>{label}</span>
+      <div style={{ display: 'flex', gap: '12px', alignItems: 'center', textAlign: 'right' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '4px', minWidth: '75px', justifyContent: 'flex-end' }}>
+          <input
+            type="number"
+            step="any"
+            value={totalVal === 0 ? '' : totalVal}
+            onChange={(e) => {
+              const val = parseFloat(e.target.value) || 0;
+              onChange(nutrientKey, val);
+            }}
+            style={{
+              width: '50px',
+              padding: '4px 6px',
+              borderRadius: '6px',
+              border: '1px solid rgba(255,255,255,0.12)',
+              background: 'rgba(0,0,0,0.3)',
+              color: '#fff',
+              fontSize: '11px',
+              fontWeight: '700',
+              textAlign: 'center',
+              outline: 'none'
+            }}
+          />
+          <span style={{ color: 'var(--theme-text-dim)', fontSize: '10px' }}>{unit}</span>
+        </div>
+        <span style={{ color: 'var(--theme-accent, #00C9FF)', fontWeight: '800', minWidth: '70px' }}>{displayPerServing}</span>
+      </div>
+    </div>
+  );
+};
+
 const getSmartDefaultMeal = (): string => {
   const hour = new Date().getHours();
   if (hour >= 5 && hour < 11) return 'Breakfast';
@@ -687,6 +761,17 @@ export const PantryView: React.FC<PantryViewProps> = ({ initialMeal, onClose, is
       clearSearchState();
       setActiveTab('saved');
     }
+  };
+
+  const handleRecipeNutrientChange = (key: string, val: number) => {
+    if (!saveRecipeConfig) return;
+    setSaveRecipeConfig({
+      ...saveRecipeConfig,
+      totals: {
+        ...saveRecipeConfig.totals,
+        [key]: val
+      }
+    });
   };
 
   const handleConfirmSaveRecipe = () => {
@@ -2689,48 +2774,6 @@ export const PantryView: React.FC<PantryViewProps> = ({ initialMeal, onClose, is
 
       {saveRecipeConfig && (() => {
         const totalServings = Math.max(1, parseFloat(recipeTotalServings) || 1);
-        const getValPerServing = (val: number | undefined) => {
-          if (val === undefined || isNaN(val)) return 0;
-          return val / totalServings;
-        };
-
-        const renderNutrientRow = (label: string, key: string, unit: string, color: string) => {
-          const totalVal = Number(saveRecipeConfig.totals[key]) || 0;
-          const perServingVal = getValPerServing(totalVal);
-          
-          let displayTotal = '';
-          let displayPerServing = '';
-          
-          if (key === 'cal') {
-            displayTotal = `${Math.round(totalVal)} ${unit}`;
-            displayPerServing = `${Math.round(perServingVal)} ${unit}`;
-          } else {
-            displayTotal = `${totalVal.toFixed(1)} ${unit}`;
-            displayPerServing = `${perServingVal.toFixed(1)} ${unit}`;
-          }
-
-          return (
-            <div 
-              key={key} 
-              style={{ 
-                display: 'flex', 
-                justifyContent: 'space-between', 
-                alignItems: 'center', 
-                padding: '8px 12px', 
-                background: 'rgba(255,255,255,0.02)', 
-                borderBottom: '1px solid rgba(255,255,255,0.04)', 
-                borderRadius: '8px', 
-                fontSize: '12px' 
-              }}
-            >
-              <span style={{ fontWeight: '700', color }}>{label}</span>
-              <div style={{ display: 'flex', gap: '12px', textAlign: 'right' }}>
-                <span style={{ color: 'var(--theme-text-dim)', minWidth: '70px' }}>{displayTotal}</span>
-                <span style={{ color: 'var(--theme-accent, #00C9FF)', fontWeight: '800', minWidth: '70px' }}>{displayPerServing}</span>
-              </div>
-            </div>
-          );
-        };
 
         return (
           <div className="recipe-save-overlay" style={{ 
@@ -2896,16 +2939,16 @@ export const PantryView: React.FC<PantryViewProps> = ({ initialMeal, onClose, is
                   flexDirection: 'column', 
                   gap: '4px' 
                 }}>
-                  {renderNutrientRow('Calories', 'cal', 'kcal', 'var(--theme-text)')}
-                  {renderNutrientRow('Protein', 'p', 'g', '#00C9FF')}
-                  {renderNutrientRow('Carbs', 'c', 'g', '#FCC419')}
-                  {renderNutrientRow('Fat', 'f', 'g', '#FF6B6B')}
-                  {renderNutrientRow('Fiber', 'fiber', 'g', 'rgba(255,255,255,0.85)')}
-                  {renderNutrientRow('Sugars', 'sugars', 'g', 'rgba(255,255,255,0.7)')}
-                  {renderNutrientRow('Sodium', 'Sodium', 'mg', 'rgba(255,255,255,0.6)')}
-                  {renderNutrientRow('Potassium', 'Potassium', 'mg', 'rgba(255,255,255,0.6)')}
-                  {renderNutrientRow('Calcium', 'Calcium', 'mg', 'rgba(255,255,255,0.6)')}
-                  {renderNutrientRow('Magnesium', 'Magnesium', 'mg', 'rgba(255,255,255,0.6)')}
+                  <RecipeNutrientRow label="Calories" nutrientKey="cal" unit="kcal" color="var(--theme-text)" totals={saveRecipeConfig.totals} totalServings={totalServings} onChange={handleRecipeNutrientChange} />
+                  <RecipeNutrientRow label="Protein" nutrientKey="p" unit="g" color="#00C9FF" totals={saveRecipeConfig.totals} totalServings={totalServings} onChange={handleRecipeNutrientChange} />
+                  <RecipeNutrientRow label="Carbs" nutrientKey="c" unit="g" color="#FCC419" totals={saveRecipeConfig.totals} totalServings={totalServings} onChange={handleRecipeNutrientChange} />
+                  <RecipeNutrientRow label="Fat" nutrientKey="f" unit="g" color="#FF6B6B" totals={saveRecipeConfig.totals} totalServings={totalServings} onChange={handleRecipeNutrientChange} />
+                  <RecipeNutrientRow label="Fiber" nutrientKey="fiber" unit="g" color="rgba(255,255,255,0.85)" totals={saveRecipeConfig.totals} totalServings={totalServings} onChange={handleRecipeNutrientChange} />
+                  <RecipeNutrientRow label="Sugars" nutrientKey="sugars" unit="g" color="rgba(255,255,255,0.7)" totals={saveRecipeConfig.totals} totalServings={totalServings} onChange={handleRecipeNutrientChange} />
+                  <RecipeNutrientRow label="Sodium" nutrientKey="Sodium" unit="mg" color="rgba(255,255,255,0.6)" totals={saveRecipeConfig.totals} totalServings={totalServings} onChange={handleRecipeNutrientChange} />
+                  <RecipeNutrientRow label="Potassium" nutrientKey="Potassium" unit="mg" color="rgba(255,255,255,0.6)" totals={saveRecipeConfig.totals} totalServings={totalServings} onChange={handleRecipeNutrientChange} />
+                  <RecipeNutrientRow label="Calcium" nutrientKey="Calcium" unit="mg" color="rgba(255,255,255,0.6)" totals={saveRecipeConfig.totals} totalServings={totalServings} onChange={handleRecipeNutrientChange} />
+                  <RecipeNutrientRow label="Magnesium" nutrientKey="Magnesium" unit="mg" color="rgba(255,255,255,0.6)" totals={saveRecipeConfig.totals} totalServings={totalServings} onChange={handleRecipeNutrientChange} />
                 </div>
               </div>
 
