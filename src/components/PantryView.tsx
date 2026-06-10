@@ -273,7 +273,7 @@ export const PantryView: React.FC<PantryViewProps> = ({ initialMeal, onClose, is
   const [recipeTotalServings, setRecipeTotalServings] = useState('1');
 
   // New states for descriptive overall physical portions and dual-unit toggles
-  const [loggedPortionsVal, setLoggedPortionsVal] = useState<string>('1');
+  const [loggedPortionsVal] = useState<string>('1');
   const abortControllerRef = React.useRef<AbortController | null>(null);
 
   const cancelSearch = () => {
@@ -1561,47 +1561,7 @@ export const PantryView: React.FC<PantryViewProps> = ({ initialMeal, onClose, is
                     )}
                   </div>
 
-                  {/* Amount selection */}
-                  <div style={{ 
-                    display: 'flex', 
-                    flexDirection: 'column', 
-                    gap: '12px', 
-                    background: 'rgba(255,255,255,0.03)', 
-                    border: '1px solid rgba(255,255,255,0.06)',
-                    borderRadius: '18px', 
-                    padding: '14px', 
-                    marginBottom: '16px' 
-                  }}>
-                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '12px' }}>
-                      <span style={{ fontSize: '12px', color: 'rgba(255,255,255,0.85)', fontWeight: '600' }}>
-                        Amount to Log:
-                      </span>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                        <input
-                          type="number"
-                          min="0.1"
-                          step="any"
-                          value={loggedPortionsVal}
-                          onChange={(e) => setLoggedPortionsVal(e.target.value)}
-                          style={{
-                            width: '70px',
-                            padding: '8px 10px',
-                            borderRadius: '10px',
-                            border: '1px solid rgba(255,255,255,0.15)',
-                            background: 'rgba(0,0,0,0.2)',
-                            color: '#fff',
-                            fontSize: '13px',
-                            fontWeight: '700',
-                            textAlign: 'center',
-                            outline: 'none'
-                          }}
-                        />
-                        <span style={{ fontSize: '12px', color: 'var(--theme-accent)', fontWeight: '700', textTransform: 'lowercase' }}>
-                          {parseFloat(loggedPortionsVal) === 1 ? 'serving' : 'servings'}
-                        </span>
-                      </div>
-                    </div>
-                  </div>
+
                   
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', marginBottom: '16px' }}>
                     {aiStagedResults.map((f, i) => {
