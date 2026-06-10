@@ -389,6 +389,59 @@ export const PantryView: React.FC<PantryViewProps> = ({ initialMeal, onClose, is
 
 
   const [aiStagedResults, setAiStagedResults] = useState<Food[]>([]);
+  const [isSearchingIngredientToAdd, setIsSearchingIngredientToAdd] = useState(false);
+  const [addIngQuery, setAddIngQuery] = useState('');
+  const [addIngResults, setAddIngResults] = useState<Food[]>([]);
+  const [isAddIngSearching, setIsAddIngSearching] = useState(false);
+
+  const handleSearchIngredientToAdd = async (forcedQuery?: string) => {
+    const q = (forcedQuery || addIngQuery).trim();
+    if (!q) return;
+    setIsAddIngSearching(true);
+    const localMatches = customFoods.filter((f: Food) => f.name.toLowerCase().includes(q.toLowerCase())).map((f: Food) => ({ ...f, isLocal: true }));
+    
+    setAddIngResults(localMatches.slice(0, 15));
+
+    try {
+      const dbResponse = await apiFetch('/api/db-search', { method: 'POST', body: JSON.stringify({ query: q }) })
+        .then(r => r.ok ? r.json() : { foods: [] }).catch(() => ({ foods: [] }));
+      const dbResults = (dbResponse.foods || []).map(normalizeFoodResult);
+
+      setAddIngResults([...localMatches, ...dbResults].slice(0, 15));
+      setIsAddIngSearching(false);
+
+      apiFetch('/api/off-search', { method: 'POST', body: JSON.stringify({ query: q }) })
+        .then(r => r.ok ? r.json() : { foods: [] })
+        .then(offBody => {
+          const offResults = (offBody.foods || offBody.results || []).map(normalizeFoodResult);
+          if (offResults.length > 0) {
+            const seen = new Set(dbResults.map((f: Food) => (f.name + '|' + f.cal).toLowerCase()));
+            const merged = [...dbResults];
+            for (const f of offResults) {
+              if (!seen.has((f.name + '|' + f.cal).toLowerCase())) {
+                merged.push(f);
+                seen.add((f.name + '|' + f.cal).toLowerCase());
+              }
+            }
+            setAddIngResults([...localMatches, ...merged].slice(0, 15));
+          }
+        })
+        .catch(() => {});
+    } catch {
+      setIsAddIngSearching(false);
+    }
+  };
+
+  React.useEffect(() => {
+    const timer = setTimeout(() => {
+      if (addIngQuery.trim().length > 1 && isSearchingIngredientToAdd) {
+        handleSearchIngredientToAdd(addIngQuery);
+      }
+    }, 300);
+    return () => clearTimeout(timer);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [addIngQuery, isSearchingIngredientToAdd]);
+
   const [isAiReviewing, setIsAiReviewing] = useState(false);
   
   const [scanningIngredients, setScanningIngredients] = useState<number | null>(null);
@@ -1049,8 +1102,8 @@ export const PantryView: React.FC<PantryViewProps> = ({ initialMeal, onClose, is
               <BarcodeScanner 
                 onScanSuccess={(result) => {
                   if (typeof result === 'object' && result !== null) {
-                    setAiStagedResults([{ ...result, stagedQty: '1', stagedUnit: 'serving' }]);
-                    setIsAiReviewing(true);
+                    handleAddPreviewClick(result);
+                    setShowFullNutrition(true);
                   } else {
                     const displayQuery = String(result);
                     setInnerGlobalSearchTab('search');
@@ -1779,40 +1832,198 @@ export const PantryView: React.FC<PantryViewProps> = ({ initialMeal, onClose, is
                   })}
                   </div>
 
-                  {/* Add Ingredient Button */}
-                  <button 
-                    onClick={() => {
-                      const newItem: Food = {
-                        name: 'New Ingredient',
-                        cal: 0, p: 0, c: 0, f: 0,
-                        serving: '1 serving',
-                        sQty: 1,
-                        sUnit: 'serving',
-                        stagedQty: '1',
-                        stagedUnit: 'serving',
-                        showNutrientIntel: true
-                      };
-                      setAiStagedResults([...aiStagedResults, newItem]);
-                    }}
-                    style={{ 
-                      width: '100%', 
+                  {/* Add Ingredient / Search Area */}
+                  {!isSearchingIngredientToAdd ? (
+                    <button 
+                      onClick={() => {
+                        setIsSearchingIngredientToAdd(true);
+                        setAddIngQuery('');
+                        setAddIngResults([]);
+                      }}
+                      style={{ 
+                        width: '100%', 
+                        padding: '16px', 
+                        background: 'rgba(0, 201, 255, 0.03)', 
+                        border: '1px dashed var(--theme-accent)', 
+                        borderRadius: '18px', 
+                        color: 'var(--theme-accent)', 
+                        fontWeight: '800', 
+                        fontSize: '13px', 
+                        cursor: 'pointer',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        gap: '8px',
+                        marginBottom: '20px'
+                      }}
+                    >
+                      <Plus size={18} /> ADD INGREDIENT
+                    </button>
+                  ) : (
+                    <div style={{ 
+                      background: 'rgba(255,255,255,0.02)', 
+                      border: '1px solid rgba(255,255,255,0.06)', 
+                      borderRadius: '20px', 
                       padding: '16px', 
-                      background: 'rgba(0, 201, 255, 0.03)', 
-                      border: '1px dashed var(--theme-accent)', 
-                      borderRadius: '18px', 
-                      color: 'var(--theme-accent)', 
-                      fontWeight: '800', 
-                      fontSize: '13px', 
-                      cursor: 'pointer',
+                      marginBottom: '20px',
                       display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      gap: '8px',
-                      marginBottom: '20px'
-                    }}
-                  >
-                    <Plus size={18} /> ADD INGREDIENT
-                  </button>
+                      flexDirection: 'column',
+                      gap: '12px'
+                    }}>
+                      <div style={{ fontSize: '11px', fontWeight: '800', color: 'var(--theme-accent)', letterSpacing: '0.5px', textTransform: 'uppercase' }}>
+                        Search Food to Add
+                      </div>
+                      
+                      <div style={{ display: 'flex', gap: '8px' }}>
+                        <input
+                          type="text"
+                          placeholder="Type food or ingredient name..."
+                          value={addIngQuery}
+                          onChange={(e) => setAddIngQuery(e.target.value)}
+                          onKeyDown={(e) => {
+                            if (e.key === 'Enter') {
+                              handleSearchIngredientToAdd();
+                            }
+                          }}
+                          style={{
+                            flex: 1,
+                            padding: '10px 14px',
+                            background: 'rgba(0,0,0,0.2)',
+                            border: '1px solid rgba(255,255,255,0.1)',
+                            borderRadius: '12px',
+                            color: '#fff',
+                            fontSize: '13px',
+                            fontWeight: '600',
+                            outline: 'none'
+                          }}
+                        />
+                        <button
+                          type="button"
+                          onClick={() => handleSearchIngredientToAdd()}
+                          style={{
+                            padding: '0 16px',
+                            background: 'var(--theme-accent)',
+                            color: '#000',
+                            border: 'none',
+                            borderRadius: '12px',
+                            fontWeight: '800',
+                            fontSize: '12px',
+                            cursor: 'pointer'
+                          }}
+                        >
+                          {isAddIngSearching ? <Loader2 className="spin" size={14} /> : 'Search'}
+                        </button>
+                      </div>
+
+                      {/* Results List */}
+                      {addIngResults.length > 0 && (
+                        <div style={{ 
+                          maxHeight: '200px', 
+                          overflowY: 'auto', 
+                          display: 'flex', 
+                          flexDirection: 'column', 
+                          gap: '6px',
+                          borderTop: '1px solid rgba(255,255,255,0.05)',
+                          paddingTop: '8px'
+                        }}>
+                          {addIngResults.map((f, i) => (
+                            <div
+                              key={i}
+                              onClick={() => {
+                                setAiStagedResults([...aiStagedResults, {
+                                  ...f,
+                                  stagedQty: '1',
+                                  stagedUnit: 'serving',
+                                  showNutrientIntel: true
+                                }]);
+                                setIsSearchingIngredientToAdd(false);
+                                setAddIngQuery('');
+                                setAddIngResults([]);
+                              }}
+                              style={{
+                                display: 'flex',
+                                justifyContent: 'space-between',
+                                alignItems: 'center',
+                                padding: '10px 12px',
+                                background: 'rgba(255,255,255,0.03)',
+                                border: '1px solid rgba(255,255,255,0.05)',
+                                borderRadius: '10px',
+                                cursor: 'pointer',
+                                fontSize: '12px',
+                                transition: 'background 0.2s'
+                              }}
+                            >
+                              <div>
+                                <span style={{ fontWeight: '700', color: '#fff' }}>{f.name}</span>
+                                {f.brand && <span style={{ color: 'rgba(255,255,255,0.4)', fontSize: '10px', marginLeft: '6px' }}>{f.brand}</span>}
+                                <div style={{ fontSize: '10px', color: 'rgba(255,255,255,0.5)', marginTop: '2px' }}>
+                                  {f.serving} • {Math.round(getCal(f))} kcal
+                                </div>
+                              </div>
+                              <Plus size={14} color="var(--theme-accent)" />
+                            </div>
+                          ))}
+                        </div>
+                      )}
+
+                      {/* Custom Ingredient Shortcut */}
+                      <div style={{ display: 'flex', gap: '8px', justifyContent: 'space-between', marginTop: '4px' }}>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            const name = addIngQuery.trim() || 'Custom Ingredient';
+                            const newItem: Food = {
+                              name,
+                              cal: 0, p: 0, c: 0, f: 0,
+                              serving: '1 serving',
+                              sQty: 1,
+                              sUnit: 'serving',
+                              stagedQty: '1',
+                              stagedUnit: 'serving',
+                              showNutrientIntel: true
+                            };
+                            setAiStagedResults([...aiStagedResults, newItem]);
+                            setIsSearchingIngredientToAdd(false);
+                            setAddIngQuery('');
+                            setAddIngResults([]);
+                          }}
+                          style={{
+                            background: 'none',
+                            border: 'none',
+                            color: 'var(--theme-accent)',
+                            fontSize: '11px',
+                            fontWeight: '700',
+                            cursor: 'pointer',
+                            padding: '4px 0',
+                            textAlign: 'left'
+                          }}
+                        >
+                          + Create custom "{addIngQuery.trim() || 'New Ingredient'}"
+                        </button>
+                        
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setIsSearchingIngredientToAdd(false);
+                            setAddIngQuery('');
+                            setAddIngResults([]);
+                          }}
+                          style={{
+                            background: 'rgba(255,255,255,0.05)',
+                            border: 'none',
+                            borderRadius: '8px',
+                            color: 'rgba(255,255,255,0.6)',
+                            padding: '6px 12px',
+                            fontSize: '11px',
+                            fontWeight: '700',
+                            cursor: 'pointer'
+                          }}
+                        >
+                          Cancel
+                        </button>
+                      </div>
+                    </div>
+                  )}
 
                   {/* Assign to Meal Selector for AI Review */}
                   <div style={{ marginBottom: '20px', background: 'rgba(255,255,255,0.03)', padding: '16px', borderRadius: '18px', border: '1px solid var(--theme-border)' }}>
@@ -2646,6 +2857,15 @@ export const PantryView: React.FC<PantryViewProps> = ({ initialMeal, onClose, is
                     <NutritionFactsDisplay 
                       food={configuringFood} 
                       multiplier={computeMultiplier(configuringFood.serving || '', servingUnit, parseFloat(servingQty) || 1)} 
+                      onEdit={(key, val) => {
+                        setConfiguringFood(prev => {
+                          if (!prev) return null;
+                          return {
+                            ...prev,
+                            [key]: val
+                          };
+                        });
+                      }}
                     />
                   </div>
                 )}
