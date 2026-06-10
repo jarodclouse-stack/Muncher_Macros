@@ -119,7 +119,7 @@ export const BarcodeScanner: React.FC<BarcodeScannerProps> = ({
       } else {
         setError("Clipboard did not contain a valid barcode (must be at least 5 digits).");
       }
-    } catch (err) {
+    } catch {
       setError("Unable to read clipboard automatically. Please long-press and paste into the input box instead!");
     }
   };

@@ -50,7 +50,7 @@ export const scanBarcode = async (imageBlob: Blob): Promise<ScanResult> => {
       const text = result.getText();
       if (isURL(text)) return { success: false, error: "Result is a web link. Only food codes are allowed." };
       return { success: true, text };
-    } catch (e) {
+    } catch {
       // Fallback to MultiFormatReader with aggressive hints (configured in constructor)
       const result = await multiFormatReader.decodeFromImageUrl(url);
       const text = result.getText();
@@ -161,7 +161,10 @@ export const extractBarcodeDigits = async (imageBlob: Blob): Promise<ScanResult>
 export const lookupBarcode = async (code: string): Promise<ScanResult> => {
   try {
     // 1. Try internal API first
-    const internalRes = await fetch(`/api/food-search?q=${encodeURIComponent(code)}`);
+    const internalRes = await apiFetch('/api/db-search', {
+      method: 'POST',
+      body: JSON.stringify({ query: code })
+    });
     
     if (internalRes.ok) {
       const body = await internalRes.json();

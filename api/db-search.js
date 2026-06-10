@@ -103,14 +103,25 @@ export default async function handler(req, res) {
       // Table may not exist yet — skip synonym expansion
     }
 
-    // Call the search function
-    const rpcParams = { query_text: query, result_limit: 25 };
-
-    // If we have a synonym, search both original and expanded
+    // If query is a numeric barcode, check the barcode column directly first
+    const isBarcode = /^\d+$/.test(query);
     let results = [];
-    const { data, error } = await supabase.rpc('search_foods', rpcParams);
-    if (error) throw error;
-    results = data || [];
+
+    if (isBarcode) {
+      const { data, error } = await supabase
+        .from('foods')
+        .select('*')
+        .eq('barcode', query)
+        .limit(1);
+      if (error) throw error;
+      results = data || [];
+    } else {
+      // Call the search function
+      const rpcParams = { query_text: query, result_limit: 25 };
+      const { data, error } = await supabase.rpc('search_foods', rpcParams);
+      if (error) throw error;
+      results = data || [];
+    }
 
     // If synonym found, also search with expanded term and merge
     if (synonymText) {
