@@ -95,6 +95,11 @@ function normalizeResult(f) {
   if (c < sugars + fb) {
     c = Math.round((sugars + fb) * 10) / 10;
   }
+  // Safety net: if sugars === c and there's meaningful fiber, the AI conflated the two.
+  // A food with real fiber cannot have ALL its carbs be sugar — cap sugars at c - fb.
+  if (sugars > 0 && sugars === c && fb > 0) {
+    sugars = Math.max(0, Math.round((c - fb) * 10) / 10);
+  }
 
   const fat = Math.round(parseNum(f.f != null ? f.f : f.fat) * 10) / 10;
   
@@ -360,7 +365,20 @@ STEP 7 — NUTRITION ESTIMATION (Rules 13, 14)
 For each component, estimate nutrition for exactly ONE (1) unit:
 
 1. BRANDED & COMMERCIAL PRODUCTS: For widely known commercial products (e.g. "Pepsi", "Coca-Cola", "Oreo", "Big Mac"), you MUST use their exact, real-world manufacturer nutrition label facts. A standard 12 fl oz (355ml) regular Pepsi has exactly 150 kcal, 41g carbohydrates (all sugars), 0g protein, and 0g fat. Regular Coca-Cola has 140 kcal, 39g carbs. Do not guess or hallucinate generic or blank numbers (like 0g carbs for regular Pepsi) for standard commercial items.
-2. TOTAL CARBOHYDRATES RULE: The "c" (carbs) key represents TOTAL carbohydrates. Total carbohydrates MUST include all simple sugars ("sugars") and dietary fiber ("fb"). Therefore, it is a mathematical requirement that: c >= sugars + fb. For example, if a beverage has 41g of sugars, its "c" value MUST be at least 41g. Never set "c" to 0 if "sugars" is non-zero.
+2. TOTAL CARBOHYDRATES vs SUGARS (CRITICAL DISTINCTION):
+   - "c" = TOTAL carbohydrates (starches + fiber + simple sugars combined).
+   - "sugars" = ONLY simple/added sugars — a SUBSET of "c". NOT the same field.
+   - Mathematical requirement: c >= sugars + fb. Never set "c" to 0 if "sugars" is non-zero.
+   - SUGAR vs STARCH EXAMPLES (use these as anchors):
+     * White rice (1 cup cooked, 45g carbs) → sugars ≈ 0g  (almost pure starch)
+     * Bread (1 slice, 15g carbs) → sugars ≈ 1–2g
+     * Oatmeal (1 cup, 28g carbs) → sugars ≈ 1g
+     * Pasta (1 cup, 40g carbs) → sugars ≈ 1–2g
+     * Banana (25g carbs) → sugars ≈ 14g
+     * Apple (25g carbs) → sugars ≈ 19g
+     * Regular Pepsi 12oz (41g carbs) → sugars ≈ 41g (pure sugar, no starch)
+     * Potato (30g carbs) → sugars ≈ 1–2g
+   - RULE: For grain, legume, tuber, and starchy foods, sugars MUST be < 20% of total carbs. Setting sugars = c for these foods is a critical error.
 3. MACRO-CALORIE ALIGNMENT: Stated calories ("cal") must be mathematically aligned with the macronutrients: cal = p * 4 + c * 4 + f * 9. Stating a positive calorie count (like 150 kcal) while setting all macros (protein, carbs, fat) to 0 is an extreme error. If a food has calories, it MUST have the corresponding macros that produce those calories.
 4. MICRONUTRIENT MANDATE (Rule 13): You MUST estimate and populate every micronutrient and trace mineral below. Do NOT leave them as 0 unless the value is truly negligible (e.g. selenium in Coke). Use USDA/NCCDB data.
 5. CONTRADICTION PREVENTION (Rule 14):

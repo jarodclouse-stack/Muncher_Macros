@@ -6,13 +6,16 @@ interface NutritionFactsDisplayProps {
   food: any;
   multiplier: number;
   onEdit?: (key: string, value: number) => void;
+  /** When true, hides sub-nutrient rows (sugars, soluble/insoluble fiber).
+   *  Edit mode always shows all rows regardless of this flag. */
+  hideSubNutrients?: boolean;
 }
 
 /**
  * A shared, comprehensive "Nutrition Facts" panel.
  * Supports an 'Editable' mode for the Staging Tray.
  */
-export const NutritionFactsDisplay: React.FC<NutritionFactsDisplayProps> = ({ food, multiplier, onEdit }) => {
+export const NutritionFactsDisplay: React.FC<NutritionFactsDisplayProps> = ({ food, multiplier, onEdit, hideSubNutrients = false }) => {
   const f = food || {};
   
   const renderRow = (label: string, key: string, unit: string = 'g', isMacro: boolean = false, isSubRow: boolean = false) => {
@@ -233,21 +236,25 @@ export const NutritionFactsDisplay: React.FC<NutritionFactsDisplayProps> = ({ fo
       {renderRow('Calories', 'cal', ' kcal', true)}
       {renderRow('Protein', 'p', 'g', true)}
       {renderRow('Carbs', 'c', 'g', true)}
-      {renderRow('Sugars', 'sugars', 'g', false, true)}
+      {/* Sub-nutrient: only show sugars when editing or hideSubNutrients is false */}
+      {(!hideSubNutrients || onEdit) && renderRow('Sugars', 'sugars', 'g', false, true)}
       {renderRow('Fat', 'f', 'g', true)}
-      
-      {/* Additional Macros */}
-      {renderRow('Fiber', 'fb', 'g')}
-      {renderRow('Soluble Fiber', 'solubleFiber', 'g', false, true)}
-      {renderRow('Insoluble Fiber', 'insolubleFiber', 'g', false, true)}
-      {renderRow('Sat Fat', 'sat', 'g')}
-      {renderRow('Sodium', 'Sodium', 'mg')}
-      {renderRow('Potassium', 'Potassium', 'mg')}
-      
-      {/* Dynamic Micros from Constants */}
-      {ALL_MICRO_KEYS.filter(k => !['Sodium', 'Potassium', 'Fiber', 'Soluble Fiber', 'Insoluble Fiber'].includes(k)).map(k => (
-        renderRow(k, k, MICRO_UNITS[k] || 'mg')
-      ))}
+
+      {/* Additional Macros — hidden in compact (scan result) view */}
+      {(!hideSubNutrients || onEdit) && (
+        <>
+          {renderRow('Fiber', 'fb', 'g')}
+          {renderRow('Soluble Fiber', 'solubleFiber', 'g', false, true)}
+          {renderRow('Insoluble Fiber', 'insolubleFiber', 'g', false, true)}
+          {renderRow('Sat Fat', 'sat', 'g')}
+          {renderRow('Sodium', 'Sodium', 'mg')}
+          {renderRow('Potassium', 'Potassium', 'mg')}
+          {/* Dynamic Micros from Constants */}
+          {ALL_MICRO_KEYS.filter(k => !['Sodium', 'Potassium', 'Fiber', 'Soluble Fiber', 'Insoluble Fiber'].includes(k)).map(k => (
+            renderRow(k, k, MICRO_UNITS[k] || 'mg')
+          ))}
+        </>
+      )}
     </div>
   );
 };

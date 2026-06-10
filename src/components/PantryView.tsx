@@ -1103,7 +1103,7 @@ export const PantryView: React.FC<PantryViewProps> = ({ initialMeal, onClose, is
                 onScanSuccess={(result) => {
                   if (typeof result === 'object' && result !== null) {
                     handleAddPreviewClick(result);
-                    setShowFullNutrition(true);
+                    setShowFullNutrition(false); // hide sub-nutrients by default after scan
                   } else {
                     const displayQuery = String(result);
                     setInnerGlobalSearchTab('search');
