@@ -2360,7 +2360,7 @@ export const PantryView: React.FC<PantryViewProps> = ({ initialMeal, onClose, is
               {/* Collapsible Sections */}
               <CollapsibleEntrySection 
                 title="Fats & Fiber" 
-                isOpen={openSection === 'fats' || true} 
+                isOpen={openSection === 'fats'}
                 onToggle={() => setOpenSection(openSection === 'fats' ? null : 'fats')}
               >
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(130px, 1fr))', gap: '8px' }}>
@@ -2379,7 +2379,7 @@ export const PantryView: React.FC<PantryViewProps> = ({ initialMeal, onClose, is
                 <CollapsibleEntrySection 
                   key={cat.cat}
                   title={cat.cat} 
-                  isOpen={openSection === cat.cat || true} 
+                  isOpen={openSection === cat.cat}
                   onToggle={() => setOpenSection(openSection === cat.cat ? null : cat.cat)}
                 >
                   <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(130px, 1fr))', gap: '8px' }}>

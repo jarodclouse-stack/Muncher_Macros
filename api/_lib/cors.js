@@ -2,6 +2,8 @@
 const DEFAULT_ORIGINS = [
   'https://munchermacros.com',
   'https://www.munchermacros.com',
+  'https://munchermacros.digital',
+  'https://www.munchermacros.digital',
   'http://localhost:5173',
   'http://localhost:4173',
 ];
