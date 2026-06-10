@@ -583,13 +583,15 @@ export const DiaryProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       if (isGuest && user?.id === 'guest') saveGuestData(updated);
       // Async DB insert for the copy
       if (user && !(isGuest && user.id === 'guest')) {
-        supabase.from('custom_foods').insert({
-          user_id: user.id, name: copy.name, brand: copy.brand || null,
-          cal: copy.cal || 0, protein: copy.p || 0, carbs: copy.c || 0,
-          fat: copy.f || 0, fiber: copy.fiber || 0, serving: copy.serving || '1 serving',
-          serving_unit: copy.sUnit || null, barcode: copy.barcode || null,
-          favorite: false, sort_order: idx + 1,
-        }).select('id').single().then(({ data }) => {
+        Promise.resolve(
+          supabase.from('custom_foods').insert({
+            user_id: user.id, name: copy.name, brand: copy.brand || null,
+            cal: copy.cal || 0, protein: copy.p || 0, carbs: copy.c || 0,
+            fat: copy.f || 0, fiber: copy.fiber || 0, serving: copy.serving || '1 serving',
+            serving_unit: copy.sUnit || null, barcode: copy.barcode || null,
+            favorite: false, sort_order: idx + 1,
+          }).select('id').single()
+        ).then(({ data }) => {
           if (data?.id) {
             setLocalCache(p => {
               const fs = [...(p.customFoods || [])];
@@ -598,7 +600,7 @@ export const DiaryProvider: React.FC<{ children: React.ReactNode }> = ({ childre
               return { ...p, customFoods: fs };
             });
           }
-        }).catch(err => console.error('Failed to duplicate custom food:', err));
+        }).catch((err: any) => console.error('Failed to duplicate custom food:', err));
       }
       return updated;
     });
