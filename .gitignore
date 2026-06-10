@@ -60,4 +60,3 @@ dist-ssr
 .vercel
 
 # AI agent handoff files (local only)
-HANDOFF.md
