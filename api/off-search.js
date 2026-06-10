@@ -268,10 +268,17 @@ export default async function handler(req, res) {
         return 0;
       };
 
-      const cal = getVal('energy-kcal', 1, 0);
+      let cal = getVal('energy-kcal', 1, 0);
       const prot = getVal('proteins', 1, 1);
       const carb = getVal('carbohydrates', 1, 1);
       const fat = getVal('fat', 1, 1);
+
+      // Many OFF products lack kcal but carry kJ ('energy'/'energy-kj') or just macros.
+      if (!cal) {
+        const kj = getVal('energy-kj', 1, 1) || getVal('energy', 1, 1);
+        if (kj) cal = Math.round(kj / 4.184);
+      }
+      if (!cal) cal = Math.round(prot * 4 + carb * 4 + fat * 9);
 
       // Build a clean name: only prepend the brand if the product name doesn't already contain it
       const rawProductName = (p.product_name_en || p.product_name || 'Unknown Item').trim();

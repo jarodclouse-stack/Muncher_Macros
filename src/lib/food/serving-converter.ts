@@ -11,6 +11,19 @@ export function safeNum(value?: number | string): number {
   return Number.isFinite(n) ? n : 0;
 }
 
+// Single source of truth for reading a food's calories regardless of which
+// field name the source used (cal / calories / kcal) or whether it's a string.
+export function getCal(food: any): number {
+  const f = food || {};
+  for (const key of ['cal', 'calories', 'kcal']) {
+    if (f[key] != null) {
+      const n = Number(f[key]);
+      if (Number.isFinite(n) && n >= 0) return n;
+    }
+  }
+  return 0;
+}
+
 export function sanitizeServingAmount(input: number | string, fallback: number = 1): number {
   const value = Number(input);
   if (!Number.isFinite(value) || value <= 0) return fallback;
@@ -197,7 +210,8 @@ export function scaleLegacyFoodByAmount(food: any, amount: number | string): any
   // Scale every numeric property found in the object (Vitamins, Minerals, Macros)
   Object.keys(f).forEach(key => {
     // Avoid scaling metadata or identifiers
-    if (['id', 'name', 'brand', 'serving', 'sUnit', '_src', 'raw', 'meal', 'timestamp'].includes(key)) return;
+    if (['id', 'name', 'brand', 'serving', 'sUnit', '_src', 'raw', 'meal', 'timestamp',
+         'barcode', 'stagedQty', 'stagedUnit', 'unit', 'type', 'ingredients'].includes(key)) return;
     
     const value = f[key];
     if (typeof value === 'number') {
@@ -234,7 +248,7 @@ export function sumFoods(foodEntries: any[]): any {
   });
 
   const totals = entries.reduce((acc, item) => {
-    acc.calories += safeNum(item.calories != null ? item.calories : item.cal);
+    acc.calories += getCal(item);
     acc.protein += safeNum(item.protein != null ? item.protein : item.p);
     acc.carbs += safeNum(item.carbs != null ? item.carbs : item.c);
     acc.fiber += safeNum(item.fiber != null ? item.fiber : item.fb);

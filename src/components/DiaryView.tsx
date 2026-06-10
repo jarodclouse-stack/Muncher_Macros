@@ -1,6 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import { useDiary } from '../context/DiaryContext';
-import { sumFoods, estimateNutriScore } from '../lib/food/serving-converter';
+import { sumFoods, estimateNutriScore, getCal } from '../lib/food/serving-converter';
 import { computeGoals } from '../lib/goals/compute';
 import { Utensils, Trash2, Sparkles, Droplets, ChevronLeft, ChevronRight, ChevronDown, ChevronUp, Scale, Dumbbell, Plus, Minus } from 'lucide-react';
 import { MEALS, ALL_MICRO_KEYS, MICRO_UNITS } from '../lib/constants';
@@ -430,14 +430,14 @@ const DiaryEntryItem = ({ log, onRemove, onEditPortion, onMove }: any) => {
 
         {/* Macro Breakdown Grid — matches AddFoodModal staging card */}
         <div className="diary-entry-stats-row">
-          <div 
+          <div
             className="diary-entry-stats-col"
             onClick={(e) => { e.stopPropagation(); setSelectedMacro('kcal'); }}
           >
             <div className="diary-entry-stats-label">KCAL</div>
-            <div className="diary-entry-stats-val">{Math.round(f.calories || f.cal || 0)}</div>
+            <div className="diary-entry-stats-val">{Math.round(getCal(f))}</div>
           </div>
-          <div 
+          <div
             className="diary-entry-stats-col"
             onClick={(e) => { e.stopPropagation(); setSelectedMacro('p'); }}
           >

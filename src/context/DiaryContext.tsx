@@ -62,6 +62,7 @@ export const DiaryProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   const [isScannerActive, setIsScannerActive] = useState(false);
   const [dataReady, setDataReady] = useState(false);
 
+  const pendingSaveRef = useRef<LocalCache | null>(null);
   const syncTimeoutRef = useRef<number | null>(null);
 
   // Load Initial Data
@@ -139,6 +140,7 @@ export const DiaryProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     if (!user) return;
     if (isGuest) {
       localStorage.setItem('ft_guest', JSON.stringify(dataToSave));
+      if (pendingSaveRef.current === dataToSave) pendingSaveRef.current = null;
       return;
     }
     
@@ -155,7 +157,9 @@ export const DiaryProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       );
       if (error) throw error;
       setSyncStatus('ok');
-    } catch {
+      if (pendingSaveRef.current === dataToSave) pendingSaveRef.current = null;
+    } catch (err) {
+      console.error('Diary save failed:', err);
       setSyncStatus(navigator.onLine ? 'error' : 'offline');
     }
   }, [user, isGuest]);
@@ -171,9 +175,27 @@ export const DiaryProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     return () => window.removeEventListener('online', handleOnline);
   }, [syncStatus, localCache, saveCloudData]);
 
+  // Flush pending saves when the tab is hidden or closing so the 1.5s debounce
+  // can't drop a just-logged entry.
+  useEffect(() => {
+    const flush = () => {
+      if (pendingSaveRef.current) {
+        if (syncTimeoutRef.current) clearTimeout(syncTimeoutRef.current);
+        saveCloudData(pendingSaveRef.current);
+      }
+    };
+    const onVisibility = () => { if (document.visibilityState === 'hidden') flush(); };
+    document.addEventListener('visibilitychange', onVisibility);
+    window.addEventListener('pagehide', flush);
+    return () => {
+      document.removeEventListener('visibilitychange', onVisibility);
+      window.removeEventListener('pagehide', flush);
+    };
+  }, [saveCloudData]);
 
   const updateCacheDebounced = useCallback((newCache: LocalCache) => {
     setLocalCache(newCache);
+    pendingSaveRef.current = newCache;
     if (syncTimeoutRef.current) clearTimeout(syncTimeoutRef.current);
     syncTimeoutRef.current = setTimeout(() => saveCloudData(newCache), 1500) as any;
   }, [saveCloudData]);
@@ -201,8 +223,6 @@ export const DiaryProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     setCurrentDate(date);
   };
 
-  const pendingSaveRef = useRef<LocalCache | null>(null);
-
   const updateDayData = useCallback((date: string, partialData: any) => {
     setLocalCache(prev => {
       const updated = { ...prev };
@@ -224,6 +244,7 @@ export const DiaryProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       newLog.push({ meal, f: food });
       updated[currentDate] = { ...currentDay, foodLog: newLog };
       
+      pendingSaveRef.current = updated;
       if (syncTimeoutRef.current) clearTimeout(syncTimeoutRef.current);
       syncTimeoutRef.current = setTimeout(() => saveCloudData(updated), 1500) as any;
       return updated;
@@ -248,6 +269,7 @@ export const DiaryProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       if (globalIdx !== -1) {
         log.splice(globalIdx, 1);
         updated[currentDate] = { ...currentDay, foodLog: log };
+        pendingSaveRef.current = updated;
         if (syncTimeoutRef.current) clearTimeout(syncTimeoutRef.current);
         syncTimeoutRef.current = setTimeout(() => saveCloudData(updated), 1500) as any;
       }
@@ -273,6 +295,7 @@ export const DiaryProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       if (globalIdx !== -1) {
         log[globalIdx] = { ...log[globalIdx], f: updatedFood };
         updated[currentDate] = { ...currentDay, foodLog: log };
+        pendingSaveRef.current = updated;
         if (syncTimeoutRef.current) clearTimeout(syncTimeoutRef.current);
         syncTimeoutRef.current = setTimeout(() => saveCloudData(updated), 1500) as any;
       }
@@ -300,6 +323,7 @@ export const DiaryProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         log.splice(globalIdx, 1);
         log.push(item);
         updated[currentDate] = { ...currentDay, foodLog: log };
+        pendingSaveRef.current = updated;
         if (syncTimeoutRef.current) clearTimeout(syncTimeoutRef.current);
         syncTimeoutRef.current = setTimeout(() => saveCloudData(updated), 1500) as any;
       }

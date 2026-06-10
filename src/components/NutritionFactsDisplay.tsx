@@ -1,5 +1,6 @@
 import React from 'react';
 import { ALL_MICRO_KEYS, MICRO_UNITS } from '../lib/constants';
+import { getCal } from '../lib/food/serving-converter';
 
 interface NutritionFactsDisplayProps {
   food: any;
@@ -15,7 +16,7 @@ export const NutritionFactsDisplay: React.FC<NutritionFactsDisplayProps> = ({ fo
   const f = food || {};
   
   const renderRow = (label: string, key: string, unit: string = 'g', isMacro: boolean = false, isSubRow: boolean = false) => {
-    const rawVal = Number(f[key]) || 0;
+    const rawVal = key === 'cal' ? getCal(f) : (Number(f[key]) || 0);
     const displayVal = Math.round(rawVal * multiplier * 10) / 10;
 
     return (

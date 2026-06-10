@@ -1,7 +1,7 @@
 import React, { useState, useMemo } from 'react';
 import ReactDOM from 'react-dom';
 import { useDiary } from '../context/DiaryContext';
-import { computeMultiplier, scaleLegacyFoodByAmount, getQuantityForUnit } from '../lib/food/serving-converter';
+import { computeMultiplier, scaleLegacyFoodByAmount, getQuantityForUnit, getCal } from '../lib/food/serving-converter';
 import { Check, X, Scale } from 'lucide-react';
 
 interface PortionEditModalProps {
@@ -83,7 +83,7 @@ export const PortionEditModal: React.FC<PortionEditModalProps> = ({ meal, idx, o
   const activeUnits = showAll ? ALL_UNITS : ALL_UNITS.filter(u => defaultUnits.includes(u.id));
 
   const currentMultiplier = computeMultiplier(base.serving || '', unit, parseFloat(qty) || 0);
-  const previewCals       = Math.round((base.calories || base.cal || 0) * currentMultiplier);
+  const previewCals       = Math.round(getCal(base) * currentMultiplier);
 
   const handleUnitChange = (newUnit: string) => {
     if (newUnit === '__other__') {

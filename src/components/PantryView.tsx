@@ -9,7 +9,7 @@ import {
   GlassWater, Cookie, Utensils, Dumbbell
 } from 'lucide-react';
 import { ALL_MICRO_KEYS, SERVING_UNITS, MICRO_CATEGORIES } from '../lib/constants';
-import { computeMultiplier, normalizeFoodResult, scaleLegacyFoodByAmount, calculateMacroBalance, scaleToTarget, getCarbClassification, estimateNutriScore, getQuantityForUnit } from '../lib/food/serving-converter';
+import { computeMultiplier, normalizeFoodResult, scaleLegacyFoodByAmount, calculateMacroBalance, scaleToTarget, getCarbClassification, estimateNutriScore, getQuantityForUnit, getCal } from '../lib/food/serving-converter';
 import { getPairingSuggestions } from '../lib/food/smart-pairing';
 
 import { SearchCoaster, type SearchTab } from './SearchCoaster';
@@ -1381,7 +1381,7 @@ export const PantryView: React.FC<PantryViewProps> = ({ initialMeal, onClose, is
                       <div style={{ fontWeight: '900', fontSize: '14px', color: 'var(--theme-text)' }}>{f.name}</div>
                       {f.brand && <div style={{ fontSize: '10px', color: 'var(--theme-text-dim)', opacity: 0.6, fontWeight: '700' }}>• {f.brand}</div>}
                     </div>
-                    <div style={{ fontSize: '11px', color: 'var(--theme-text-dim)', marginTop: '4px', fontWeight: '600' }}>{f.serving} • {Math.round(Number(f.cal) || 0)} kcal • P:{f.p}g C:{f.c}g F:{f.f}g</div>
+                    <div style={{ fontSize: '11px', color: 'var(--theme-text-dim)', marginTop: '4px', fontWeight: '600' }}>{f.serving} • {Math.round(getCal(f))} kcal • P:{f.p}g C:{f.c}g F:{f.f}g</div>
                   </div>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                     {(() => {
@@ -1701,7 +1701,7 @@ export const PantryView: React.FC<PantryViewProps> = ({ initialMeal, onClose, is
 
                           {/* Quick Stats Row - Distinguishing Bubble */}
                           <div className="quick-stats-bubble-row" style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '6px', marginBottom: '12px', background: 'var(--theme-panel-dim)', border: '1px solid var(--theme-border)', padding: '10px', borderRadius: '16px' }}>
-                            <div style={{ textAlign: 'center' }}><div style={{ fontSize: '8px', color: 'var(--theme-text-dim)', fontWeight: '700' }}>KCAL</div><div style={{ fontSize: '11px', fontWeight: '900', color: 'var(--theme-text)' }}>{Math.round((Number(f.cal) || 0) * multiplier)}</div></div>
+                            <div style={{ textAlign: 'center' }}><div style={{ fontSize: '8px', color: 'var(--theme-text-dim)', fontWeight: '700' }}>KCAL</div><div style={{ fontSize: '11px', fontWeight: '900', color: 'var(--theme-text)' }}>{Math.round(getCal(f) * multiplier)}</div></div>
                             <div style={{ textAlign: 'center' }}><div style={{ fontSize: '8px', color: 'var(--theme-text-dim)', fontWeight: '700' }}>P</div><div style={{ fontSize: '11px', fontWeight: '900', color: 'var(--theme-error)' }}>{((Number(f.p) || 0) * multiplier).toFixed(1)}g</div></div>
                             <div style={{ textAlign: 'center' }}><div style={{ fontSize: '8px', color: 'var(--theme-text-dim)', fontWeight: '700' }}>C</div><div style={{ fontSize: '11px', fontWeight: '900', color: 'var(--theme-accent)' }}>{((Number(f.c) || 0) * multiplier).toFixed(1)}g</div></div>
                             <div style={{ textAlign: 'center' }}><div style={{ fontSize: '8px', color: 'var(--theme-text-dim)', fontWeight: '700' }}>F</div><div style={{ fontSize: '11px', fontWeight: '900', color: 'var(--theme-warning)' }}>{((Number(f.f) || 0) * multiplier).toFixed(1)}g</div></div>
@@ -2117,7 +2117,7 @@ export const PantryView: React.FC<PantryViewProps> = ({ initialMeal, onClose, is
                             fontSize: '11px', fontWeight: '800', color: '#fff', marginBottom: '2px',
                             overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap'
                           }}>{f.name}</div>
-                          <div style={{ fontSize: '9px', color: 'var(--theme-text-dim)' }}>{Math.round(Number(f.cal) || 0)} kcal</div>
+                          <div style={{ fontSize: '9px', color: 'var(--theme-text-dim)' }}>{Math.round(getCal(f))} kcal</div>
                         </button>
                       ))
                     )}
@@ -2164,7 +2164,7 @@ export const PantryView: React.FC<PantryViewProps> = ({ initialMeal, onClose, is
                           {r.isLocal && <BookmarkCheck size={12} color="var(--theme-success)" />}
                         </div>
                         <div style={{ fontSize: '11px', color: 'var(--theme-text-dim)', marginTop: '2px' }}>
-                          {r.cal} kcal • P:{r.p}g C:{r.c}g F:{r.f}g
+                          {getCal(r)} kcal • P:{r.p}g C:{r.c}g F:{r.f}g
                         </div>
                       </div>
                       <div style={{ background: 'var(--theme-accent-dim)', color: 'var(--theme-accent)', padding: '4px 8px', borderRadius: '8px', fontSize: '10px', fontWeight: '800' }}>
@@ -2357,13 +2357,13 @@ export const PantryView: React.FC<PantryViewProps> = ({ initialMeal, onClose, is
           {[...customFoods]
             .filter((f: Food) => {
               if (filterType === 'fav') return f.favorite;
-              if (filterType === 'high-p') return (f.p * 4) / (f.cal || 1) > 0.3;
+              if (filterType === 'high-p') return (f.p * 4) / (getCal(f) || 1) > 0.3;
               if (filterType === 'recipe') return (f.ingredientItems?.length || 0) > 0 || (f as Food & { type?: string }).type === 'recipe';
               return true;
             })
             .sort((a: Food, b: Food) => {
               if (sortBy === 'name') return a.name.localeCompare(b.name);
-              if (sortBy === 'cal') return b.cal - a.cal;
+              if (sortBy === 'cal') return getCal(b) - getCal(a);
               if (sortBy === 'p') return b.p - a.p;
               return 0; // Default to recent (existing order)
             })
@@ -2391,7 +2391,7 @@ export const PantryView: React.FC<PantryViewProps> = ({ initialMeal, onClose, is
                       <div style={{ fontWeight: '900', fontSize: '14px', color: 'var(--theme-text, #fff)' }}>{f.name}</div>
                       {f.brand && <div style={{ fontSize: '10px', color: 'var(--theme-text-dim, rgba(255,255,255,0.6))', opacity: 0.6, fontWeight: '700' }}>• {f.brand}</div>}
                     </div>
-                    <div style={{ fontSize: '11px', color: 'var(--theme-text-dim, rgba(255,255,255,0.6))', marginTop: '4px', fontWeight: '600' }}>{f.serving} • {Math.round(Number(f.cal) || 0)} kcal • P:{f.p}g C:{f.c}g F:{f.f}g</div>
+                    <div style={{ fontSize: '11px', color: 'var(--theme-text-dim, rgba(255,255,255,0.6))', marginTop: '4px', fontWeight: '600' }}>{f.serving} • {Math.round(getCal(f))} kcal • P:{f.p}g C:{f.c}g F:{f.f}g</div>
                   </div>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
                     {(() => {
@@ -2535,7 +2535,7 @@ export const PantryView: React.FC<PantryViewProps> = ({ initialMeal, onClose, is
 
               {/* Nutrition Summary */}
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '8px', marginBottom: '16px' }}>
-                <MacroPill label="Calories" val={Math.round((Number(configuringFood.cal) || 0) * computeMultiplier(configuringFood.serving || '', servingUnit, parseFloat(servingQty) || 1))} unit="kcal" color="var(--theme-text)" />
+                <MacroPill label="Calories" val={Math.round(getCal(configuringFood) * computeMultiplier(configuringFood.serving || '', servingUnit, parseFloat(servingQty) || 1))} unit="kcal" color="var(--theme-text)" />
                 <MacroPill label="Protein" val={Math.round((Number(configuringFood.p) || 0) * computeMultiplier(configuringFood.serving || '', servingUnit, parseFloat(servingQty) || 1))} unit="g" color="#00C9FF" />
                 <MacroPill label="Carbs" val={Math.round((Number(configuringFood.c) || 0) * computeMultiplier(configuringFood.serving || '', servingUnit, parseFloat(servingQty) || 1))} unit="g" color="#FCC419" />
                 <MacroPill label="Fat" val={Math.round((Number(configuringFood.f) || 0) * computeMultiplier(configuringFood.serving || '', servingUnit, parseFloat(servingQty) || 1))} unit="g" color="#FF6B6B" />
@@ -2549,7 +2549,7 @@ export const PantryView: React.FC<PantryViewProps> = ({ initialMeal, onClose, is
                 const f = (Number(configuringFood.f) || 0) * multiplier;
                 const fb = (Number(configuringFood.fb || configuringFood.fiber || configuringFood.Fiber) || 0) * multiplier;
                 const sugars = (Number(configuringFood.sugars) || 0) * multiplier;
-                const totalCal = (Number(configuringFood.cal) || 0) * multiplier;
+                const totalCal = getCal(configuringFood) * multiplier;
                 
                 const isHighProtein = (p * 4) / (totalCal || 1) > 0.35;
                 const isHighCarb = (c * 4) / (totalCal || 1) > 0.6;
@@ -2663,7 +2663,7 @@ export const PantryView: React.FC<PantryViewProps> = ({ initialMeal, onClose, is
                 {/* Intelligence Scaling Row */}
                 <div style={{ display: 'flex', gap: '8px' }}>
                   <button
-                    onClick={() => setPromptDialog({ title: 'Scale to Calories', message: 'Enter target Calories (kcal):', defaultValue: '500', onConfirm: (v) => { setPromptDialog(null); const targetKcal = Number(v); const baseKcal = Number(configuringFood.cal) || 0; if (baseKcal > 0) { const multForOne = computeMultiplier(configuringFood.serving, servingUnit, 1); setServingQty((targetKcal / (baseKcal * multForOne)).toFixed(1)); } } })}
+                    onClick={() => setPromptDialog({ title: 'Scale to Calories', message: 'Enter target Calories (kcal):', defaultValue: '500', onConfirm: (v) => { setPromptDialog(null); const targetKcal = Number(v); const baseKcal = getCal(configuringFood); if (baseKcal > 0) { const multForOne = computeMultiplier(configuringFood.serving, servingUnit, 1); setServingQty((targetKcal / (baseKcal * multForOne)).toFixed(1)); } } })}
                     style={{ flex: 1, padding: '10px', background: 'rgba(255,255,255,0.05)', border: '1px solid var(--theme-border)', borderRadius: '12px', color: 'var(--theme-accent, #00C9FF)', fontSize: '10px', fontWeight: '800', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '4px' }}>
                     <Flame size={12}/> SCALE TO KCAL
                   </button>
