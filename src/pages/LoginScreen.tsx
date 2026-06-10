@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { supabase } from '../lib/supabase';
-import { LogIn, Check } from 'lucide-react';
+import { LogIn, Check, UserPlus } from 'lucide-react';
 import { PrivacyPolicy } from '../components/PrivacyPolicy';
 import { TermsOfService } from '../components/TermsOfService';
 
@@ -10,8 +10,10 @@ export const LoginScreen: React.FC = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
+  const [successMsg, setSuccessMsg] = useState('');
   const [loading, setLoading] = useState(false);
   const [rememberMe, setRememberMe] = useState(true);
+  const [isSignUp, setIsSignUp] = useState(false);
   const [showPrivacy, setShowPrivacy] = useState(false);
   const [showTerms, setShowTerms] = useState(false);
   const { loginAsGuest } = useAuth();
@@ -19,6 +21,7 @@ export const LoginScreen: React.FC = () => {
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
+    setSuccessMsg('');
     
     if (import.meta.env.DEV && email === 'guest' && password === 'password') {
       loginAsGuest();
@@ -26,19 +29,33 @@ export const LoginScreen: React.FC = () => {
     }
 
     setLoading(true);
-    const { error: signInError } = await supabase.auth.signInWithPassword({
-      email,
-      password,
-    });
-    
-    if (signInError) {
-      setError(signInError.message);
+    if (isSignUp) {
+      const { data, error: signUpError } = await supabase.auth.signUp({
+        email,
+        password,
+      });
+      if (signUpError) {
+        setError(signUpError.message);
+      } else if (data?.user && data.user.identities?.length === 0) {
+        setError('This email is already registered. Please sign in instead.');
+      } else {
+        setSuccessMsg('Account created successfully! Check your email for a confirmation link.');
+      }
+    } else {
+      const { error: signInError } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
+      if (signInError) {
+        setError(signInError.message);
+      }
     }
     setLoading(false);
   };
 
   const handleGoogleLogin = async () => {
     setError('');
+    setSuccessMsg('');
     const { error: googleError } = await supabase.auth.signInWithOAuth({
       provider: 'google',
       options: {
@@ -59,10 +76,13 @@ export const LoginScreen: React.FC = () => {
           </div>
 
           <h1 style={{ fontSize: '24px', fontWeight: '800', margin: '0 0 4px 0', background: 'linear-gradient(90deg, #fff 0%, #a0a0b0 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>Macro Munchers</h1>
-          <p style={{ color: '#8b8b9b', fontSize: '13px', margin: 0 }}>Sign in to continue</p>
+          <p style={{ color: '#8b8b9b', fontSize: '13px', margin: 0 }}>
+            {isSignUp ? 'Create a new account' : 'Sign in to continue'}
+          </p>
         </div>
         
         {error && <div style={{ background: 'rgba(255, 50, 50, 0.1)', color: '#ff6b6b', padding: '12px', borderRadius: '12px', marginBottom: '20px', fontSize: '13px', border: '1px solid rgba(255, 50, 50, 0.2)', textAlign: 'center' }}>{error}</div>}
+        {successMsg && <div style={{ background: 'rgba(146, 254, 157, 0.1)', color: '#92FE9D', padding: '12px', borderRadius: '12px', marginBottom: '20px', fontSize: '13px', border: '1px solid rgba(146, 254, 157, 0.2)', textAlign: 'center' }}>{successMsg}</div>}
         
         <form onSubmit={handleLogin} style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
@@ -88,17 +108,28 @@ export const LoginScreen: React.FC = () => {
             />
           </div>
           
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginTop: '4px', cursor: 'pointer', userSelect: 'none' }} onClick={() => setRememberMe(!rememberMe)}>
-            <div style={{ width: '18px', height: '18px', borderRadius: '6px', border: '1px solid rgba(255,255,255,0.2)', background: rememberMe ? 'linear-gradient(90deg, #00C9FF 0%, #92FE9D 100%)' : 'rgba(0,0,0,0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'all 0.2s' }}>
-              {rememberMe && <Check size={11} strokeWidth={4} color="#000" />}
+          {!isSignUp && (
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginTop: '4px', cursor: 'pointer', userSelect: 'none' }} onClick={() => setRememberMe(!rememberMe)}>
+              <div style={{ width: '18px', height: '18px', borderRadius: '6px', border: '1px solid rgba(255,255,255,0.2)', background: rememberMe ? 'linear-gradient(90deg, #00C9FF 0%, #92FE9D 100%)' : 'rgba(0,0,0,0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'all 0.2s' }}>
+                {rememberMe && <Check size={11} strokeWidth={4} color="#000" />}
+              </div>
+              <span style={{ fontSize: '13px', color: '#c0c0d0' }}>Stay logged in</span>
             </div>
-            <span style={{ fontSize: '13px', color: '#c0c0d0' }}>Stay logged in</span>
-          </div>
+          )}
 
           <button type="submit" disabled={loading} style={{ marginTop: '16px', padding: '14px', borderRadius: '14px', border: 'none', background: 'linear-gradient(90deg, #00C9FF 0%, #92FE9D 100%)', color: '#000', fontWeight: '800', cursor: 'pointer', display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '8px', transition: 'transform 0.2s', opacity: loading ? 0.7 : 1, fontSize: '15px' }}>
-            <LogIn size={18} />
-            {loading ? 'Signing in...' : 'Sign In'}
+            {isSignUp ? <UserPlus size={18} /> : <LogIn size={18} />}
+            {loading ? (isSignUp ? 'Signing up...' : 'Signing in...') : (isSignUp ? 'Sign Up' : 'Sign In')}
           </button>
+          
+          <div style={{ textAlign: 'center', marginTop: '6px' }}>
+            <button 
+              type="button"
+              onClick={() => { setIsSignUp(!isSignUp); setError(''); setSuccessMsg(''); }}
+              style={{ background: 'none', border: 'none', color: 'var(--theme-accent, #00C9FF)', fontSize: '13px', fontWeight: '700', cursor: 'pointer', textDecoration: 'underline', outline: 'none' }}>
+              {isSignUp ? 'Already have an account? Sign In' : "Don't have an account? Sign Up"}
+            </button>
+          </div>
         </form>
 
         <div style={{ display: 'flex', alignItems: 'center', margin: '20px 0', gap: '10px' }}>
@@ -109,8 +140,9 @@ export const LoginScreen: React.FC = () => {
 
         {/* Google Login Button */}
         <button 
+          type="button"
           onClick={handleGoogleLogin}
-          style={{ width: '100%', padding: '14px', borderRadius: '14px', border: '1px solid rgba(255,255,255,0.1)', background: 'rgba(255,255,255,0.05)', color: 'white', fontWeight: '600', cursor: 'pointer', display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '10px', transition: 'all 0.2s', fontSize: '14px' }}>
+          style={{ width: '100%', padding: '14px', borderRadius: '14px', border: '1px solid rgba(255,255,255,0.1)', background: 'rgba(255,255,255,0.05)', color: 'white', fontWeight: '600', cursor: 'pointer', display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '10px', transition: 'all 0.2s', fontSize: '14px', marginBottom: '12px' }}>
           <svg width="18" height="18" viewBox="0 0 48 48">
             <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/>
             <path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/>
@@ -119,6 +151,14 @@ export const LoginScreen: React.FC = () => {
             <path fill="none" d="M0 0h48v48H0z"/>
           </svg>
           Sign in with Google
+        </button>
+
+        {/* Continue as Guest Button */}
+        <button 
+          type="button"
+          onClick={() => loginAsGuest()}
+          style={{ width: '100%', padding: '14px', borderRadius: '14px', border: '1px solid rgba(255,255,255,0.1)', background: 'rgba(255,255,255,0.05)', color: 'var(--theme-accent, #00C9FF)', fontWeight: '700', cursor: 'pointer', display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '10px', transition: 'all 0.2s', fontSize: '14px' }}>
+          Continue as Guest
         </button>
 
         <p style={{ textAlign: 'center', fontSize: '11px', color: '#5b5b6b', marginTop: '20px', lineHeight: 1.6 }}>

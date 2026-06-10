@@ -87,14 +87,18 @@ export const scanNutritionLabel = async (imageBlob: Blob): Promise<ScanResult> =
         }
 
         const body = await res.json();
-        
+
+        if (res.status === 429) {
+          return resolve({ success: false, error: body.error || 'Daily AI scan limit reached.', detail: body.code });
+        }
+
         if (res.ok && body.food) {
           resolve({ success: true, data: body.food });
         } else {
-          resolve({ 
-            success: false, 
+          resolve({
+            success: false,
             error: body.error || 'Failed to extract nutritional data.',
-            detail: body.detail 
+            detail: body.detail
           });
         }
       } catch (err) {
@@ -127,14 +131,18 @@ export const extractBarcodeDigits = async (imageBlob: Blob): Promise<ScanResult>
         }
 
         const body = await res.json();
-        
+
+        if (res.status === 429) {
+          return resolve({ success: false, error: body.error || 'Daily AI scan limit reached.', detail: body.code });
+        }
+
         if (res.ok && body.code) {
           resolve({ success: true, text: body.code });
         } else {
-          resolve({ 
-            success: false, 
+          resolve({
+            success: false,
             error: body.error || 'Failed to decode barcode numbers.',
-            detail: body.detail 
+            detail: body.detail
           });
         }
       } catch (err) {

@@ -34,8 +34,15 @@ const getThemeIcon = (id: ThemeName, color: string, size = 16) => {
   }
 };
 
+// Themes only accessible with a Pro subscription
+const PRO_THEME_IDS = new Set([
+  'olympian-gold', 'gold-reserve', 'midnight-galaxy', 'poseidons-depths',
+  'artemis-moonlight', 'oracles-vision', 'ember-forge', 'spartan-grit',
+  'dionysus-vineyard', 'hermes-swiftness'
+]);
+
 export const ThemesView: React.FC = () => {
-  const { localCache, purchaseTheme } = useDiary();
+  const { localCache, purchaseTheme, isPro } = useDiary();
   const { theme: currentThemeName, setTheme } = useTheme();
   
   const activeRef = useRef<HTMLDivElement>(null);
@@ -84,7 +91,12 @@ export const ThemesView: React.FC = () => {
   ];
 
   const handleSelectTheme = (t: any) => {
-    if (purchasedThemes.includes(t.id)) {
+    const isProTheme = PRO_THEME_IDS.has(t.id);
+    if (isProTheme && !isPro) {
+      setToastMsg('✨ Upgrade to Pro to unlock all premium themes!');
+      return;
+    }
+    if (isPro || purchasedThemes.includes(t.id)) {
       setTheme(t.id);
     } else {
       if (currentGems >= t.price) {
@@ -116,16 +128,21 @@ export const ThemesView: React.FC = () => {
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: 'var(--space-md)', paddingBottom: '120px' }}>
         {themes.map(t => {
           const isSelected = currentThemeName === t.id;
-          const isPurchased = purchasedThemes.includes(t.id);
+          const isPurchased = isPro || purchasedThemes.includes(t.id);
+          const isProLocked = PRO_THEME_IDS.has(t.id) && !isPro;
           return (
             <div
               key={t.id}
               ref={isSelected ? activeRef : undefined}
               onClick={() => handleSelectTheme(t)}
               className="section"
-                style={{ 
+                style={{
                   background: 'var(--theme-panel)',
-                  border: isSelected ? '2px solid var(--theme-accent)' : '1px solid var(--theme-border)',
+                  border: isSelected
+                    ? '2px solid var(--theme-accent)'
+                    : isProLocked
+                      ? '1px solid rgba(212,175,55,0.25)'
+                      : '1px solid var(--theme-border)',
                   borderRadius: 'var(--radius-lg)',
                   padding: 'var(--space-lg)',
                   cursor: 'pointer',
@@ -133,10 +150,10 @@ export const ThemesView: React.FC = () => {
                   display: 'flex',
                   alignItems: 'center',
                   gap: 'var(--space-md)',
-                  boxShadow: isSelected 
-                    ? `0 12px 35px var(--theme-accent-dim), 0 0 15px var(--theme-accent-dim)` 
+                  boxShadow: isSelected
+                    ? `0 12px 35px var(--theme-accent-dim), 0 0 15px var(--theme-accent-dim)`
                     : '0 6px 16px rgba(0, 0, 0, 0.12)',
-                  opacity: isPurchased ? 1 : 0.8,
+                  opacity: isProLocked ? 0.65 : 1,
                   transform: isSelected ? 'translateY(-4px) scale(1.02)' : 'translateY(0) scale(1)'
                 }}
             >
@@ -144,16 +161,22 @@ export const ThemesView: React.FC = () => {
                 <div style={{ flex: 1, background: t.colors[0] }} />
                 <div style={{ flex: 1, background: t.colors[1] }} />
               </div>
-              
+
               <div style={{ flex: 1 }}>
                 <div style={{ fontSize: '15px', fontWeight: '800', color: 'var(--theme-text)', display: 'flex', alignItems: 'center', gap: '6px' }}>
                   {getThemeIcon(t.id, t.colors[1], 15)}
                   <span>{t.name}</span>
-                  <span style={{ fontSize: '11px', color: 'var(--theme-accent)', fontWeight: '400', background: 'var(--theme-accent-dim)', padding: '1px 6px', borderRadius: '4px' }}>{t.price} Gems</span>
+                  {isProLocked && (
+                    <span style={{ fontSize: '10px', color: '#D4AF37', fontWeight: '900', background: 'rgba(212,175,55,0.15)', padding: '2px 7px', borderRadius: '4px', border: '1px solid rgba(212,175,55,0.3)', display: 'flex', alignItems: 'center', gap: '3px' }}>
+                      <Crown size={9} /> PRO
+                    </span>
+                  )}
                 </div>
                 <div style={{ fontSize: '11px', color: 'var(--theme-text-dim)', textTransform: 'uppercase', letterSpacing: '0.5px', marginTop: '2px', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                  {isPurchased ? (
-                    <span style={{ color: 'var(--theme-success)', fontWeight: '700' }}>PURCHASED</span>
+                  {isProLocked ? (
+                    <span style={{ color: '#D4AF37', fontWeight: '700' }}>PRO EXCLUSIVE</span>
+                  ) : isPurchased ? (
+                    <span style={{ color: 'var(--theme-success)', fontWeight: '700' }}>UNLOCKED</span>
                   ) : (
                     <span style={{ color: 'var(--theme-accent)', fontWeight: '700' }}>{t.price} GEMS</span>
                   )}
@@ -164,6 +187,10 @@ export const ThemesView: React.FC = () => {
               {isSelected ? (
                 <div style={{ background: 'var(--theme-accent)', color: '#000', borderRadius: '50%', padding: '4px' }}>
                   <Check size={14} strokeWidth={3} />
+                </div>
+              ) : isProLocked ? (
+                <div style={{ color: '#D4AF37', opacity: 0.8 }}>
+                  <Crown size={16} />
                 </div>
               ) : !isPurchased && (
                 <div style={{ background: 'var(--theme-accent-dim)', color: 'var(--theme-accent)', padding: '6px 12px', borderRadius: '8px', fontSize: '10px', fontWeight: '800' }}>

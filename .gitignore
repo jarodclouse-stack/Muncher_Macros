@@ -58,3 +58,6 @@ dist-ssr
 /.agents/skills/vibe/
 # === End Boost OS ===
 .vercel
+
+# AI agent handoff files (local only)
+HANDOFF.md

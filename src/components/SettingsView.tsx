@@ -39,10 +39,11 @@ import { useAuth } from '../context/AuthContext';
 import { useDiary } from '../context/DiaryContext';
 import { getRewardBreakdown } from '../lib/reward-utils';
 import { supabase } from '../lib/supabase';
+import { apiFetch } from '../lib/api';
 
 export const SettingsView: React.FC<{ onClose: () => void }> = ({ onClose }) => {
-  const { user, isGuest, updateEmail, updatePassword } = useAuth();
-  const { localCache, updateSettings, purchaseTheme, updateLocalCache } = useDiary();
+  const { user, isGuest, updateEmail, updatePassword, convertGuestToPermanent } = useAuth();
+  const { localCache, updateSettings, purchaseTheme, updateLocalCache, isPro } = useDiary();
   const { theme: currentThemeName, setTheme } = useTheme();
 
   const rewards = getRewardBreakdown(localCache);
@@ -120,6 +121,77 @@ export const SettingsView: React.FC<{ onClose: () => void }> = ({ onClose }) => 
   const [message, setMessage] = useState({ text: '', type: '' });
   const [toastMsg, setToastMsg] = useState('');
   const [deleteStep, setDeleteStep] = useState<'none' | 'confirm' | 'type'>('none');
+  const [stripeLoading, setStripeLoading] = useState(false);
+  const [guestEmail, setGuestEmail] = useState('');
+  const [guestPassword, setGuestPassword] = useState('');
+
+  const handleLinkGuestAccount = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!guestEmail || !guestPassword) {
+      setMessage({ text: 'Please fill in both email and password.', type: 'error' });
+      return;
+    }
+    if (guestPassword.length < 6) {
+      setMessage({ text: 'Password must be at least 6 characters.', type: 'error' });
+      return;
+    }
+    setLoading(true);
+    setMessage({ text: '', type: '' });
+    try {
+      await convertGuestToPermanent(guestEmail, guestPassword);
+      setMessage({ text: 'Guest account successfully secured! You are now logged in with your new credentials.', type: 'success' });
+      setGuestEmail('');
+      setGuestPassword('');
+    } catch (err: any) {
+      setMessage({ text: err.message || 'Failed to convert account.', type: 'error' });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleUpgradeToPro = async () => {
+    setStripeLoading(true);
+    try {
+      const res = await apiFetch('/api/create-checkout-session', {
+        method: 'POST',
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        throw new Error(data.error || 'Failed to start Stripe Checkout');
+      }
+      if (data.url) {
+        window.location.href = data.url;
+      } else {
+        throw new Error('No checkout URL returned');
+      }
+    } catch (err: any) {
+      setToastMsg(err.message || 'An error occurred starting checkout');
+    } finally {
+      setStripeLoading(false);
+    }
+  };
+
+  const handleManageSubscription = async () => {
+    setStripeLoading(true);
+    try {
+      const res = await apiFetch('/api/create-portal-session', {
+        method: 'POST',
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        throw new Error(data.error || 'Failed to start billing portal');
+      }
+      if (data.url) {
+        window.location.href = data.url;
+      } else {
+        throw new Error('No portal URL returned');
+      }
+    } catch (err: any) {
+      setToastMsg(err.message || 'An error occurred loading billing portal');
+    } finally {
+      setStripeLoading(false);
+    }
+  };
 
 
   const handleUpdateEmail = async (e: React.FormEvent) => {
@@ -255,7 +327,75 @@ export const SettingsView: React.FC<{ onClose: () => void }> = ({ onClose }) => 
 
         {/* Modal Content - Scrollable */}
         <div style={{ flex: 1, overflowY: 'auto', padding: '32px', display: 'flex', flexDirection: 'column', gap: 'var(--space-lg)' }}>
-          {/* existing content goes here */}
+          
+          {/* Premium Membership Tier card */}
+          <div className="section" style={{ 
+            background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.03) 0%, rgba(255, 255, 255, 0.01) 100%)', 
+            border: '1px solid var(--theme-border)', 
+            borderRadius: 'var(--radius-lg)', 
+            padding: 'var(--space-xl)',
+            position: 'relative',
+            overflow: 'hidden',
+            marginTop: 0
+          }}>
+            <div style={{ 
+              position: 'absolute', 
+              top: '-50px', 
+              right: '-50px', 
+              width: '150px', 
+              height: '150px', 
+              background: isPro ? 'radial-gradient(circle, rgba(212,175,55,0.18) 0%, transparent 70%)' : 'radial-gradient(circle, rgba(0,245,212,0.15) 0%, transparent 70%)',
+              pointerEvents: 'none'
+            }} />
+            
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '16px' }}>
+              <div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
+                  {isPro ? (
+                    <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', background: 'rgba(212, 175, 55, 0.15)', color: '#D4AF37', fontSize: '11px', fontWeight: '900', padding: '4px 10px', borderRadius: '999px', textTransform: 'uppercase', letterSpacing: '0.05em', border: '1px solid rgba(212, 175, 55, 0.3)' }}>
+                      <Crown size={12} /> PRO MEMBER
+                    </span>
+                  ) : (
+                    <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', background: 'rgba(255, 255, 255, 0.08)', color: 'var(--theme-text-dim)', fontSize: '11px', fontWeight: '900', padding: '4px 10px', borderRadius: '999px', textTransform: 'uppercase', letterSpacing: '0.05em', border: '1px solid rgba(255, 255, 255, 0.1)' }}>
+                      FREE MEMBER
+                    </span>
+                  )}
+                </div>
+                <h3 style={{ fontSize: '18px', fontWeight: '800', margin: '0 0 6px 0', color: 'var(--theme-text)' }}>
+                  {isPro ? 'Thank you for supporting Macro Munchers!' : 'Unlock Premium Features'}
+                </h3>
+                <p style={{ color: 'var(--theme-text-dim)', fontSize: '13px', margin: 0, maxWidth: '480px', lineHeight: 1.5 }}>
+                  {isPro 
+                    ? 'Your account has active Pro benefits. Manage your subscription, view invoices, or update payment methods.' 
+                    : 'Get access to unlimited AI barcode scans, automatic cloud backups, and all 22 custom visual themes.'}
+                </p>
+              </div>
+
+              <div>
+                {isPro ? (
+                  <button 
+                    onClick={handleManageSubscription}
+                    disabled={stripeLoading}
+                    className="btn"
+                    style={{ margin: 0, padding: '12px 20px', background: 'rgba(255,255,255,0.05)', color: 'var(--theme-text)', border: '1px solid var(--theme-border)', display: 'flex', alignItems: 'center', gap: '8px', fontWeight: '700' }}
+                  >
+                    {stripeLoading ? <Loader2 className="spin" size={16} /> : <SettingsIcon size={16} />}
+                    Manage Subscription
+                  </button>
+                ) : (
+                  <button 
+                    onClick={handleUpgradeToPro}
+                    disabled={stripeLoading}
+                    className="btn"
+                    style={{ margin: 0, padding: '12px 24px', background: 'linear-gradient(90deg, #00C9FF 0%, #92FE9D 100%)', color: '#000', fontWeight: '800', display: 'flex', alignItems: 'center', gap: '8px', boxShadow: '0 0 20px rgba(0, 201, 255, 0.2)' }}
+                  >
+                    {stripeLoading ? <Loader2 className="spin" size={16} /> : <Zap size={16} />}
+                    Upgrade to Pro — $9.99/mo
+                  </button>
+                )}
+              </div>
+            </div>
+          </div>
           
           <div className="section" style={{ background: 'linear-gradient(145deg, var(--theme-panel) 0%, rgba(255,255,255,0.01) 100%)', border: '1px solid var(--theme-border)', borderRadius: 'var(--radius-lg)', padding: 'var(--space-xl)' }}>
             <h2 style={{ fontSize: '20px', fontWeight: '800', marginBottom: 'var(--space-xs)', display: 'flex', alignItems: 'center', gap: '10px', color: 'var(--theme-text)' }}>
@@ -274,43 +414,83 @@ export const SettingsView: React.FC<{ onClose: () => void }> = ({ onClose }) => 
           {/* Account Section */}
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: 'var(--space-lg)' }}>
             
-            {/* Email Settings */}
-            <div className="section" style={{ background: 'var(--theme-panel)', border: '1px solid var(--theme-border)', borderRadius: 'var(--radius-lg)', padding: 'var(--space-xl)' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: 'var(--space-lg)', fontWeight: '700', color: 'var(--theme-text)' }}><Mail size={18} color="var(--theme-accent)" /> Account Email</div>
-              <form onSubmit={handleUpdateEmail} style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-                <label className="lbl">Email Address</label>
-                <input 
-                  type="email" 
-                  className="inp" 
-                  value={emailInput} 
-                  onChange={e => setEmailInput(e.target.value)} 
-                  disabled={isGuest || loading}
-                />
-                <button type="submit" disabled={isGuest || loading} className="btn" style={{ marginTop: '8px', background: 'var(--theme-accent)', color: '#000' }}>
-                  {loading ? <Loader2 className="spin" size={16} /> : 'Update Email'}
-                </button>
-                {isGuest && <p style={{ fontSize: '11px', color: 'var(--theme-text-dim)', textAlign: 'center', margin: 0 }}>Log in to change account details.</p>}
-              </form>
-            </div>
+            {isGuest ? (
+              /* Link/Upgrade Guest Account */
+              <div className="section" style={{ background: 'linear-gradient(135deg, rgba(0, 245, 212, 0.08) 0%, rgba(0,0,0,0.4) 100%)', border: '1px solid var(--theme-accent)', borderRadius: 'var(--radius-lg)', padding: 'var(--space-xl)', gridColumn: 'span 2' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: 'var(--space-sm)', fontWeight: '800', color: 'var(--theme-text)', fontSize: '15px' }}><ShieldCheck size={20} color="var(--theme-accent)" /> Secure Your Data & Convert Account</div>
+                <p style={{ color: 'var(--theme-text-dim)', fontSize: '13px', margin: '0 0 16px 0', lineHeight: 1.5 }}>
+                  You are currently using a **Guest Session**. To access your data from other devices and prevent data loss, register an email and password below. All your custom foods, logs, and settings will transfer automatically!
+                </p>
+                <form onSubmit={handleLinkGuestAccount} style={{ display: 'flex', flexWrap: 'wrap', gap: '16px', alignItems: 'flex-end' }}>
+                  <div style={{ flex: '1 1 200px', display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                    <label className="lbl">Email Address</label>
+                    <input 
+                      type="email" 
+                      className="inp" 
+                      value={guestEmail} 
+                      onChange={e => setGuestEmail(e.target.value)} 
+                      placeholder="e.g. name@domain.com"
+                      disabled={loading}
+                      required
+                    />
+                  </div>
+                  <div style={{ flex: '1 1 200px', display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                    <label className="lbl">Password</label>
+                    <input 
+                      type="password" 
+                      className="inp" 
+                      value={guestPassword} 
+                      onChange={e => setGuestPassword(e.target.value)} 
+                      placeholder="••••••••"
+                      disabled={loading}
+                      required
+                    />
+                  </div>
+                  <button type="submit" disabled={loading} className="btn" style={{ margin: 0, padding: '12px 24px', background: 'var(--theme-accent)', color: '#000', fontWeight: '800' }}>
+                    {loading ? <Loader2 className="spin" size={16} /> : 'Save Account'}
+                  </button>
+                </form>
+              </div>
+            ) : (
+              <>
+                {/* Email Settings */}
+                <div className="section" style={{ background: 'var(--theme-panel)', border: '1px solid var(--theme-border)', borderRadius: 'var(--radius-lg)', padding: 'var(--space-xl)' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: 'var(--space-lg)', fontWeight: '700', color: 'var(--theme-text)' }}><Mail size={18} color="var(--theme-accent)" /> Account Email</div>
+                  <form onSubmit={handleUpdateEmail} style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                    <label className="lbl">Email Address</label>
+                    <input 
+                      type="email" 
+                      className="inp" 
+                      value={emailInput} 
+                      onChange={e => setEmailInput(e.target.value)} 
+                      disabled={loading}
+                    />
+                    <button type="submit" disabled={loading} className="btn" style={{ marginTop: '8px', background: 'var(--theme-accent)', color: '#000' }}>
+                      {loading ? <Loader2 className="spin" size={16} /> : 'Update Email'}
+                    </button>
+                  </form>
+                </div>
 
-            {/* Password Settings */}
-            <div className="section" style={{ background: 'var(--theme-panel)', border: '1px solid var(--theme-border)', borderRadius: 'var(--radius-lg)', padding: 'var(--space-xl)' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: 'var(--space-lg)', fontWeight: '700', color: 'var(--theme-text)' }}><Lock size={18} color="var(--theme-error)" /> Security Password</div>
-              <form onSubmit={handleUpdatePassword} style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-                <label className="lbl">New Password</label>
-                <input 
-                  type="password" 
-                  className="inp"
-                  value={passInput} 
-                  onChange={e => setPassInput(e.target.value)} 
-                  placeholder="••••••••"
-                  disabled={isGuest || loading}
-                />
-                <button type="submit" disabled={isGuest || loading} className="btn" style={{ marginTop: '8px', background: 'var(--theme-error-dim)', color: 'var(--theme-error)' }}>
-                  {loading ? <Loader2 className="spin" size={16} /> : 'Change Password'}
-                </button>
-              </form>
-            </div>
+                {/* Password Settings */}
+                <div className="section" style={{ background: 'var(--theme-panel)', border: '1px solid var(--theme-border)', borderRadius: 'var(--radius-lg)', padding: 'var(--space-xl)' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: 'var(--space-lg)', fontWeight: '700', color: 'var(--theme-text)' }}><Lock size={18} color="var(--theme-error)" /> Security Password</div>
+                  <form onSubmit={handleUpdatePassword} style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                    <label className="lbl">New Password</label>
+                    <input 
+                      type="password" 
+                      className="inp"
+                      value={passInput} 
+                      onChange={e => setPassInput(e.target.value)} 
+                      placeholder="••••••••"
+                      disabled={loading}
+                    />
+                    <button type="submit" disabled={loading} className="btn" style={{ marginTop: '8px', background: 'var(--theme-error-dim)', color: 'var(--theme-error)' }}>
+                      {loading ? <Loader2 className="spin" size={16} /> : 'Change Password'}
+                    </button>
+                  </form>
+                </div>
+              </>
+            )}
 
             {/* Display Name Personalization Settings */}
             <div className="section" style={{ background: 'var(--theme-panel)', border: '1px solid var(--theme-border)', borderRadius: 'var(--radius-lg)', padding: 'var(--space-xl)' }}>

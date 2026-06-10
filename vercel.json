@@ -5,7 +5,10 @@
     "api/ai-describe.js": { "maxDuration": 30 },
     "api/ai-lookup.js": { "maxDuration": 30 },
     "api/ai-verify-meal.js": { "maxDuration": 30 },
-    "api/ai-ingredients.js": { "maxDuration": 15 }
+    "api/ai-ingredients.js": { "maxDuration": 15 },
+    "api/stripe-webhook.js": { "maxDuration": 10 },
+    "api/create-checkout-session.js": { "maxDuration": 10 },
+    "api/create-portal-session.js": { "maxDuration": 10 }
   },
   "rewrites": [
     { "source": "/((?!api/).*)", "destination": "/index.html" }

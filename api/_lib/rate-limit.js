@@ -1,11 +1,16 @@
 import { Ratelimit } from "@upstash/ratelimit";
 import { Redis } from "@upstash/redis";
+import { getSupabase } from './supabase-client.js';
 
 const windows = new Map();
 
 const WINDOW_MS = 60_000;
 const MAX_REQUESTS = 10;
-const DAILY_LIMIT = 50;
+const FREE_DAILY_LIMIT = 10;  // Free tier: 10 AI scans/day
+// Pro users are unlimited — quota is skipped entirely
+// TODO (REVERT BEFORE LAUNCH): DB column is_pro defaults to true (all users are Pro).
+// When Stripe is live, run: ALTER TABLE user_data ALTER COLUMN is_pro SET DEFAULT false;
+// Then remove the `|| true` override in checkAiQuota below.
 
 let ratelimit = null;
 let redisClient = null;
@@ -74,13 +79,30 @@ export async function rateLimit(req, res) {
 }
 
 /**
- * Enforces a daily limit of 50 AI requests per user using Redis.
- * Returns true if the user is allowed to proceed, false otherwise.
- * If Redis is not configured, it fails open (returns true).
+ * Enforces a daily AI quota per user.
+ * Pro users bypass the limit entirely.
+ * Free users are capped at FREE_DAILY_LIMIT (10) requests/day.
+ * Falls open (returns true) if Redis is not configured.
  */
 export async function checkAiQuota(userId, res) {
   if (!userId || userId === 'anonymous') return true;
 
+  // Pro users get unlimited AI scans — skip quota check
+  try {
+    const supabase = getSupabase();
+    if (supabase) {
+      const { data } = await supabase
+        .from('user_data')
+        .select('is_pro')
+        .eq('user_id', userId)
+        .single();
+      if (data?.is_pro || true) return true; // TODO (REVERT BEFORE LAUNCH): remove `|| true`
+    }
+  } catch (err) {
+    console.warn('[quota] Could not check Pro status, applying free limit:', err.message);
+  }
+
+  // Free user quota enforcement
   if (redisClient) {
     try {
       const today = new Date().toISOString().split('T')[0];
@@ -88,22 +110,22 @@ export async function checkAiQuota(userId, res) {
 
       const current = await redisClient.incr(key);
       if (current === 1) {
-        // Expire key at the end of the day, or simply set 24h retention
         await redisClient.expire(key, 86400);
       }
 
-      res.setHeader('X-Quota-Limit', DAILY_LIMIT);
-      res.setHeader('X-Quota-Remaining', Math.max(0, DAILY_LIMIT - current));
+      res.setHeader('X-Quota-Limit', FREE_DAILY_LIMIT);
+      res.setHeader('X-Quota-Remaining', Math.max(0, FREE_DAILY_LIMIT - current));
 
-      if (current > DAILY_LIMIT) {
+      if (current > FREE_DAILY_LIMIT) {
         res.status(429).json({
-          error: `Daily AI limit of ${DAILY_LIMIT} requests reached. Please try again tomorrow.`
+          error: `You've used all ${FREE_DAILY_LIMIT} free AI scans for today. Upgrade to Pro for unlimited scans!`,
+          code: 'QUOTA_EXCEEDED'
         });
         return false;
       }
       return true;
     } catch (err) {
-      console.warn("Failed to check user AI quota in Redis:", err.message);
+      console.warn('Failed to check user AI quota in Redis:', err.message);
     }
   }
 

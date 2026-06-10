@@ -9,6 +9,7 @@ interface AuthState {
   loginAsGuest: () => void;
   updateEmail: (email: string) => Promise<void>;
   updatePassword: (password: string) => Promise<void>;
+  convertGuestToPermanent: (email: string, password: string) => Promise<void>;
   logout: () => Promise<void>;
 }
 
@@ -22,21 +23,36 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   useEffect(() => {
     // Check active sessions and sets the user
     supabase.auth.getSession().then(({ data: { session } }) => {
-      setUser(session?.user ?? null);
+      const u = session?.user ?? null;
+      setUser(u);
+      setIsGuest(u?.is_anonymous ?? false);
       setLoading(false);
     });
 
     // Listen for changes on auth state (log in, log out, etc.)
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-      setUser(session?.user ?? null);
+      const u = session?.user ?? null;
+      setUser(u);
+      setIsGuest(u?.is_anonymous ?? false);
     });
 
     return () => subscription.unsubscribe();
   }, []);
 
-  const loginAsGuest = () => {
-    setIsGuest(true);
-    setUser({ id: 'guest', email: 'guest@local' } as User); // Mock user for guest state
+  const loginAsGuest = async () => {
+    try {
+      setLoading(true);
+      const { data, error } = await supabase.auth.signInAnonymously();
+      if (error) throw error;
+      setIsGuest(true);
+      setUser(data.user);
+    } catch (e: any) {
+      console.warn("Supabase anonymous sign-in failed, falling back to mock guest:", e.message);
+      setIsGuest(true);
+      setUser({ id: 'guest', email: 'guest@local', is_anonymous: true } as any);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const updateEmail = async (newEmail: string) => {
@@ -51,16 +67,22 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     if (error) throw error;
   };
 
+  const convertGuestToPermanent = async (emailStr: string, passwordStr: string) => {
+    const { error } = await supabase.auth.updateUser({
+      email: emailStr,
+      password: passwordStr,
+    });
+    if (error) throw error;
+  };
+
   const logout = async () => {
-    if (!isGuest) {
-      await supabase.auth.signOut();
-    }
+    await supabase.auth.signOut();
     setIsGuest(false);
     setUser(null);
   };
 
   return (
-    <AuthContext.Provider value={{ user, loading, isGuest, loginAsGuest, updateEmail, updatePassword, logout }}>
+    <AuthContext.Provider value={{ user, loading, isGuest, loginAsGuest, updateEmail, updatePassword, convertGuestToPermanent, logout }}>
       {children}
     </AuthContext.Provider>
   );

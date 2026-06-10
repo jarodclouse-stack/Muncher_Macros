@@ -1,5 +1,5 @@
 import React, { useRef, useState } from 'react';
-import { Loader2, AlertCircle, ArrowRight, FileText, Barcode, Search, Clipboard } from 'lucide-react';
+import { Loader2, AlertCircle, ArrowRight, FileText, Barcode, Search, Clipboard, Crown } from 'lucide-react';
 import { useDiary } from '../context/DiaryContext';
 import { scanBarcode, extractBarcodeDigits, scanNutritionLabel } from '../lib/vision/scanner-logic';
 import { ImageCropperModal } from './ImageCropperModal';
@@ -18,6 +18,7 @@ export const BarcodeScanner: React.FC<BarcodeScannerProps> = ({
   const [status, setStatus] = useState<'idle' | 'scanning' | 'ai-reading' | 'failed' | 'cropping' | 'selecting-source'>('idle');
   const [scanType, setScanType] = useState<'nutrition' | 'barcode' | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [scanDetail, setScanDetail] = useState<string | null>(null);
   const [manualCode, setManualCode] = useState('');
   const [pendingImage, setPendingImage] = useState<string | null>(null);
   const [detectedText, setDetectedText] = useState<string | null>(null);
@@ -32,6 +33,7 @@ export const BarcodeScanner: React.FC<BarcodeScannerProps> = ({
     if (!file) return;
 
     setError(null);
+    setScanDetail(null);
     setDetectedText(null);
     const objectUrl = URL.createObjectURL(file);
     setPendingImage(objectUrl);
@@ -58,6 +60,7 @@ export const BarcodeScanner: React.FC<BarcodeScannerProps> = ({
             setStatus('idle');
             setScanType(null);
           } else {
+            setScanDetail(aiResult.detail || null);
             throw new Error(aiResult.error || "Could not read code. Ensure it is clear.");
           }
         }
@@ -70,6 +73,7 @@ export const BarcodeScanner: React.FC<BarcodeScannerProps> = ({
           setStatus('idle');
           setScanType(null);
         } else {
+          setScanDetail(labelResult.detail || null);
           throw new Error(labelResult.error || "Could not extract nutrition. Try a clearer photo.");
         }
       }
@@ -205,7 +209,39 @@ export const BarcodeScanner: React.FC<BarcodeScannerProps> = ({
       {/* Error Phase */}
       {(status === 'failed' || error) && (
         <div style={{ width: '100%', animation: 'slideDown 0.3s ease-out' }}>
-          <div style={{ 
+          {scanDetail === 'QUOTA_EXCEEDED' ? (
+            /* Quota upgrade card */
+            <div style={{
+              padding: '24px', borderRadius: '24px', border: '1px solid rgba(212,175,55,0.35)',
+              background: 'rgba(212,175,55,0.07)', display: 'flex', flexDirection: 'column', gap: '16px',
+              backdropFilter: 'blur(10px)'
+            }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#D4AF37' }}>
+                <Crown size={20} />
+                <span style={{ fontWeight: '900', fontSize: '13px', textTransform: 'uppercase', letterSpacing: '1px' }}>Daily Limit Reached</span>
+              </div>
+              <p style={{ fontSize: '13px', color: 'var(--theme-text-dim)', margin: 0, lineHeight: '1.5', fontWeight: '600' }}>
+                {error}
+              </p>
+              <button
+                onClick={() => {
+                  // Navigate to Settings tab — dispatch a custom event the shell can listen to
+                  window.dispatchEvent(new CustomEvent('navigate-to-settings'));
+                }}
+                style={{
+                  display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px',
+                  padding: '14px 20px', borderRadius: '16px', border: 'none', cursor: 'pointer',
+                  background: 'linear-gradient(135deg, #D4AF37 0%, #F5D76E 50%, #D4AF37 100%)',
+                  color: '#000', fontWeight: '900', fontSize: '13px', letterSpacing: '0.5px',
+                  boxShadow: '0 4px 20px rgba(212,175,55,0.4)', transition: 'all 0.2s'
+                }}
+              >
+                <Crown size={15} />
+                Upgrade to Pro — $9.99/mo
+              </button>
+            </div>
+          ) : (
+          <div style={{
             padding: '24px', borderRadius: '24px', border: '1px solid rgba(255,107,107,0.2)',
             background: 'rgba(255,107,107,0.05)', display: 'flex', flexDirection: 'column', gap: '16px',
             backdropFilter: 'blur(10px)'
@@ -214,11 +250,11 @@ export const BarcodeScanner: React.FC<BarcodeScannerProps> = ({
               <AlertCircle size={20} />
               <span style={{ fontWeight: '900', fontSize: '13px', textTransform: 'uppercase', letterSpacing: '1px' }}>Scanning Interrupted</span>
             </div>
-            
+
             <p style={{ fontSize: '12px', color: 'var(--theme-text-dim)', margin: 0, lineHeight: '1.4', fontWeight: '600' }}>
-              {scanType === 'nutrition' 
+              {scanType === 'nutrition'
                 ? (error?.includes('404') || error?.includes('Network')
-                   ? "The AI Scan Service is currently unreachable. Please try a different scan type or check back later." 
+                   ? "The AI Scan Service is currently unreachable. Please try a different scan type or check back later."
                    : "AI analysis failed. Please ensure the label is well-lit and occupies the whole frame.")
                 : (error?.includes('404') || error?.includes('Network')
                    ? "The database service is currently offline. You can still try a manual search below."
@@ -275,19 +311,20 @@ export const BarcodeScanner: React.FC<BarcodeScannerProps> = ({
 
             <div style={{ display: 'flex', gap: '12px', marginTop: '8px' }}>
               <button 
-                onClick={() => { setScanType(null); setStatus('idle'); setError(null); }} 
+                onClick={() => { setScanType(null); setStatus('idle'); setError(null); setScanDetail(null); }}
                 style={{ flex: 1, padding: '12px', background: 'var(--theme-panel-dim)', border: '1px solid var(--theme-border)', borderRadius: '14px', color: 'var(--theme-text)', fontWeight: '800', fontSize: '11px', cursor: 'pointer', textTransform: 'uppercase' }}
               >
                 {scanType === 'nutrition' ? 'TRY AGAIN' : 'PHOTO AGAIN'}
               </button>
               <button 
-                onClick={() => { setScanType(null); setStatus('idle'); setError(null); setIsScannerActive(false); }} 
+                onClick={() => { setScanType(null); setStatus('idle'); setError(null); setScanDetail(null); setIsScannerActive(false); }} 
                 style={{ flex: 1, padding: '12px', background: 'none', border: '1px solid transparent', borderRadius: '14px', color: 'var(--theme-accent)', fontWeight: '800', fontSize: '11px', cursor: 'pointer', textTransform: 'uppercase' }}
               >
                 EXIT SCANNER
               </button>
             </div>
           </div>
+          )}
         </div>
       )}
 
