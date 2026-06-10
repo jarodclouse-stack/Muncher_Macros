@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
 import { apiFetch } from '../lib/api';
 import { useDiary } from '../context/DiaryContext';
-import { 
-  Plus, Check, X, Search, Sparkles, ChevronDown, 
+import {
+  Plus, Check, X, Search, Sparkles, ChevronDown,
   Flame, Activity, Trash2, Loader2, BookmarkCheck,
   Info, Edit2, Camera, Brain, Lightbulb, CheckCircle,
   AlertTriangle, TrendingDown, Zap, Egg, Wheat, Salad, Apple, Coffee,
-  GlassWater, Cookie, Utensils, Dumbbell
+  GlassWater, Cookie, Utensils, Dumbbell, FileText, Barcode
 } from 'lucide-react';
 import { ALL_MICRO_KEYS, SERVING_UNITS, MICRO_CATEGORIES } from '../lib/constants';
 import { computeMultiplier, normalizeFoodResult, scaleLegacyFoodByAmount, calculateMacroBalance, scaleToTarget, getCarbClassification, estimateNutriScore, getQuantityForUnit, getCal } from '../lib/food/serving-converter';
@@ -393,6 +393,11 @@ export const PantryView: React.FC<PantryViewProps> = ({ initialMeal, onClose, is
   const [addIngQuery, setAddIngQuery] = useState('');
   const [addIngResults, setAddIngResults] = useState<Food[]>([]);
   const [isAddIngSearching, setIsAddIngSearching] = useState(false);
+  // Ingredient add mode: null = show picker chips
+  const [ingAddMode, setIngAddMode] = useState<null | 'ai' | 'search' | 'label' | 'barcode'>(null);
+  const [ingAiQuery, setIngAiQuery] = useState('');
+  const [ingAiResults, setIngAiResults] = useState<Food[]>([]);
+  const [ingAiSearching, setIngAiSearching] = useState(false);
 
   const handleSearchIngredientToAdd = async (forcedQuery?: string) => {
     const q = (forcedQuery || addIngQuery).trim();
@@ -441,6 +446,23 @@ export const PantryView: React.FC<PantryViewProps> = ({ initialMeal, onClose, is
     return () => clearTimeout(timer);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [addIngQuery, isSearchingIngredientToAdd]);
+
+  const handleIngAiSearch = async () => {
+    if (!ingAiQuery.trim()) return;
+    setIngAiSearching(true);
+    setIngAiResults([]);
+    try {
+      const res = await apiFetch('/api/ai-describe', {
+        method: 'POST',
+        body: JSON.stringify({ description: ingAiQuery, meal: 'Snacks' })
+      });
+      if (res.ok) {
+        const data = await res.json();
+        setIngAiResults((data.foods || []) as Food[]);
+      }
+    } catch {}
+    setIngAiSearching(false);
+  };
 
   const [isAiReviewing, setIsAiReviewing] = useState(false);
   
@@ -1832,198 +1854,139 @@ export const PantryView: React.FC<PantryViewProps> = ({ initialMeal, onClose, is
                   })}
                   </div>
 
-                  {/* Add Ingredient / Search Area */}
-                  {!isSearchingIngredientToAdd ? (
-                    <button 
-                      onClick={() => {
-                        setIsSearchingIngredientToAdd(true);
-                        setAddIngQuery('');
-                        setAddIngResults([]);
-                      }}
-                      style={{ 
-                        width: '100%', 
-                        padding: '16px', 
-                        background: 'rgba(0, 201, 255, 0.03)', 
-                        border: '1px dashed var(--theme-accent)', 
-                        borderRadius: '18px', 
-                        color: 'var(--theme-accent)', 
-                        fontWeight: '800', 
-                        fontSize: '13px', 
-                        cursor: 'pointer',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        gap: '8px',
-                        marginBottom: '20px'
-                      }}
-                    >
-                      <Plus size={18} /> ADD INGREDIENT
-                    </button>
-                  ) : (
-                    <div style={{ 
-                      background: 'rgba(255,255,255,0.02)', 
-                      border: '1px solid rgba(255,255,255,0.06)', 
-                      borderRadius: '20px', 
-                      padding: '16px', 
-                      marginBottom: '20px',
-                      display: 'flex',
-                      flexDirection: 'column',
-                      gap: '12px'
-                    }}>
-                      <div style={{ fontSize: '11px', fontWeight: '800', color: 'var(--theme-accent)', letterSpacing: '0.5px', textTransform: 'uppercase' }}>
-                        Search Food to Add
+                  {/* Add Ingredient — AI / Search / Label / Barcode */}
+                  {ingAddMode === null ? (
+                    /* ── 4 mode chips ── */
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px', marginBottom: '20px' }}>
+                      {([
+                        { mode: 'ai'      as const, icon: <Sparkles size={13} />, label: 'AI Search' },
+                        { mode: 'search'  as const, icon: <Search size={13} />,   label: 'Search' },
+                        { mode: 'label'   as const, icon: <FileText size={13} />, label: 'Label' },
+                        { mode: 'barcode' as const, icon: <Barcode size={13} />,  label: 'Barcode' },
+                      ] as const).map(({ mode, icon, label }) => (
+                        <button key={mode} type="button"
+                          onClick={() => {
+                            setIngAddMode(mode);
+                            if (mode === 'search') { setIsSearchingIngredientToAdd(true); setAddIngQuery(''); setAddIngResults([]); }
+                            if (mode === 'ai') { setIngAiQuery(''); setIngAiResults([]); }
+                          }}
+                          style={{ padding: '13px 6px', background: 'rgba(0,201,255,0.03)', border: '1px dashed var(--theme-accent)', borderRadius: '14px', color: 'var(--theme-accent)', fontWeight: '800', fontSize: '11px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '5px', letterSpacing: '0.5px', textTransform: 'uppercase' }}>
+                          {icon} {label}
+                        </button>
+                      ))}
+                    </div>
+
+                  ) : ingAddMode === 'ai' ? (
+                    /* ── AI describe search ── */
+                    <div style={{ background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.06)', borderRadius: '20px', padding: '16px', marginBottom: '20px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                        <div style={{ fontSize: '11px', fontWeight: '800', color: 'var(--theme-accent)', letterSpacing: '0.5px', textTransform: 'uppercase' }}>AI Food Search</div>
+                        <button type="button" onClick={() => setIngAddMode(null)} style={{ background: 'rgba(255,255,255,0.05)', border: 'none', borderRadius: '8px', color: 'rgba(255,255,255,0.6)', padding: '6px 12px', fontSize: '11px', fontWeight: '700', cursor: 'pointer' }}>Cancel</button>
                       </div>
-                      
                       <div style={{ display: 'flex', gap: '8px' }}>
-                        <input
-                          type="text"
-                          placeholder="Type food or ingredient name..."
-                          value={addIngQuery}
-                          onChange={(e) => setAddIngQuery(e.target.value)}
-                          onKeyDown={(e) => {
-                            if (e.key === 'Enter') {
-                              handleSearchIngredientToAdd();
-                            }
-                          }}
-                          style={{
-                            flex: 1,
-                            padding: '10px 14px',
-                            background: 'rgba(0,0,0,0.2)',
-                            border: '1px solid rgba(255,255,255,0.1)',
-                            borderRadius: '12px',
-                            color: '#fff',
-                            fontSize: '13px',
-                            fontWeight: '600',
-                            outline: 'none'
-                          }}
+                        <input type="text" placeholder='e.g. "100g chicken breast" or "half avocado"'
+                          value={ingAiQuery}
+                          onChange={(e) => setIngAiQuery(e.target.value)}
+                          onKeyDown={(e) => { if (e.key === 'Enter') handleIngAiSearch(); }}
+                          style={{ flex: 1, padding: '10px 14px', background: 'rgba(0,0,0,0.2)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '12px', color: '#fff', fontSize: '13px', fontWeight: '600', outline: 'none' }}
                         />
-                        <button
-                          type="button"
-                          onClick={() => handleSearchIngredientToAdd()}
-                          style={{
-                            padding: '0 16px',
-                            background: 'var(--theme-accent)',
-                            color: '#000',
-                            border: 'none',
-                            borderRadius: '12px',
-                            fontWeight: '800',
-                            fontSize: '12px',
-                            cursor: 'pointer'
-                          }}
-                        >
-                          {isAddIngSearching ? <Loader2 className="spin" size={14} /> : 'Search'}
+                        <button type="button" onClick={handleIngAiSearch}
+                          style={{ padding: '0 14px', background: 'var(--theme-accent)', color: '#000', border: 'none', borderRadius: '12px', fontWeight: '800', fontSize: '12px', cursor: 'pointer' }}>
+                          {ingAiSearching ? <Loader2 className="spin" size={14} /> : <Sparkles size={14} />}
                         </button>
                       </div>
-
-                      {/* Results List */}
-                      {addIngResults.length > 0 && (
-                        <div style={{ 
-                          maxHeight: '200px', 
-                          overflowY: 'auto', 
-                          display: 'flex', 
-                          flexDirection: 'column', 
-                          gap: '6px',
-                          borderTop: '1px solid rgba(255,255,255,0.05)',
-                          paddingTop: '8px'
-                        }}>
-                          {addIngResults.map((f, i) => (
-                            <div
-                              key={i}
-                              onClick={() => {
-                                setAiStagedResults([...aiStagedResults, {
-                                  ...f,
-                                  stagedQty: '1',
-                                  stagedUnit: 'serving',
-                                  showNutrientIntel: true
-                                }]);
-                                setIsSearchingIngredientToAdd(false);
-                                setAddIngQuery('');
-                                setAddIngResults([]);
-                              }}
-                              style={{
-                                display: 'flex',
-                                justifyContent: 'space-between',
-                                alignItems: 'center',
-                                padding: '10px 12px',
-                                background: 'rgba(255,255,255,0.03)',
-                                border: '1px solid rgba(255,255,255,0.05)',
-                                borderRadius: '10px',
-                                cursor: 'pointer',
-                                fontSize: '12px',
-                                transition: 'background 0.2s'
-                              }}
-                            >
+                      {ingAiResults.length > 0 && (
+                        <div style={{ maxHeight: '220px', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '6px', borderTop: '1px solid rgba(255,255,255,0.05)', paddingTop: '8px' }}>
+                          {ingAiResults.map((f, i) => (
+                            <div key={i}
+                              onClick={() => { setAiStagedResults([...aiStagedResults, { ...f, stagedQty: String(f.sQty || 1), stagedUnit: f.sUnit || 'serving', showNutrientIntel: false }]); setIngAddMode(null); setIngAiResults([]); }}
+                              style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '10px 12px', background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.05)', borderRadius: '10px', cursor: 'pointer', fontSize: '12px' }}>
                               <div>
                                 <span style={{ fontWeight: '700', color: '#fff' }}>{f.name}</span>
-                                {f.brand && <span style={{ color: 'rgba(255,255,255,0.4)', fontSize: '10px', marginLeft: '6px' }}>{f.brand}</span>}
-                                <div style={{ fontSize: '10px', color: 'rgba(255,255,255,0.5)', marginTop: '2px' }}>
-                                  {f.serving} • {Math.round(getCal(f))} kcal
-                                </div>
+                                <div style={{ fontSize: '10px', color: 'rgba(255,255,255,0.5)', marginTop: '2px' }}>{f.serving} • {Math.round(getCal(f))} kcal • {(f.p || 0)}p {(f.c || 0)}c {(f.f || 0)}f</div>
                               </div>
                               <Plus size={14} color="var(--theme-accent)" />
                             </div>
                           ))}
                         </div>
                       )}
+                    </div>
 
-                      {/* Custom Ingredient Shortcut */}
+                  ) : ingAddMode === 'search' ? (
+                    /* ── Text search ── */
+                    <div style={{ background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.06)', borderRadius: '20px', padding: '16px', marginBottom: '20px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                      <div style={{ fontSize: '11px', fontWeight: '800', color: 'var(--theme-accent)', letterSpacing: '0.5px', textTransform: 'uppercase' }}>Search Food to Add</div>
+                      <div style={{ display: 'flex', gap: '8px' }}>
+                        <input type="text" placeholder="Type food or ingredient name..."
+                          value={addIngQuery}
+                          onChange={(e) => setAddIngQuery(e.target.value)}
+                          onKeyDown={(e) => { if (e.key === 'Enter') handleSearchIngredientToAdd(); }}
+                          style={{ flex: 1, padding: '10px 14px', background: 'rgba(0,0,0,0.2)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '12px', color: '#fff', fontSize: '13px', fontWeight: '600', outline: 'none' }}
+                        />
+                        <button type="button" onClick={() => handleSearchIngredientToAdd()}
+                          style={{ padding: '0 16px', background: 'var(--theme-accent)', color: '#000', border: 'none', borderRadius: '12px', fontWeight: '800', fontSize: '12px', cursor: 'pointer' }}>
+                          {isAddIngSearching ? <Loader2 className="spin" size={14} /> : 'Search'}
+                        </button>
+                      </div>
+                      {addIngResults.length > 0 && (
+                        <div style={{ maxHeight: '200px', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '6px', borderTop: '1px solid rgba(255,255,255,0.05)', paddingTop: '8px' }}>
+                          {addIngResults.map((f, i) => (
+                            <div key={i}
+                              onClick={() => { setAiStagedResults([...aiStagedResults, { ...f, stagedQty: '1', stagedUnit: 'serving', showNutrientIntel: true }]); setIngAddMode(null); setIsSearchingIngredientToAdd(false); setAddIngQuery(''); setAddIngResults([]); }}
+                              style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '10px 12px', background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.05)', borderRadius: '10px', cursor: 'pointer', fontSize: '12px' }}>
+                              <div>
+                                <span style={{ fontWeight: '700', color: '#fff' }}>{f.name}</span>
+                                {f.brand && <span style={{ color: 'rgba(255,255,255,0.4)', fontSize: '10px', marginLeft: '6px' }}>{f.brand}</span>}
+                                <div style={{ fontSize: '10px', color: 'rgba(255,255,255,0.5)', marginTop: '2px' }}>{f.serving} • {Math.round(getCal(f))} kcal</div>
+                              </div>
+                              <Plus size={14} color="var(--theme-accent)" />
+                            </div>
+                          ))}
+                        </div>
+                      )}
                       <div style={{ display: 'flex', gap: '8px', justifyContent: 'space-between', marginTop: '4px' }}>
-                        <button
-                          type="button"
-                          onClick={() => {
-                            const name = addIngQuery.trim() || 'Custom Ingredient';
-                            const newItem: Food = {
-                              name,
-                              cal: 0, p: 0, c: 0, f: 0,
-                              serving: '1 serving',
-                              sQty: 1,
-                              sUnit: 'serving',
-                              stagedQty: '1',
-                              stagedUnit: 'serving',
-                              showNutrientIntel: true
-                            };
-                            setAiStagedResults([...aiStagedResults, newItem]);
-                            setIsSearchingIngredientToAdd(false);
-                            setAddIngQuery('');
-                            setAddIngResults([]);
-                          }}
-                          style={{
-                            background: 'none',
-                            border: 'none',
-                            color: 'var(--theme-accent)',
-                            fontSize: '11px',
-                            fontWeight: '700',
-                            cursor: 'pointer',
-                            padding: '4px 0',
-                            textAlign: 'left'
-                          }}
-                        >
+                        <button type="button"
+                          onClick={() => { const name = addIngQuery.trim() || 'Custom Ingredient'; const newItem: Food = { name, cal: 0, p: 0, c: 0, f: 0, serving: '1 serving', sQty: 1, sUnit: 'serving', stagedQty: '1', stagedUnit: 'serving', showNutrientIntel: true }; setAiStagedResults([...aiStagedResults, newItem]); setIngAddMode(null); setIsSearchingIngredientToAdd(false); setAddIngQuery(''); setAddIngResults([]); }}
+                          style={{ background: 'none', border: 'none', color: 'var(--theme-accent)', fontSize: '11px', fontWeight: '700', cursor: 'pointer', padding: '4px 0', textAlign: 'left' }}>
                           + Create custom "{addIngQuery.trim() || 'New Ingredient'}"
                         </button>
-                        
-                        <button
-                          type="button"
-                          onClick={() => {
-                            setIsSearchingIngredientToAdd(false);
-                            setAddIngQuery('');
-                            setAddIngResults([]);
-                          }}
-                          style={{
-                            background: 'rgba(255,255,255,0.05)',
-                            border: 'none',
-                            borderRadius: '8px',
-                            color: 'rgba(255,255,255,0.6)',
-                            padding: '6px 12px',
-                            fontSize: '11px',
-                            fontWeight: '700',
-                            cursor: 'pointer'
-                          }}
-                        >
+                        <button type="button"
+                          onClick={() => { setIngAddMode(null); setIsSearchingIngredientToAdd(false); setAddIngQuery(''); setAddIngResults([]); }}
+                          style={{ background: 'rgba(255,255,255,0.05)', border: 'none', borderRadius: '8px', color: 'rgba(255,255,255,0.6)', padding: '6px 12px', fontSize: '11px', fontWeight: '700', cursor: 'pointer' }}>
                           Cancel
                         </button>
                       </div>
                     </div>
-                  )}
+
+                  ) : (ingAddMode === 'label' || ingAddMode === 'barcode') ? (
+                    /* ── Inline scanner — pre-selected type ── */
+                    <div style={{ background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.06)', borderRadius: '20px', padding: '16px', marginBottom: '20px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                        <div style={{ fontSize: '11px', fontWeight: '800', color: 'var(--theme-accent)', letterSpacing: '0.5px', textTransform: 'uppercase' }}>
+                          {ingAddMode === 'label' ? 'Scan Nutrition Label' : 'Scan Barcode'}
+                        </div>
+                        <button type="button" onClick={() => setIngAddMode(null)} style={{ background: 'rgba(255,255,255,0.05)', border: 'none', borderRadius: '8px', color: 'rgba(255,255,255,0.6)', padding: '6px 12px', fontSize: '11px', fontWeight: '700', cursor: 'pointer' }}>Cancel</button>
+                      </div>
+                      <BarcodeScanner
+                        initialScanType={ingAddMode === 'label' ? 'nutrition' : 'barcode'}
+                        onScanSuccess={(result) => {
+                          if (typeof result === 'object' && result !== null) {
+                            const food = result as Food;
+                            setAiStagedResults([...aiStagedResults, { ...food, stagedQty: String(food.sQty || 1), stagedUnit: food.sUnit || 'serving', showNutrientIntel: false }]);
+                            setIngAddMode(null);
+                          } else {
+                            // Barcode string → search
+                            setIngAddMode('search');
+                            setIsSearchingIngredientToAdd(true);
+                            setAddIngQuery(String(result));
+                            handleSearchIngredientToAdd(String(result));
+                          }
+                        }}
+                        onScanError={() => {}}
+                      />
+                    </div>
+
+                  ) : null}
 
                   {/* Assign to Meal Selector for AI Review */}
                   <div style={{ marginBottom: '20px', background: 'rgba(255,255,255,0.03)', padding: '16px', borderRadius: '18px', border: '1px solid var(--theme-border)' }}>

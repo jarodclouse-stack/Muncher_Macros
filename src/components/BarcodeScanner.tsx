@@ -7,16 +7,19 @@ import { ImageCropperModal } from './ImageCropperModal';
 interface BarcodeScannerProps {
   onScanSuccess: (result: string | any) => void;
   onScanError?: (error: string) => void;
+  /** When set, skips the mode-picker UI and goes straight to camera for this type. */
+  initialScanType?: 'nutrition' | 'barcode';
 }
 
-export const BarcodeScanner: React.FC<BarcodeScannerProps> = ({ 
-  onScanSuccess, 
-  onScanError
+export const BarcodeScanner: React.FC<BarcodeScannerProps> = ({
+  onScanSuccess,
+  onScanError,
+  initialScanType
 }) => {
   const { setIsScannerActive } = useDiary();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [status, setStatus] = useState<'idle' | 'scanning' | 'ai-reading' | 'failed' | 'cropping' | 'selecting-source'>('idle');
-  const [scanType, setScanType] = useState<'nutrition' | 'barcode' | null>(null);
+  const [scanType, setScanType] = useState<'nutrition' | 'barcode' | null>(initialScanType ?? null);
   const [error, setError] = useState<string | null>(null);
   const [scanDetail, setScanDetail] = useState<string | null>(null);
   const [manualCode, setManualCode] = useState('');
@@ -27,6 +30,16 @@ export const BarcodeScanner: React.FC<BarcodeScannerProps> = ({
     setIsScannerActive(true);
     return () => setIsScannerActive(false);
   }, [setIsScannerActive]);
+
+  // Auto-open camera when a scan type is pre-selected
+  React.useEffect(() => {
+    if (initialScanType) {
+      // Small delay so the file input is mounted
+      const t = setTimeout(() => triggerNativePicker(), 120);
+      return () => clearTimeout(t);
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -132,27 +145,42 @@ export const BarcodeScanner: React.FC<BarcodeScannerProps> = ({
       {/* Step 1: Selection Phase */}
       {status === 'idle' && (
         <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-md)', width: '100%', animation: 'slideDown 0.3s ease-out' }}>
+          {initialScanType ? (
+            /* Compact re-scan button when type is pre-selected */
+            <button
+              onClick={() => { setScanType(initialScanType); triggerNativePicker(); }}
+              style={{ width: '100%', padding: '20px', background: 'var(--theme-panel)', border: '1px solid var(--theme-border)', borderRadius: '20px', color: 'var(--theme-accent)', fontWeight: '800', fontSize: '13px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px', textTransform: 'uppercase', letterSpacing: '1px' }}
+            >
+              {initialScanType === 'nutrition' ? <FileText size={20} /> : <Barcode size={20} />}
+              Tap to {initialScanType === 'nutrition' ? 'scan nutrition label' : 'scan barcode'}
+            </button>
+          ) : (
+            <>
           <div style={{ textAlign: 'center', marginBottom: 'var(--space-xs)' }}>
             <div style={{ fontSize: '11px', fontWeight: '900', color: 'var(--theme-accent)', textTransform: 'uppercase', letterSpacing: '2px', opacity: 0.8 }}>Select Scan Mode</div>
           </div>
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 'var(--space-md)', width: '100%' }}>
-            <ScanCategoryBtn 
-              icon={<FileText size={24} />} 
-              label="Nutrition Label" 
-              onClick={() => { setScanType('nutrition'); triggerNativePicker(); }} 
+            <ScanCategoryBtn
+              icon={<FileText size={24} />}
+              label="Nutrition Label"
+              onClick={() => { setScanType('nutrition'); triggerNativePicker(); }}
             />
-            <ScanCategoryBtn 
-              icon={<Barcode size={24} />} 
-              label="Barcode" 
-              onClick={() => { setScanType('barcode'); triggerNativePicker(); }} 
+            <ScanCategoryBtn
+              icon={<Barcode size={24} />}
+              label="Barcode"
+              onClick={() => { setScanType('barcode'); triggerNativePicker(); }}
             />
           </div>
+            </>
+          )}
 
-          <div style={{ display: 'flex', alignItems: 'center', gap: '12px', margin: '16px 0 8px 0' }}>
-            <div style={{ flex: 1, height: '1px', background: 'rgba(255,255,255,0.1)' }}></div>
-            <div style={{ fontSize: '10px', fontWeight: '800', color: 'var(--theme-text-dim)', textTransform: 'uppercase', letterSpacing: '1px' }}>Or Enter Barcode Manually</div>
-            <div style={{ flex: 1, height: '1px', background: 'rgba(255,255,255,0.1)' }}></div>
-          </div>
+          {initialScanType !== 'nutrition' && (
+            <div style={{ display: 'flex', alignItems: 'center', gap: '12px', margin: '16px 0 8px 0' }}>
+              <div style={{ flex: 1, height: '1px', background: 'rgba(255,255,255,0.1)' }}></div>
+              <div style={{ fontSize: '10px', fontWeight: '800', color: 'var(--theme-text-dim)', textTransform: 'uppercase', letterSpacing: '1px' }}>Or Enter Barcode Manually</div>
+              <div style={{ flex: 1, height: '1px', background: 'rgba(255,255,255,0.1)' }}></div>
+            </div>
+          )}
 
           {error && (
             <div style={{ padding: '10px 14px', borderRadius: '12px', background: 'rgba(255,107,107,0.1)', border: '1px solid rgba(255,107,107,0.2)', color: '#FF6B6B', fontSize: '11px', fontWeight: '600', display: 'flex', alignItems: 'center', gap: '8px' }}>
@@ -160,7 +188,7 @@ export const BarcodeScanner: React.FC<BarcodeScannerProps> = ({
             </div>
           )}
 
-          <form onSubmit={handleManualSubmit} style={{ display: 'flex', gap: '8px', width: '100%' }}>
+          {initialScanType !== 'nutrition' && <form onSubmit={handleManualSubmit} style={{ display: 'flex', gap: '8px', width: '100%' }}>
             <div style={{ flex: 1, position: 'relative', display: 'flex', alignItems: 'center' }}>
               <input 
                 type="text" placeholder="Enter barcode number..."
@@ -188,7 +216,7 @@ export const BarcodeScanner: React.FC<BarcodeScannerProps> = ({
             >
               <ArrowRight size={22} strokeWidth={3} />
             </button>
-          </form>
+          </form>}
         </div>
       )}
 
