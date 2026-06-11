@@ -82,7 +82,6 @@ export const NutritionFactsDisplay: React.FC<NutritionFactsDisplayProps> = ({ fo
     );
   };
 
-  const grade = f.nutriscore_grade ? String(f.nutriscore_grade).toLowerCase().trim() : null;
   const levels = f.nutrient_levels || null;
 
   return (
@@ -91,74 +90,6 @@ export const NutritionFactsDisplay: React.FC<NutritionFactsDisplayProps> = ({ fo
         {onEdit ? 'EDIT SCAN DATA (TOTAL CONTROL)' : 'Nutrition Intelligence Profile'}
       </div>
 
-      {/* Nutri-Score Section */}
-      {grade && (
-        <div style={{
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-          gap: '12px',
-          background: 'rgba(255, 255, 255, 0.03)',
-          border: '1px solid rgba(255, 255, 255, 0.08)',
-          borderRadius: '18px',
-          padding: '16px',
-          marginBottom: '16px',
-          boxShadow: 'inset 0 1px 1px rgba(255, 255, 255, 0.05)'
-        }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', width: '100%', alignItems: 'center' }}>
-            <span style={{ fontSize: '11px', fontWeight: '900', color: 'var(--theme-text-dim)', letterSpacing: '1px', textTransform: 'uppercase' }}>Nutri-Score</span>
-            <span style={{ 
-              fontSize: '11px', 
-              fontWeight: '900', 
-              color: grade === 'a' || grade === 'b' ? '#85bb2f' : grade === 'c' ? '#fecb02' : '#e63e11',
-              textTransform: 'uppercase',
-              letterSpacing: '0.5px'
-            }}>
-              {grade === 'a' && 'High nutritional quality'}
-              {grade === 'b' && 'Good nutritional quality'}
-              {grade === 'c' && 'Moderate nutritional quality'}
-              {grade === 'd' && 'Lower nutritional quality'}
-              {grade === 'e' && 'Lower nutritional quality'}
-            </span>
-          </div>
-          
-          {/* A B C D E Visual Scale */}
-          <div style={{ display: 'flex', gap: '6px', width: '100%', justifyContent: 'space-between' }}>
-            {(['a', 'b', 'c', 'd', 'e'] as const).map((g) => {
-              const isActive = grade === g;
-              const config = {
-                a: { bg: '#038141', label: 'A' },
-                b: { bg: '#85bb2f', label: 'B' },
-                c: { bg: '#fecb02', label: 'C' },
-                d: { bg: '#ee8100', label: 'D' },
-                e: { bg: '#e63e11', label: 'E' }
-              }[g];
-
-              return (
-                <div
-                  key={g}
-                  style={{
-                    flex: 1,
-                    textAlign: 'center',
-                    padding: '8px 0',
-                    borderRadius: '10px',
-                    fontSize: '14px',
-                    fontWeight: '900',
-                    color: isActive ? '#000' : 'rgba(255, 255, 255, 0.25)',
-                    background: isActive ? config.bg : 'rgba(255, 255, 255, 0.04)',
-                    border: isActive ? `1.5px solid ${config.bg}` : '1.5px solid transparent',
-                    boxShadow: isActive ? `0 0 16px ${config.bg}80` : 'none',
-                    transform: isActive ? 'scale(1.05)' : 'none',
-                    transition: 'all 0.25s cubic-bezier(0.4, 0, 0.2, 1)'
-                  }}
-                >
-                  {config.label}
-                </div>
-              );
-            })}
-          </div>
-        </div>
-      )}
 
       {/* Nutrient Levels Section */}
       {levels && (

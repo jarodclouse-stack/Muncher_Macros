@@ -603,58 +603,64 @@ export const ProgressView: React.FC = () => {
                 {cat.keys.map((nutrient: { k: string; u: string; exercise_sensitive?: boolean; rda_m: number; rda_f: number }) => {
                   const isEnhanced = nutrient.exercise_sensitive && computed.computedMicros[nutrient.k] > (sex === 'f' || sex === 'female' ? nutrient.rda_f : nutrient.rda_m);
                   return (
-                    <div key={nutrient.k} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '10px 0', borderBottom: '1px solid var(--theme-border)', fontSize: '14px' }}>
-                      <span style={{ color: 'var(--theme-text-dim)', display: 'flex', gap: '4px', alignItems: 'center' }}>
-                        {nutrient.k} {isEnhanced && <span title="Activity Boost" style={{ display: 'inline-flex', alignItems: 'center' }}><Flame size={12} color="var(--theme-error)" /></span>}
-                      </span>
-                      {editingMicro === nutrient.k ? (
-                        <div style={{ display: 'flex', gap: '4px' }}>
-                          <input 
-                            type="number" 
-                            step="0.1" 
-                            autoFocus 
-                            className="inp" 
-                            value={customMicroValue} 
-                            onChange={e => setCustomMicroValue(e.target.value)} 
-                            onKeyDown={e => e.key === 'Enter' && saveCustomMicro(nutrient.k)}
-                            style={{ width: '80px', padding: '4px 8px' }} 
-                          />
-                          <button onClick={() => saveCustomMicro(nutrient.k)} className="btn" style={{ margin: 0, padding: '4px 8px', background: 'var(--theme-accent)', color: '#000000' }}><Check size={14} /></button>
-                        </div>
-                      ) : (
-                        <span 
-                          style={{ 
-                            fontWeight: '700', 
-                            cursor: 'pointer', 
-                            background: 'var(--theme-panel-dim)',
-                            border: '1px solid var(--theme-border)',
-                            padding: '4px 8px',
-                            borderRadius: '6px',
-                            color: 'var(--theme-text)',
-                            display: 'flex',
-                            alignItems: 'center',
-                            gap: '6px',
-                            transition: 'all 0.2s',
-                            boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
-                          }}
-                          onClick={() => {
-                            setEditingMicro(nutrient.k);
-                            setCustomMicroValue(String(computed.computedMicros[nutrient.k]));
-                          }}
-                          title="Click to override target"
-                          onMouseEnter={(e) => {
-                            e.currentTarget.style.background = 'var(--theme-accent-dim)';
-                            e.currentTarget.style.borderColor = 'var(--theme-accent)';
-                          }}
-                          onMouseLeave={(e) => {
-                            e.currentTarget.style.background = 'var(--theme-panel-dim)';
-                            e.currentTarget.style.borderColor = 'var(--theme-border)';
-                          }}
-                        >
-                          {(computed.computedMicros as Record<string, number>)[nutrient.k]} {nutrient.u}
-                          <Edit2 size={10} color="var(--theme-text-dim)" />
-                        </span>
-                      )}
+                    <div key={nutrient.k} style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '6px 0', borderBottom: '1px solid var(--theme-border)' }}>
+                      <div
+                        className="micro-badge-btn"
+                        style={{ color: 'var(--theme-text-on-panel)', background: 'var(--theme-panel)', flexShrink: 0 }}
+                      >
+                        {nutrient.k}
+                        {isEnhanced && <Flame size={11} color="var(--theme-error)" />}
+                      </div>
+                      <div style={{ flex: 1, display: 'flex', justifyContent: 'flex-end', alignItems: 'center' }}>
+                        {editingMicro === nutrient.k ? (
+                          <div style={{ display: 'flex', gap: '4px' }}>
+                            <input
+                              type="number"
+                              step="0.1"
+                              autoFocus
+                              className="inp"
+                              value={customMicroValue}
+                              onChange={e => setCustomMicroValue(e.target.value)}
+                              onKeyDown={e => e.key === 'Enter' && saveCustomMicro(nutrient.k)}
+                              style={{ width: '80px', padding: '4px 8px' }}
+                            />
+                            <button onClick={() => saveCustomMicro(nutrient.k)} className="btn" style={{ margin: 0, padding: '4px 8px', background: 'var(--theme-accent)', color: '#000000' }}><Check size={14} /></button>
+                          </div>
+                        ) : (
+                          <span
+                            style={{
+                              fontWeight: '700',
+                              cursor: 'pointer',
+                              background: 'var(--theme-panel-dim)',
+                              border: '1px solid var(--theme-border)',
+                              padding: '4px 8px',
+                              borderRadius: '6px',
+                              color: 'var(--theme-text)',
+                              display: 'flex',
+                              alignItems: 'center',
+                              gap: '6px',
+                              transition: 'all 0.2s',
+                              boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
+                            }}
+                            onClick={() => {
+                              setEditingMicro(nutrient.k);
+                              setCustomMicroValue(String(computed.computedMicros[nutrient.k]));
+                            }}
+                            title="Click to override target"
+                            onMouseEnter={(e) => {
+                              e.currentTarget.style.background = 'var(--theme-accent-dim)';
+                              e.currentTarget.style.borderColor = 'var(--theme-accent)';
+                            }}
+                            onMouseLeave={(e) => {
+                              e.currentTarget.style.background = 'var(--theme-panel-dim)';
+                              e.currentTarget.style.borderColor = 'var(--theme-border)';
+                            }}
+                          >
+                            {(computed.computedMicros as Record<string, number>)[nutrient.k]} {nutrient.u}
+                            <Edit2 size={10} color="var(--theme-text-dim)" />
+                          </span>
+                        )}
+                      </div>
                     </div>
                   );
                 })}

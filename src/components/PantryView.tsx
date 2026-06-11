@@ -17,7 +17,7 @@ import { NutritionFactsDisplay } from './NutritionFactsDisplay';
 import { BarcodeScanner } from './BarcodeScanner';
 import { ConfirmDialog } from './ConfirmDialog';
 import { PromptDialog } from './PromptDialog';
-import { NutriScorePopup } from './NutriScorePopup';
+import { NutriScorePopup, NS_COLOR } from './NutriScorePopup';
 import type { Food, RecipeItem } from '../types/food';
 
 
@@ -382,6 +382,7 @@ export const PantryView: React.FC<PantryViewProps> = ({ initialMeal, onClose, is
   const [ingPickerOpen, setIngPickerOpen] = useState(false);
   const [adjustingIngIdx, setAdjustingIngIdx] = useState<number | null>(null);
   const [expandedIngIdx, setExpandedIngIdx] = useState<number | null>(null);
+  const [aiNutriPopupIdx, setAiNutriPopupIdx] = useState<number | null>(null);
   const [ingAiQuery, setIngAiQuery] = useState('');
   const [ingAiResults, setIngAiResults] = useState<Food[]>([]);
   const [ingAiSearching, setIngAiSearching] = useState(false);
@@ -1624,11 +1625,15 @@ export const PantryView: React.FC<PantryViewProps> = ({ initialMeal, onClose, is
                             </div>
                             <div className="diary-entry-actions">
                               {(() => {
-                                const { grade: g } = estimateNutriScore(f);
-                                const nsColors: Record<string, string> = { A: '#2d8653', B: '#85bb2f', C: '#f9c000', D: '#ee8100', E: '#e63e11' };
+                                const g = (f.nutriscore_grade ? String(f.nutriscore_grade).toLowerCase().trim() : null) || estimateNutriScore(f).grade;
+                                if (!g) return null;
                                 return (
-                                  <span style={{ background: nsColors[g] || '#888', color: '#fff', borderRadius: '6px', padding: '2px 7px', fontSize: '11px', fontWeight: '900', letterSpacing: '0.5px' }}>
-                                    {g}
+                                  <span
+                                    onClick={(e) => { e.stopPropagation(); setAiNutriPopupIdx(aiNutriPopupIdx === i ? null : i); }}
+                                    style={{ background: NS_COLOR[g] || '#888', color: g === 'c' ? '#000' : '#fff', borderRadius: '6px', padding: '2px 7px', fontSize: '11px', fontWeight: '900', letterSpacing: '0.5px', cursor: 'pointer' }}
+                                    title="Tap to see Nutri-Score details"
+                                  >
+                                    {g.toUpperCase()}
                                   </span>
                                 );
                               })()}
@@ -1639,6 +1644,7 @@ export const PantryView: React.FC<PantryViewProps> = ({ initialMeal, onClose, is
                                   if (next.length === 0) setIsAiReviewing(false);
                                   if (adjustingIngIdx === i) setAdjustingIngIdx(null);
                                   if (expandedIngIdx === i) setExpandedIngIdx(null);
+                                  if (aiNutriPopupIdx === i) setAiNutriPopupIdx(null);
                                 }}
                                 style={{ background: 'none', border: 'none', color: 'var(--theme-error)', cursor: 'pointer', padding: '4px' }}
                               >
@@ -1743,6 +1749,11 @@ export const PantryView: React.FC<PantryViewProps> = ({ initialMeal, onClose, is
                                 }}
                               />
                             </div>
+                          )}
+
+                          {/* Nutri-Score popup for this card */}
+                          {aiNutriPopupIdx === i && (
+                            <NutriScorePopup food={f} onClose={() => setAiNutriPopupIdx(null)} />
                           )}
                         </div>
                     );
