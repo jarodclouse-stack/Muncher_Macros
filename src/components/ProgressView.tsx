@@ -584,7 +584,7 @@ export const ProgressView: React.FC = () => {
             style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '16px', fontWeight: '700', color: 'var(--theme-text)', cursor: 'pointer', marginBottom: isMicrosOpen ? 'var(--space-lg)' : '0' }}
           >
             <Leaf size={18} color="var(--theme-success, #51CF66)" />
-            Micro Nutrients Targets
+            Micronutrient Goals
             <ChevronDown size={18} color="var(--theme-text-dim)" style={{ marginLeft: 'auto', transform: isMicrosOpen ? 'rotate(180deg)' : 'rotate(0)', transition: 'transform 0.3s' }} />
           </div>
           {isMicrosOpen && <>
@@ -596,14 +596,14 @@ export const ProgressView: React.FC = () => {
                RESET ALL TO DEFAULTS
              </button>
           </div>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))', gap: 'var(--space-md)' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-xl)' }}>
             {MICRO_CATEGORIES.map((cat: { cat: string; keys: Array<{k: string; u: string; exercise_sensitive?: boolean; rda_m: number; rda_f: number}> }, i: number) => (
               <div key={i}>
-                <div style={{ fontWeight: '700', fontSize: '12px', color: 'var(--theme-accent)', textTransform: 'uppercase', marginBottom: '12px', letterSpacing: '0.05em' }}>{cat.cat}</div>
+                <div style={{ fontWeight: '800', fontSize: '11px', color: 'var(--theme-accent)', textTransform: 'uppercase', marginBottom: '4px', letterSpacing: '0.08em' }}>{cat.cat}</div>
                 {cat.keys.map((nutrient: { k: string; u: string; exercise_sensitive?: boolean; rda_m: number; rda_f: number }) => {
                   const isEnhanced = nutrient.exercise_sensitive && computed.computedMicros[nutrient.k] > (sex === 'f' || sex === 'female' ? nutrient.rda_f : nutrient.rda_m);
                   return (
-                    <div key={nutrient.k} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '8px 0', borderBottom: '1px solid var(--theme-border)', fontSize: '13px' }}>
+                    <div key={nutrient.k} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '10px 0', borderBottom: '1px solid var(--theme-border)', fontSize: '14px' }}>
                       <span style={{ color: 'var(--theme-text-dim)', display: 'flex', gap: '4px', alignItems: 'center' }}>
                         {nutrient.k} {isEnhanced && <span title="Activity Boost" style={{ display: 'inline-flex', alignItems: 'center' }}><Flame size={12} color="var(--theme-error)" /></span>}
                       </span>

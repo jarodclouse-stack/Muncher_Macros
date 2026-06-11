@@ -6,7 +6,7 @@ import {
   Flame, Activity, Trash2, Loader2, BookmarkCheck,
   Info, Edit2, Camera, Brain, Lightbulb, CheckCircle,
   AlertTriangle, TrendingDown, Zap, Egg, Wheat, Salad, Apple, Coffee,
-  GlassWater, Cookie, Utensils, Dumbbell, FileText, Barcode
+  GlassWater, Cookie, Utensils, Dumbbell, FileText, Barcode, Scale
 } from 'lucide-react';
 import { ALL_MICRO_KEYS, SERVING_UNITS, MICRO_CATEGORIES } from '../lib/constants';
 import { computeMultiplier, normalizeFoodResult, scaleLegacyFoodByAmount, calculateMacroBalance, scaleToTarget, getCarbClassification, estimateNutriScore, getQuantityForUnit, getCal } from '../lib/food/serving-converter';
@@ -396,6 +396,8 @@ export const PantryView: React.FC<PantryViewProps> = ({ initialMeal, onClose, is
   // Ingredient add mode: null = show picker chips; ingPickerOpen controls whether chips are visible
   const [ingAddMode, setIngAddMode] = useState<null | 'ai' | 'search' | 'label' | 'barcode'>(null);
   const [ingPickerOpen, setIngPickerOpen] = useState(false);
+  const [adjustingIngIdx, setAdjustingIngIdx] = useState<number | null>(null);
+  const [expandedIngIdx, setExpandedIngIdx] = useState<number | null>(null);
   const [ingAiQuery, setIngAiQuery] = useState('');
   const [ingAiResults, setIngAiResults] = useState<Food[]>([]);
   const [ingAiSearching, setIngAiSearching] = useState(false);
@@ -1659,212 +1661,136 @@ export const PantryView: React.FC<PantryViewProps> = ({ initialMeal, onClose, is
                       const multiplier = computeMultiplier(f.serving || '100g', f.stagedUnit || 'serving', parseFloat(String(f.stagedQty)) || 1) * scaleFactor;
                       
                       return (
-                        <div key={i} className="glass-card ai-staged-food-card" style={{ 
-                          padding: 'var(--space-md)', 
-                          width: '100%',
-                          boxSizing: 'border-box',
-                          border: f._src === 'off' || innerGlobalSearchTab === 'scan' ? '2px solid var(--theme-accent)' : '1px solid rgba(255,255,255,0.08)',
-                          boxShadow: f._src === 'off' || innerGlobalSearchTab === 'scan' ? '0 0 15px var(--theme-accent-dim)' : 'none',
-                          '--theme-text-dim': 'rgba(255,255,255,0.6)',
-                          '--theme-panel-dim': 'rgba(255,255,255,0.05)',
-                          '--theme-border': 'rgba(255,255,255,0.1)',
-                          '--theme-input-bg': 'rgba(255,255,255,0.03)'
-                        } as React.CSSProperties}>
-                          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px', gap: '10px', flexWrap: 'wrap' }}>
-                            <input 
-                              value={f.name} 
-                              onChange={(e) => {
-                                const next = [...aiStagedResults];
-                                next[i] = { ...f, name: e.target.value };
-                                setAiStagedResults(next);
-                              }}
-                              style={{ 
-                                flex: 1,
-                                minWidth: '140px',
-                                background: 'rgba(255,255,255,0.05)', 
-                                border: '1px solid var(--theme-border)', 
-                                borderRadius: '12px',
-                                color: 'var(--theme-text)', 
-                                fontWeight: '900', 
-                                fontSize: '14px', 
-                                outline: 'none', 
-                                padding: '10px'
-                              }}
-                            />
-                            <div style={{ display: 'flex', gap: '6px', alignItems: 'center' }}>
-                              <button 
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  const next = [...aiStagedResults];
-                                  next[i] = { ...f, showNutrientIntel: !f.showNutrientIntel };
-                                  setAiStagedResults(next);
-                                }}
-                                style={{ 
-                                  background: f.showNutrientIntel ? 'rgba(0, 201, 255, 0.15)' : 'rgba(255,255,255,0.05)', 
-                                  border: '1px solid',
-                                  borderColor: f.showNutrientIntel ? 'var(--theme-accent)' : 'rgba(255,255,255,0.1)',
-                                  color: f.showNutrientIntel ? 'var(--theme-accent)' : 'var(--theme-text-dim)', 
-                                  borderRadius: '8px', padding: '6px 10px', fontSize: '10px', fontWeight: '800', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '4px'
-                                }}>
-                                <Info size={12} /> {f.showNutrientIntel ? 'HIDE' : 'INFO'}
-                              </button>
-                                <button onClick={() => {
+                        <div key={i} className="diary-entry-card" style={{ cursor: 'default' }}>
+                          {/* Card header: name + delete */}
+                          <div className="diary-entry-header">
+                            <div style={{ flex: 1 }}>
+                              <div className="diary-entry-name">{f.name}</div>
+                              {f.brand && <div className="diary-entry-brand">{f.brand}</div>}
+                            </div>
+                            <div className="diary-entry-actions">
+                              {(() => {
+                                const ns = estimateNutriScore(f);
+                                const nsColors: Record<string, string> = { A: '#2d8653', B: '#85bb2f', C: '#f9c000', D: '#ee8100', E: '#e63e11' };
+                                return (
+                                  <span style={{ background: nsColors[ns] || '#888', color: '#fff', borderRadius: '6px', padding: '2px 7px', fontSize: '11px', fontWeight: '900', letterSpacing: '0.5px' }}>
+                                    {ns}
+                                  </span>
+                                );
+                              })()}
+                              <button
+                                onClick={() => {
                                   const next = aiStagedResults.filter((_, idx) => idx !== i);
                                   setAiStagedResults(next);
                                   if (next.length === 0) setIsAiReviewing(false);
-                                }} style={{ background: 'none', border: 'none', color: 'var(--theme-error)', cursor: 'pointer', padding: '4px' }}><X size={18} /></button>
-                              </div>
+                                  if (adjustingIngIdx === i) setAdjustingIngIdx(null);
+                                  if (expandedIngIdx === i) setExpandedIngIdx(null);
+                                }}
+                                style={{ background: 'none', border: 'none', color: 'var(--theme-error)', cursor: 'pointer', padding: '4px' }}
+                              >
+                                <X size={18} />
+                              </button>
                             </div>
+                          </div>
 
-                          {/* Confidence badge + category chip */}
-                          {((f as any).confidence === 'low' || (f as any).confidence === 'medium' || ((f as any).category && (f as any).category !== 'unknown')) && (
-                            <div style={{ display: 'flex', gap: '6px', alignItems: 'center', marginBottom: '10px', flexWrap: 'wrap' }}>
-                              {(f as any).confidence === 'low' && (
-                                <span style={{
-                                  display: 'inline-flex', alignItems: 'center', gap: '3px',
-                                  background: 'rgba(255, 180, 0, 0.12)', border: '1px solid rgba(255, 180, 0, 0.35)',
-                                  color: '#ffb400', borderRadius: '6px', padding: '2px 7px',
-                                  fontSize: '9px', fontWeight: '800', letterSpacing: '0.3px'
-                                }}>~ ESTIMATED</span>
-                              )}
-                              {(f as any).confidence === 'medium' && (
-                                <span style={{
-                                  display: 'inline-flex', alignItems: 'center', gap: '3px',
-                                  background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.15)',
-                                  color: 'rgba(255,255,255,0.45)', borderRadius: '6px', padding: '2px 7px',
-                                  fontSize: '9px', fontWeight: '800', letterSpacing: '0.3px'
-                                }}>~ APPROX</span>
-                              )}
-                              {(f as any).category && (f as any).category !== 'unknown' && (
-                                <span style={{
-                                  display: 'inline-flex', alignItems: 'center', gap: '3px',
-                                  background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.1)',
-                                  color: 'rgba(255,255,255,0.85)', borderRadius: '6px', padding: '2px 7px',
-                                  fontSize: '9px', fontWeight: '700', letterSpacing: '0.3px', textTransform: 'lowercase'
-                                }}>
-                                  {getCategoryIcon(String((f as any).category), 11)}
-                                  <span style={{ marginLeft: '4px' }}>{(f as any).category}</span>
-                                </span>
-                              )}
+                          {/* Macro stats row */}
+                          <div className="diary-entry-stats-row">
+                            <div className="diary-entry-stats-col">
+                              <span className="diary-entry-stats-label">KCAL</span>
+                              <span className="diary-entry-stats-val">{Math.round(getCal(f) * multiplier)}</span>
+                            </div>
+                            <div className="diary-entry-stats-col">
+                              <span className="diary-entry-stats-label">P</span>
+                              <span className="diary-entry-stats-val p">{((Number(f.p) || 0) * multiplier).toFixed(1)}g</span>
+                            </div>
+                            <div className="diary-entry-stats-col">
+                              <span className="diary-entry-stats-label">C</span>
+                              <span className="diary-entry-stats-val c">{((Number(f.c) || 0) * multiplier).toFixed(1)}g</span>
+                            </div>
+                            <div className="diary-entry-stats-col">
+                              <span className="diary-entry-stats-label">F</span>
+                              <span className="diary-entry-stats-val f">{((Number(f.f) || 0) * multiplier).toFixed(1)}g</span>
+                            </div>
+                          </div>
+
+                          {/* Bottom row: serving + ADJUST + MORE */}
+                          <div className="diary-entry-bottom-row">
+                            <span className="diary-entry-serving">{f.stagedQty} {f.stagedUnit}</span>
+                            <button
+                              className="diary-entry-adjust-btn"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                setAdjustingIngIdx(adjustingIngIdx === i ? null : i);
+                              }}
+                            >
+                              <Scale size={13} /> ADJUST
+                            </button>
+                            <button
+                              className="diary-entry-more-btn"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                setExpandedIngIdx(expandedIngIdx === i ? null : i);
+                              }}
+                            >
+                              MORE {expandedIngIdx === i ? '▲' : '▼'}
+                            </button>
+                          </div>
+
+                          {/* Inline ADJUST: qty + unit + Done */}
+                          {adjustingIngIdx === i && (
+                            <div style={{ display: 'flex', gap: '8px', marginTop: '10px', padding: '10px', background: 'rgba(0,0,0,0.3)', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.08)' }}>
+                              <input
+                                type="number"
+                                step="any"
+                                value={f.stagedQty}
+                                onChange={(e) => {
+                                  const next = [...aiStagedResults];
+                                  next[i] = { ...f, stagedQty: e.target.value };
+                                  setAiStagedResults(next);
+                                }}
+                                style={{ width: '70px', background: 'rgba(0,0,0,0.4)', border: '1px solid var(--theme-border)', borderRadius: '10px', color: 'var(--theme-text)', fontSize: '13px', padding: '10px', textAlign: 'center', outline: 'none', fontWeight: '900' }}
+                              />
+                              <select
+                                value={f.stagedUnit}
+                                onChange={(e) => {
+                                  const newUnit = e.target.value;
+                                  const oldUnit = f.stagedUnit || 'g';
+                                  const oldQty = parseFloat(f.stagedQty || '') || 1;
+                                  const currentMult = computeMultiplier(f.serving || '', oldUnit, oldQty);
+                                  const newQtyVal = getQuantityForUnit(f.serving || '', currentMult, newUnit);
+                                  const roundedQty = Math.round(newQtyVal * 100) / 100;
+                                  const next = [...aiStagedResults];
+                                  next[i] = { ...f, stagedQty: roundedQty.toString(), stagedUnit: newUnit };
+                                  setAiStagedResults(next);
+                                }}
+                                style={{ flex: 1, background: 'rgba(0,0,0,0.4)', border: '1px solid var(--theme-border)', borderRadius: '10px', color: 'var(--theme-text)', fontSize: '13px', padding: '10px', outline: 'none', fontWeight: '800' }}
+                              >
+                                {SERVING_UNITS.map(u => <option key={u.v} value={u.v} style={{ background: 'var(--theme-panel)', color: 'var(--theme-text)' }}>{u.v}</option>)}
+                              </select>
+                              <button
+                                onClick={() => setAdjustingIngIdx(null)}
+                                style={{ padding: '10px 14px', background: 'var(--theme-accent)', border: 'none', borderRadius: '10px', color: '#000', fontWeight: '900', fontSize: '12px', cursor: 'pointer', fontFamily: 'inherit' }}
+                              >
+                                Done
+                              </button>
                             </div>
                           )}
 
-                          {/* Quick Stats Row - Distinguishing Bubble */}
-                          <div className="quick-stats-bubble-row" style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '6px', marginBottom: '12px', background: 'var(--theme-panel-dim)', border: '1px solid var(--theme-border)', padding: '10px', borderRadius: '16px' }}>
-                            <div style={{ textAlign: 'center' }}><div style={{ fontSize: '8px', color: 'var(--theme-text-dim)', fontWeight: '700' }}>KCAL</div><div style={{ fontSize: '11px', fontWeight: '900', color: 'var(--theme-text)' }}>{Math.round(getCal(f) * multiplier)}</div></div>
-                            <div style={{ textAlign: 'center' }}><div style={{ fontSize: '8px', color: 'var(--theme-text-dim)', fontWeight: '700' }}>P</div><div style={{ fontSize: '11px', fontWeight: '900', color: 'var(--theme-error)' }}>{((Number(f.p) || 0) * multiplier).toFixed(1)}g</div></div>
-                            <div style={{ textAlign: 'center' }}><div style={{ fontSize: '8px', color: 'var(--theme-text-dim)', fontWeight: '700' }}>C</div><div style={{ fontSize: '11px', fontWeight: '900', color: 'var(--theme-accent)' }}>{((Number(f.c) || 0) * multiplier).toFixed(1)}g</div></div>
-                            <div style={{ textAlign: 'center' }}><div style={{ fontSize: '8px', color: 'var(--theme-text-dim)', fontWeight: '700' }}>F</div><div style={{ fontSize: '11px', fontWeight: '900', color: 'var(--theme-warning)' }}>{((Number(f.f) || 0) * multiplier).toFixed(1)}g</div></div>
-                          </div>
-
-                      
-                        {/* Nutrition Intel Expandable Block */}
-                        {f.showNutrientIntel && (
-                          <div style={{ marginBottom: '16px', background: 'rgba(255,255,255,0.02)', padding: '12px', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.05)' }}>
-                            <NutritionFactsDisplay 
-                              food={f} 
-                              multiplier={multiplier} 
-                              onEdit={(key, val) => {
-                                const next = [...aiStagedResults];
-                                next[i] = { ...f, [key]: val };
-                                setAiStagedResults(next);
-                              }}
-                            />
-                          </div>
-                        )}
-
-                        <div style={{ display: 'flex', gap: '8px' }}>
-                          <input 
-                            type="number" 
-                            step="any"
-                            value={f.stagedQty} 
-                            onChange={(e) => {
-                              const next = [...aiStagedResults];
-                              next[i] = { ...f, stagedQty: e.target.value };
-                              setAiStagedResults(next);
-                            }}
-                            style={{ width: '75px', background: 'rgba(0,0,0,0.06)', border: '1px solid var(--theme-border)', borderRadius: '12px', color: 'var(--theme-text)', fontSize: '13px', padding: '12px', textAlign: 'center', outline: 'none', fontWeight: '900' }} 
-                          />
-                          <select 
-                            value={f.stagedUnit} 
-                            onChange={(e) => {
-                              const newUnit = e.target.value;
-                              const oldUnit = f.stagedUnit || 'g';
-                              const oldQty = parseFloat(f.stagedQty || '') || 1;
-                              
-                              const currentMult = computeMultiplier(f.serving || '', oldUnit, oldQty);
-                              const newQtyVal = getQuantityForUnit(f.serving || '', currentMult, newUnit);
-                              const roundedQty = Math.round(newQtyVal * 100) / 100;
-
-                              const next = [...aiStagedResults];
-                              next[i] = { ...f, stagedQty: roundedQty.toString(), stagedUnit: newUnit };
-                              setAiStagedResults(next);
-                            }}
-                            style={{ flex: 1, background: 'rgba(0,0,0,0.06)', border: '1px solid var(--theme-border)', borderRadius: '12px', color: 'var(--theme-text)', fontSize: '13px', padding: '12px', outline: 'none', fontWeight: '800' }}>
-                            {SERVING_UNITS.map(u => <option key={u.v} value={u.v} style={{ background: 'var(--theme-panel)', color: 'var(--theme-text)' }}>{u.v}</option>)}
-                          </select>
+                          {/* Expanded: full nutrition facts */}
+                          {expandedIngIdx === i && (
+                            <div style={{ marginTop: '12px', padding: '12px', background: 'rgba(255,255,255,0.02)', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.05)' }}>
+                              <NutritionFactsDisplay
+                                food={f}
+                                multiplier={multiplier}
+                                onEdit={(key, val) => {
+                                  const next = [...aiStagedResults];
+                                  next[i] = { ...f, [key]: val };
+                                  setAiStagedResults(next);
+                                }}
+                              />
+                            </div>
+                          )}
                         </div>
-
-                        <div style={{ display: 'flex', gap: '8px', marginTop: '12px', borderTop: '1px solid rgba(255,255,255,0.05)', paddingTop: '10px' }}>
-                          <button 
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              setConfiguringFood(f);
-                              setEditName(f.name || '');
-                              setServingQty(f.stagedQty || '1');
-                              setServingUnit(f.stagedUnit || 'serving');
-                            }}
-                            style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', padding: '10px', background: 'rgba(255,255,255,0.03)', border: '1px solid var(--theme-border)', borderRadius: '12px', color: 'var(--theme-text)', fontSize: '11px', fontWeight: '900', cursor: 'pointer' }}
-                          >
-                            <Info size={12} color="var(--theme-accent)" /> TWEAK
-                          </button>
-                          <button 
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              const next = [...aiStagedResults];
-                              next[i] = { ...f, ingredients: f.ingredients !== undefined ? undefined : (f.ingredients || '') };
-                              setAiStagedResults(next);
-                            }}
-                            style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', padding: '10px', background: 'rgba(255,255,255,0.03)', border: f.ingredients !== undefined ? '1px solid var(--theme-accent)' : '1px solid var(--theme-border)', borderRadius: '12px', color: 'var(--theme-text)', fontSize: '11px', fontWeight: '900', cursor: 'pointer' }}
-                          >
-                            <Info size={12} color="var(--theme-accent)" /> {f.ingredients !== undefined ? 'HIDE INGREDIENTS' : 'INGREDIENTS'}
-                          </button>
-                        </div>
-                        {f.ingredients !== undefined && (
-                          <div style={{ marginTop: '10px', animation: 'slideDown 0.2s ease-out', position: 'relative' }}>
-                            <textarea 
-                              className="force-white-placeholder"
-                              placeholder="Type ingredients here... (e.g. Water, Sugar, Salt)"
-                              value={f.ingredients || ''}
-                              onChange={(e) => {
-                                const next = [...aiStagedResults];
-                                next[i] = { ...f, ingredients: e.target.value };
-                                setAiStagedResults(next);
-                              }}
-                              style={{ width: '100%', height: '60px', background: 'rgba(0,0,0,0.4)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '12px', color: 'var(--theme-text)', fontSize: '13px', padding: '12px', paddingRight: '44px', outline: 'none', fontWeight: '600', resize: 'none' }}
-                            />
-                            <input 
-                              type="file" 
-                              accept="image/*" 
-                              capture="environment" 
-                              id={`pantry-ing-cam-${i}`}
-                              style={{ display: 'none' }}
-                              onChange={(e) => handleIngredientScan(e, i)}
-                            />
-                            <label 
-                              htmlFor={`pantry-ing-cam-${i}`}
-                              style={{ 
-                                position: 'absolute', right: '10px', bottom: '10px', 
-                                background: 'var(--theme-accent)', color: '#000', 
-                                padding: '6px', borderRadius: '8px', cursor: 'pointer',
-                                display: 'flex', alignItems: 'center', justifyContent: 'center',
-                                opacity: scanningIngredients === i ? 0.5 : 1
-                              }}>
-                              {scanningIngredients === i ? <Loader2 size={16} className="spin" /> : <Camera size={16} />}
-                            </label>
-                          </div>
-                        )}
-                      </div>
                     );
                   })}
                   </div>
