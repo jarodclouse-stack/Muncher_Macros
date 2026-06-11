@@ -4,8 +4,8 @@ import { useDiary } from '../context/DiaryContext';
 import {
   Plus, Check, X, Search, Sparkles, ChevronDown,
   Flame, Activity, Trash2, Loader2, BookmarkCheck,
-  Info, Edit2, Camera, Brain, Lightbulb, CheckCircle,
-  AlertTriangle, TrendingDown, Zap, Egg, Wheat, Salad, Apple, Coffee,
+  Edit2, Camera, Brain, Lightbulb, CheckCircle,
+  AlertTriangle, TrendingDown, Zap, Wheat, Salad, Apple,
   GlassWater, Cookie, Utensils, Dumbbell, FileText, Barcode, Scale
 } from 'lucide-react';
 import { ALL_MICRO_KEYS, SERVING_UNITS, MICRO_CATEGORIES } from '../lib/constants';
@@ -20,23 +20,7 @@ import { PromptDialog } from './PromptDialog';
 import { NutriScorePopup } from './NutriScorePopup';
 import type { Food, RecipeItem } from '../types/food';
 
-const getCategoryIcon = (cat: string, size = 16) => {
-  switch (String(cat).toLowerCase()) {
-    case 'protein': return <Egg size={size} color="#F2994A" style={{ display: 'inline-block', verticalAlign: 'middle' }} />;
-    case 'grain': return <Wheat size={size} color="#F2C94C" style={{ display: 'inline-block', verticalAlign: 'middle' }} />;
-    case 'vegetable': return <Salad size={size} color="#27AE60" style={{ display: 'inline-block', verticalAlign: 'middle' }} />;
-    case 'fruit': return <Apple size={size} color="#EB5757" style={{ display: 'inline-block', verticalAlign: 'middle' }} />;
-    case 'dairy': return <GlassWater size={size} color="#56CCF2" style={{ display: 'inline-block', verticalAlign: 'middle' }} />;
-    case 'sauce':
-    case 'condiment': return <GlassWater size={size} color="#E08030" opacity={0.8} style={{ display: 'inline-block', verticalAlign: 'middle' }} />;
-    case 'topping': return <Sparkles size={size} color="#F2C94C" style={{ display: 'inline-block', verticalAlign: 'middle' }} />;
-    case 'side': return <Utensils size={size} color="#BDBDBD" opacity={0.8} style={{ display: 'inline-block', verticalAlign: 'middle' }} />;
-    case 'beverage': return <Coffee size={size} color="#8D5B4C" style={{ display: 'inline-block', verticalAlign: 'middle' }} />;
-    case 'dessert':
-    case 'snack': return <Cookie size={size} color="#D35400" style={{ display: 'inline-block', verticalAlign: 'middle' }} />;
-    default: return <Utensils size={size} color="#BDBDBD" style={{ display: 'inline-block', verticalAlign: 'middle' }} />;
-  }
-};
+
 
 const getMineralIcon = (key: string, size = 11) => {
   if (key === 'iron') return <Dumbbell size={size} style={{ display: 'inline-block', verticalAlign: 'middle', marginRight: '4px' }} />;
@@ -469,8 +453,6 @@ export const PantryView: React.FC<PantryViewProps> = ({ initialMeal, onClose, is
 
   const [isAiReviewing, setIsAiReviewing] = useState(false);
   
-  const [scanningIngredients, setScanningIngredients] = useState<number | null>(null);
-
   // Photo verification state
   const [isVerifyingPhoto, setIsVerifyingPhoto] = useState(false);
   const [verifyResult, setVerifyResult] = useState<{
@@ -480,34 +462,6 @@ export const PantryView: React.FC<PantryViewProps> = ({ initialMeal, onClose, is
     significantDifference: boolean;
     adjustedItems: Array<{ name: string; adjustedQty: number; adjustedUnit: string; adjustedCal: number; adjustedP: number; adjustedC: number; adjustedF: number; reason: string }>;
   } | null>(null);
-
-  const handleIngredientScan = async (e: React.ChangeEvent<HTMLInputElement>, index: number) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-    
-    setScanningIngredients(index);
-    try {
-      const reader = new FileReader();
-      reader.onloadend = async () => {
-        const base64 = (reader.result as string).split(',')[1];
-        const res = await apiFetch('/api/ai-ingredients', {
-          method: 'POST',
-          body: JSON.stringify({ base64, mediaType: file.type })
-        });
-        const data = await res.json();
-        if (data.ingredients) {
-          const next = [...aiStagedResults];
-          next[index] = { ...next[index], ingredients: data.ingredients };
-          setAiStagedResults(next);
-        }
-        setScanningIngredients(null);
-      };
-      reader.readAsDataURL(file);
-    } catch (err) {
-      console.error(err);
-      setScanningIngredients(null);
-    }
-  };
 
   const handleVerifyWithPhoto = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -1670,11 +1624,11 @@ export const PantryView: React.FC<PantryViewProps> = ({ initialMeal, onClose, is
                             </div>
                             <div className="diary-entry-actions">
                               {(() => {
-                                const ns = estimateNutriScore(f);
+                                const { grade: g } = estimateNutriScore(f);
                                 const nsColors: Record<string, string> = { A: '#2d8653', B: '#85bb2f', C: '#f9c000', D: '#ee8100', E: '#e63e11' };
                                 return (
-                                  <span style={{ background: nsColors[ns] || '#888', color: '#fff', borderRadius: '6px', padding: '2px 7px', fontSize: '11px', fontWeight: '900', letterSpacing: '0.5px' }}>
-                                    {ns}
+                                  <span style={{ background: nsColors[g] || '#888', color: '#fff', borderRadius: '6px', padding: '2px 7px', fontSize: '11px', fontWeight: '900', letterSpacing: '0.5px' }}>
+                                    {g}
                                   </span>
                                 );
                               })()}
