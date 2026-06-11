@@ -33,7 +33,8 @@ export const DiaryView: React.FC = () => {
   
   const waterGoal = goals.waterGoal || 120;
   const currentWater = dayData.water || 0;
-  
+  const isMetric = (localCache.settings?.units?.weight || 'lb') === 'kg';
+
   const handleAddWater = (oz: number) => {
     updateDayData(currentDate, { water: Math.max(0, (currentWater || 0) + oz) });
   };
@@ -270,10 +271,11 @@ export const DiaryView: React.FC = () => {
           <MacroCard label="Fiber" value={totals.fiber} total={38} color="var(--theme-success)" icon={<Scale size={14} />} />
         </div>
 
-        <HydrationCard 
-          current={currentWater} 
-          goal={waterGoal} 
-          onAdd={handleAddWater} 
+        <HydrationCard
+          current={currentWater}
+          goal={waterGoal}
+          onAdd={handleAddWater}
+          isMetric={isMetric}
         />
       </div>
 
@@ -770,23 +772,37 @@ const WaterJugIcon = ({ color }: { color: string }) => (
   </svg>
 );
 
-const HydrationCard = ({ current, goal, onAdd }: { current: number, goal: number, onAdd: (v: number) => void }) => {
+const OZ_TO_ML = 29.5735;
+
+const HydrationCard = ({ current, goal, onAdd, isMetric = false }: { current: number, goal: number, onAdd: (v: number) => void, isMetric?: boolean }) => {
   const pct = Math.min(100, (current / (goal || 120)) * 100);
   const [customVal, setCustomVal] = useState('');
   const [isCustom, setIsCustom] = useState(false);
   const [mode, setMode] = useState<'add' | 'remove'>('add');
-  
+
+  // Display values: always stored in oz, shown in mL for metric users
+  const displayCurrent = isMetric ? Math.round(current * OZ_TO_ML) : parseFloat((current || 0).toFixed(1));
+  const displayGoal = isMetric ? Math.round(goal * OZ_TO_ML) : goal;
+  const waterUnit = isMetric ? 'mL' : 'oz';
+  // Quick-add amounts in oz (metric: 250mL ≈ 8.45oz, 500mL ≈ 16.91oz)
+  const quick1Oz = isMetric ? 250 / OZ_TO_ML : 8;
+  const quick2Oz = isMetric ? 500 / OZ_TO_ML : 16;
+  const quick1Label = isMetric ? '250 mL' : '8 oz';
+  const quick2Label = isMetric ? '500 mL' : '16 oz';
+
   const handleCustomAdd = () => {
     const val = parseFloat(customVal);
     if (!isNaN(val) && val > 0) {
-      onAdd(mode === 'add' ? val : -val);
+      // User entered mL (metric) or oz (imperial) — convert to oz for storage
+      const oz = isMetric ? val / OZ_TO_ML : val;
+      onAdd(mode === 'add' ? oz : -oz);
       setCustomVal('');
       setIsCustom(false);
     }
   };
 
-  const handleQuickAdd = (val: number) => {
-    onAdd(mode === 'add' ? val : -val);
+  const handleQuickAdd = (oz: number) => {
+    onAdd(mode === 'add' ? oz : -oz);
   };
 
   return (
@@ -904,8 +920,8 @@ const HydrationCard = ({ current, goal, onAdd }: { current: number, goal: number
             </div>
           </div>
           <div style={{ textAlign: 'right' }}>
-            <div style={{ fontSize: '24px', fontWeight: '900', color: 'var(--theme-text-on-panel)' }}>{(current || 0).toFixed(1)} <span style={{ fontSize: '14px', color: 'var(--theme-text-dim-on-panel)', fontWeight: '500' }}>oz</span></div>
-            <div style={{ fontSize: '11px', color: 'var(--theme-text-dim-on-panel)', fontWeight: '700' }}>GOAL: {goal} oz</div>
+            <div style={{ fontSize: '24px', fontWeight: '900', color: 'var(--theme-text-on-panel)' }}>{displayCurrent} <span style={{ fontSize: '14px', color: 'var(--theme-text-dim-on-panel)', fontWeight: '500' }}>{waterUnit}</span></div>
+            <div style={{ fontSize: '11px', color: 'var(--theme-text-dim-on-panel)', fontWeight: '700' }}>GOAL: {displayGoal} {waterUnit}</div>
           </div>
         </div>
 
@@ -914,14 +930,14 @@ const HydrationCard = ({ current, goal, onAdd }: { current: number, goal: number
           const iconColor = mode === 'remove' ? 'var(--theme-error, #FF6B6B)' : 'var(--theme-accent, #00C9FF)';
           return (
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '10px' }}>
-               <WaterBtn icon={<WaterBottleIcon color={iconColor} />} label={mode === 'add' ? "+8 oz" : "-8 oz"} onClick={() => handleQuickAdd(8)} color={mode === 'remove' ? 'var(--theme-error-dim, rgba(255,107,107,0.05))' : undefined} />
-               <WaterBtn icon={<WaterJugIcon color={iconColor} />} label={mode === 'add' ? "+16 oz" : "-16 oz"} onClick={() => handleQuickAdd(16)} color={mode === 'remove' ? 'var(--theme-error-dim, rgba(255,107,107,0.1))' : 'var(--theme-accent-dim, rgba(0,201,255,0.1))'} />
+               <WaterBtn icon={<WaterBottleIcon color={iconColor} />} label={mode === 'add' ? `+${quick1Label}` : `-${quick1Label}`} onClick={() => handleQuickAdd(quick1Oz)} color={mode === 'remove' ? 'var(--theme-error-dim, rgba(255,107,107,0.05))' : undefined} />
+               <WaterBtn icon={<WaterJugIcon color={iconColor} />} label={mode === 'add' ? `+${quick2Label}` : `-${quick2Label}`} onClick={() => handleQuickAdd(quick2Oz)} color={mode === 'remove' ? 'var(--theme-error-dim, rgba(255,107,107,0.1))' : 'var(--theme-accent-dim, rgba(0,201,255,0.1))'} />
                {isCustom ? (
                  <div style={{ gridColumn: 'span 2', display: 'flex', background: 'var(--theme-panel-dim, rgba(0,0,0,0.3))', borderRadius: '14px', padding: '4px', border: mode === 'add' ? '1px solid var(--theme-accent, #00C9FF)' : '1px solid var(--theme-error, #FF6B6B)' }}>
                      <input 
                        autoFocus
                        type="number" 
-                       placeholder={mode === 'add' ? "Add oz" : "Remove oz"} 
+                       placeholder={mode === 'add' ? `Add ${waterUnit}` : `Remove ${waterUnit}`}
                        value={customVal} 
                        onChange={e => setCustomVal(e.target.value)} 
                        onBlur={() => !customVal && setIsCustom(false)}

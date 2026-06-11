@@ -8,13 +8,16 @@ const STEPS = ['welcome', 'body', 'goal', 'activity'] as const;
 type Step = typeof STEPS[number];
 
 export const OnboardingWizard: React.FC<{ onComplete: () => void }> = ({ onComplete }) => {
-  const { updateGoals, updateSettings } = useDiary();
+  const { updateGoals, updateSettings, localCache } = useDiary();
+  const unitWeight = localCache.settings?.units?.weight || 'lb';
+  const unitHeight = localCache.settings?.units?.height || 'in';
+  const isMetric = unitWeight === 'kg';
   const [step, setStep] = useState<Step>('welcome');
   const [screenName, setScreenName] = useState('');
   const [sex, setSex] = useState('male');
   const [age, setAge] = useState('25');
-  const [height, setHeight] = useState('70');
-  const [weight, setWeight] = useState('170');
+  const [height, setHeight] = useState(isMetric ? '178' : '70');
+  const [weight, setWeight] = useState(isMetric ? '77' : '170');
   const [goalType, setGoalType] = useState('maintain');
   const [activityId, setActivityId] = useState('moderate');
 
@@ -112,11 +115,11 @@ export const OnboardingWizard: React.FC<{ onComplete: () => void }> = ({ onCompl
             </div>
             <div style={{ display: 'flex', gap: '12px' }}>
               <div style={{ flex: 1 }}>
-                <label style={lblStyle}>Height (in)</label>
+                <label style={lblStyle}>Height ({unitHeight})</label>
                 <input type="number" value={height} onChange={e => setHeight(e.target.value)} style={inpStyle} />
               </div>
               <div style={{ flex: 1 }}>
-                <label style={lblStyle}>Weight (lb)</label>
+                <label style={lblStyle}>Weight ({unitWeight})</label>
                 <input type="number" value={weight} onChange={e => setWeight(e.target.value)} style={inpStyle} />
               </div>
             </div>

@@ -182,19 +182,44 @@ export const lookupBarcode = async (code: string): Promise<ScanResult> => {
       const data = await offRes.json();
       if (data.status === 1 && data.product) {
         const p = data.product;
-        // Map OpenFoodFacts to internal Food format
+        const n = p.nutriments || {};
+
+        // Prefer per-serving values when available; fall back to per-100g.
+        // OPF stores both: "energy-kcal_serving" and "energy-kcal_100g".
+        const servingG = parseFloat(p.serving_quantity || '0') || null;
+        const scale = servingG ? servingG / 100 : 1;
+
+        const calServing = n['energy-kcal_serving'] ?? (n['energy-kcal_100g'] != null ? n['energy-kcal_100g'] * scale : null);
+        const pServing   = n['proteins_serving']      ?? (n['proteins_100g']      != null ? n['proteins_100g']      * scale : null);
+        const cServing   = n['carbohydrates_serving'] ?? (n['carbohydrates_100g'] != null ? n['carbohydrates_100g'] * scale : null);
+        const fServing   = n['fat_serving']           ?? (n['fat_100g']           != null ? n['fat_100g']           * scale : null);
+        const fbServing  = n['fiber_serving']         ?? (n['fiber_100g']         != null ? n['fiber_100g']         * scale : null);
+
         const mappedData = {
           name: p.product_name || "Unknown Product",
           brand: p.brands ? p.brands.split(',')[0] : "",
-          serving: p.serving_size || "100g",
-          cal: Math.round(p.nutriments?.['energy-kcal_100g'] || 0),
-          p: p.nutriments?.proteins_100g || 0,
-          c: p.nutriments?.carbohydrates_100g || 0,
-          f: p.nutriments?.fat_100g || 0,
-          fiber: p.nutriments?.fiber_100g || 0,
+          serving: p.serving_size || (servingG ? `${servingG}g` : "100g"),
+          sQty: servingG || 100,
+          sUnit: 'g',
+          cal: Math.round(calServing ?? 0),
+          p: Math.round((pServing ?? 0) * 10) / 10,
+          c: Math.round((cServing ?? 0) * 10) / 10,
+          f: Math.round((fServing ?? 0) * 10) / 10,
+          fb: Math.round((fbServing ?? 0) * 10) / 10,
           barcode: code,
           _src: 'off'
         };
+
+        // Quality check: if calories are suspiciously low for a non-water food,
+        // the OPF entry is likely incomplete. Try AI lookup as a better source.
+        const nameLC = mappedData.name.toLowerCase();
+        const isProbablyWater = ['water', 'seltzer', 'sparkling', 'club soda'].some(w => nameLC.includes(w));
+        if (mappedData.cal < 5 && !isProbablyWater) {
+          // Let the caller fall through to AI lookup by returning failure
+          console.warn(`[barcode] OPF data quality too low for ${code} (${mappedData.cal} kcal) — skipping`);
+          return { success: false, error: "Food data from barcode database is incomplete. Try scanning the nutrition label instead." };
+        }
+
         return { success: true, data: mappedData, text: code };
       }
     }

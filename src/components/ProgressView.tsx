@@ -90,6 +90,12 @@ export const ProgressView: React.FC = () => {
   });
 
   const [waterGoal, setWaterGoal] = useState(goals.waterGoal || 120);
+  const OZ_TO_ML = 29.5735;
+  const waterUnit = isMetric ? 'mL' : 'fl oz';
+  const displayWaterGoal = isMetric ? Math.round(waterGoal * OZ_TO_ML) : waterGoal;
+  const setDisplayWaterGoal = (val: number) => setWaterGoal(isMetric ? val / OZ_TO_ML : val);
+  const waterSliderMax = isMetric ? 7500 : 250;
+  const waterSliderStep = isMetric ? 50 : 5;
 
   // Macro splits
   const macroP = computed.macroP;
@@ -550,9 +556,9 @@ export const ProgressView: React.FC = () => {
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontWeight: '600', color: 'var(--theme-accent)' }}><Droplet size={18} /> Daily Water Goal</div>
               <div style={{ display: 'flex', gap: 'var(--space-md)', flexDirection: 'column' }}>
                 <div style={{ flex: 2, display: 'flex', flexDirection: 'column', gap: 'var(--space-xs)' }}>
-                  <label className="lbl">Target (fl oz)</label>
-                  <input type="number" className="inp" value={waterGoal} onChange={e => setWaterGoal(Number(e.target.value))} />
-                  <input type="range" min="0" max="250" step="5" value={waterGoal} onChange={e => setWaterGoal(Number(e.target.value))} className="custom-range" style={{ '--thumb-color': 'var(--theme-accent)', background: `linear-gradient(to right, var(--theme-accent) ${Math.min(100, (waterGoal / 250) * 100)}%, rgba(255,255,255,0.1) ${Math.min(100, (waterGoal / 250) * 100)}%)` } as React.CSSProperties} />
+                  <label className="lbl">Target ({waterUnit})</label>
+                  <input type="number" className="inp" value={displayWaterGoal} onChange={e => setDisplayWaterGoal(Number(e.target.value))} />
+                  <input type="range" min="0" max={waterSliderMax} step={waterSliderStep} value={displayWaterGoal} onChange={e => setDisplayWaterGoal(Number(e.target.value))} className="custom-range" style={{ '--thumb-color': 'var(--theme-accent)', background: `linear-gradient(to right, var(--theme-accent) ${Math.min(100, (displayWaterGoal / waterSliderMax) * 100)}%, rgba(255,255,255,0.1) ${Math.min(100, (displayWaterGoal / waterSliderMax) * 100)}%)` } as React.CSSProperties} />
                 </div>
                 <div style={{ flex: 1 }}>
                   <button onClick={handleSaveWaterOnly} className="btn" style={{ width: '100%', marginTop: '0', background: 'var(--theme-accent)', color: '#000000' }}>
@@ -560,7 +566,11 @@ export const ProgressView: React.FC = () => {
                   </button>
                 </div>
               </div>
-              <div style={{ fontSize: '11px', color: 'var(--theme-text-dim)', marginTop: '4px' }}>Standard recommendation is half your bodyweight in oz (e.g. {Math.round((isMetric ? weightLb * 2.20462 : Number(weightLb)) / 2)} oz).</div>
+              <div style={{ fontSize: '11px', color: 'var(--theme-text-dim)', marginTop: '4px' }}>
+                {isMetric
+                  ? `Standard recommendation is half your bodyweight in oz (~${Math.round((Number(weightLb) * 2.20462 / 2) * OZ_TO_ML)} mL).`
+                  : `Standard recommendation is half your bodyweight in oz (e.g. ${Math.round(Number(weightLb) / 2)} oz).`}
+              </div>
             </div>
 
           </div>

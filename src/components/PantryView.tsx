@@ -393,8 +393,9 @@ export const PantryView: React.FC<PantryViewProps> = ({ initialMeal, onClose, is
   const [addIngQuery, setAddIngQuery] = useState('');
   const [addIngResults, setAddIngResults] = useState<Food[]>([]);
   const [isAddIngSearching, setIsAddIngSearching] = useState(false);
-  // Ingredient add mode: null = show picker chips
+  // Ingredient add mode: null = show picker chips; ingPickerOpen controls whether chips are visible
   const [ingAddMode, setIngAddMode] = useState<null | 'ai' | 'search' | 'label' | 'barcode'>(null);
+  const [ingPickerOpen, setIngPickerOpen] = useState(false);
   const [ingAiQuery, setIngAiQuery] = useState('');
   const [ingAiResults, setIngAiResults] = useState<Food[]>([]);
   const [ingAiSearching, setIngAiSearching] = useState(false);
@@ -811,9 +812,23 @@ export const PantryView: React.FC<PantryViewProps> = ({ initialMeal, onClose, is
       setServingQty(parsedQty);
       setServingUnit(parsedUnit);
     } else {
-      setServingQty(String(food.sQty || '1'));
       const fallbackUnit = food.sUnit ? matchUnit(food.sUnit) : null;
-      setServingUnit(fallbackUnit || 'serving');
+      const sQtyNum = Number(food.sQty) || 1;
+
+      if (fallbackUnit && sQtyNum > 0) {
+        // sUnit is a recognized unit (g, ml, oz…) but the serving string has an
+        // unrecognized count-based unit like "1 Tortilla". computeMultiplier can't
+        // resolve "Tortilla" → grams, so it would return sQty raw (61×) instead of 1.
+        // Fix: rewrite the food's serving string to the weight-based form so that
+        // computeMultiplier("61 g", "g", 61) = 1 correctly.
+        setConfiguringFood({ ...food, serving: `${sQtyNum} ${food.sUnit}` });
+        setServingQty(String(sQtyNum));
+        setServingUnit(fallbackUnit);
+      } else {
+        // Unit is completely unknown — default to 1 serving (safe fallback).
+        setServingQty('1');
+        setServingUnit('serving');
+      }
     }
 
     setShowFullNutrition(false);
@@ -1854,26 +1869,47 @@ export const PantryView: React.FC<PantryViewProps> = ({ initialMeal, onClose, is
                   })}
                   </div>
 
-                  {/* Add Ingredient — AI / Search / Label / Barcode */}
+                  {/* Add Ingredient — single button that expands to 4 options */}
                   {ingAddMode === null ? (
-                    /* ── 4 mode chips ── */
-                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px', marginBottom: '20px' }}>
-                      {([
-                        { mode: 'ai'      as const, icon: <Sparkles size={13} />, label: 'AI Search' },
-                        { mode: 'search'  as const, icon: <Search size={13} />,   label: 'Search' },
-                        { mode: 'label'   as const, icon: <FileText size={13} />, label: 'Label' },
-                        { mode: 'barcode' as const, icon: <Barcode size={13} />,  label: 'Barcode' },
-                      ] as const).map(({ mode, icon, label }) => (
-                        <button key={mode} type="button"
-                          onClick={() => {
-                            setIngAddMode(mode);
-                            if (mode === 'search') { setIsSearchingIngredientToAdd(true); setAddIngQuery(''); setAddIngResults([]); }
-                            if (mode === 'ai') { setIngAiQuery(''); setIngAiResults([]); }
-                          }}
-                          style={{ padding: '13px 6px', background: 'rgba(0,201,255,0.03)', border: '1px dashed var(--theme-accent)', borderRadius: '14px', color: 'var(--theme-accent)', fontWeight: '800', fontSize: '11px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '5px', letterSpacing: '0.5px', textTransform: 'uppercase' }}>
-                          {icon} {label}
+                    <div style={{ marginBottom: '20px' }}>
+                      {!ingPickerOpen ? (
+                        /* ── Collapsed: single ADD INGREDIENT button ── */
+                        <button
+                          type="button"
+                          onClick={() => setIngPickerOpen(true)}
+                          style={{ width: '100%', padding: '14px', background: 'rgba(0,201,255,0.04)', border: '1.5px dashed var(--theme-accent)', borderRadius: '14px', color: 'var(--theme-accent)', fontWeight: '800', fontSize: '12px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', letterSpacing: '0.6px', textTransform: 'uppercase', fontFamily: 'inherit' }}>
+                          <Search size={14} /> Add Ingredient
                         </button>
-                      ))}
+                      ) : (
+                        /* ── Expanded: 4 mode chips + cancel ── */
+                        <div>
+                          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px', marginBottom: '8px' }}>
+                            {([
+                              { mode: 'ai'      as const, icon: <Sparkles size={13} />, label: 'AI Search' },
+                              { mode: 'search'  as const, icon: <Search size={13} />,   label: 'Search' },
+                              { mode: 'label'   as const, icon: <FileText size={13} />, label: 'Label' },
+                              { mode: 'barcode' as const, icon: <Barcode size={13} />,  label: 'Barcode' },
+                            ] as const).map(({ mode, icon, label }) => (
+                              <button key={mode} type="button"
+                                onClick={() => {
+                                  setIngPickerOpen(false);
+                                  setIngAddMode(mode);
+                                  if (mode === 'search') { setIsSearchingIngredientToAdd(true); setAddIngQuery(''); setAddIngResults([]); }
+                                  if (mode === 'ai') { setIngAiQuery(''); setIngAiResults([]); }
+                                }}
+                                style={{ padding: '13px 6px', background: 'rgba(0,201,255,0.03)', border: '1px dashed var(--theme-accent)', borderRadius: '14px', color: 'var(--theme-accent)', fontWeight: '800', fontSize: '11px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '5px', letterSpacing: '0.5px', textTransform: 'uppercase', fontFamily: 'inherit' }}>
+                                {icon} {label}
+                              </button>
+                            ))}
+                          </div>
+                          <button
+                            type="button"
+                            onClick={() => setIngPickerOpen(false)}
+                            style={{ width: '100%', padding: '9px', background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '12px', color: 'var(--theme-text-dim)', fontWeight: '700', fontSize: '11px', cursor: 'pointer', fontFamily: 'inherit' }}>
+                            Cancel
+                          </button>
+                        </div>
+                      )}
                     </div>
 
                   ) : ingAddMode === 'ai' ? (
@@ -1881,7 +1917,7 @@ export const PantryView: React.FC<PantryViewProps> = ({ initialMeal, onClose, is
                     <div style={{ background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.06)', borderRadius: '20px', padding: '16px', marginBottom: '20px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
                       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                         <div style={{ fontSize: '11px', fontWeight: '800', color: 'var(--theme-accent)', letterSpacing: '0.5px', textTransform: 'uppercase' }}>AI Food Search</div>
-                        <button type="button" onClick={() => setIngAddMode(null)} style={{ background: 'rgba(255,255,255,0.05)', border: 'none', borderRadius: '8px', color: 'rgba(255,255,255,0.6)', padding: '6px 12px', fontSize: '11px', fontWeight: '700', cursor: 'pointer' }}>Cancel</button>
+                        <button type="button" onClick={() => { setIngAddMode(null); setIngPickerOpen(false); }} style={{ background: 'rgba(255,255,255,0.05)', border: 'none', borderRadius: '8px', color: 'rgba(255,255,255,0.6)', padding: '6px 12px', fontSize: '11px', fontWeight: '700', cursor: 'pointer' }}>Cancel</button>
                       </div>
                       <div style={{ display: 'flex', gap: '8px' }}>
                         <input type="text" placeholder='e.g. "100g chicken breast" or "half avocado"'
@@ -1951,7 +1987,7 @@ export const PantryView: React.FC<PantryViewProps> = ({ initialMeal, onClose, is
                           + Create custom "{addIngQuery.trim() || 'New Ingredient'}"
                         </button>
                         <button type="button"
-                          onClick={() => { setIngAddMode(null); setIsSearchingIngredientToAdd(false); setAddIngQuery(''); setAddIngResults([]); }}
+                          onClick={() => { setIngAddMode(null); setIngPickerOpen(false); setIsSearchingIngredientToAdd(false); setAddIngQuery(''); setAddIngResults([]); }}
                           style={{ background: 'rgba(255,255,255,0.05)', border: 'none', borderRadius: '8px', color: 'rgba(255,255,255,0.6)', padding: '6px 12px', fontSize: '11px', fontWeight: '700', cursor: 'pointer' }}>
                           Cancel
                         </button>
@@ -1965,7 +2001,7 @@ export const PantryView: React.FC<PantryViewProps> = ({ initialMeal, onClose, is
                         <div style={{ fontSize: '11px', fontWeight: '800', color: 'var(--theme-accent)', letterSpacing: '0.5px', textTransform: 'uppercase' }}>
                           {ingAddMode === 'label' ? 'Scan Nutrition Label' : 'Scan Barcode'}
                         </div>
-                        <button type="button" onClick={() => setIngAddMode(null)} style={{ background: 'rgba(255,255,255,0.05)', border: 'none', borderRadius: '8px', color: 'rgba(255,255,255,0.6)', padding: '6px 12px', fontSize: '11px', fontWeight: '700', cursor: 'pointer' }}>Cancel</button>
+                        <button type="button" onClick={() => { setIngAddMode(null); setIngPickerOpen(false); }} style={{ background: 'rgba(255,255,255,0.05)', border: 'none', borderRadius: '8px', color: 'rgba(255,255,255,0.6)', padding: '6px 12px', fontSize: '11px', fontWeight: '700', cursor: 'pointer' }}>Cancel</button>
                       </div>
                       <BarcodeScanner
                         initialScanType={ingAddMode === 'label' ? 'nutrition' : 'barcode'}

@@ -1943,5 +1943,31 @@ body .luminous-absolute-white * {
   }
 }
 
+/* ── Compact spacing for small phones (iPhone 14 and under) ── */
+@media (max-width: 393px) {
+  :root {
+    --space-xs: 8px;
+    --space-sm: 11px;
+    --space-md: 16px;
+    --space-lg: 20px;
+    --space-xl: 26px;
+  }
 
+  /* Tighter container sides */
+  .app-container {
+    padding-left: 10px !important;
+    padding-right: 10px !important;
+  }
 
+  /* SearchCoaster tabs — slightly smaller touch area */
+  .search-coaster-tab-btn {
+    padding: 10px 0 !important;
+  }
+  .coaster-label {
+    font-size: 9px !important;
+  }
+  .coaster-icon-container svg {
+    width: 15px !important;
+    height: 15px !important;
+  }
+}

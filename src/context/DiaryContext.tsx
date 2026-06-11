@@ -120,7 +120,7 @@ export const DiaryProvider: React.FC<{ children: React.ReactNode }> = ({ childre
           const p = profileRes.data;
           cache.settings = {
             displayName: p.display_name || '',
-            units: { weight: p.weight_unit || 'kg', height: p.height_unit || 'cm' },
+            units: { weight: p.weight_unit || 'lb', height: p.height_unit || 'in' },
             purchasedThemes: p.purchased_themes || ['obsidian', 'cybermancer'],
             notifications: p.notifications || {},
           };
@@ -130,7 +130,7 @@ export const DiaryProvider: React.FC<{ children: React.ReactNode }> = ({ childre
           // New user — seed defaults
           if (!cache.settings) {
             cache.settings = {
-              units: { weight: 'kg', height: 'cm' },
+              units: { weight: 'lb', height: 'in' },
               notifications: {
                 reminders: true, goals: true, morningNudge: true,
                 afternoonCheck: true, eveningSummary: true,
@@ -238,8 +238,8 @@ export const DiaryProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       await supabase.from('user_profiles').upsert({
         user_id: user.id,
         display_name: settings?.displayName || null,
-        weight_unit: settings?.units?.weight || 'kg',
-        height_unit: settings?.units?.height || 'cm',
+        weight_unit: settings?.units?.weight || 'lbs',
+        height_unit: settings?.units?.height || 'ft',
         purchased_themes: settings?.purchasedThemes || ['obsidian'],
         notifications: settings?.notifications || {},
         updated_at: new Date().toISOString(),
@@ -258,7 +258,7 @@ export const DiaryProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         fat: goals.fat ?? 65,
         fiber: goals.fiber ?? 25,
         target_weight: goals.weight ?? null,
-        weight_unit: goals.weightUnit || 'kg',
+        weight_unit: goals.weightUnit || 'lbs',
         activity_level: goals.activityLevel || null,
         goal_type: goals.goalType || null,
         onboarding_complete: goals.onboardingComplete ?? false,
