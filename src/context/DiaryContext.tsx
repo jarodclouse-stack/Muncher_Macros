@@ -153,9 +153,11 @@ export const DiaryProvider: React.FC<{ children: React.ReactNode }> = ({ childre
             fiber: g.fiber,
             weight: g.target_weight,
             weightUnit: g.weight_unit,
-            activityLevel: g.activity_level,
+            activityId: g.activity_level,   // activity_level column stores activityId value
             goalType: g.goal_type,
             onboardingComplete: g.onboarding_complete,
+            // Restore all overflow fields from extras blob
+            ...(g.extras || {}),
           };
         }
 
@@ -197,8 +199,8 @@ export const DiaryProvider: React.FC<{ children: React.ReactNode }> = ({ childre
           diaryData.forEach((row: any) => {
             cache[row.entry_date] = {
               foodLog: row.food_log || [],
-              ...(row.weight_log != null && { weightLog: row.weight_log }),
-              ...(row.water_ml != null && { waterMl: row.water_ml }),
+              ...(row.weight_log != null && { weight: row.weight_log }),
+              ...(row.water_ml != null && { water: row.water_ml }),
               ...(row.notes && { notes: row.notes }),
             };
           });
@@ -250,18 +252,27 @@ export const DiaryProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   const saveGoalsToDb = useCallback(async (goals: Record<string, any>) => {
     if (!user || (isGuest && user.id === 'guest')) return;
     try {
+      // Explicit columns — well-typed fields
+      const { calories, protein, carbs, fat, fiber, weight, weightUnit, activityId, goalType, onboardingComplete, ...rest } = goals;
+      // Everything else goes into extras JSONB so no goal data is lost between sessions
+      const extras: Record<string, any> = {};
+      const knownKeys = new Set(['calories','protein','carbs','fat','fiber','weight','weightUnit','activityId','goalType','onboardingComplete']);
+      for (const [k, v] of Object.entries(rest)) {
+        if (!knownKeys.has(k)) extras[k] = v;
+      }
       await supabase.from('user_goals').upsert({
         user_id: user.id,
-        calories: goals.calories ?? 2000,
-        protein: goals.protein ?? 150,
-        carbs: goals.carbs ?? 250,
-        fat: goals.fat ?? 65,
-        fiber: goals.fiber ?? 25,
-        target_weight: goals.weight ?? null,
-        weight_unit: goals.weightUnit || 'lbs',
-        activity_level: goals.activityLevel || null,
-        goal_type: goals.goalType || null,
-        onboarding_complete: goals.onboardingComplete ?? false,
+        calories: calories ?? 2000,
+        protein: protein ?? 150,
+        carbs: carbs ?? 250,
+        fat: fat ?? 65,
+        fiber: fiber ?? 25,
+        target_weight: weight ?? null,
+        weight_unit: weightUnit || 'lbs',
+        activity_level: activityId || null,   // store activityId in activity_level column
+        goal_type: goalType || null,
+        onboarding_complete: onboardingComplete ?? false,
+        extras,
         updated_at: new Date().toISOString(),
       }, { onConflict: 'user_id' });
     } catch (err) { console.error('Failed to save goals:', err); }
@@ -274,8 +285,8 @@ export const DiaryProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         user_id: user.id,
         entry_date: date,
         food_log: dayData.foodLog || [],
-        weight_log: dayData.weightLog ?? null,
-        water_ml: dayData.waterMl ?? null,
+        weight_log: dayData.weight ?? null,
+        water_ml: dayData.water ?? null,
         notes: dayData.notes ?? null,
         updated_at: new Date().toISOString(),
       }, { onConflict: 'user_id,entry_date' });

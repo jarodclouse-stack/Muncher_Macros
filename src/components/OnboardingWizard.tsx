@@ -39,7 +39,7 @@ export const OnboardingWizard: React.FC<{ onComplete: () => void }> = ({ onCompl
 
   const finish = () => {
     if (screenName.trim()) {
-      updateSettings({ screenName: screenName.trim() });
+      updateSettings({ displayName: screenName.trim() });
     }
     updateGoals({
       sex,
