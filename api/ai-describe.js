@@ -177,7 +177,8 @@ function normalizeResult(f) {
     'Insoluble Fiber': Math.round(parseNum(f['Insoluble Fiber'] || f.insolubleFiber || f.insoluble_fiber) * 10) / 10,
     solubleFiber: Math.round(parseNum(f['Soluble Fiber'] || f.solubleFiber || f.soluble_fiber) * 10) / 10,
     insolubleFiber: Math.round(parseNum(f['Insoluble Fiber'] || f.insolubleFiber || f.insoluble_fiber) * 10) / 10,
-    category: String(f.category || 'unknown'),
+    category: String(f.category || 'unknown'), // legacy
+    foodGroup: String(f.foodGroup || f.category || 'Other'),
     confidence: String(f.confidence || 'high'),
     nutriscore_grade: f.nutriscore_grade ? String(f.nutriscore_grade).toLowerCase().trim() : undefined,
     nutrient_levels: typeof f.nutrient_levels === 'object' && f.nutrient_levels ? {
@@ -405,7 +406,7 @@ The JSON object MUST follow this structure exactly:
   "foods": [
     {
       "name": "specific ingredient name (canonicalized)",
-      "category": "protein|grain|vegetable|fruit|dairy|sauce|topping|side|beverage|dessert|condiment|snack|other",
+      "foodGroup": "Vegetables|Fruits|Grains & Breads|Meat & Poultry|Fish & Seafood|Dairy & Eggs|Nuts & Seeds|Fats & Oils|Sweets & Snacks|Beverages|Mixed Meals|Legumes & Beans|Condiments & Sauces|Supplements & Powders|Herbs & Spices|Soups & Stews|Fast Food / Restaurant|Alcoholic Beverages|Other",
       "confidence": "high|medium|low",
       "detectedCount": number,
       "sUnit": "piece|slice|whole|serving|oz|cup|tbsp|tsp|g|ml",

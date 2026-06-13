@@ -1,3 +1,24 @@
+export type FoodGroup = 
+  | 'Vegetables'
+  | 'Fruits'
+  | 'Grains & Breads'
+  | 'Meat & Poultry'
+  | 'Fish & Seafood'
+  | 'Dairy & Eggs'
+  | 'Nuts & Seeds'
+  | 'Fats & Oils'
+  | 'Sweets & Snacks'
+  | 'Beverages'
+  | 'Mixed Meals'
+  | 'Legumes & Beans'
+  | 'Condiments & Sauces'
+  | 'Supplements & Powders'
+  | 'Herbs & Spices'
+  | 'Soups & Stews'
+  | 'Fast Food / Restaurant'
+  | 'Alcoholic Beverages'
+  | 'Other';
+
 export interface RecipeItem {
   food: Food;
   qty: string;
@@ -38,6 +59,7 @@ export interface Food {
   stagedQty?: string;
   stagedUnit?: string;
   showNutrientIntel?: boolean;
+  foodGroup?: FoodGroup;
   [key: string]: any; // Allow for flexible micronutrient keys
 }
 

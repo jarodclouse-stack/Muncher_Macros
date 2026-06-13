@@ -280,6 +280,33 @@ export default async function handler(req, res) {
       }
       if (!cal) cal = Math.round(prot * 4 + carb * 4 + fat * 9);
 
+      const mapOffCategory = (tags) => {
+        if (!tags || !tags.length) return 'Other';
+        const str = tags.join(' ').toLowerCase();
+        
+        if (str.includes('alcohol') || str.includes('beer') || str.includes('wine') || str.includes('vodka') || str.includes('liquor')) return 'Alcoholic Beverages';
+        if (str.includes('fast food') || str.includes('burger') || str.includes('mcdonalds')) return 'Fast Food / Restaurant';
+        if (str.includes('soup') || str.includes('stew') || str.includes('broth')) return 'Soups & Stews';
+        if (str.includes('supplement') || str.includes('whey') || str.includes('protein powder') || str.includes('vitamin')) return 'Supplements & Powders';
+        if (str.includes('sauce') || str.includes('condiment') || str.includes('dressing') || str.includes('ketchup') || str.includes('mayo')) return 'Condiments & Sauces';
+        if (str.includes('legume') || str.includes('bean') || str.includes('lentil') || str.includes('chickpea')) return 'Legumes & Beans';
+        if (str.includes('herb') || str.includes('spice') || str.includes('seasoning')) return 'Herbs & Spices';
+        
+        if (str.includes('vegetable')) return 'Vegetables';
+        if (str.includes('fruit')) return 'Fruits';
+        if (str.includes('bread') || str.includes('cereal') || str.includes('pasta') || str.includes('grain')) return 'Grains & Breads';
+        if (str.includes('meat') || str.includes('poultry') || str.includes('chicken') || str.includes('beef') || str.includes('pork')) return 'Meat & Poultry';
+        if (str.includes('fish') || str.includes('seafood')) return 'Fish & Seafood';
+        if (str.includes('dairy') || str.includes('cheese') || str.includes('milk') || str.includes('egg') || str.includes('yogurt')) return 'Dairy & Eggs';
+        if (str.includes('nut') || str.includes('seed')) return 'Nuts & Seeds';
+        if (str.includes('oil') || str.includes('fat') || str.includes('butter')) return 'Fats & Oils';
+        if (str.includes('snack') || str.includes('sweet') || str.includes('candy') || str.includes('chocolate') || str.includes('dessert') || str.includes('cookie') || str.includes('ice cream')) return 'Sweets & Snacks';
+        if (str.includes('beverage') || str.includes('drink') || str.includes('juice') || str.includes('soda')) return 'Beverages';
+        if (str.includes('meal') || str.includes('pizza') || str.includes('sandwich') || str.includes('casserole')) return 'Mixed Meals';
+        
+        return 'Other';
+      };
+
       // Build a clean name: only prepend the brand if the product name doesn't already contain it
       const rawProductName = (p.product_name_en || p.product_name || 'Unknown Item').trim();
       const primaryBrand = (p.brands || '').split(',')[0].trim();
@@ -340,6 +367,7 @@ export default async function handler(req, res) {
           sugars: p.nutriments.sugars_100g !== undefined ? Number(p.nutriments.sugars_100g) : undefined,
           salt: p.nutriments.salt_100g !== undefined ? Number(p.nutriments.salt_100g) : undefined,
         } : undefined,
+        foodGroup: mapOffCategory(p.categories_tags),
         _src: 'off'
       };
     });
