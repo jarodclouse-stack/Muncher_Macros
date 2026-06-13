@@ -3,7 +3,8 @@ import ReactDOM from 'react-dom';
 import { 
   User, Mail, Lock, ShieldCheck, AlertCircle, Loader2, Settings as SettingsIcon, 
   Trash2, Palette, RotateCcw, Check, X, Download, Moon, Zap, Sun, Waves, Leaf, 
-  Castle, Sunset, Anchor, Gauge, Atom, Crown, Wind, Shield, Eye, Hammer, Sparkles 
+  Castle, Sunset, Anchor, Gauge, Atom, Crown, Wind, Shield, Eye, Hammer, Sparkles,
+  Target, Flame, Dumbbell
 } from 'lucide-react';
 
 const getThemeIcon = (id: ThemeName, color: string, size = 16) => {
@@ -637,6 +638,75 @@ export const SettingsView: React.FC<{ onClose: () => void }> = ({ onClose }) => 
                       style={{ padding: '6px 16px', border: 'none', borderRadius: '999px', background: settings.units.height === 'ft' ? 'var(--theme-accent)' : 'transparent', color: settings.units.height === 'ft' ? '#000' : 'var(--theme-text-dim)', fontSize: '12px', fontWeight: '800', cursor: 'pointer', transition: 'all 0.2s' }}>FT/IN</button>
                   </div>
                 </div>
+              </div>
+            </div>
+
+            {/* Goals & Macros Preferences */}
+            <div className="section" style={{ background: 'var(--theme-panel)', border: '1px solid var(--theme-border)', borderRadius: 'var(--radius-lg)', padding: 'var(--space-xl)' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: 'var(--space-lg)', fontWeight: '700', color: 'var(--theme-text)' }}><Target size={18} color="var(--theme-accent)" /> Goals & Macros</div>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                  <label className="lbl" style={{ display: 'flex', alignItems: 'center', gap: '6px' }}><Dumbbell size={14} color="var(--theme-accent)"/> Protein Strategy</label>
+                  <select 
+                    value={localCache.goals?.proteinLevelId || 'moderate'} 
+                    onChange={e => updateGoals({ proteinLevelId: e.target.value })}
+                    className="inp"
+                    style={{ background: 'rgba(0,0,0,0.4)', padding: '10px 14px', border: '1px solid var(--theme-border)', borderRadius: '10px', color: '#fff', fontSize: '14px', fontFamily: 'inherit' }}
+                  >
+                    <option value="sedentary">Basic Maintenance (Low Protein)</option>
+                    <option value="light">Standard (Moderate Protein)</option>
+                    <option value="moderate">Athletic (High Protein)</option>
+                    <option value="active">Very High Protein</option>
+                    <option value="athlete">Elite Performance</option>
+                    <option value="bodybuilder">Maximum Bodybuilding Limit</option>
+                  </select>
+                </div>
+
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                  <label className="lbl" style={{ display: 'flex', alignItems: 'center', gap: '6px' }}><Sparkles size={14} color="var(--theme-accent)"/> Dietary Style (Macro Split)</label>
+                  <select 
+                    value={
+                      localCache.goals?.macroC === 5 ? 'keto' :
+                      localCache.goals?.macroC === 25 ? 'low-carb' :
+                      localCache.goals?.macroC === 55 ? 'high-carb' :
+                      'balanced'
+                    } 
+                    onChange={e => {
+                      const style = e.target.value;
+                      let c = 45; let f = 25;
+                      if (style === 'keto') { c = 5; f = 65; }
+                      else if (style === 'low-carb') { c = 25; f = 45; }
+                      else if (style === 'high-carb') { c = 55; f = 15; }
+                      updateGoals({ macroC: c, macroF: f });
+                    }}
+                    className="inp"
+                    style={{ background: 'rgba(0,0,0,0.4)', padding: '10px 14px', border: '1px solid var(--theme-border)', borderRadius: '10px', color: '#fff', fontSize: '14px', fontFamily: 'inherit' }}
+                  >
+                    <option value="balanced">Balanced (45% C / 25% F)</option>
+                    <option value="low-carb">Low Carb (25% C / 45% F)</option>
+                    <option value="keto">Keto (5% C / 65% F)</option>
+                    <option value="high-carb">High Carb (55% C / 15% F)</option>
+                  </select>
+                </div>
+
+                {localCache.goals?.goalType !== 'maintain' && (
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                    <label className="lbl" style={{ display: 'flex', alignItems: 'center', gap: '6px' }}><Flame size={14} color="var(--theme-accent)"/> Weight Velocity</label>
+                    <select 
+                      value={localCache.goals?.rate || 0.5} 
+                      onChange={e => updateGoals({ rate: Number(e.target.value) })}
+                      className="inp"
+                      style={{ background: 'rgba(0,0,0,0.4)', padding: '10px 14px', border: '1px solid var(--theme-border)', borderRadius: '10px', color: '#fff', fontSize: '14px', fontFamily: 'inherit' }}
+                    >
+                      <option value="0.5">0.5 lbs / week</option>
+                      <option value="1">1.0 lbs / week</option>
+                      <option value="1.5">1.5 lbs / week</option>
+                      <option value="2">2.0 lbs / week</option>
+                    </select>
+                  </div>
+                )}
+
               </div>
             </div>
 

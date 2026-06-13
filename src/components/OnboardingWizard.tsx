@@ -4,7 +4,7 @@ import { useDiary } from '../context/DiaryContext';
 import { ACTIVITY_LEVELS } from '../lib/constants';
 import { ChevronRight, ChevronLeft, User, Target, Flame, Sparkles, Dumbbell, Scale } from 'lucide-react';
 
-const STEPS = ['welcome', 'body', 'goal', 'activity'] as const;
+const STEPS = ['welcome', 'body', 'activity', 'protein', 'goal_type', 'goal_rate', 'diet_style'] as const;
 type Step = typeof STEPS[number];
 
 export const OnboardingWizard: React.FC<{ onComplete: () => void }> = ({ onComplete }) => {
@@ -21,12 +21,21 @@ export const OnboardingWizard: React.FC<{ onComplete: () => void }> = ({ onCompl
   const [targetWeight, setTargetWeight] = useState('');
   const [goalType, setGoalType] = useState('maintain');
   const [activityId, setActivityId] = useState('moderate');
+  const [proteinLevelId, setProteinLevelId] = useState('moderate');
+  const [goalRate, setGoalRate] = useState<number>(0.5);
+  const [dietStyle, setDietStyle] = useState('balanced');
 
   const stepIdx = STEPS.indexOf(step);
   const progress = ((stepIdx + 1) / STEPS.length) * 100;
 
   const next = () => {
-    const nextIdx = stepIdx + 1;
+    let nextIdx = stepIdx + 1;
+    
+    // Skip goal_rate if goalType is 'maintain'
+    if (STEPS[nextIdx] === 'goal_rate' && goalType === 'maintain') {
+      nextIdx++;
+    }
+
     if (nextIdx < STEPS.length) {
       setStep(STEPS[nextIdx]);
     } else {
@@ -42,6 +51,14 @@ export const OnboardingWizard: React.FC<{ onComplete: () => void }> = ({ onCompl
     if (screenName.trim()) {
       updateSettings({ displayName: screenName.trim() });
     }
+    
+    // Convert diet style to macros
+    let macroC = 45;
+    let macroF = 25;
+    if (dietStyle === 'keto') { macroC = 5; macroF = 65; }
+    else if (dietStyle === 'low-carb') { macroC = 25; macroF = 45; }
+    else if (dietStyle === 'high-carb') { macroC = 55; macroF = 15; }
+
     updateGoals({
       sex,
       age: Number(age),
@@ -49,11 +66,11 @@ export const OnboardingWizard: React.FC<{ onComplete: () => void }> = ({ onCompl
       weight: Number(weight),
       goalType,
       activityId,
-      proteinLevelId: activityId,
-      rate: goalType === 'lose' ? 0.5 : goalType === 'gain' ? 0.25 : 0,
+      proteinLevelId,
+      rate: goalType === 'maintain' ? 0 : goalRate,
       targetWeight: targetWeight ? Number(targetWeight) : Number(weight),
-      macroC: 45,
-      macroF: 25,
+      macroC,
+      macroF,
       onboardingComplete: true,
     });
     onComplete();
@@ -61,6 +78,7 @@ export const OnboardingWizard: React.FC<{ onComplete: () => void }> = ({ onCompl
 
   const canAdvance = () => {
     if (step === 'body') return Number(age) > 0 && Number(height) > 0 && Number(weight) > 0;
+    if (step === 'goal_type' && goalType !== 'maintain') return targetWeight !== '';
     return true;
   };
 
@@ -127,7 +145,7 @@ export const OnboardingWizard: React.FC<{ onComplete: () => void }> = ({ onCompl
           </div>
         );
 
-      case 'goal':
+      case 'goal_type':
         return (
           <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: 'var(--theme-accent)' }}>
@@ -174,6 +192,70 @@ export const OnboardingWizard: React.FC<{ onComplete: () => void }> = ({ onCompl
           </div>
         );
 
+      case 'goal_rate':
+        return (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: 'var(--theme-accent)' }}>
+              <Flame size={20} /> <span style={{ fontSize: '18px', fontWeight: '800', color: 'var(--theme-text)' }}>Velocity</span>
+            </div>
+            <p style={{ color: 'var(--theme-text-dim)', fontSize: '13px', margin: 0 }}>How fast do you want to {goalType === 'lose' ? 'lose weight' : 'gain muscle'}?</p>
+            {[
+              { id: 0.5, label: 'Steady & Sustainable', desc: `0.5 lbs / week` },
+              { id: 1.0, label: 'Moderate Pace', desc: `1.0 lbs / week` },
+              { id: 1.5, label: 'Aggressive', desc: `1.5 lbs / week` },
+              { id: 2.0, label: 'Maximum Velocity', desc: `2.0 lbs / week` },
+            ].map(r => (
+              <div
+                key={r.id}
+                onClick={() => setGoalRate(r.id)}
+                style={{
+                  padding: '14px 16px',
+                  background: goalRate === r.id ? 'var(--theme-accent-dim)' : 'rgba(0,0,0,0.3)',
+                  border: goalRate === r.id ? '2px solid var(--theme-accent)' : '1px solid var(--theme-border)',
+                  borderRadius: '12px',
+                  cursor: 'pointer',
+                  transition: 'all 0.2s',
+                }}
+              >
+                <div style={{ fontWeight: '700', color: 'var(--theme-text)', fontSize: '14px' }}>{r.label}</div>
+                <div style={{ fontSize: '11px', color: 'var(--theme-text-dim)', marginTop: '2px' }}>{r.desc}</div>
+              </div>
+            ))}
+          </div>
+        );
+
+      case 'diet_style':
+        return (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: 'var(--theme-accent)' }}>
+              <Sparkles size={20} /> <span style={{ fontSize: '18px', fontWeight: '800', color: 'var(--theme-text)' }}>Dietary Style</span>
+            </div>
+            <p style={{ color: 'var(--theme-text-dim)', fontSize: '13px', margin: 0 }}>How do you prefer to eat?</p>
+            {[
+              { id: 'balanced', label: 'Balanced', desc: 'Moderate carbs and fats (45% C / 25% F)' },
+              { id: 'low-carb', label: 'Low Carb', desc: 'Lower carbs, higher fats (25% C / 45% F)' },
+              { id: 'keto', label: 'Keto', desc: 'Extremely low carbs, very high fats (5% C / 65% F)' },
+              { id: 'high-carb', label: 'High Carb', desc: 'High carbs, lower fats (55% C / 15% F)' },
+            ].map(d => (
+              <div
+                key={d.id}
+                onClick={() => setDietStyle(d.id)}
+                style={{
+                  padding: '14px 16px',
+                  background: dietStyle === d.id ? 'var(--theme-accent-dim)' : 'rgba(0,0,0,0.3)',
+                  border: dietStyle === d.id ? '2px solid var(--theme-accent)' : '1px solid var(--theme-border)',
+                  borderRadius: '12px',
+                  cursor: 'pointer',
+                  transition: 'all 0.2s',
+                }}
+              >
+                <div style={{ fontWeight: '700', color: 'var(--theme-text)', fontSize: '14px' }}>{d.label}</div>
+                <div style={{ fontSize: '11px', color: 'var(--theme-text-dim)', marginTop: '2px' }}>{d.desc}</div>
+              </div>
+            ))}
+          </div>
+        );
+
       case 'activity':
         return (
           <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
@@ -196,6 +278,47 @@ export const OnboardingWizard: React.FC<{ onComplete: () => void }> = ({ onCompl
               >
                 <div style={{ fontWeight: '700', color: 'var(--theme-text)', fontSize: '14px' }}>{a.label}</div>
                 <div style={{ fontSize: '11px', color: 'var(--theme-text-dim)', marginTop: '2px' }}>{a.desc}</div>
+              </div>
+            ))}
+          </div>
+        );
+
+      case 'protein':
+        return (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: 'var(--theme-accent)' }}>
+              <Dumbbell size={20} /> <span style={{ fontSize: '18px', fontWeight: '800', color: 'var(--theme-text)' }}>Protein Target</span>
+            </div>
+            <p style={{ color: 'var(--theme-text-dim)', fontSize: '13px', margin: 0 }}>Select a protein intake strategy. Even if you are sedentary, high protein helps preserve muscle while dieting!</p>
+            {ACTIVITY_LEVELS.map((a: { id: string; label: string; desc: string; tdee: number }) => (
+              <div
+                key={a.id}
+                onClick={() => setProteinLevelId(a.id)}
+                style={{
+                  padding: '12px 14px',
+                  background: proteinLevelId === a.id ? 'var(--theme-accent-dim)' : 'rgba(0,0,0,0.3)',
+                  border: proteinLevelId === a.id ? '2px solid var(--theme-accent)' : '1px solid var(--theme-border)',
+                  borderRadius: '12px',
+                  cursor: 'pointer',
+                  transition: 'all 0.2s',
+                }}
+              >
+                <div style={{ fontWeight: '700', color: 'var(--theme-text)', fontSize: '14px' }}>
+                  {a.id === 'sedentary' ? 'Basic Maintenance (Low Protein)' : 
+                   a.id === 'light' ? 'Standard (Moderate Protein)' : 
+                   a.id === 'moderate' ? 'Athletic (High Protein)' : 
+                   a.id === 'active' ? 'Very High Protein' : 
+                   a.id === 'athlete' ? 'Elite Performance' : 
+                   'Maximum Bodybuilding Limit'}
+                </div>
+                <div style={{ fontSize: '11px', color: 'var(--theme-text-dim)', marginTop: '2px' }}>
+                  {a.id === 'sedentary' ? '0.5g per lb of bodyweight' : 
+                   a.id === 'light' ? '0.6g per lb of bodyweight' : 
+                   a.id === 'moderate' ? '0.7g per lb of bodyweight' : 
+                   a.id === 'active' ? '0.8g per lb of bodyweight' : 
+                   a.id === 'athlete' ? '0.9g per lb of bodyweight' : 
+                   '1.0g per lb of bodyweight'}
+                </div>
               </div>
             ))}
           </div>
