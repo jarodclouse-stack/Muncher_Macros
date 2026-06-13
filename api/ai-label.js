@@ -11,6 +11,8 @@ const MODELS = [
   'claude-haiku-4-5-20241001',
 ];
 
+const REQUEST_TIMEOUT_MS = 25000; // 25s timeout to safely beat Vercel's 30s limit
+
 async function anthropicRequest(prompt, apiKey, modelIndex = 0) {
   const model = MODELS[modelIndex];
   return new Promise((resolve, reject) => {
@@ -39,7 +41,14 @@ async function anthropicRequest(prompt, apiKey, modelIndex = 0) {
         } catch (e) { reject(new Error('Invalid JSON from AI')); }
       });
     });
+
     apiReq.on('error', reject);
+    
+    apiReq.setTimeout(REQUEST_TIMEOUT_MS, () => {
+      apiReq.destroy();
+      reject(new Error('AI response timed out (took longer than 25 seconds). Please try a clearer or closer photo of the label.'));
+    });
+
     apiReq.write(JSON.stringify({
       model,
       max_tokens: 2048,
