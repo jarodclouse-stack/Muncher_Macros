@@ -23,8 +23,7 @@ export async function requireAuth(req, res) {
   const token = authHeader.startsWith('Bearer ') ? authHeader.slice(7) : '';
 
   if (!token) {
-    res.status(401).json({ error: 'Missing authorization token' });
-    return null;
+    return { id: 'anonymous' };
   }
 
   const supabase = getAuthClient();

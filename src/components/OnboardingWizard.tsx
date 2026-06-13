@@ -18,6 +18,7 @@ export const OnboardingWizard: React.FC<{ onComplete: () => void }> = ({ onCompl
   const [age, setAge] = useState('25');
   const [height, setHeight] = useState(isMetric ? '178' : '70');
   const [weight, setWeight] = useState(isMetric ? '77' : '170');
+  const [targetWeight, setTargetWeight] = useState('');
   const [goalType, setGoalType] = useState('maintain');
   const [activityId, setActivityId] = useState('moderate');
 
@@ -50,7 +51,7 @@ export const OnboardingWizard: React.FC<{ onComplete: () => void }> = ({ onCompl
       activityId,
       proteinLevelId: activityId,
       rate: goalType === 'lose' ? 0.5 : goalType === 'gain' ? 0.25 : 0,
-      targetWeight: Number(weight),
+      targetWeight: targetWeight ? Number(targetWeight) : Number(weight),
       macroC: 45,
       macroF: 25,
       onboardingComplete: true,
@@ -158,6 +159,18 @@ export const OnboardingWizard: React.FC<{ onComplete: () => void }> = ({ onCompl
                 </div>
               </div>
             ))}
+            {goalType !== 'maintain' && (
+              <div style={{ marginTop: '8px' }}>
+                <label style={lblStyle}>Target Weight ({unitWeight})</label>
+                <input 
+                  type="number" 
+                  value={targetWeight} 
+                  onChange={e => setTargetWeight(e.target.value)} 
+                  style={inpStyle} 
+                  placeholder={`Enter your target weight in ${unitWeight}`}
+                />
+              </div>
+            )}
           </div>
         );
 

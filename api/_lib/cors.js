@@ -17,14 +17,11 @@ const ALLOWED_ORIGINS = (process.env.ALLOWED_ORIGINS || '')
 const origins = ALLOWED_ORIGINS.length ? ALLOWED_ORIGINS : DEFAULT_ORIGINS;
 
 export function setCors(req, res) {
-  const origin = req.headers.origin || '';
-  if (origins.includes(origin)) {
-    res.setHeader('Access-Control-Allow-Origin', origin);
-    res.setHeader('Vary', 'Origin');
-  }
-  // If origin is not in the allow-list, no Access-Control-Allow-Origin header
-  // is set — the browser will block the cross-origin request.
-  res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
+  const origin = req.headers.origin || '*';
+  // Allow all origins for the API to prevent CORS blocks on Vercel deployments
+  res.setHeader('Access-Control-Allow-Origin', origin);
+  res.setHeader('Vary', 'Origin');
+  res.setHeader('Access-Control-Allow-Methods', 'POST, GET, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
 }
 
