@@ -379,7 +379,17 @@ const DiaryEntryItem = ({ log, onRemove, onEditPortion, onMove }: any) => {
         <div className="diary-entry-header">
           <div style={{ flex: 1, minWidth: 0 }}>
             <div className="diary-entry-name">{f.name}</div>
-            {f.brand && <div className="diary-entry-brand">• {f.brand}</div>}
+            <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flexWrap: 'wrap', marginTop: '2px' }}>
+              {(f.foodGroup || f.category) && (f.foodGroup || f.category) !== 'Other' && (f.foodGroup || f.category) !== 'unknown' && (
+                <div style={{ 
+                  fontSize: '9px', fontWeight: '800', background: 'rgba(255,255,255,0.1)', color: 'var(--theme-text-dim)', 
+                  padding: '2px 6px', borderRadius: '4px', textTransform: 'uppercase' 
+                }}>
+                  {f.foodGroup || f.category}
+                </div>
+              )}
+              {f.brand && <div className="diary-entry-brand">• {f.brand}</div>}
+            </div>
           </div>
           <div className="diary-entry-actions">
             {/* Nutri-Score badge — clickable, horizontal pill design, perfectly aligned */}

@@ -235,7 +235,7 @@ export const PantryView: React.FC<PantryViewProps> = ({ initialMeal, onClose, is
   const [createTab, setCreateTab] = useState<'basics' | 'micros' | 'recipe'>('recipe');
   
   const [sortBy] = useState<'recent' | 'name' | 'cal' | 'p'>('recent');
-  const [filterType, setFilterType] = useState<'all' | 'fav' | 'high-p' | 'low-c' | 'recipe'>('all');
+  const [filterType, setFilterType] = useState<string>('all');
   
   const [searchQuery, setSearchQuery] = useState('');
   const [isSearching, setIsSearching] = useState(false);
@@ -2407,19 +2407,24 @@ export const PantryView: React.FC<PantryViewProps> = ({ initialMeal, onClose, is
             <Plus size={16} /> CREATE NEW FOOD OR RECIPE
           </button>
 
-          {/* Filters from Image 2 */}
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '8px', marginBottom: '8px' }}>
-            <PantryFilter label="All" active={filterType === 'all'} onClick={() => setFilterType('all')} />
-            <PantryFilter label="Favorites" active={filterType === 'fav'} onClick={() => setFilterType('fav')} />
-            <PantryFilter label="Protein" active={filterType === 'high-p'} onClick={() => setFilterType('high-p')} />
-            <PantryFilter label="Recipes" active={filterType === 'recipe'} onClick={() => setFilterType('recipe')} />
+          {/* Category Filters */}
+          <div style={{ display: 'flex', overflowX: 'auto', gap: '8px', paddingBottom: '8px', marginBottom: '8px', WebkitOverflowScrolling: 'touch', scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
+            <style dangerouslySetInnerHTML={{__html: `::-webkit-scrollbar { display: none; }`}} />
+            <div style={{ display: 'flex', gap: '8px', padding: '0 4px', minWidth: 'max-content' }}>
+              <PantryFilter label="All" active={filterType === 'all'} onClick={() => setFilterType('all')} />
+              <PantryFilter label="Favorites" active={filterType === 'fav'} onClick={() => setFilterType('fav')} />
+              <PantryFilter label="Recipes" active={filterType === 'recipe'} onClick={() => setFilterType('recipe')} />
+              {['Meat & Poultry', 'Vegetables', 'Fruits', 'Grains & Breads', 'Dairy & Eggs', 'Sweets & Snacks', 'Beverages', 'Mixed Meals', 'Legumes & Beans', 'Condiments & Sauces', 'Supplements & Powders', 'Herbs & Spices', 'Soups & Stews', 'Fast Food / Restaurant', 'Alcoholic Beverages', 'Other'].map(group => (
+                <PantryFilter key={group} label={group} active={filterType === group} onClick={() => setFilterType(group)} />
+              ))}
+            </div>
           </div>
 
           {[...customFoods]
             .filter((f: Food) => {
               if (filterType === 'fav') return f.favorite;
-              if (filterType === 'high-p') return (f.p * 4) / (getCal(f) || 1) > 0.3;
-              if (filterType === 'recipe') return (f.ingredientItems?.length || 0) > 0 || (f as Food & { type?: string }).type === 'recipe';
+              if (filterType === 'recipe') return f.type === 'recipe';
+              if (filterType !== 'all') return f.foodGroup === filterType || f.category === filterType;
               return true;
             })
             .sort((a: Food, b: Food) => {
