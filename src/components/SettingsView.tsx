@@ -44,7 +44,7 @@ import { apiFetch } from '../lib/api';
 
 export const SettingsView: React.FC<{ onClose: () => void }> = ({ onClose }) => {
   const { user, isGuest, updateEmail, updatePassword, convertGuestToPermanent } = useAuth();
-  const { localCache, updateSettings, purchaseTheme, updateLocalCache, isPro } = useDiary();
+  const { localCache, updateSettings, purchaseTheme, updateLocalCache, isPro, updateGoals } = useDiary();
   const { theme: currentThemeName, setTheme } = useTheme();
 
   const rewards = getRewardBreakdown(localCache);
