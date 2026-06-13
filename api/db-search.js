@@ -3,7 +3,7 @@ import { createClient } from '@supabase/supabase-js';
 import { setCors, handlePreflight } from './_lib/cors.js';
 import { validateQuery, readBody } from './_lib/validate.js';
 import { rateLimit } from './_lib/rate-limit.js';
-import { requireAuth } from './_lib/auth.js';
+import { allowGuest } from './_lib/auth.js';
 
 const round1 = v => Math.round((Number(v) || 0) * 10) / 10;
 const round2 = v => Math.round((Number(v) || 0) * 100) / 100;
@@ -80,7 +80,7 @@ export default async function handler(req, res) {
   if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
   if (!(await rateLimit(req, res))) return;
 
-  const user = await requireAuth(req, res);
+  const user = await allowGuest(req, res);
   if (!user) return;
 
   const body = await readBody(req);

@@ -51,6 +51,38 @@ This file is shared between Adam (Antigravity) and Eve (Claude). Update it at th
 - `[x]` **Hide sub-nutrients in scan result view (Eve)**:
   - `[x]` `src/components/PantryView.tsx` — After nutrition label scan, `setShowFullNutrition(false)` instead of `true`. Scan result now shows only the quick stats row (Cal/P/C/F) by default; user can tap "Show Detailed Nutrition" to expand.
   - `[x]` `src/components/NutritionFactsDisplay.tsx` — Added `hideSubNutrients` prop. When `true` (and not in edit mode), hides sugars, fiber, soluble/insoluble fiber, sat fat, sodium, potassium, and all dynamic micros.
+- `[x]` **NutriScore Badge Fix (Eve → Adam pushed)**:
+  - `[x]` `src/components/PantryView.tsx` — Badge now reads `f.nutriscore_grade` first, falls back to `estimateNutriScore()`. Uses `NS_COLOR` (lowercase keys) so color always renders. Badge is tappable — opens `NutriScorePopup`.
+  - `[x]` `src/components/NutritionFactsDisplay.tsx` — Removed the full Nutri-Score section (grade header + A–E bar); user taps the badge instead.
+  - `[x]` `src/components/ProgressView.tsx` — Micronutrient Goals rows restyled to pill/chip style matching Nutrition tab (`micro-badge-btn` class).
+- `[x]` **Data Layer Audit & Fixes (Eve — pushed)**:
+  - `[x]` Found 5 categories of DB ↔ cache key mismatches after data normalization split.
+  - `[x]` `DiaryContext.tsx` load fix: `weight_log` → `weight`, `water_ml` → `water` (was `weightLog`/`waterMl` — weight/water never saved or loaded).
+  - `[x]` `DiaryContext.tsx` save fix: same key alignment in `saveDiaryToDb`.
+  - `[x]` `DiaryContext.tsx` goals load fix: `activityLevel` → `activityId` (TDEE always defaulted to moderate).
+  - `[x]` `DiaryContext.tsx` goals save fix: `activityId` → `activity_level` column; all extra fields dumped to `extras` JSONB so body stats survive across sessions.
+  - `[x]` `OnboardingWizard.tsx`: `updateSettings({ screenName })` → `updateSettings({ displayName })` (name never persisted).
+  - `[x]` Supabase migration applied: `ALTER TABLE user_goals ADD COLUMN IF NOT EXISTS extras JSONB DEFAULT '{}'::jsonb;`
+  - ✅ Pushed as commit `1bf519f`.
+- `[x]` **Food Categories — 19 categories (Adam)**:
+  - `[x]` `api/ai-lookup.js`, `api/ai-describe.js` — AI prompts updated to classify into 19 food groups.
+  - `[x]` `api/off-search.js` — OFF parser maps products to the 19 categories.
+  - `[x]` `src/types/food.ts` — `FoodGroup` type updated with all 19 categories.
+  - `[x]` `src/components/PantryView.tsx` — Horizontally scrollable category filter chips.
+  - `[x]` `src/components/DiaryView.tsx` — Category badge renders beneath each food name.
+- `[x]` **Vercel AI Timeout Fixes (Adam)**:
+  - `[x]` `vercel.json` — All AI functions set to `maxDuration: 30, memory: 1024`. Stripe routes preserved.
+  - `[x]` `api/ai-label.js` — `REQUEST_TIMEOUT_MS = 25000` intercepts slow requests before Vercel's 30s hard limit.
+- `[x]` **CORS & Guest Auth Fixes (Adam)**:
+  - `[x]` `api/_lib/cors.js` — Opened to all origins (was strict allowlist). Fixes Vercel CORS blocks.
+  - `[x]` `api/_lib/auth.js` — No-token requests return `{ id: 'anonymous' }` so guests can search foods.
+  - `[x]` `src/components/OnboardingWizard.tsx` — Target Weight field now separate from Current Weight (lose/gain goals only).
+  - ⚠️ Note: `requireAuth` still enforced on AI scan endpoints (`ai-label`, `ai-describe`, etc.) — only search is open to guests.
+- `[x]` **Auth & Quota Security Hardening (Eve)**:
+  - `[x]` `api/_lib/auth.js` — Split into `requireAuth` (strict — returns 401 on missing token) and `allowGuest` (permissive — returns `{ id: 'anonymous' }` for no-token requests). AI endpoints use `requireAuth`; search endpoints use `allowGuest`. Closes the hole where unauthenticated callers could reach AI endpoints for free.
+  - `[x]` `api/db-search.js` — Swapped `requireAuth` → `allowGuest`. Guests can search foods; invalid tokens still get 401.
+  - `[x]` `api/off-search.js` — Same swap as db-search.
+  - `[x]` `api/_lib/rate-limit.js` — `checkAiQuota`: anonymous users now get 401 instead of bypassing quota entirely. Also fixed stale table reference: `user_data` → `user_profiles` (data normalization renamed the table). TODO comment updated to reference correct table name.
 - `[ ]` **Apple Sign In**:
   - `[ ]` Apple Developer: App ID + Service ID + Private Key (.p8)
   - `[ ]` Supabase: Configure Apple provider
@@ -60,14 +92,23 @@ This file is shared between Adam (Antigravity) and Eve (Claude). Update it at th
 
 ## 🚀 Verification & Build Status
 
-* **TypeScript**: `npx tsc --noEmit` — 0 errors (verified by Eve after data normalization).
+* **TypeScript**: `npx tsc --noEmit` — 0 errors (verified by Eve after data audit, 2026-06-13).
 * **Tests**: `npm run test` — 24 test cases pass (Adam).
+* **Vercel**: Latest deployment READY (commit 9e2a8bd). `foods` table has 8,129 rows, `search_foods` RPC works correctly.
+* **Search**: DB + OFF search both functional. Prior "all search engines failed" report was during a brief ERROR deployment window — now resolved.
 
 ---
 
 ## ⏳ Pending / Next Steps
 
 1. **Apple Sign In** — In progress. Requires Apple Developer credentials from Jarod.
-2. **Stripe** — Jarod needs to create Stripe account and add 3 env vars to Vercel: `STRIPE_SECRET_KEY`, `STRIPE_PRICE_ID`, `STRIPE_WEBHOOK_SECRET`. Then register webhook URL.
-3. **Supabase Auth Providers** — Enable Anonymous sign-ins + confirm Google OAuth callback URLs are correct.
-4. **Revert free Pro** — Before public launch, revert `is_pro` default and remove `|| true` overrides (see TODOs in `DiaryContext.tsx` and `rate-limit.js`).
+3. **Stripe** — Jarod needs to create Stripe account and add 3 env vars to Vercel: `STRIPE_SECRET_KEY`, `STRIPE_PRICE_ID`, `STRIPE_WEBHOOK_SECRET`. Then register webhook URL.
+4. **Supabase Auth Providers** — Enable Anonymous sign-ins + confirm Google OAuth callback URLs are correct.
+5. **Revert free Pro** — Before public launch, revert `is_pro` default and remove `|| true` overrides (see TODOs in `DiaryContext.tsx` and `rate-limit.js`).
+
+- `[x]` **Food Categories & Search Fixes (Adam)**:
+  - `[x]` Fixed CORS issue blocking Vercel API routes and allowed guest search queries.
+  - `[x]` Fixed OnboardingWizard target weight defaulting to current weight.
+  - `[x]` Added 19 comprehensive Food Categories to data models, AI API prompts, and Open Food Facts parser.
+  - `[x]` Added Category horizontal scroll filters to PantryView.
+  - `[x]` Added Category badge pill to DiaryView food items.

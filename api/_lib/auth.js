@@ -14,25 +14,52 @@ function getAuthClient() {
 }
 
 /**
- * Extracts the Bearer token from the Authorization header and verifies
- * it against Supabase Auth. Returns the user object on success, or
- * sends a 401 response and returns null on failure.
+ * Strict auth — requires a valid Bearer token.
+ * Returns the user object on success, or sends 401 and returns null.
+ * Use on all AI scan endpoints (ai-label, ai-describe, ai-lookup, etc.)
  */
 export async function requireAuth(req, res) {
   const authHeader = req.headers.authorization || '';
   const token = authHeader.startsWith('Bearer ') ? authHeader.slice(7) : '';
 
   if (!token) {
-    return { id: 'anonymous' };
+    res.status(401).json({ error: 'Authentication required' });
+    return null;
   }
 
   const supabase = getAuthClient();
   if (!supabase) {
-    // If Supabase credentials aren't configured, allow the request through
-    // (local dev without auth setup). Log a warning.
     console.warn('[auth] Supabase credentials not configured — skipping auth check');
     return { id: 'anonymous' };
   }
+
+  try {
+    const { data: { user }, error } = await supabase.auth.getUser(token);
+    if (error || !user) {
+      res.status(401).json({ error: 'Invalid or expired token' });
+      return null;
+    }
+    return user;
+  } catch (err) {
+    console.error('[auth] Token verification failed:', err.message);
+    res.status(401).json({ error: 'Authentication failed' });
+    return null;
+  }
+}
+
+/**
+ * Guest-permissive auth — verifies token if present, but allows unauthenticated
+ * requests through as { id: 'anonymous' }.
+ * Use on search endpoints (db-search, off-search) where guests can browse foods.
+ */
+export async function allowGuest(req, res) {
+  const authHeader = req.headers.authorization || '';
+  const token = authHeader.startsWith('Bearer ') ? authHeader.slice(7) : '';
+
+  if (!token) return { id: 'anonymous' };
+
+  const supabase = getAuthClient();
+  if (!supabase) return { id: 'anonymous' };
 
   try {
     const { data: { user }, error } = await supabase.auth.getUser(token);

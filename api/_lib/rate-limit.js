@@ -9,7 +9,7 @@ const MAX_REQUESTS = 10;
 const FREE_DAILY_LIMIT = 10;  // Free tier: 10 AI scans/day
 // Pro users are unlimited — quota is skipped entirely
 // TODO (REVERT BEFORE LAUNCH): DB column is_pro defaults to true (all users are Pro).
-// When Stripe is live, run: ALTER TABLE user_data ALTER COLUMN is_pro SET DEFAULT false;
+// When Stripe is live, run: ALTER TABLE user_profiles ALTER COLUMN is_pro SET DEFAULT false;
 // Then remove the `|| true` override in checkAiQuota below.
 
 let ratelimit = null;
@@ -85,14 +85,18 @@ export async function rateLimit(req, res) {
  * Falls open (returns true) if Redis is not configured.
  */
 export async function checkAiQuota(userId, res) {
-  if (!userId || userId === 'anonymous') return true;
+  // Anonymous users are blocked from AI features entirely — they must sign in
+  if (!userId || userId === 'anonymous') {
+    res.status(401).json({ error: 'Sign in to use AI scanning features.' });
+    return false;
+  }
 
   // Pro users get unlimited AI scans — skip quota check
   try {
     const supabase = getSupabase();
     if (supabase) {
       const { data } = await supabase
-        .from('user_data')
+        .from('user_profiles')  // was 'user_data' (stale after data normalization)
         .select('is_pro')
         .eq('user_id', userId)
         .single();
