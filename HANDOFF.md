@@ -115,10 +115,23 @@ This file is shared between Adam (Antigravity) and Eve (Claude). Update it at th
     - `SUPABASE_SERVICE_ROLE_KEY` (from Supabase Dashboard → Settings → API → service_role key)
     - `APP_URL=https://munchermacros.digital`
   - ✅ `npx tsc --noEmit` — 0 errors.
+- `[x]` **Sprint Planning — Sprint 1 (Eve)**:
+  - `[x]` `SPRINT-1.md` created in project root — 2-week sprint with dependency chain, data persistence QA checklist (15 items total), and pre-launch blocker list.
+  - `[x]` All sprint items linked: P0 tracker setup (#2→#3→#4) unlocks goals audit (#6) unlocks macro consistency (#13); pantry fixes (#5) unlocks custom food persistence (#12); water goal (#8) unlocks water log persist (#14).
+- `[x]` **Security Architecture ADR (Eve)**:
+  - `[x]` `docs/ADR-001-security-architecture.md` — Full app security audit covering auth, CORS, OAuth, RLS, rate limiting, input validation, secrets.
+  - `[x]` **GAP-2 FIXED**: `api/_lib/cors.js` — CORS now validates origin against the `origins` allowlist instead of mirroring any origin. Add new allowed origins via `ALLOWED_ORIGINS` env var in Vercel.
+  - ⚠️ **GAP-1 still pending** (Pro `|| true` override, 3 places) — must revert before launch. See SPRINT-1.md P0 #1.
+  - ⚠️ **GAP-3 still pending** (OAuth state = userId, weak CSRF) — fix documented in ADR-001. Replace with signed JWT nonce in `fitbit-auth.js`, `google-fit-auth.js`, and their callback handlers before fitness tracker ships to real users.
 - `[ ]` **Apple Sign In**:
   - `[ ]` Apple Developer: App ID + Service ID + Private Key (.p8)
   - `[ ]` Supabase: Configure Apple provider
   - `[ ]` Code: Add Apple sign-in button to `src/pages/LoginScreen.tsx`
+- `[x]` **Vercel Hobby Limit Fix (Adam)**:
+  - `[x]` Consolidated 19 individual serverless functions into 4 master router endpoints (`api/ai.js`, `api/search.js`, `api/stripe.js`, `api/tracker.js`) to bypass Vercel's 12-function hard limit on the free tier.
+  - `[x]` Moved all core endpoint logic to internal `api/_lib/` subdirectories.
+  - `[x]` Updated all frontend `apiFetch` requests to use `?action=` routing.
+  - `[x]` Fixed `vercel.json` config rules to match the new router architecture.
 
 ---
 

@@ -20,23 +20,39 @@
 
 ### 🔴 P0 — Must ship (pre-launch blockers)
 
-| # | Item | Owner | Status | Notes |
-|---|------|-------|--------|-------|
-| 1 | **Revert free-Pro** — Remove `\|\| true` overrides in `DiaryContext.tsx` (×2) and `api/_lib/rate-limit.js`, then run `ALTER TABLE user_profiles ALTER COLUMN is_pro SET DEFAULT false;` | Eve | ⬜ Pending | **Cannot launch with this in place.** 3 files, low risk. Do last before prod deploy. |
-| 2 | **Apply tracker integration migration** — Run `scripts/migration-tracker-integrations.sql` in Supabase SQL Editor | Jarod | ⬜ Pending | Required before Fitbit/Google Fit will work |
-| 3 | **Add Vercel env vars for fitness tracker** | Jarod | ⬜ Pending | `FITBIT_CLIENT_ID`, `FITBIT_CLIENT_SECRET`, `GOOGLE_FIT_CLIENT_ID`, `GOOGLE_FIT_CLIENT_SECRET`, `SUPABASE_SERVICE_ROLE_KEY`, `APP_URL=https://munchermacros.digital` |
-| 4 | **Register OAuth redirect URIs** | Jarod | ⬜ Pending | Fitbit: `https://munchermacros.digital/api/fitbit-callback` · Google Cloud: `https://munchermacros.digital/api/google-fit-callback` |
+| # | Item | Owner | Status | Depends on | Notes |
+|---|------|-------|--------|-----------|-------|
+| 1 | **Revert free-Pro** — Remove `\|\| true` overrides in `DiaryContext.tsx` (×2) and `api/_lib/rate-limit.js`, then run `ALTER TABLE user_profiles ALTER COLUMN is_pro SET DEFAULT false;` | Eve | ⬜ Pending | Stripe live (P2-B) | **Cannot launch with this in place.** Do last before prod deploy. |
+| 2 | **Apply tracker migration** — Run `scripts/migration-tracker-integrations.sql` in Supabase SQL Editor | Jarod | ⬜ Pending | — | Unlocks #3, #4, #6 |
+| 3 | **Add Vercel env vars for fitness tracker** | Jarod | ⬜ Pending | #2 | `FITBIT_CLIENT_ID`, `FITBIT_CLIENT_SECRET`, `GOOGLE_FIT_CLIENT_ID`, `GOOGLE_FIT_CLIENT_SECRET`, `SUPABASE_SERVICE_ROLE_KEY`, `APP_URL` |
+| 4 | **Register OAuth redirect URIs** | Jarod | ⬜ Pending | #3 | Fitbit + Google Cloud consoles |
 
 ---
 
 ### 🟠 P1 — High value, should ship
 
-| # | Item | Owner | Status | Notes |
-|---|------|-------|--------|-------|
-| 5 | **Pantry fixes** — Identify and fix whatever is broken/missing in the pantry feature | Adam or Eve | ⬜ Pending | User-reported; exact bugs TBD — start with a live test session and file specific issues |
-| 6 | **Goals → Diary linkage audit** — Verify tracker TDEE flows into diary remaining calories end-to-end; macro goals display correctly in diary + nutrition views | Eve | ⬜ Pending | `computeGoals()` already handles `useTrackerTDEE` — needs smoke test once tracker migration is applied |
-| 7 | **Search end-to-end QA** — Manual test: text search, barcode scan, OFF fallback, category filter, recent searches. File any regressions. | Adam | ⬜ Pending | Race condition fixed; recent searches added. QA pass to confirm nothing new crept in. |
-| 8 | **Water goal visible in diary** — Confirm water goal from Goals tab surfaces in diary daily progress | Eve | ⬜ Pending | `waterGoal` is already read in DiaryView — verify it renders and persists correctly |
+| # | Item | Owner | Status | Depends on | Notes |
+|---|------|-------|--------|-----------|-------|
+| 5 | **Pantry fixes** — Identify and fix what's broken | Adam or Eve | ⬜ Pending | — | Unlocks #12 |
+| 6 | **Goals → Diary linkage audit** — Verify tracker TDEE flows into diary remaining calories; macro goals consistent across all views | Eve | ⬜ Pending | #2, #3, #4 | Unlocks #13 |
+| 7 | **Search end-to-end QA** — Text search, barcode, OFF fallback, category filter, recent searches | Adam | ⬜ Pending | — | |
+| 8 | **Water goal visible in diary** — Confirm Goals tab water goal surfaces in diary | Eve | ⬜ Pending | — | Unlocks #14 |
+
+---
+
+### 🟢 P1 — Data Persistence QA
+
+Verify that everything a user enters actually saves, survives a reload, and displays correctly everywhere it should.
+
+| # | What to verify | How to test | Owner | Status | Depends on |
+|---|---------------|-------------|-------|--------|-----------|
+| 9 | **Body stats persist** — Height, weight, age, sex, activity level survive reload and re-login | Enter values → reload → log out → log back in → confirm same | Eve | ⬜ Pending | — |
+| 10 | **Weight log persists + shows in Progress** — Logged weight appears in Progress chart and history after reload | Log weight → reload → check ProgressView | Eve | ⬜ Pending | — |
+| 11 | **Food log persists across sessions** — Diary foods still there after reload and re-login with correct macros | Add 3 foods → reload → confirm all 3 present | Adam | ⬜ Pending | — |
+| 12 | **Custom pantry foods persist** — Manually created foods appear in pantry and are searchable after reload | Create custom food → reload → search → add to diary | Adam | ⬜ Pending | #5 |
+| 13 | **Macro/calorie goals consistent across views** — Goals tab targets match diary countdown and Nutrition doughnut | Set goals → check diary remaining → check Nutrition doughnut | Eve | ⬜ Pending | #6 |
+| 14 | **Water log persists** — Water logged today survives reload | Log water → reload → confirm oz/ml | Adam | ⬜ Pending | #8 |
+| 15 | **Guest → permanent account keeps data** — Guest diary survives account creation | Use as guest → add foods → sign up → confirm diary intact | Eve | ⬜ Pending | — |
 
 ---
 
@@ -46,6 +62,37 @@
 |---|------|-------|-----------|
 | 9 | **Apple Sign In** | Eve (once unblocked) | Jarod needs: Apple Developer App ID, Service ID, Private Key (.p8). Then configure Supabase Apple provider. |
 | 10 | **Stripe billing live** | Eve (once unblocked) | Jarod needs: Stripe account created, then add `STRIPE_SECRET_KEY`, `STRIPE_PRICE_ID`, `STRIPE_WEBHOOK_SECRET` to Vercel + register webhook URL. |
+
+---
+
+## 🔗 Dependency Chain
+
+```
+[Jarod] Apply tracker migration (#2)
+        └──▶ Add Vercel env vars (#3)
+                └──▶ Register OAuth redirect URIs (#4)
+                        └──▶ Goals → Diary linkage audit (#6)
+                                └──▶ Macro/calorie goals consistency (#13)
+
+[Any time] Pantry fixes (#5)
+        └──▶ Custom pantry foods persist (#12)
+
+[Any time] Search QA (#7)
+
+[Any time] Water goal in diary (#8)
+        └──▶ Water log persists (#14)
+
+[Any time] Body stats persist (#9)
+[Any time] Weight log persists (#10)
+[Any time] Food log persists (#11)
+[Any time] Guest → permanent account (#15)
+
+[After Stripe is live] Revert free-Pro (#1)
+[After Apple creds from Jarod] Apple Sign In (#P2-A)
+[After Jarod creates Stripe account] Stripe billing (#P2-B)
+```
+
+**Start here:** Items #5, #7, #8, #9, #10, #11 have no blockers — Adam and Eve can work these in parallel while Jarod sets up the tracker env vars.
 
 ---
 
@@ -102,6 +149,7 @@ ALTER TABLE user_profiles ALTER COLUMN is_pro SET DEFAULT false;
 
 - [ ] Code reviewed and TypeScript clean (`npx tsc --noEmit` — 0 errors)
 - [ ] Smoke tested on production URL (`munchermacros.digital`)
+- [ ] All P1 data persistence checks pass (items 9–15 above)
 - [ ] HANDOFF.md updated with what shipped and what's still pending
 - [ ] No `TODO (REVERT BEFORE LAUNCH)` comments remain (for P0 #1)
 
