@@ -1,8 +1,8 @@
 // api/off-search.js — server-side proxy for Open Food Facts (English only)
 
-import { setCors, handlePreflight } from './_lib/cors.js';
-import { readBody } from './_lib/validate.js';
-import { allowGuest } from './_lib/auth.js';
+import { setCors, handlePreflight } from '../cors.js';
+import { readBody } from '../validate.js';
+import { allowGuest } from '../auth.js';
 
 function isEnglish(p) {
   // Must have a product name

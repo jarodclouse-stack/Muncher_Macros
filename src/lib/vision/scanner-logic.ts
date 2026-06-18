@@ -161,7 +161,7 @@ export const extractBarcodeDigits = async (imageBlob: Blob): Promise<ScanResult>
 export const lookupBarcode = async (code: string): Promise<ScanResult> => {
   try {
     // 1. Try internal API first
-    const internalRes = await apiFetch('/api/db-search', {
+    const internalRes = await apiFetch('/api/search?action=db', {
       method: 'POST',
       body: JSON.stringify({ query: code })
     });

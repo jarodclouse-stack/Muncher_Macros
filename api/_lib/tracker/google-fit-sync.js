@@ -1,7 +1,7 @@
 // api/google-fit-sync.js — Fetch today's calorie burn from Google Fit and update DB
 // Required env vars: GOOGLE_FIT_CLIENT_ID, GOOGLE_FIT_CLIENT_SECRET, SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY
-import { setCors, handlePreflight } from './_lib/cors.js';
-import { requireAuth } from './_lib/auth.js';
+import { setCors, handlePreflight } from '../cors.js';
+import { requireAuth } from '../auth.js';
 import { createClient } from '@supabase/supabase-js';
 
 async function getServiceClient() {

@@ -1,9 +1,9 @@
 // api/db-search.js — Search our own foods database with fuzzy matching
 import { createClient } from '@supabase/supabase-js';
-import { setCors, handlePreflight } from './_lib/cors.js';
-import { validateQuery, readBody } from './_lib/validate.js';
-import { rateLimit } from './_lib/rate-limit.js';
-import { allowGuest } from './_lib/auth.js';
+import { setCors, handlePreflight } from '../cors.js';
+import { validateQuery, readBody } from '../validate.js';
+import { rateLimit } from '../rate-limit.js';
+import { allowGuest } from '../auth.js';
 
 const round1 = v => Math.round((Number(v) || 0) * 10) / 10;
 const round2 = v => Math.round((Number(v) || 0) * 100) / 100;

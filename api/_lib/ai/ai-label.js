@@ -1,8 +1,8 @@
 import https from 'https';
-import { setCors, handlePreflight } from './_lib/cors.js';
-import { validateImage, readBody } from './_lib/validate.js';
-import { rateLimit, checkAiQuota } from './_lib/rate-limit.js';
-import { requireAuth } from './_lib/auth.js';
+import { setCors, handlePreflight } from '../cors.js';
+import { validateImage, readBody } from '../validate.js';
+import { rateLimit, checkAiQuota } from '../rate-limit.js';
+import { requireAuth } from '../auth.js';
 
 const MODELS = [
   'claude-sonnet-4-6',

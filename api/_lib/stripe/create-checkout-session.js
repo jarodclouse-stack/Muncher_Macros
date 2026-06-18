@@ -1,5 +1,5 @@
-import { requireAuth } from './_lib/auth.js';
-import { setCors, handlePreflight } from './_lib/cors.js';
+import { requireAuth } from '../auth.js';
+import { setCors, handlePreflight } from '../cors.js';
 
 export default async function handler(req, res) {
   setCors(req, res);

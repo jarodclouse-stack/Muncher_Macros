@@ -1,7 +1,7 @@
 // api/fitbit-sync.js — Fetch today's calorie burn from Fitbit and update DB
 // Required env vars: FITBIT_CLIENT_ID, FITBIT_CLIENT_SECRET, SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY
-import { setCors, handlePreflight } from './_lib/cors.js';
-import { requireAuth } from './_lib/auth.js';
+import { setCors, handlePreflight } from '../cors.js';
+import { requireAuth } from '../auth.js';
 import { createClient } from '@supabase/supabase-js';
 
 async function getServiceClient() {

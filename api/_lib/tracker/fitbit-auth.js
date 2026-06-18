@@ -1,7 +1,7 @@
 // api/fitbit-auth.js — Initiate Fitbit OAuth 2.0 flow
 // Required env vars: FITBIT_CLIENT_ID, APP_URL
-import { setCors, handlePreflight } from './_lib/cors.js';
-import { requireAuth } from './_lib/auth.js';
+import { setCors, handlePreflight } from '../cors.js';
+import { requireAuth } from '../auth.js';
 
 export default async function handler(req, res) {
   setCors(req, res);

@@ -1,11 +1,11 @@
 // api/ai-describe.js
 // Modern AI-Native Meal Perception Logic
 
-import { setCors, handlePreflight } from './_lib/cors.js';
-import { validateText, readBody } from './_lib/validate.js';
-import { rateLimit, checkAiQuota } from './_lib/rate-limit.js';
-import { requireAuth } from './_lib/auth.js';
-import { checkCache, saveToCache } from './_lib/supabase-client.js';
+import { setCors, handlePreflight } from '../cors.js';
+import { validateText, readBody } from '../validate.js';
+import { rateLimit, checkAiQuota } from '../rate-limit.js';
+import { requireAuth } from '../auth.js';
+import { checkCache, saveToCache } from '../supabase-client.js';
 
 function extractJSON(text) {
   if (!text) return null;

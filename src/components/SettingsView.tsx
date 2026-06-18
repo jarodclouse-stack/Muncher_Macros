@@ -153,7 +153,7 @@ export const SettingsView: React.FC<{ onClose: () => void }> = ({ onClose }) => 
   const handleUpgradeToPro = async () => {
     setStripeLoading(true);
     try {
-      const res = await apiFetch('/api/create-checkout-session', {
+      const res = await apiFetch('/api/stripe?action=checkout', {
         method: 'POST',
       });
       const data = await res.json();
@@ -175,7 +175,7 @@ export const SettingsView: React.FC<{ onClose: () => void }> = ({ onClose }) => 
   const handleManageSubscription = async () => {
     setStripeLoading(true);
     try {
-      const res = await apiFetch('/api/create-portal-session', {
+      const res = await apiFetch('/api/stripe?action=portal', {
         method: 'POST',
       });
       const data = await res.json();

@@ -117,7 +117,7 @@ export const ProgressView: React.FC = () => {
     const token = (window as any).__supabaseToken || localStorage.getItem('sb-access-token') || '';
     if (!token) return;
 
-    fetch('/api/tracker-status', { headers: { Authorization: `Bearer ${token}` } })
+    fetch('/api/tracker?action=status', { headers: { Authorization: `Bearer ${token}` } })
       .then(r => r.json())
       .then(data => setTrackerStatus(data))
       .catch(() => {});
@@ -130,7 +130,7 @@ export const ProgressView: React.FC = () => {
       setTrackerToast(`✅ ${connected === 'fitbit' ? 'Fitbit' : 'Google Fit'} connected!`);
       window.history.replaceState({}, '', window.location.pathname);
       // Reload status after connect
-      fetch('/api/tracker-status', { headers: { Authorization: `Bearer ${token}` } })
+      fetch('/api/tracker?action=status', { headers: { Authorization: `Bearer ${token}` } })
         .then(r => r.json()).then(setTrackerStatus).catch(() => {});
     } else if (error) {
       setTrackerToast(`⚠️ Connection failed: ${error.replace(/_/g, ' ')}`);
@@ -140,7 +140,7 @@ export const ProgressView: React.FC = () => {
 
   const connectTracker = async (provider: 'fitbit' | 'google_fit') => {
     const token = (window as any).__supabaseToken || localStorage.getItem('sb-access-token') || '';
-    const endpoint = provider === 'fitbit' ? '/api/fitbit-auth' : '/api/google-fit-auth';
+    const endpoint = provider === 'fitbit' ? '/api/tracker?action=fitbit-auth' : '/api/tracker?action=google-fit-auth';
     try {
       const r = await fetch(endpoint, { headers: { Authorization: `Bearer ${token}` } });
       const data = await r.json();
@@ -152,7 +152,7 @@ export const ProgressView: React.FC = () => {
 
   const disconnectTracker = async (provider: 'fitbit' | 'google_fit') => {
     const token = (window as any).__supabaseToken || localStorage.getItem('sb-access-token') || '';
-    await fetch('/api/tracker-disconnect', {
+    await fetch('/api/tracker?action=disconnect', {
       method: 'POST',
       headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
       body: JSON.stringify({ provider }),
@@ -167,7 +167,7 @@ export const ProgressView: React.FC = () => {
   const syncTracker = async (provider: 'fitbit' | 'google_fit') => {
     setTrackerSyncing(provider);
     const token = (window as any).__supabaseToken || localStorage.getItem('sb-access-token') || '';
-    const endpoint = provider === 'fitbit' ? '/api/fitbit-sync' : '/api/google-fit-sync';
+    const endpoint = provider === 'fitbit' ? '/api/tracker?action=fitbit-sync' : '/api/tracker?action=google-fit-sync';
     try {
       const r = await fetch(endpoint, { headers: { Authorization: `Bearer ${token}` } });
       const data = await r.json();

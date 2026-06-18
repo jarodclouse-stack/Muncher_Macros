@@ -1,7 +1,7 @@
 // api/google-fit-auth.js — Initiate Google Fit / Health Connect OAuth flow
 // Required env vars: GOOGLE_FIT_CLIENT_ID, APP_URL
-import { setCors, handlePreflight } from './_lib/cors.js';
-import { requireAuth } from './_lib/auth.js';
+import { setCors, handlePreflight } from '../cors.js';
+import { requireAuth } from '../auth.js';
 
 export default async function handler(req, res) {
   setCors(req, res);

@@ -1,5 +1,5 @@
 import crypto from 'crypto';
-import { getSupabase } from './_lib/supabase-client.js';
+import { getSupabase } from '../supabase-client.js';
 
 async function readRawBody(req) {
   return new Promise((resolve) => {

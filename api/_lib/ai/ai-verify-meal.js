@@ -4,10 +4,10 @@
 // Returns: { summary, confidence, adjustedItems[], significantDifference }
 
 import https from 'https';
-import { setCors, handlePreflight } from './_lib/cors.js';
-import { readBody, validateImage } from './_lib/validate.js';
-import { rateLimit, checkAiQuota } from './_lib/rate-limit.js';
-import { requireAuth } from './_lib/auth.js';
+import { setCors, handlePreflight } from '../cors.js';
+import { readBody, validateImage } from '../validate.js';
+import { rateLimit, checkAiQuota } from '../rate-limit.js';
+import { requireAuth } from '../auth.js';
 
 const MODELS = [
   'claude-sonnet-4-6',
