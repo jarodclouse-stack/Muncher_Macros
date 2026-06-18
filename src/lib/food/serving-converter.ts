@@ -391,6 +391,8 @@ export const normalizeFoodResult = (food: any): Food => {
     'Insoluble Fiber': r(food['Insoluble Fiber'] || food.insolubleFiber || food.insoluble_fiber || 0),
     solubleFiber: r(food.solubleFiber || food.soluble_fiber || food['Soluble Fiber'] || 0),
     insolubleFiber: r(food.insolubleFiber || food.insoluble_fiber || food['Insoluble Fiber'] || 0),
+    // Preserve food image URL from Open Food Facts / db-search
+    image_url: food.image_url || food.image_small_url || undefined,
     // Preserve Nutri-Score and Nutrient Levels — never drop these
     nutriscore_grade: food.nutriscore_grade
       ? String(food.nutriscore_grade).toLowerCase().trim()
@@ -471,6 +473,11 @@ export function getCarbClassification(food: any): CarbCategory {
  * `estimated: true` means it was computed — show a "~" prefix to signal approximation.
  */
 export function estimateNutriScore(food: any): { grade: string; estimated: boolean } {
+  // Locked at log time — always authoritative (prevents serving-size distortion)
+  if (food?._nutriscore_fixed && food?.nutriscore_grade) {
+    const g = String(food.nutriscore_grade).toLowerCase().trim();
+    if ('abcde'.includes(g) && g.length === 1) return { grade: g, estimated: false };
+  }
   if (food?.nutriscore_grade && food?._src !== 'ai') {
     const g = String(food.nutriscore_grade).toLowerCase().trim();
     if ('abcde'.includes(g) && g.length === 1) return { grade: g, estimated: false };

@@ -83,6 +83,38 @@ This file is shared between Adam (Antigravity) and Eve (Claude). Update it at th
   - `[x]` `api/db-search.js` — Swapped `requireAuth` → `allowGuest`. Guests can search foods; invalid tokens still get 401.
   - `[x]` `api/off-search.js` — Same swap as db-search.
   - `[x]` `api/_lib/rate-limit.js` — `checkAiQuota`: anonymous users now get 401 instead of bypassing quota entirely. Also fixed stale table reference: `user_data` → `user_profiles` (data normalization renamed the table). TODO comment updated to reference correct table name.
+- `[x]` **Nutri-Score Consistency Fix (Eve)**:
+  - `[x]` `src/lib/food/serving-converter.ts` — `estimateNutriScore()`: Added `_nutriscore_fixed` short-circuit at top. When a food has this flag set, returns stored grade unconditionally (no recomputation from potentially inflated serving-size macros).
+  - `[x]` `src/components/PantryView.tsx` — ADD TO FOOD LOG handler: Computes `estimateNutriScore(configuringFood)` on the *pre-scale* food (correct per-100g grade), then stamps `scaled.nutriscore_grade` and `scaled._nutriscore_fixed = true` before calling `addFoodLog`. DiaryView now always shows the same grade as the scan preview.
+- `[x]` **Food Images (Eve)**:
+  - `[x]` `api/off-search.js` — Added `image_small_url,image_front_small_url` to the OFF `fields` query param. Added `image_url` field to the returned food object (`p.image_front_small_url || p.image_small_url`).
+  - `[x]` `src/lib/food/serving-converter.ts` — `normalizeFoodResult()`: Preserves `image_url` (falls back to `image_small_url`) so images survive the normalize pipeline.
+  - `[x]` `src/lib/vision/scanner-logic.ts` — `lookupBarcode()` direct OFF fallback: Added `image_url` and `nutriscore_grade` to `mappedData`.
+  - `[x]` `src/components/PantryView.tsx` — Search result rows: 40×40 rounded thumbnail shown left of food name when `f.image_url` is set. Hides gracefully on load error.
+  - `[x]` `src/components/DiaryView.tsx` — Diary entry cards: 38×38 rounded thumbnail shown left of food name when `f.image_url` is set. Hides gracefully on load error.
+  - ✅ `npx tsc --noEmit` — 0 errors after all changes.
+- `[x]` **Circular Macro Tracker — % Display & Color (Eve)**:
+  - `[x]` `src/components/NutritionView.tsx` — Changed carbs color from `var(--theme-accent)` (turquoise) to `#4F8EF7` (blue) in `resolvedColors`. Also changed the legend progress bar to use `resolvedColors.*` instead of CSS vars directly so they stay in sync.
+  - `[x]` Added caloric percentage badge next to each macro's gram display (e.g. "35%"). Calculated as `(val * calPerGram) / totalMacroCals` where calPerGram is 4/4/9 for protein/carbs/fat.
+  - `[x]` `npx tsc --noEmit` — 0 errors.
+- `[x]` **Fitness Tracker Integration — Fitbit + Google Fit (Eve)**:
+  - `[x]` `scripts/migration-tracker-integrations.sql` — New `user_integrations` table. ⚠️ **Must apply to Supabase before deploying** (SQL Editor → Run).
+  - `[x]` `api/fitbit-auth.js` — Returns Fitbit OAuth URL. Requires env vars: `FITBIT_CLIENT_ID`, `APP_URL`.
+  - `[x]` `api/fitbit-callback.js` — Exchanges OAuth code for tokens, stores in DB via service role. Requires: `FITBIT_CLIENT_SECRET`, `SUPABASE_SERVICE_ROLE_KEY`.
+  - `[x]` `api/fitbit-sync.js` — Fetches Fitbit daily `caloriesOut` (total TDEE) for a date. Auto-refreshes expired tokens.
+  - `[x]` `api/google-fit-auth.js` — Returns Google OAuth URL. Requires: `GOOGLE_FIT_CLIENT_ID`.
+  - `[x]` `api/google-fit-callback.js` — Exchanges Google OAuth code for tokens. Requires: `GOOGLE_FIT_CLIENT_SECRET`.
+  - `[x]` `api/google-fit-sync.js` — Aggregates `com.google.calories.expended` from Google Fitness API for the day.
+  - `[x]` `api/tracker-status.js` — Returns connection status + last sync data for all providers.
+  - `[x]` `api/tracker-disconnect.js` — Deletes integration row from DB.
+  - `[x]` `src/lib/goals/compute.ts` — `computeGoals()` now uses `g.trackerTDEE` instead of formula when `g.useTrackerTDEE === true`.
+  - `[x]` `src/components/ProgressView.tsx` — New "Fitness Tracker Integration" card with Connect/Disconnect/Sync buttons, live burn display, and toggle to use tracker TDEE. Apple Watch note explains HealthKit limitation.
+  - ⚠️ **Env vars Jarod must add to Vercel** before this feature works:
+    - `FITBIT_CLIENT_ID` + `FITBIT_CLIENT_SECRET` (from https://dev.fitbit.com → Register an App, redirect URI: `https://munchermacros.digital/api/fitbit-callback`)
+    - `GOOGLE_FIT_CLIENT_ID` + `GOOGLE_FIT_CLIENT_SECRET` (from Google Cloud Console → Fitness API → OAuth credentials, redirect URI: `https://munchermacros.digital/api/google-fit-callback`)
+    - `SUPABASE_SERVICE_ROLE_KEY` (from Supabase Dashboard → Settings → API → service_role key)
+    - `APP_URL=https://munchermacros.digital`
+  - ✅ `npx tsc --noEmit` — 0 errors.
 - `[ ]` **Apple Sign In**:
   - `[ ]` Apple Developer: App ID + Service ID + Private Key (.p8)
   - `[ ]` Supabase: Configure Apple provider

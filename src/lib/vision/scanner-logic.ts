@@ -207,6 +207,8 @@ export const lookupBarcode = async (code: string): Promise<ScanResult> => {
           f: Math.round((fServing ?? 0) * 10) / 10,
           fb: Math.round((fbServing ?? 0) * 10) / 10,
           barcode: code,
+          image_url: p.image_front_small_url || p.image_small_url || p.image_url || undefined,
+          nutriscore_grade: p.nutriscore_grade || p.nutriscore?.grade || undefined,
           _src: 'off'
         };
 

@@ -243,6 +243,9 @@ export const PantryView: React.FC<PantryViewProps> = ({ initialMeal, onClose, is
   const [searchResults, setSearchResults] = useState<Food[]>([]);
   const [innerGlobalSearchTab, setInnerGlobalSearchTab] = useState<SearchTab>('search');
   const [hasSearched, setHasSearched] = useState(false);
+  const [recentSearches, setRecentSearches] = React.useState<string[]>(() => {
+    try { return JSON.parse(localStorage.getItem('mm_recent_searches') || '[]'); } catch { return []; }
+  });
   const [promptDialog, setPromptDialog] = useState<{ title: string; message?: string; defaultValue?: string; placeholder?: string; onConfirm: (v: string) => void } | null>(null);
   const [confirmDialog, setConfirmDialog] = useState<{ title: string; message: string; onConfirm: () => void } | null>(null);
 
@@ -267,6 +270,24 @@ export const PantryView: React.FC<PantryViewProps> = ({ initialMeal, onClose, is
     }
     setIsSearching(false);
     setIsLoadingMore(false);
+  };
+
+  const addRecentSearch = (q: string) => {
+    const trimmed = q.trim();
+    if (!trimmed || trimmed.length < 2) return;
+    setRecentSearches(prev => {
+      const deduped = [trimmed, ...prev.filter(s => s.toLowerCase() !== trimmed.toLowerCase())].slice(0, 8);
+      try { localStorage.setItem('mm_recent_searches', JSON.stringify(deduped)); } catch {}
+      return deduped;
+    });
+  };
+
+  const removeRecentSearch = (q: string) => {
+    setRecentSearches(prev => {
+      const next = prev.filter(s => s !== q);
+      try { localStorage.setItem('mm_recent_searches', JSON.stringify(next)); } catch {}
+      return next;
+    });
   };
 
   const searchCache = React.useRef<Record<string, Food[]>>({});
@@ -360,13 +381,14 @@ export const PantryView: React.FC<PantryViewProps> = ({ initialMeal, onClose, is
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [ingQuery]);
 
-  // As-you-type search for global search (300ms debounce)
+  // As-you-type search for global search (450ms debounce — long enough to avoid
+  // firing mid-word while typing at normal speed, short enough to feel live)
   React.useEffect(() => {
     const timer = setTimeout(() => {
       if (searchQuery.trim().length > 1 && innerGlobalSearchTab === 'search') {
         handleGlobalSearch(undefined, searchQuery);
       }
-    }, 300);
+    }, 450);
     return () => clearTimeout(timer);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchQuery]);
@@ -536,6 +558,12 @@ export const PantryView: React.FC<PantryViewProps> = ({ initialMeal, onClose, is
       return;
     }
 
+    // Cancel any previous in-flight search before starting a new one.
+    // Without this, old OFF results (which check controller.signal.aborted on their
+    // own closed-over controller) can overwrite newer DB results after the query changes.
+    if (abortControllerRef.current) {
+      abortControllerRef.current.abort();
+    }
     const controller = new AbortController();
     abortControllerRef.current = controller;
 
@@ -554,6 +582,7 @@ export const PantryView: React.FC<PantryViewProps> = ({ initialMeal, onClose, is
       // flaky OFF failure isn't locked in for the whole session.
       if (controller.signal.aborted) return;
       setSearchResults([...localMatches, ...dbResults].slice(0, 50));
+      if (dbResults.length > 0 || localMatches.length > 0) addRecentSearch(q);
       setIsSearching(false);
 
       // Step 2: OFF search — uses ORIGINAL query (OFF indexes brand slang like "coke" natively)
@@ -1346,16 +1375,60 @@ export const PantryView: React.FC<PantryViewProps> = ({ initialMeal, onClose, is
                   </button>
                 </form>
 
+                {/* Recent searches — shown when input is empty and no active search */}
+                {!searchQuery && !hasSearched && !isSearching && recentSearches.length > 0 && innerGlobalSearchTab === 'search' && (
+                  <div style={{ marginTop: '12px' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '8px' }}>
+                      <span style={{ fontSize: '10px', fontWeight: '900', color: 'var(--theme-text-dim)', letterSpacing: '0.8px', textTransform: 'uppercase' }}>Recent searches</span>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setRecentSearches([]);
+                          try { localStorage.removeItem('mm_recent_searches'); } catch {}
+                        }}
+                        style={{ fontSize: '10px', fontWeight: '700', color: 'var(--theme-text-dim)', background: 'none', border: 'none', cursor: 'pointer', opacity: 0.6, padding: '2px 4px' }}
+                      >
+                        Clear all
+                      </button>
+                    </div>
+                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
+                      {recentSearches.map((q) => (
+                        <div key={q} style={{ display: 'flex', alignItems: 'center', gap: '4px', background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.12)', borderRadius: '20px', padding: '5px 10px 5px 12px' }}>
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setSearchQuery(q);
+                              setHasSearched(false);
+                              handleGlobalSearch(undefined, q);
+                            }}
+                            style={{ background: 'none', border: 'none', color: 'var(--theme-text)', fontSize: '12px', fontWeight: '700', cursor: 'pointer', padding: 0 }}
+                          >
+                            {q}
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => removeRecentSearch(q)}
+                            style={{ background: 'none', border: 'none', color: 'var(--theme-text-dim)', fontSize: '14px', cursor: 'pointer', padding: '0 0 0 2px', lineHeight: 1, opacity: 0.5 }}
+                            aria-label={`Remove ${q}`}
+                          >
+                            ×
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
                 {isSearching && (
-                  <div style={{ 
-                    display: 'flex', 
-                    flexDirection: 'column', 
-                    alignItems: 'center', 
-                    justifyContent: 'center', 
-                    padding: '20px', 
-                    marginTop: '20px', 
-                    borderRadius: '16px', 
-                    background: 'var(--theme-panel-dim, rgba(255,255,255,0.02))', 
+                  <div style={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    padding: '20px',
+                    marginTop: '20px',
+                    borderRadius: '16px',
+                    background: 'var(--theme-panel-dim, rgba(255,255,255,0.02))',
                     border: '1px dashed var(--theme-border, rgba(255,255,255,0.15))',
                     textAlign: 'center'
                   }}>
@@ -1423,6 +1496,14 @@ export const PantryView: React.FC<PantryViewProps> = ({ initialMeal, onClose, is
                   '--theme-text-dim': 'rgba(255,255,255,0.6)',
                   cursor: 'pointer', transition: 'transform 0.2s', display: 'flex', justifyContent: 'space-between', alignItems: 'center' 
                 } as React.CSSProperties}>
+                  {f.image_url && (
+                    <img
+                      src={f.image_url}
+                      alt={f.name}
+                      style={{ width: '40px', height: '40px', borderRadius: '8px', objectFit: 'cover', marginRight: '8px', flexShrink: 0, border: '1px solid rgba(255,255,255,0.1)' }}
+                      onError={e => { (e.target as HTMLImageElement).style.display = 'none'; }}
+                    />
+                  )}
                   <div style={{ flex: 1 }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                       <div style={{ fontWeight: '900', fontSize: '14px', color: 'var(--theme-text)' }}>{f.name}</div>
@@ -1450,6 +1531,13 @@ export const PantryView: React.FC<PantryViewProps> = ({ initialMeal, onClose, is
               {isLoadingMore && (
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', padding: '12px', color: 'var(--theme-text-dim)', fontSize: '11px', fontWeight: '700', letterSpacing: '0.5px' }}>
                   <Loader2 className="spin" size={14} color="var(--theme-accent)" /> Loading branded results...
+                  <button
+                    type="button"
+                    onClick={cancelSearch}
+                    style={{ marginLeft: '4px', padding: '3px 10px', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.12)', borderRadius: '8px', color: 'var(--theme-text-dim)', fontSize: '10px', fontWeight: '800', cursor: 'pointer', letterSpacing: '0.5px' }}
+                  >
+                    CANCEL
+                  </button>
                 </div>
               )}
             </div>
@@ -2804,6 +2892,13 @@ export const PantryView: React.FC<PantryViewProps> = ({ initialMeal, onClose, is
                     scaled.serving = `${servingQty} ${servingUnit}`;
                     scaled.sQty = parseFloat(servingQty) || 1;
                     scaled.sUnit = servingUnit;
+                    // Lock the Nutri-Score at the correct pre-scale grade so DiaryView
+                    // doesn't recompute from inflated (multi-serving) macro values.
+                    const { grade: lockedGrade } = estimateNutriScore(configuringFood);
+                    if (lockedGrade) {
+                      scaled.nutriscore_grade = lockedGrade;
+                      scaled._nutriscore_fixed = true;
+                    }
                     addFoodLog(targetMeal, scaled);
                     setConfiguringFood(null);
                     showNotification(`Added to ${targetMeal}!`);

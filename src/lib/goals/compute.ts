@@ -71,8 +71,9 @@ export function computeGoals(g: any) {
     const cm = units.height === 'cm' ? g.height : g.height * 2.54;
     
     bmr = calculateBMR({ sex, weightKg: kg, heightCm: cm, age: g.age });
-    tdee = calculateTDEE(bmr, activityId);
-    
+    // If user has a fitness tracker connected and has chosen to use it, prefer that TDEE
+    tdee = (g.useTrackerTDEE && g.trackerTDEE) ? g.trackerTDEE : calculateTDEE(bmr, activityId);
+
     if (g.goalType === 'lose') {
       calAdj = -Math.abs(calculateWeightGoalCalories(0, g.rate || 0, units.weight).calorieAdjustment || 0);
     } else if (g.goalType === 'gain') {

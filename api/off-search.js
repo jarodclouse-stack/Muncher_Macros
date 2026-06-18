@@ -87,7 +87,8 @@ export default async function handler(req, res) {
         + '&search_simple=1&action=process&json=1&page_size=50'
         + '&lc=en&cc=us'
         + '&fields=product_name,product_name_en,serving_size,serving_quantity,'
-        + 'serving_quantity_unit,serving_size_unit,nutriments,brands,lang,nutriscore_grade,nutrient_levels';
+        + 'serving_quantity_unit,serving_size_unit,nutriments,brands,lang,nutriscore_grade,nutrient_levels,'
+        + 'image_small_url,image_front_small_url,categories_tags';
 
       // Build ordered list of queries to try: exact + plural forms
       const pluralForms = getPlurals(query);
@@ -359,6 +360,7 @@ export default async function handler(req, res) {
         Selenium: getVal('selenium', 1000000, 0),
         Copper: getVal('copper', 1000, 3),
         barcode: p.code || p._id || (isBarcode ? strippedQuery : undefined),
+        image_url: p.image_front_small_url || p.image_small_url || undefined,
         nutriscore_grade: p.nutriscore_grade,
         nutrient_levels: p.nutrient_levels,
         nutrient_percentages: p.nutriments ? {

@@ -3,7 +3,7 @@ import { Toast } from './Toast';
 import { useDiary } from '../context/DiaryContext';
 import { ACTIVITY_LEVELS, MICRO_CATEGORIES } from '../lib/constants';
 import { computeGoals } from '../lib/goals/compute';
-import { Flame, Save, Droplet, User, PieChart, Info, Check, Edit2, ChevronDown, Leaf, Dna, Lightbulb } from 'lucide-react';
+import { Flame, Save, Droplet, User, PieChart, Info, Check, Edit2, ChevronDown, Leaf, Dna, Lightbulb, Watch, RefreshCw, Link2, LinkSlash } from 'lucide-react';
 
 export const ProgressView: React.FC = () => {
   const { localCache, updateGoals } = useDiary();
@@ -105,6 +105,101 @@ export const ProgressView: React.FC = () => {
   const [isMicrosOpen, setIsMicrosOpen] = useState(false);
   const [editingMicro, setEditingMicro] = useState('');
   const [customMicroValue, setCustomMicroValue] = useState('');
+
+  // Fitness tracker integration state
+  const [trackerStatus, setTrackerStatus] = useState<Record<string, any>>({ fitbit: { connected: false }, google_fit: { connected: false } });
+  const [trackerSyncing, setTrackerSyncing] = useState<string | null>(null);
+  const [useTrackerTDEE, setUseTrackerTDEE] = useState<boolean>(goals.useTrackerTDEE || false);
+  const [trackerToast, setTrackerToast] = useState('');
+
+  // Load tracker connection status + check for OAuth callback result
+  React.useEffect(() => {
+    const token = (window as any).__supabaseToken || localStorage.getItem('sb-access-token') || '';
+    if (!token) return;
+
+    fetch('/api/tracker-status', { headers: { Authorization: `Bearer ${token}` } })
+      .then(r => r.json())
+      .then(data => setTrackerStatus(data))
+      .catch(() => {});
+
+    // Check if we just returned from an OAuth callback
+    const params = new URLSearchParams(window.location.search);
+    const connected = params.get('tracker_connected');
+    const error = params.get('tracker_error');
+    if (connected) {
+      setTrackerToast(`✅ ${connected === 'fitbit' ? 'Fitbit' : 'Google Fit'} connected!`);
+      window.history.replaceState({}, '', window.location.pathname);
+      // Reload status after connect
+      fetch('/api/tracker-status', { headers: { Authorization: `Bearer ${token}` } })
+        .then(r => r.json()).then(setTrackerStatus).catch(() => {});
+    } else if (error) {
+      setTrackerToast(`⚠️ Connection failed: ${error.replace(/_/g, ' ')}`);
+      window.history.replaceState({}, '', window.location.pathname);
+    }
+  }, []);
+
+  const connectTracker = async (provider: 'fitbit' | 'google_fit') => {
+    const token = (window as any).__supabaseToken || localStorage.getItem('sb-access-token') || '';
+    const endpoint = provider === 'fitbit' ? '/api/fitbit-auth' : '/api/google-fit-auth';
+    try {
+      const r = await fetch(endpoint, { headers: { Authorization: `Bearer ${token}` } });
+      const data = await r.json();
+      if (data.url) window.location.href = data.url;
+    } catch {
+      setTrackerToast('Failed to start OAuth flow');
+    }
+  };
+
+  const disconnectTracker = async (provider: 'fitbit' | 'google_fit') => {
+    const token = (window as any).__supabaseToken || localStorage.getItem('sb-access-token') || '';
+    await fetch('/api/tracker-disconnect', {
+      method: 'POST',
+      headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ provider }),
+    });
+    setTrackerStatus(prev => ({ ...prev, [provider]: { connected: false } }));
+    if (goals.trackerSource === provider) {
+      updateGoals({ useTrackerTDEE: false, trackerTDEE: null, trackerSource: null });
+      setUseTrackerTDEE(false);
+    }
+  };
+
+  const syncTracker = async (provider: 'fitbit' | 'google_fit') => {
+    setTrackerSyncing(provider);
+    const token = (window as any).__supabaseToken || localStorage.getItem('sb-access-token') || '';
+    const endpoint = provider === 'fitbit' ? '/api/fitbit-sync' : '/api/google-fit-sync';
+    try {
+      const r = await fetch(endpoint, { headers: { Authorization: `Bearer ${token}` } });
+      const data = await r.json();
+      if (data.caloriesBurned) {
+        setTrackerStatus((prev: any) => ({
+          ...prev,
+          [provider]: { ...prev[provider], last_calories_burned: data.caloriesBurned, last_synced_at: new Date().toISOString() }
+        }));
+        if (useTrackerTDEE && goals.trackerSource === provider) {
+          updateGoals({ trackerTDEE: data.caloriesBurned });
+        }
+        setTrackerToast(`Synced ${data.caloriesBurned.toLocaleString()} kcal burned today`);
+      } else if (data.code === 'RECONNECT_REQUIRED') {
+        setTrackerToast('Session expired — please reconnect your tracker');
+        setTrackerStatus((prev: any) => ({ ...prev, [provider]: { connected: false } }));
+      }
+    } catch {
+      setTrackerToast('Sync failed — try again');
+    } finally {
+      setTrackerSyncing(null);
+    }
+  };
+
+  const handleUseTrackerTDEE = (enabled: boolean, provider: 'fitbit' | 'google_fit') => {
+    setUseTrackerTDEE(enabled);
+    const cal = trackerStatus[provider]?.last_calories_burned || null;
+    updateGoals({
+      useTrackerTDEE: enabled,
+      trackerTDEE: enabled ? cal : null,
+      trackerSource: enabled ? provider : null,
+    });
+  };
 
   const saveCustomMicro = (k: string) => {
     updateGoals({ customMicros: { ...(goals.customMicros || {}), [k]: Number(customMicroValue) } });
@@ -487,6 +582,139 @@ export const ProgressView: React.FC = () => {
               </span>
             </div>
           </div>
+        </div>
+
+        {/* Fitness Tracker Integration */}
+        <div className="card" style={{ gridColumn: '1 / -1', padding: 'var(--space-xl)' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '16px', fontWeight: '700', marginBottom: '6px', color: 'var(--theme-text)' }}>
+            <Watch size={18} color="var(--theme-accent)" /> Fitness Tracker Integration
+          </div>
+          <div style={{ fontSize: '12px', color: 'var(--theme-text-dim)', marginBottom: 'var(--space-lg)', lineHeight: '1.5' }}>
+            Connect your wearable to replace the formula-based TDEE with your device's actual daily calorie burn — including Apple Watch (via Google Fit on Android) and Fitbit.
+          </div>
+
+          {trackerToast && (
+            <div style={{ marginBottom: 'var(--space-md)', padding: '10px 14px', background: 'var(--theme-panel-dim)', border: '1px solid var(--theme-border)', borderRadius: 'var(--radius-md)', fontSize: '13px', color: 'var(--theme-text)' }}>
+              {trackerToast}
+              <button onClick={() => setTrackerToast('')} style={{ marginLeft: '10px', background: 'none', border: 'none', color: 'var(--theme-text-dim)', cursor: 'pointer', fontSize: '14px' }}>×</button>
+            </div>
+          )}
+
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-md)' }}>
+            {([
+              { provider: 'fitbit' as const, label: 'Fitbit', emoji: '⌚', desc: 'Versa, Charge, Sense, Inspire series' },
+              { provider: 'google_fit' as const, label: 'Google Fit / Galaxy Watch', emoji: '🤖', desc: 'Galaxy Watch 4+, Pixel Watch, Wear OS devices' },
+            ] as const).map(({ provider, label, emoji, desc }) => {
+              const s = trackerStatus[provider] || {};
+              const isConnected = !!s.connected;
+              const isSyncing = trackerSyncing === provider;
+              const lastSync = s.last_synced_at ? new Date(s.last_synced_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : null;
+              const isActiveSource = goals.trackerSource === provider && useTrackerTDEE;
+
+              return (
+                <div key={provider} style={{
+                  padding: 'var(--space-md)',
+                  background: isConnected ? 'var(--theme-panel-dim)' : 'var(--theme-panel)',
+                  border: `1px solid ${isActiveSource ? 'var(--theme-accent)' : 'var(--theme-border)'}`,
+                  borderRadius: 'var(--radius-md)',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: 'var(--space-sm)',
+                }}>
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                    <div>
+                      <div style={{ fontWeight: '700', fontSize: '14px', color: 'var(--theme-text)' }}>{emoji} {label}</div>
+                      <div style={{ fontSize: '11px', color: 'var(--theme-text-dim)' }}>{desc}</div>
+                    </div>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-sm)' }}>
+                      {isConnected ? (
+                        <>
+                          <button
+                            onClick={() => syncTracker(provider)}
+                            disabled={isSyncing}
+                            style={{ display: 'flex', alignItems: 'center', gap: '4px', padding: '6px 12px', background: 'var(--theme-accent-dim)', border: '1px solid var(--theme-accent)', borderRadius: '8px', color: 'var(--theme-accent)', fontSize: '12px', fontWeight: '700', cursor: isSyncing ? 'default' : 'pointer' }}
+                          >
+                            <RefreshCw size={12} style={{ animation: isSyncing ? 'spin 1s linear infinite' : 'none' }} />
+                            {isSyncing ? 'Syncing…' : 'Sync'}
+                          </button>
+                          <button
+                            onClick={() => disconnectTracker(provider)}
+                            style={{ display: 'flex', alignItems: 'center', gap: '4px', padding: '6px 10px', background: 'none', border: '1px solid var(--theme-border)', borderRadius: '8px', color: 'var(--theme-text-dim)', fontSize: '12px', cursor: 'pointer' }}
+                          >
+                            <LinkSlash size={12} /> Disconnect
+                          </button>
+                        </>
+                      ) : (
+                        <button
+                          onClick={() => connectTracker(provider)}
+                          style={{ display: 'flex', alignItems: 'center', gap: '6px', padding: '8px 16px', background: 'var(--theme-accent)', border: 'none', borderRadius: '10px', color: '#000', fontSize: '13px', fontWeight: '800', cursor: 'pointer' }}
+                        >
+                          <Link2 size={13} /> Connect
+                        </button>
+                      )}
+                    </div>
+                  </div>
+
+                  {isConnected && (
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', paddingTop: '8px', borderTop: '1px solid var(--theme-border)' }}>
+                      <div style={{ display: 'flex', gap: 'var(--space-md)' }}>
+                        {s.last_calories_burned ? (
+                          <div>
+                            <div style={{ fontSize: '10px', color: 'var(--theme-text-dim)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Today's Burn</div>
+                            <div style={{ fontSize: '20px', fontWeight: '800', color: 'var(--theme-warning)' }}>{s.last_calories_burned.toLocaleString()} <span style={{ fontSize: '11px', fontWeight: '600' }}>kcal</span></div>
+                          </div>
+                        ) : (
+                          <div style={{ fontSize: '12px', color: 'var(--theme-text-dim)', fontStyle: 'italic' }}>Sync to get today's data</div>
+                        )}
+                        {lastSync && <div style={{ alignSelf: 'flex-end', fontSize: '10px', color: 'var(--theme-text-dim)', marginBottom: '2px' }}>Last sync {lastSync}</div>}
+                      </div>
+
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                        <span style={{ fontSize: '12px', color: isActiveSource ? 'var(--theme-accent)' : 'var(--theme-text-dim)', fontWeight: isActiveSource ? '700' : '400' }}>
+                          {isActiveSource ? '✓ Using as TDEE' : 'Use as TDEE'}
+                        </span>
+                        <button
+                          onClick={() => handleUseTrackerTDEE(!isActiveSource, provider)}
+                          disabled={!s.last_calories_burned}
+                          style={{
+                            width: '44px', height: '24px', borderRadius: '12px', border: 'none', cursor: s.last_calories_burned ? 'pointer' : 'not-allowed',
+                            background: isActiveSource ? 'var(--theme-accent)' : 'var(--theme-border)',
+                            position: 'relative', transition: 'background 0.2s', opacity: s.last_calories_burned ? 1 : 0.5,
+                          }}
+                          title={s.last_calories_burned ? 'Toggle tracker TDEE' : 'Sync first to enable'}
+                        >
+                          <span style={{
+                            position: 'absolute', top: '3px', left: isActiveSource ? '23px' : '3px',
+                            width: '18px', height: '18px', borderRadius: '50%', background: '#fff',
+                            transition: 'left 0.2s', boxShadow: '0 1px 3px rgba(0,0,0,0.4)',
+                          }} />
+                        </button>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              );
+            })}
+
+            {/* Apple Watch note */}
+            <div style={{ padding: '12px 16px', background: 'var(--theme-panel)', border: '1px solid var(--theme-border)', borderRadius: 'var(--radius-md)', display: 'flex', gap: '10px', alignItems: 'flex-start' }}>
+              <span style={{ fontSize: '20px' }}>🍎</span>
+              <div>
+                <div style={{ fontWeight: '700', fontSize: '13px', color: 'var(--theme-text)' }}>Apple Watch / HealthKit</div>
+                <div style={{ fontSize: '12px', color: 'var(--theme-text-dim)', lineHeight: '1.5', marginTop: '3px' }}>
+                  HealthKit is iOS-native only and cannot be accessed from a web browser. Apple Watch support is coming in a future native app. In the meantime, Apple Watch users can export daily burn via the Health app → share to Google Fit → then connect Google Fit above.
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* TDEE source indicator */}
+          {useTrackerTDEE && goals.trackerTDEE && (
+            <div style={{ marginTop: 'var(--space-md)', padding: '10px 14px', background: 'var(--theme-success-dim)', border: '1px solid var(--theme-success)', borderRadius: 'var(--radius-md)', fontSize: '13px', color: 'var(--theme-success)', fontWeight: '600', display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <Watch size={14} />
+              TDEE sourced from {goals.trackerSource === 'fitbit' ? 'Fitbit' : 'Google Fit'}: <strong>{goals.trackerTDEE.toLocaleString()} kcal/day</strong>
+            </div>
+          )}
         </div>
 
         {/* 5. Macro Split & Water Goal */}

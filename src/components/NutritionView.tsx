@@ -105,11 +105,11 @@ export const NutritionView: React.FC = () => {
 
   const resolvedColors = useMemo(() => {
     void localCache.theme;
-    if (typeof window === 'undefined') return { protein: '#ff4b4b', carbs: '#00c9ff', fat: '#fcc419' };
+    if (typeof window === 'undefined') return { protein: '#ff4b4b', carbs: '#4F8EF7', fat: '#fcc419' };
     const style = getComputedStyle(document.documentElement);
     return {
       protein: style.getPropertyValue('--theme-error').trim() || '#ff4b4b',
-      carbs: style.getPropertyValue('--theme-accent').trim() || '#00c9ff',
+      carbs: '#4F8EF7',
       fat: style.getPropertyValue('--theme-warning').trim() || '#fcc419'
     };
   }, [localCache.theme]);
@@ -188,8 +188,12 @@ export const NutritionView: React.FC = () => {
             {['Protein', 'Carbs', 'Fat'].map((label, idx) => {
               const val = [totals.protein, totals.carbs, totals.fat][idx];
               const goal = [computed.proteinG, computed.carbG, computed.fatG][idx] || 1;
-              const color = ['var(--theme-error)', 'var(--theme-accent)', 'var(--theme-warning)'][idx];
+              const color = [resolvedColors.protein, resolvedColors.carbs, resolvedColors.fat][idx];
               const pct = Math.min(100, (val / goal) * 100);
+              const calPerGram = [4, 4, 9][idx];
+              const macroCals = val * calPerGram;
+              const totalMacroCals = (totals.protein * 4 + totals.carbs * 4 + totals.fat * 9) || 1;
+              const caloricPct = Math.round((macroCals / totalMacroCals) * 100);
 
               return (
                 <div key={label}>
@@ -226,7 +230,19 @@ export const NutritionView: React.FC = () => {
                         </span>
                       )}
                     </span>
-                    <span style={{ color: 'var(--theme-text-dim-on-panel)', fontWeight: '800' }}>{Math.round(val)} <span style={{ fontSize: '10px' }}>/ {Math.round(goal)}g</span></span>
+                    <span style={{ display: 'flex', alignItems: 'center', gap: '6px', color: 'var(--theme-text-dim-on-panel)', fontWeight: '800' }}>
+                      {Math.round(val)} <span style={{ fontSize: '10px' }}>/ {Math.round(goal)}g</span>
+                      <span style={{
+                        background: `${color}22`,
+                        border: `1px solid ${color}55`,
+                        borderRadius: '6px',
+                        color: color,
+                        padding: '1px 5px',
+                        fontSize: '9px',
+                        fontWeight: '900',
+                        letterSpacing: '0.3px'
+                      }}>{caloricPct}%</span>
+                    </span>
                   </div>
                   <div style={{ height: '4px', background: 'var(--theme-panel-dim)', borderRadius: '2px', margin: '4px 0 8px 0', border: '1px solid var(--theme-border)' }}>
                     <div style={{ width: `${pct}%`, height: '100%', background: color, borderRadius: '2px' }} />

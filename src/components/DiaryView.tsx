@@ -377,6 +377,14 @@ const DiaryEntryItem = ({ log, onRemove, onEditPortion, onMove }: any) => {
       >
         {/* Top Row: Name + Nutri-Score badge + Trash */}
         <div className="diary-entry-header">
+          {f.image_url && (
+            <img
+              src={f.image_url}
+              alt={f.name}
+              style={{ width: '38px', height: '38px', borderRadius: '8px', objectFit: 'cover', marginRight: '8px', flexShrink: 0, border: '1px solid rgba(255,255,255,0.1)' }}
+              onError={e => { (e.target as HTMLImageElement).style.display = 'none'; }}
+            />
+          )}
           <div style={{ flex: 1, minWidth: 0 }}>
             <div className="diary-entry-name">{f.name}</div>
             <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flexWrap: 'wrap', marginTop: '2px' }}>
