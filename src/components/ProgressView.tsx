@@ -3,7 +3,7 @@ import { Toast } from './Toast';
 import { useDiary } from '../context/DiaryContext';
 import { ACTIVITY_LEVELS, MICRO_CATEGORIES } from '../lib/constants';
 import { computeGoals } from '../lib/goals/compute';
-import { Flame, Save, Droplet, User, PieChart, Info, Check, Edit2, ChevronDown, Leaf, Dna, Lightbulb, Watch, RefreshCw, Link2, LinkSlash } from 'lucide-react';
+import { Flame, Save, Droplet, User, PieChart, Info, Check, Edit2, ChevronDown, Leaf, Dna, Lightbulb, Watch, RefreshCw, Link2, Unlink } from 'lucide-react';
 
 export const ProgressView: React.FC = () => {
   const { localCache, updateGoals } = useDiary();
@@ -641,7 +641,7 @@ export const ProgressView: React.FC = () => {
                             onClick={() => disconnectTracker(provider)}
                             style={{ display: 'flex', alignItems: 'center', gap: '4px', padding: '6px 10px', background: 'none', border: '1px solid var(--theme-border)', borderRadius: '8px', color: 'var(--theme-text-dim)', fontSize: '12px', cursor: 'pointer' }}
                           >
-                            <LinkSlash size={12} /> Disconnect
+                            <Unlink size={12} /> Disconnect
                           </button>
                         </>
                       ) : (
