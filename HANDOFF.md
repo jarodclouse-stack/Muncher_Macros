@@ -115,6 +115,24 @@ This file is shared between Adam (Antigravity) and Eve (Claude). Update it at th
     - `SUPABASE_SERVICE_ROLE_KEY` (from Supabase Dashboard → Settings → API → service_role key)
     - `APP_URL=https://munchermacros.digital`
   - ✅ `npx tsc --noEmit` — 0 errors.
+- `[x]` **Fix: AI search speed + disappearing results (Eve)**:
+  - `[x]` `api/_lib/ai/ai-lookup.js` — Added 12s request timeout (was no timeout → hung until Vercel killed it). Reduced max_tokens 4000→1800. Replaced 400-word prompt requesting 30+ micros for 5 foods with a concise prompt requesting 3 foods + key micros only. Response time should drop from 10-15s to 3-5s.
+  - `[x]` `src/components/PantryView.tsx` — Fixed "search disappears" bug: on AI failure, error is now shown in a prominent red card with `setHasSearched(true)` so the UI doesn't go back to a blank state. Timeout errors show a helpful message directing user to the regular Search tab.
+  - ✅ `npx tsc --noEmit` — 0 errors.
+- `[x]` **Fix: AI scan routes + model strings + Vercel timeouts (Eve)**:
+  - `[x]` `src/lib/vision/scanner-logic.ts` — Fixed two stale routes left over from Adam's API consolidation:
+    - `/api/ai-label` → `/api/ai?action=label`
+    - `/api/ai-barcode` → `/api/ai?action=barcode`
+  - `[x]` `api/_lib/ai/*.js` (all 6 handlers) — Restored better model fallback chain:
+    `claude-sonnet-4-6` → `claude-haiku-4-5-20251001` → `claude-3-5-sonnet-20241022` → `claude-3-5-haiku-20241022`
+    Adam replaced these thinking they were fictional, but `claude-sonnet-4-6` and `claude-haiku-4-5-20251001` are valid current model IDs.
+  - `[x]` `vercel.json` — Added missing timeout/memory config for `api/search.js` (20s, 512MB) and `api/tracker.js` (20s, 256MB). Were defaulting to 10s which caused OFF search timeouts.
+- `[x]` **Fix: Barcode/AI scan 404 error (Eve)**:
+  - `[x]` `src/lib/vision/scanner-logic.ts` — Updated two stale API URLs:
+    - `/api/ai-label` → `/api/ai?action=label`
+    - `/api/ai-barcode` → `/api/ai?action=barcode`
+  - These routes were broken when the API was restructured into router files (`api/ai.js`). The individual `api/ai-label.js` and `api/ai-barcode.js` files no longer exist as top-level Vercel routes.
+  - ✅ No other old-style AI routes found in the codebase.
 - `[x]` **Sprint Planning — Sprint 1 (Eve)**:
   - `[x]` `SPRINT-1.md` created in project root — 2-week sprint with dependency chain, data persistence QA checklist (15 items total), and pre-launch blocker list.
   - `[x]` All sprint items linked: P0 tracker setup (#2→#3→#4) unlocks goals audit (#6) unlocks macro consistency (#13); pantry fixes (#5) unlocks custom food persistence (#12); water goal (#8) unlocks water log persist (#14).

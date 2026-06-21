@@ -1,7 +1,9 @@
 {
   "functions": {
-    "api/ai.js": { "maxDuration": 30, "memory": 1024 },
-    "api/stripe.js": { "maxDuration": 10 }
+    "api/ai.js":      { "maxDuration": 30, "memory": 1024 },
+    "api/search.js":  { "maxDuration": 20, "memory": 512 },
+    "api/tracker.js": { "maxDuration": 20, "memory": 256 },
+    "api/stripe.js":  { "maxDuration": 10 }
   },
   "rewrites": [
     { "source": "/((?!api/).*)", "destination": "/index.html" }

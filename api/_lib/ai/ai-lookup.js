@@ -23,15 +23,17 @@ function extractJSON(text) {
 }
 
 const MODELS = [
+  'claude-haiku-4-5-20251001',
   'claude-3-5-haiku-20241022',
-  'claude-3-haiku-20240307',
+  'claude-sonnet-4-6',
   'claude-3-5-sonnet-20241022',
-  'claude-3-sonnet-20240229',
 ];
 
 import https from 'https';
 
-async function anthropicJson(prompt, apiKey, maxTokens = 4000) {
+const REQUEST_TIMEOUT_MS = 12000; // 12s — fast fail before Vercel's 20s limit
+
+async function anthropicJson(prompt, apiKey, maxTokens = 1800) {
   let lastError = 'Initialization error';
   for (const model of MODELS) {
     try {
@@ -57,6 +59,10 @@ async function anthropicJson(prompt, apiKey, maxTokens = 4000) {
           });
         });
         req.on('error', reject);
+        req.setTimeout(REQUEST_TIMEOUT_MS, () => {
+          req.destroy();
+          reject(new Error('AI search timed out. Try a shorter query.'));
+        });
         req.write(JSON.stringify({
           model,
           max_tokens: maxTokens,
@@ -221,35 +227,23 @@ export default async function handler(req, res) {
   const apiKey = (process.env.ANTHROPIC_API_KEY || '').trim();
   if (!apiKey) return res.status(500).json({ error: 'Environment variable ANTHROPIC_API_KEY missing' });
 
-  const prompt = `Search for nutritional data for: "${query}".
-  Return a JSON array of the 5 most likely food matches.
-  For each match, provide a complete nutrient breakdown scaled to its standard "BASE" serving.
+  const prompt = `Return a JSON array of the 3 best matches for: "${query}".
+Use real USDA/manufacturer values. Return ONLY raw JSON, no markdown.
 
-  DIETARY PERCEPTION PROTOCOL:
-  1. BRANDED & COMMERCIAL PRODUCTS: For widely known commercial products (e.g. "Pepsi", "Coca-Cola", "Oreo", "Big Mac"), you MUST use their exact, real-world manufacturer nutrition label facts. A standard 12 fl oz (355ml) regular Pepsi has exactly 150 kcal, 41g carbohydrates (all sugars), 0g protein, and 0g fat. Regular Coca-Cola has 140 kcal, 39g carbs. Do not guess or hallucinate generic or blank numbers (like 0g carbs for regular Pepsi) for standard commercial items.
-  2. TOTAL CARBOHYDRATES RULE: The "c" (carbs) key represents TOTAL carbohydrates. Total carbohydrates MUST include all simple sugars ("sugars") and dietary fiber ("fb"). Therefore, it is a mathematical requirement that: c >= sugars + fb. For example, if a beverage has 41g of sugars, its "c" value MUST be at least 41g. Never set "c" to 0 if "sugars" is non-zero.
-  3. MACRO-CALORIE ALIGNMENT: Stated calories ("cal") must be mathematically aligned with the macronutrients: cal = p * 4 + c * 4 + f * 9. Stating a positive calorie count (like 150 kcal) while setting all macros (protein, carbs, fat) to 0 is an extreme error. If a food has calories, it MUST have the corresponding macros that produce those calories.
-  4. ITEM COUNT/WEIGHT: Identify the base serving weight or count (e.g. 174 for a 174g breast).
-  5. NUTRITION: Extract nutrition for exactly that quantity. You MUST estimate and populate every single micronutrient and trace mineral key listed below. Do not leave them out or set them all to 0. Realistically estimate each value using scientific nutrition databases (USDA/NCCDB).
-  6. NUTRI-SCORE & NUTRIENT LEVELS: Estimate the product's Nutri-Score grade ('a', 'b', 'c', 'd', or 'e') and nutrient levels (qualitative level 'low', 'moderate', or 'high' for fat, saturated-fat, sugars, and salt) based on the calculated nutritional density per 100g of the food:
-     - Nutri-Score: 'a' or 'b' for fresh raw vegetables, fruits, whole grains, water. 'c' for standard meats, mixed meals with reasonable balance. 'd' or 'e' for high-sugar, high-saturated-fat, or high-salt processed foods (e.g. regular soda, donuts, potato chips).
-     - Nutrient Levels per 100g:
-       * fat: low (<3g), moderate (3g - 17.5g), high (>17.5g)
-       * saturated-fat: low (<1.5g), moderate (1.5g - 5g), high (>5g)
-       * sugars: low (<5g), moderate (5g - 22.5g), high (>22.5g)
-       * salt: low (<0.3g / <120mg sodium), moderate (0.3g - 1.5g / 120mg - 600mg sodium), high (>1.5g / >600mg sodium)
-     - Also calculate/estimate the exact nutrient percentages (weight percentage of that nutrient per 100g of the food) for: fat, saturated-fat, sugars, and salt (where salt percentage = sodium per 100g in mg * 2.5 / 1000). e.g., a food with 30g sugar per 100g has 30% sugars.
-  7. FOOD GROUP: Classify the food into exactly one of the following foodGroup strings: "Vegetables", "Fruits", "Grains & Breads", "Meat & Poultry", "Fish & Seafood", "Dairy & Eggs", "Nuts & Seeds", "Fats & Oils", "Sweets & Snacks", "Beverages", "Mixed Meals", "Legumes & Beans", "Condiments & Sauces", "Supplements & Powders", "Herbs & Spices", "Soups & Stews", "Fast Food / Restaurant", "Alcoholic Beverages", or "Other".
-  
-  JSON keys: name, serving, detectedCount, sUnit, cal, p, c, f, fb, sat, trans, mono, poly, chol, sugars, Sodium, Potassium, Calcium, Iron, "Vitamin C", "Vitamin A", "Vitamin D", "Vitamin B1", "Vitamin B2", "Vitamin B3", "Vitamin B5", "Vitamin B6", "Vitamin B7", "Vitamin B9", "Vitamin B12", "Vitamin E", "Vitamin K", "Magnesium", "Phosphorus", "Zinc", "Copper", "Manganese", "Selenium", "Chloride", "Iodine", "Chromium", "Molybdenum", "Fluoride", "Fiber", "Soluble Fiber", "Insoluble Fiber", nutriscore_grade, nutrient_levels, nutrient_percentages, foodGroup.
+Rules:
+- cal = p*4 + c*4 + f*9 (macros must explain calories — never 0 macros with non-zero cal)
+- c (total carbs) >= sugars + fb at all times
+- For branded products (Pepsi, Big Mac, Oreo etc) use exact label values
+- sUnit = "g" and detectedCount = weight in grams when weight is known
+- nutriscore_grade: a/b for produce & whole foods, c for balanced meals, d/e for junk/soda
+- nutrient_levels keys: fat, saturated-fat, sugars, salt — values: low/moderate/high per 100g thresholds
+- nutrient_percentages: same 4 keys, numeric mass-percent values per 100g
+- foodGroup: one of Vegetables|Fruits|Grains & Breads|Meat & Poultry|Fish & Seafood|Dairy & Eggs|Nuts & Seeds|Fats & Oils|Sweets & Snacks|Beverages|Mixed Meals|Legumes & Beans|Condiments & Sauces|Supplements & Powders|Herbs & Spices|Soups & Stews|Fast Food / Restaurant|Alcoholic Beverages|Other
 
-  Rules:
-  - Return ONLY raw JSON. No markdown fences.
-  - Accuracy is paramount. Use P*4 + C*4 + F*9 for calories.
-  - CRITICAL: Use GRAMS (g) as sUnit if a weight is known, and put the weight in detectedCount. (e.g. "Chicken Breast" -> detectedCount: 174, sUnit: "g")
-  - Ensure nutrient_levels is an object containing exact keys: {"fat": "low|moderate|high", "saturated-fat": "low|moderate|high", "sugars": "low|moderate|high", "salt": "low|moderate|high"}.
-  - Ensure nutrient_percentages is an object containing exact keys with estimated numeric values (e.g., mass percentages like 41, 24, 30, 0.02): {"fat": number, "saturated-fat": number, "sugars": number, "salt": number}.
-  - DO NOT omit any key. Ensure every single key from the list above is included in the output JSON objects. All values should be estimated as realistically as possible for the base serving.`;
+Required JSON keys per item:
+name, serving, detectedCount, sUnit, cal, p, c, f, fb, sat, trans, mono, poly, chol, sugars,
+Sodium, Potassium, Calcium, Iron, Magnesium, Zinc, "Vitamin C", "Vitamin D", "Vitamin B12",
+nutriscore_grade, nutrient_levels, nutrient_percentages, foodGroup`;
 
   try {
     const cached = await checkCache('lookup', query);

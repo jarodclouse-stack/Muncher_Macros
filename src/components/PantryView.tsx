@@ -671,11 +671,17 @@ export const PantryView: React.FC<PantryViewProps> = ({ initialMeal, onClose, is
         
         setSearchResults([...localMatches, ...normalized].slice(0, 50));
       } else {
-        setErrorMsg("AI Lookup failed.");
+        const errBody = await res.json().catch(() => ({}));
+        setErrorMsg(errBody.error || "AI search failed — try a different query or use the Search tab.");
+        setHasSearched(true);
       }
     } catch (err: any) {
       if (err.name !== 'AbortError') {
-        setErrorMsg("AI Lookup failed.");
+        const msg = (err.message || '').toLowerCase().includes('timeout')
+          ? "AI search timed out — try a shorter query or switch to the Search tab."
+          : "AI search failed — try a different query.";
+        setErrorMsg(msg);
+        setHasSearched(true);
       }
     } finally {
       if (abortControllerRef.current === controller) {
@@ -1550,7 +1556,15 @@ export const PantryView: React.FC<PantryViewProps> = ({ initialMeal, onClose, is
             </div>
           )}
           
-          {errorMsg && <div style={{ color: 'var(--theme-error)', fontSize: '13px', marginTop: '12px', textAlign: 'center' }}>{errorMsg}</div>}
+          {errorMsg && (
+            <div style={{ display: 'flex', alignItems: 'flex-start', gap: '10px', background: 'rgba(255,80,80,0.1)', border: '1px solid rgba(255,80,80,0.3)', borderRadius: '12px', padding: '12px 16px', marginTop: '12px' }}>
+              <span style={{ fontSize: '16px', flexShrink: 0 }}>⚠️</span>
+              <div>
+                <div style={{ color: '#FF8080', fontSize: '12px', fontWeight: '900', letterSpacing: '0.5px', marginBottom: '2px' }}>SEARCH ERROR</div>
+                <div style={{ color: 'rgba(255,255,255,0.8)', fontSize: '12px', fontWeight: '600' }}>{errorMsg}</div>
+              </div>
+            </div>
+          )}
 
               {/* AI Review Step */}
               {isAiReviewing && aiStagedResults.length > 0 && (
