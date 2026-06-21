@@ -228,7 +228,7 @@ export default async function handler(req, res) {
   if (!apiKey) return res.status(500).json({ error: 'Environment variable ANTHROPIC_API_KEY missing' });
 
   const prompt = `Return a JSON array of the 3 best matches for: "${query}".
-Use real USDA/manufacturer values. Return ONLY raw JSON, no markdown.
+Use real verified manufacturer values. Return ONLY raw JSON, no markdown.
 
 Rules:
 - cal = p*4 + c*4 + f*9 (macros must explain calories — never 0 macros with non-zero cal)

@@ -37,7 +37,6 @@ export const PrivacyPolicy: React.FC<{ onClose: () => void }> = ({ onClose }) =>
             <li><strong>Supabase</strong> — Authentication and data storage</li>
             <li><strong>Anthropic (Claude AI)</strong> — Image and text analysis for nutrition features</li>
             <li><strong>Open Food Facts</strong> — Product database lookups</li>
-            <li><strong>USDA FoodData Central</strong> — Nutrient data verification</li>
           </ul>
 
           <h3 style={h3Style}>Your Rights</h3>

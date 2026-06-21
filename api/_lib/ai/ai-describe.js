@@ -381,7 +381,7 @@ For each component, estimate nutrition for exactly ONE (1) unit:
      * Potato (30g carbs) → sugars ≈ 1–2g
    - RULE: For grain, legume, tuber, and starchy foods, sugars MUST be < 20% of total carbs. Setting sugars = c for these foods is a critical error.
 3. MACRO-CALORIE ALIGNMENT: Stated calories ("cal") must be mathematically aligned with the macronutrients: cal = p * 4 + c * 4 + f * 9. Stating a positive calorie count (like 150 kcal) while setting all macros (protein, carbs, fat) to 0 is an extreme error. If a food has calories, it MUST have the corresponding macros that produce those calories.
-4. MICRONUTRIENT MANDATE (Rule 13): You MUST estimate and populate every micronutrient and trace mineral below. Do NOT leave them as 0 unless the value is truly negligible (e.g. selenium in Coke). Use USDA/NCCDB data.
+4. MICRONUTRIENT MANDATE (Rule 13): You MUST estimate and populate every micronutrient and trace mineral below. Do NOT leave them as 0 unless the value is truly negligible (e.g. selenium in Coke). Use standard scientific nutritional databases.
 5. CONTRADICTION PREVENTION (Rule 14):
   - Diet/zero-sugar drinks: sugars ≈ 0, cal ≈ 0–5. Violating this is an error.
   - Black coffee: no milk fat, no sugar. cal ≈ 5.

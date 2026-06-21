@@ -903,16 +903,6 @@ body.theme-ember-forge {
     border-radius: 10px;
   }
   /* Source badge teal */
-  .usda-badge {
-    background: rgba(125,232,168,0.1);
-    color: #7de8a8;
-    border: 1px solid rgba(125,232,168,0.3);
-    font-size: 9px;
-    padding: 2px 7px;
-    border-radius: 4px;
-    font-weight: 700;
-    display: inline-block;
-  }
   .ai-badge {
     background: rgba(237,209,85,0.1);
     color: #edd155;
