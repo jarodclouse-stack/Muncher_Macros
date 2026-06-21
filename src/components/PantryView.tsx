@@ -14,7 +14,7 @@ import { getPairingSuggestions } from '../lib/food/smart-pairing';
 
 import { SearchCoaster, type SearchTab } from './SearchCoaster';
 import { NutritionFactsDisplay } from './NutritionFactsDisplay';
-import { BarcodeScanner } from './BarcodeScanner';
+import { SmartScanner } from './SmartScanner';
 import { ConfirmDialog } from './ConfirmDialog';
 import { PromptDialog } from './PromptDialog';
 import { NutriScorePopup, NS_COLOR } from './NutriScorePopup';
@@ -1128,7 +1128,7 @@ export const PantryView: React.FC<PantryViewProps> = ({ initialMeal, onClose, is
             
           {innerGlobalSearchTab === 'scan' ? (
             <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '20px', padding: '20px 0' }}>
-              <BarcodeScanner 
+              <SmartScanner
                 onScanSuccess={(result) => {
                   if (typeof result === 'object' && result !== null) {
                     handleAddPreviewClick(result);
@@ -1996,7 +1996,7 @@ export const PantryView: React.FC<PantryViewProps> = ({ initialMeal, onClose, is
                         </div>
                         <button type="button" onClick={() => { setIngAddMode(null); setIngPickerOpen(false); }} style={{ background: 'rgba(255,255,255,0.05)', border: 'none', borderRadius: '8px', color: 'rgba(255,255,255,0.6)', padding: '6px 12px', fontSize: '11px', fontWeight: '700', cursor: 'pointer' }}>Cancel</button>
                       </div>
-                      <BarcodeScanner
+                      <SmartScanner
                         initialScanType={ingAddMode === 'label' ? 'nutrition' : 'barcode'}
                         onScanSuccess={(result) => {
                           if (typeof result === 'object' && result !== null) {

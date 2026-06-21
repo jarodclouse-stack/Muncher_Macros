@@ -2,6 +2,26 @@
 
 This file is shared between Adam (Antigravity) and Eve (Claude). Update it at the end of every session.
 
+## 📝 Logging Standard (Both AIs — read this)
+
+Every session entry must be **granular** so the other AI has full context. Do not write summary-only entries.
+
+**Required format for every change:**
+```
+- `[x]` **[Feature/Fix name] (Adam|Eve)**:
+  - Read `path/to/file.ts` — [what you found / why you read it]
+  - Read `path/to/other.js` — [what you found]
+  - Edited `path/to/file.ts` line ~XX — [exactly what changed and why]
+  - Edited `path/to/other.js` — [exactly what changed and why]
+  - Created `path/to/new.ts` — [what it does]
+  - Ran `npx tsc --noEmit` — [result]
+  - ⚠️ [Any warnings, blockers, or things the other AI must know]
+```
+
+**Why this matters:** Jarod works with both of us. When one AI picks up where the other left off, granular logs prevent re-doing work, breaking things the other fixed, or missing context on *why* a decision was made.
+
+---
+
 ---
 
 ## 🛠️ Status Checklist
@@ -29,7 +49,7 @@ This file is shared between Adam (Antigravity) and Eve (Claude). Update it at th
   - `[x]` `api/_lib/rate-limit.js` — Pro users bypass AI quota; free users capped at 10 AI scans/day with `code: 'QUOTA_EXCEEDED'` in 429 response.
   - `[x]` `src/components/ThemesView.tsx` — 10 premium themes gated behind `isPro`, Crown lock UI, "PRO EXCLUSIVE" badge.
   - `[x]` `src/lib/vision/scanner-logic.ts` — 429 responses surface `detail: body.code` for UI handling.
-  - `[x]` `src/components/BarcodeScanner.tsx` — Gold "Daily Limit Reached" upgrade card shown when quota hit; fires `navigate-to-settings` event to open Settings modal.
+  - `[x]` `src/components/SmartScanner.tsx` — Gold "Daily Limit Reached" upgrade card shown when quota hit; fires `navigate-to-settings` event to open Settings modal.
   - `[x]` `src/pages/MainDashboard.tsx` — Listens for `navigate-to-settings` custom event and opens Settings modal.
 - `[x]` **Temp: All users granted Pro (Eve)**:
   - `[x]` DB migration `temp_all_users_pro_revert_before_launch` applied — `is_pro DEFAULT true`, all existing rows set to true.

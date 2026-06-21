@@ -35,7 +35,7 @@ export const MainDashboard: React.FC = () => {
     }
   }, [dataReady, localCache.goals]);
 
-  // Allow child components (e.g. BarcodeScanner quota prompt) to open the Settings modal
+  // Allow child components (e.g. SmartScanner quota prompt) to open the Settings modal
   useEffect(() => {
     const handler = () => setShowSettingsModal(true);
     window.addEventListener('navigate-to-settings', handler);

@@ -4,14 +4,14 @@ import { useDiary } from '../context/DiaryContext';
 import { scanBarcode, extractBarcodeDigits, scanNutritionLabel } from '../lib/vision/scanner-logic';
 import { ImageCropperModal } from './ImageCropperModal';
 
-interface BarcodeScannerProps {
+interface SmartScannerProps {
   onScanSuccess: (result: string | any) => void;
   onScanError?: (error: string) => void;
   /** When set, skips the mode-picker UI and goes straight to camera for this type. */
   initialScanType?: 'nutrition' | 'barcode';
 }
 
-export const BarcodeScanner: React.FC<BarcodeScannerProps> = ({
+export const SmartScanner: React.FC<SmartScannerProps> = ({
   onScanSuccess,
   onScanError,
   initialScanType
