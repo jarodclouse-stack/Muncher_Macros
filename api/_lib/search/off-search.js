@@ -3,6 +3,7 @@
 import { setCors, handlePreflight } from '../cors.js';
 import { readBody } from '../validate.js';
 import { allowGuest } from '../auth.js';
+import { checkCache, saveToCache, getSupabase } from '../supabase-client.js';
 
 function isEnglish(p) {
   // Must have a product name
@@ -43,6 +44,81 @@ function getPlurals(word) {
   return [...forms];
 }
 
+// ── Auto-persist barcoded OFF foods to the foods table ───────────────────────
+// Fires after every OFF search that returns results. Only persists foods that
+// have a numeric barcode (reliable dedup key). Generic/unbranded results are
+// skipped — those come from the CSV import instead.
+async function persistToFoods(foods) {
+  const supabase = getSupabase();
+  if (!supabase) return;
+
+  const withBarcode = foods.filter(f => f.barcode && /^\d{8,}$/.test(String(f.barcode)));
+  if (!withBarcode.length) return;
+
+  try {
+    // Skip barcodes already in the DB
+    const barcodes = withBarcode.map(f => String(f.barcode));
+    const { data: existing } = await supabase
+      .from('foods')
+      .select('barcode')
+      .in('barcode', barcodes);
+
+    const existingSet = new Set((existing || []).map(r => r.barcode));
+    const toInsert = withBarcode.filter(f => !existingSet.has(String(f.barcode)));
+    if (!toInsert.length) return;
+
+    // Map OFF food shape → foods table columns (nutrients already in correct units)
+    const rows = toInsert.map(f => ({
+      name:        f.name,
+      brand:       '',
+      serving:     f.serving || '100g',
+      s_qty:       Number(f.sQty) || 100,
+      s_unit:      f.sUnit || 'g',
+      cal:         Number(f.cal)  || 0,
+      p:           Number(f.p)   || 0,
+      c:           Number(f.c)   || 0,
+      f:           Number(f.f)   || 0,
+      fiber:       Number(f.fb)  || 0,
+      sugars:      Number(f.sugars) || 0,
+      sat:         Number(f.sat)  || 0,
+      mono:        Number(f.mono) || 0,
+      poly:        Number(f.poly) || 0,
+      trans:       Number(f.trans) || 0,
+      chol:        Number(f.chol) || 0,
+      sodium:      Number(f.Sodium)     || 0,
+      potassium:   Number(f.Potassium)  || 0,
+      calcium:     Number(f.Calcium)    || 0,
+      magnesium:   Number(f.Magnesium)  || 0,
+      iron:        Number(f.Iron)       || 0,
+      zinc:        Number(f.Zinc)       || 0,
+      phosphorus:  Number(f.Phosphorus) || 0,
+      manganese:   Number(f.Manganese)  || 0,
+      selenium:    Number(f.Selenium)   || 0,
+      copper:      Number(f.Copper)     || 0,
+      vitamin_c:   Number(f['Vitamin C'])  || 0,
+      vitamin_a:   Number(f['Vitamin A'])  || 0,
+      vitamin_d:   Number(f['Vitamin D'])  || 0,
+      vitamin_e:   Number(f['Vitamin E'])  || 0,
+      vitamin_k:   Number(f['Vitamin K'])  || 0,
+      vitamin_b1:  Number(f['Vitamin B1']) || 0,
+      vitamin_b2:  Number(f['Vitamin B2']) || 0,
+      vitamin_b3:  Number(f['Vitamin B3']) || 0,
+      vitamin_b5:  Number(f['Vitamin B5']) || 0,
+      vitamin_b6:  Number(f['Vitamin B6']) || 0,
+      vitamin_b12: Number(f['Vitamin B12']) || 0,
+      barcode:     String(f.barcode),
+      source:      'off',
+      popularity:  0,
+    }));
+
+    await supabase.from('foods').insert(rows);
+    console.log(`[off-persist] Seeded ${rows.length} new food(s) into DB`);
+  } catch (err) {
+    // Best-effort — never block the search response
+    console.warn('[off-persist] Failed:', err?.message);
+  }
+}
+
 export default async function handler(req, res) {
   setCors(req, res);
   if (handlePreflight(req, res)) return;
@@ -57,6 +133,13 @@ export default async function handler(req, res) {
 
   const strippedQuery = query.replace(/[\s-]/g, '');
   const isBarcode = /^\d+$/.test(strippedQuery);
+  const cacheCategory = isBarcode ? 'off-barcode' : 'off';
+
+  // ── Cache check (eliminates 3–6s OFF wait on repeat queries) ────────────────
+  const cached = await checkCache(cacheCategory, isBarcode ? strippedQuery : query);
+  if (cached) {
+    return res.status(200).json({ foods: cached, _cached: true });
+  }
 
   let productsToProcess = [];
 
@@ -120,11 +203,18 @@ export default async function handler(req, res) {
         }
       };
 
-      // Try the original query first (6s). Only fall back to ONE plural variant
-      // (3s) if it returns nothing — keeps total well under Vercel's 10s limit.
-      addProducts(await fetchQuery(queriesToTry[0], 6000));
-      if (productsToProcess.length === 0 && queriesToTry.length > 1) {
-        addProducts(await fetchQuery(queriesToTry[1], 3000));
+      // Run original query + first plural/singular variant in parallel.
+      // Total latency = max(primary, fallback) instead of up to 9s sequential.
+      // The seen Set deduplicates any overlapping results.
+      if (queriesToTry.length > 1) {
+        const [primary, fallback] = await Promise.all([
+          fetchQuery(queriesToTry[0], 6000),
+          fetchQuery(queriesToTry[1], 4000),
+        ]);
+        addProducts(primary);
+        addProducts(fallback);
+      } else {
+        addProducts(await fetchQuery(queriesToTry[0], 6000));
       }
     }
 
@@ -391,6 +481,14 @@ export default async function handler(req, res) {
       const { _energy100g, ...clean } = f;
       return clean;
     });
+
+    // ── Cache + persist (both fire-and-forget) ───────────────────────────────
+    if (activeFoods.length > 0) {
+      saveToCache(cacheCategory, isBarcode ? strippedQuery : query, activeFoods);
+      // Self-seed the foods table with barcoded results so future searches
+      // hit the fast DB path instead of waiting on the OFF API.
+      persistToFoods(activeFoods);
+    }
 
     return res.status(200).json({ foods: activeFoods });
 

@@ -5,6 +5,59 @@ import { validateQuery, readBody } from '../validate.js';
 import { rateLimit } from '../rate-limit.js';
 import { allowGuest } from '../auth.js';
 
+// ─── In-memory synonym cache ──────────────────────────────────────────────────
+// The search_synonyms table is 262 static rows. Loading it into memory on first
+// request eliminates a DB round trip on every single search query.
+let _synonymMap = null;
+let _synonymLoadedAt = 0;
+const SYNONYM_TTL_MS = 60 * 60 * 1000; // refresh hourly
+
+async function getSynonymMap(supabase) {
+  const now = Date.now();
+  if (_synonymMap && now - _synonymLoadedAt < SYNONYM_TTL_MS) return _synonymMap;
+  try {
+    const { data } = await supabase.from('search_synonyms').select('term, expands');
+    if (data) {
+      _synonymMap = new Map(data.map(r => [r.term.toLowerCase(), r.expands]));
+      _synonymLoadedAt = now;
+    }
+  } catch {
+    _synonymMap = _synonymMap || new Map();
+  }
+  return _synonymMap;
+}
+
+// ─── Result cache helpers (reuse search_cache table) ─────────────────────────
+async function getCached(supabase, cacheKey) {
+  try {
+    const { data } = await supabase
+      .from('search_cache')
+      .select('results')
+      .eq('query_hash', `db:${cacheKey}`)
+      .gt('expires_at', new Date().toISOString())
+      .maybeSingle();
+    return data?.results || null;
+  } catch { return null; }
+}
+
+async function setCached(supabase, cacheKey, results) {
+  if (!results?.length) return;
+  const expiresAt = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString();
+  try {
+    await supabase.from('search_cache').upsert({
+      query_hash: `db:${cacheKey}`,
+      query: cacheKey,
+      results,
+      created_at: new Date().toISOString(),
+      expires_at: expiresAt,
+    }, { onConflict: 'query_hash' });
+    // Lazy cleanup: ~5% chance to purge expired rows
+    if (Math.random() < 0.05) {
+      supabase.rpc('cleanup_expired_search_cache').catch(() => {});
+    }
+  } catch { /* cache write is best-effort */ }
+}
+
 const round1 = v => Math.round((Number(v) || 0) * 10) / 10;
 const round2 = v => Math.round((Number(v) || 0) * 100) / 100;
 const round3 = v => Math.round((Number(v) || 0) * 1000) / 1000;
@@ -62,6 +115,39 @@ function mapToFoodShape(row) {
   };
 }
 
+// ── Personal frequency map ────────────────────────────────────────────────────
+// Counts how many times each food name appears in the user's diary (last 60
+// days). Runs in parallel with the main search RPC — zero added latency for
+// authenticated users. Anonymous users get an empty map (no boost).
+async function getFrequentFoodNames(supabase, userId) {
+  if (!userId || userId === 'anonymous') return new Map();
+  try {
+    const since = new Date(Date.now() - 60 * 24 * 60 * 60 * 1000).toISOString().slice(0, 10);
+    const { data } = await supabase
+      .from('diary_entries')
+      .select('food_log')
+      .eq('user_id', userId)
+      .gte('entry_date', since)
+      .not('food_log', 'is', null);
+
+    if (!data?.length) return new Map();
+
+    const freq = new Map();
+    for (const row of data) {
+      if (!Array.isArray(row.food_log)) continue;
+      for (const item of row.food_log) {
+        if (item?.name) {
+          const key = item.name.toLowerCase();
+          freq.set(key, (freq.get(key) || 0) + 1);
+        }
+      }
+    }
+    return freq;
+  } catch {
+    return new Map();
+  }
+}
+
 // Lazy-init Supabase client (server-side, service role)
 let _supabase = null;
 function getSupabase() {
@@ -89,22 +175,31 @@ export default async function handler(req, res) {
 
   try {
     const supabase = getSupabase();
+    const isBarcode = /^\d+$/.test(query);
 
-    // Check for synonym expansion (Phase 2 — no-op if table doesn't exist yet)
-    let synonymText = null;
-    try {
-      const { data: syn } = await supabase
-        .from('search_synonyms')
-        .select('expands')
-        .eq('term', query.toLowerCase())
-        .maybeSingle();
-      if (syn?.expands) synonymText = syn.expands;
-    } catch {
-      // Table may not exist yet — skip synonym expansion
+    // ── Personal frequency promise (fires now, awaited later) ─────────────────
+    // Runs in parallel with synonym lookup + search RPC — zero added latency.
+    // Returns a name→count map of foods this user has logged in the last 60 days.
+    const freqPromise = !isBarcode
+      ? getFrequentFoodNames(supabase, user?.id)
+      : Promise.resolve(new Map());
+
+    // ── 1. Synonyms from memory (no DB round trip after first load) ──────────
+    const synonymMap = await getSynonymMap(supabase);
+    const synonymText = !isBarcode ? (synonymMap.get(query.toLowerCase()) || null) : null;
+
+    // ── 2. Cache check ────────────────────────────────────────────────────────
+    const cacheKey = synonymText ? `${query}::${synonymText}` : query;
+    const cached = await getCached(supabase, cacheKey);
+    if (cached) {
+      return res.status(200).json({
+        foods: cached.map(mapToFoodShape),
+        expandedQuery: synonymText || query,
+        _cached: true,
+      });
     }
 
-    // If query is a numeric barcode, check the barcode column directly first
-    const isBarcode = /^\d+$/.test(query);
+    // ── 3. Search ─────────────────────────────────────────────────────────────
     let results = [];
 
     if (isBarcode) {
@@ -115,33 +210,46 @@ export default async function handler(req, res) {
         .limit(1);
       if (error) throw error;
       results = data || [];
+    } else if (synonymText) {
+      // Run original + synonym in parallel — eliminates sequential delay
+      const [main, syn] = await Promise.all([
+        supabase.rpc('search_foods', { query_text: query,       result_limit: 25 }),
+        supabase.rpc('search_foods', { query_text: synonymText, result_limit: 25 }),
+      ]);
+      if (main.error) throw main.error;
+      results = main.data || [];
+      if (syn.data?.length) {
+        const seen = new Set(results.map(r => r.id));
+        for (const r of syn.data) {
+          if (!seen.has(r.id)) { results.push(r); seen.add(r.id); }
+        }
+        results.sort((a, b) => (b.rank_score || 0) - (a.rank_score || 0));
+        results = results.slice(0, 25);
+      }
     } else {
-      // Call the search function
-      const rpcParams = { query_text: query, result_limit: 25 };
-      const { data, error } = await supabase.rpc('search_foods', rpcParams);
+      const { data, error } = await supabase.rpc('search_foods', {
+        query_text: query,
+        result_limit: 25,
+      });
       if (error) throw error;
       results = data || [];
     }
 
-    // If synonym found, also search with expanded term and merge
-    if (synonymText) {
-      const { data: synData } = await supabase.rpc('search_foods', {
-        query_text: synonymText,
-        result_limit: 25
+    // ── 4. Cache results for next time ────────────────────────────────────────
+    // Fire-and-forget: don't await, keeps response fast
+    setCached(supabase, cacheKey, results);
+
+    // ── 5. Personal frequency boost ───────────────────────────────────────────
+    // Reorder results so foods this user logs frequently float to the top.
+    // freqPromise was started in parallel — should already be resolved by now.
+    const freqMap = await freqPromise;
+    if (freqMap.size > 0) {
+      results.sort((a, b) => {
+        const aFreq = freqMap.get((a.name || '').toLowerCase()) || 0;
+        const bFreq = freqMap.get((b.name || '').toLowerCase()) || 0;
+        if (aFreq !== bFreq) return bFreq - aFreq;
+        return (b.rank_score || 0) - (a.rank_score || 0);
       });
-      if (synData?.length) {
-        // Merge and dedupe by id, keep best rank_score
-        const seen = new Set(results.map(r => r.id));
-        for (const r of synData) {
-          if (!seen.has(r.id)) {
-            results.push(r);
-            seen.add(r.id);
-          }
-        }
-        // Re-sort by rank_score
-        results.sort((a, b) => (b.rank_score || 0) - (a.rank_score || 0));
-        results = results.slice(0, 25);
-      }
     }
 
     const foods = results.map(mapToFoodShape);
